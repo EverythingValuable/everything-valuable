@@ -91,6 +91,7 @@ export default function BidSection({ item }) {
     clearInterval(timerRef.current);
     setShowConfirm(false);
     setLockedPrice(null);
+    setConfirmResult(null);
     await base44.entities.Item.update(item.id, {
       make_it_mine_active: false,
       make_it_mine_expires: null,
