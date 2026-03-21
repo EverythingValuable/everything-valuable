@@ -204,7 +204,8 @@ export default function SellerDashboard() {
   );
 }
 
-function StatCard({ label, value, icon: Icon, color, wide }) {
+function StatCard({ label, value, icon: IconComp, color, wide }) {
+  const Icon = IconComp;
   return (
     <div className="bg-card rounded-xl border border-border px-5 py-4 space-y-1">
       <div className="flex items-center justify-between">
