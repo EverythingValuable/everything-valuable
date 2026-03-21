@@ -40,7 +40,14 @@ export default function Home() {
       <HowItWorksPreview />
 
       {/* Categories */}
-      <CategoryGrid />
+      <CategoryGrid categoryImages={{
+        fine_art: "/__generating__/img_7046f8a118d8.png",
+        jewelry: "/__generating__/img_0b56d1e098fd.png",
+        watches: "/__generating__/img_8a2fe9384230.png",
+        furniture: "/__generating__/img_12a2f0925c03.png",
+        decorative_arts: "/__generating__/img_9712282e9e6e.png",
+        antiques: "/__generating__/img_4b18d32035dd.png",
+      }} />
 
       {/* Editorial / Trust block */}
       <section className="py-20 md:py-28 bg-foreground text-background">
