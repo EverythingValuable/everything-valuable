@@ -143,37 +143,21 @@ export default function ListingStudio() {
 
   const publishNow = async () => {
     setSaving(true);
-    const user = await base44.auth.me();
     const now = new Date();
     const firstBidsEnd = new Date(now.getTime() + form.first_bids_duration_hours * 3600000);
-    await base44.entities.Item.create({
-      title: form.title,
-      category: form.category || "other",
-      images: form.images,
-      description: form.description,
-      condition: form.condition,
-      provenance: form.provenance,
-      materials: form.materials,
-      dimensions: form.dimensions,
-      period: form.period,
-      origin: form.origin,
-      condition_notes: form.condition_notes,
-      shipping_notes: form.shipping_notes,
-      prisometer_start_price: +form.prisometer_start_price,
-      reserve_price: +form.reserve_price,
-      below_reserve_percent: form.below_reserve_percent,
-      prisometer_duration_hours: form.prisometer_duration_hours,
-      first_bids_duration_hours: form.first_bids_duration_hours,
+    const liveFields = {
       first_bids_start: now.toISOString(),
       first_bids_end: firstBidsEnd.toISOString(),
-      estimated_low: +form.estimated_low || undefined,
-      estimated_high: +form.estimated_high || undefined,
-      seller_email: user.email,
-      seller_name: user.full_name,
       status: "first_bids",
       highest_bid: 0,
       bid_count: 0,
-    });
+    };
+    if (isEditMode) {
+      await base44.entities.Item.update(editId, buildPayload(liveFields));
+    } else {
+      const user = await base44.auth.me();
+      await base44.entities.Item.create(buildPayload({ seller_email: user.email, seller_name: user.full_name, ...liveFields }));
+    }
     setSaving(false);
     navigate("/seller");
   };
