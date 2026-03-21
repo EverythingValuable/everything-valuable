@@ -113,10 +113,6 @@ export default function PrisometerWidget({ item, compact = false }) {
         </div>
       )}
 
-      {/* dummy close tag fix — remove the extra one below */}
-      <div className="hidden">
-      </div>
-
       <div className="text-center py-3">
         <p className="text-xs text-muted-foreground mb-1">Current Price</p>
         <motion.div
