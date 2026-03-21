@@ -17,6 +17,7 @@ import Pricing from './pages/Pricing';
 import About from './pages/About';
 import SellerOnboarding from './pages/SellerOnboarding';
 import ListingStudio from './pages/ListingStudio';
+import SellWithUs from './pages/SellWithUs';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();

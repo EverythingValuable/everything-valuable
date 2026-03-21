@@ -64,7 +64,15 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-background/10 flex flex-col md:flex-row justify-between items-center gap-4">
+        {/* Seller Sign In */}
+        <div className="mt-10 pt-8 border-t border-background/10 flex justify-center">
+          <Link to="/seller" className="text-sm text-background/50 hover:text-background transition-colors flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" />
+            Seller Sign In
+          </Link>
+        </div>
+
+        <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-background/40">
             © 2026 Everything Valuable. All rights reserved. PRI$OMETER™ and 1stBid$™ are proprietary technologies.
           </p>
