@@ -122,8 +122,11 @@ export default function SellerDashboard() {
             </>
           )}
 
+          {/* Profile Editor */}
+          {view === "profile" && <ProfileEditor />}
+
           {/* Listings table */}
-          <div>
+          <div className={view === "profile" ? "hidden" : ""}>
             {view !== "overview" && (
               <h2 className="font-serif text-lg font-semibold mb-4">{viewTitle(view)}</h2>
             )}
