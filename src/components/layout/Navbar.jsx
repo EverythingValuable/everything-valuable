@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, Heart, User, Menu, X, ChevronDown } from "lucide-react";
+import { Search, Heart, User, Menu, X, ChevronDown, Bookmark, Trophy, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 
 const categories = [
   { label: "Fine Art", path: "/browse?category=fine_art" },
@@ -19,6 +21,34 @@ const categories = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  const { data: user } = useQuery({
+    queryKey: ["me"],
+    queryFn: () => base44.auth.me(),
+    retry: false,
+  });
+
+  const { data: sellerProfile } = useQuery({
+    queryKey: ["seller-profile-nav", user?.email],
+    queryFn: () => base44.entities.SellerProfile.filter({ user_email: user?.email }),
+    select: d => d[0],
+    enabled: !!user?.email,
+  });
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const isSeller = !!sellerProfile?.onboarding_complete;
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
@@ -41,10 +71,7 @@ export default function Navbar() {
       {/* Main nav */}
       <div className="flex items-center justify-between px-6 md:px-8 h-16 md:h-20">
         <div className="flex items-center gap-8">
-          <button
-            className="md:hidden p-1"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
+          <button className="md:hidden p-1" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
@@ -55,39 +82,25 @@ export default function Navbar() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <div
-              className="relative"
-              onMouseEnter={() => setCategoriesOpen(true)}
-              onMouseLeave={() => setCategoriesOpen(false)}
-            >
+            <div className="relative" onMouseEnter={() => setCategoriesOpen(true)} onMouseLeave={() => setCategoriesOpen(false)}>
               <button className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                 Categories <ChevronDown className="w-3.5 h-3.5" />
               </button>
               <AnimatePresence>
                 {categoriesOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 4 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-xl py-2 z-50"
-                  >
+                  <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }} transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-xl py-2 z-50">
                     {categories.map(cat => (
-                      <Link
-                        key={cat.path}
-                        to={cat.path}
+                      <Link key={cat.path} to={cat.path}
                         className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                        onClick={() => setCategoriesOpen(false)}
-                      >
+                        onClick={() => setCategoriesOpen(false)}>
                         {cat.label}
                       </Link>
                     ))}
                     <div className="border-t border-border mt-1 pt-1">
-                      <Link
-                        to="/browse"
-                        className="block px-4 py-2.5 text-sm font-medium text-primary hover:bg-muted transition-colors"
-                        onClick={() => setCategoriesOpen(false)}
-                      >
+                      <Link to="/browse" className="block px-4 py-2.5 text-sm font-medium text-primary hover:bg-muted transition-colors"
+                        onClick={() => setCategoriesOpen(false)}>
                         View All
                       </Link>
                     </div>
@@ -106,31 +119,72 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <Link to="/browse" className="p-2 rounded-full hover:bg-muted transition-colors">
-            <Search className="w-4.5 h-4.5 text-muted-foreground" />
+            <Search className="w-4 h-4 text-muted-foreground" />
           </Link>
           <Link to="/buyer" className="p-2 rounded-full hover:bg-muted transition-colors hidden sm:flex">
-            <Heart className="w-4.5 h-4.5 text-muted-foreground" />
+            <Heart className="w-4 h-4 text-muted-foreground" />
           </Link>
-          <Link to="/seller" className="hidden md:inline-flex">
+
+          {/* Sell With Us — now goes to info page */}
+          <Link to="/sell" className="hidden md:inline-flex">
             <Button variant="outline" size="sm" className="text-xs font-medium border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all">
               Sell With Us
             </Button>
           </Link>
-          <Link to="/buyer" className="p-2 rounded-full hover:bg-muted transition-colors">
-            <User className="w-4.5 h-4.5 text-muted-foreground" />
-          </Link>
+
+          {/* Profile dropdown */}
+          <div className="relative" ref={profileRef}>
+            <button onClick={() => setProfileOpen(p => !p)}
+              className="p-2 rounded-full hover:bg-muted transition-colors flex items-center gap-1">
+              <User className="w-4 h-4 text-muted-foreground" />
+            </button>
+
+            <AnimatePresence>
+              {profileOpen && (
+                <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }} transition={{ duration: 0.15 }}
+                  className="absolute top-full right-0 mt-2 w-52 bg-card border border-border rounded-xl shadow-xl py-2 z-50">
+
+                  {user && (
+                    <div className="px-4 py-3 border-b border-border">
+                      <p className="text-sm font-medium truncate">{user.full_name || "My Account"}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                  )}
+
+                  <div className="py-1">
+                    <DropLink to="/buyer?view=saves" icon={Bookmark} label="My Saves" onClick={() => setProfileOpen(false)} />
+                    <DropLink to="/buyer?view=won" icon={Trophy} label="Won Items" onClick={() => setProfileOpen(false)} />
+                    <DropLink to="/buyer?view=profile" icon={User} label="My Profile" onClick={() => setProfileOpen(false)} />
+                  </div>
+
+                  {isSeller && (
+                    <>
+                      <div className="border-t border-border my-1" />
+                      <div className="py-1">
+                        <DropLink to="/seller" icon={LayoutDashboard} label="Seller Dashboard" onClick={() => setProfileOpen(false)} highlight />
+                      </div>
+                    </>
+                  )}
+
+                  <div className="border-t border-border my-1" />
+                  <button onClick={() => { base44.auth.logout(); setProfileOpen(false); }}
+                    className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors">
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
 
       {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden border-t border-border"
-          >
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }} className="md:hidden overflow-hidden border-t border-border">
             <nav className="px-6 py-4 space-y-1">
               <Link to="/browse" className="block py-3 text-sm font-medium border-b border-border/50" onClick={() => setMobileOpen(false)}>Browse All</Link>
               {categories.map(cat => (
@@ -141,12 +195,25 @@ export default function Navbar() {
               <div className="pt-3 border-t border-border/50 space-y-2">
                 <Link to="/how-it-works" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>How It Works</Link>
                 <Link to="/pricing" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>Pricing & Fees</Link>
-                <Link to="/seller" className="block py-2 text-sm font-medium text-primary" onClick={() => setMobileOpen(false)}>Sell With Us</Link>
+                <Link to="/sell" className="block py-2 text-sm font-medium text-primary" onClick={() => setMobileOpen(false)}>Sell With Us</Link>
+                <Link to="/buyer?view=saves" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>My Saves</Link>
+                <Link to="/buyer?view=won" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>Won Items</Link>
+                {isSeller && <Link to="/seller" className="block py-2 text-sm font-medium text-primary" onClick={() => setMobileOpen(false)}>Seller Dashboard</Link>}
               </div>
             </nav>
           </motion.div>
         )}
       </AnimatePresence>
     </header>
+  );
+}
+
+function DropLink({ to, icon: Icon, label, onClick, highlight }) {
+  return (
+    <Link to={to} onClick={onClick}
+      className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-muted ${highlight ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}>
+      <Icon className="w-4 h-4" />
+      {label}
+    </Link>
   );
 }
