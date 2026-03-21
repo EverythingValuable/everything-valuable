@@ -233,11 +233,6 @@ export default function BidSection({ item }) {
           <div className="text-center py-2">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Locked Price</p>
             <p className="font-serif text-3xl font-semibold">${price.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
-            {aboveReserve ? (
-              <span className="text-xs text-green-600 font-medium">✓ Above reserve — purchase completes immediately</span>
-            ) : (
-              <span className="text-xs text-amber-600 font-medium">⚠ Below reserve — seller review required</span>
-            )}
           </div>
 
           {/* Fee breakdown */}
