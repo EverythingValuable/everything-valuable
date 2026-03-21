@@ -167,7 +167,8 @@ export default function BidSection({ item }) {
   const currentHighestBid = item.highest_bid || 0;
   const sellerTiers = sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers;
   const increment = getMinBidIncrement(currentHighestBid, sellerTiers);
-  const minBid = currentHighestBid + increment;
+  const startingBid = item.estimated_low ? item.estimated_low / 2 : 0;
+  const minBid = currentHighestBid > 0 ? currentHighestBid + increment : startingBid;
 
   const price = lockedPrice || currentPrice;
   const serviceFee = price * 0.10 + 30;
