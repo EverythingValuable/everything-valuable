@@ -8,6 +8,8 @@
   :root {
     --font-serif: 'Cormorant Garamond', Georgia, serif;
     --font-sans: 'Inter', system-ui, sans-serif;
+    --font-display: 'Manrope', system-ui, sans-serif;
+    --font-mono-price: 'Space Grotesk', system-ui, sans-serif;
 
     --background: 40 33% 98%;
     --foreground: 0 0% 11%;
