@@ -276,54 +276,60 @@ export default function BidSection({ item }) {
 
           {/* Bid Confirmation Modal */}
           {showBidConfirm && (
-           <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
-             <div className="flex items-center gap-2">
-               <Gavel className="w-5 h-5 text-primary" />
-               <h3 className="font-serif text-lg font-semibold">Confirm Your Bid</h3>
-             </div>
+            <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Gavel className="w-5 h-5 text-primary" />
+                  <h3 className="font-serif text-lg font-semibold">Confirm Your Bid</h3>
+                </div>
+              </div>
 
-             <div className="text-center py-2">
-               <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your Bid Amount</p>
-               <p className="font-serif text-3xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
-             </div>
+              <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+                Your high bid will be placed when the prisometer starts. You will only be charged if the prisometer meets or exceeds your bid amount.
+              </p>
 
-             <div className="rounded-lg border border-border bg-card p-4 space-y-3 text-sm">
-               <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">If Your Bid Wins</p>
-               <div className="flex justify-between">
-                 <span className="text-muted-foreground">Item Price</span>
-                 <span>${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-               </div>
-               <div className="flex justify-between">
-                 <span className="text-muted-foreground">Service Fee (10% + $30)</span>
-                 <span>${(parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-               </div>
-               <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold text-xs text-muted-foreground">
-                 <span>If prisometer meets your high bid, you will be charged</span>
-                 <span className="text-foreground">${(parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-               </div>
-               <div className="flex justify-between text-green-700 font-medium">
-                 <span>50% Credit Applied on Final Invoice</span>
-                 <span>−${((parseFloat(bidAmount) * 0.1 + 30) * 0.5).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-               </div>
-               <div className="border-t border-border mt-3 pt-3 flex justify-between font-semibold">
-                 <span>Invoice Total (excl. shipping & tax)</span>
-                 <span>${(parseFloat(bidAmount) + ((parseFloat(bidAmount) * 0.1 + 30) * 0.5)).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-               </div>
-             </div>
+              <div className="text-center py-2">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your High Bid</p>
+                <p className="font-serif text-3xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
+              </div>
 
-             <div className="flex gap-3">
-               <Button
-                 onClick={() => placeBidMutation.mutate()}
-                 disabled={placeBidMutation.isPending}
-                 className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-               >
-                 {placeBidMutation.isPending ? "Placing Bid..." : "Confirm Bid"}
-               </Button>
-               <Button variant="outline" onClick={() => setShowBidConfirm(false)} className="h-12 px-5">
-                 Cancel
-               </Button>
-             </div>
-           </div>
+              <div className="rounded-lg border border-border bg-card p-4 space-y-3 text-sm">
+                <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3">Fee Breakdown</p>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Item Price</span>
+                  <span>${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Service Fee (10% + $30)</span>
+                  <span>${(parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold">
+                  <span>If prisometer meets your high bid, you will be charged</span>
+                  <span>${(parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div className="flex justify-between text-green-700 font-medium">
+                  <span>50% Credit Applied on Final Invoice</span>
+                  <span>−${((parseFloat(bidAmount) * 0.1 + 30) * 0.5).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div className="border-t border-border mt-2 pt-3 flex justify-between font-semibold text-xs text-muted-foreground">
+                  <span>Remaining balance on final invoice</span>
+                  <span className="text-foreground">${(parseFloat(bidAmount) + ((parseFloat(bidAmount) * 0.1 + 30) * 0.5)).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => placeBidMutation.mutate()}
+                  disabled={placeBidMutation.isPending}
+                  className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                >
+                  {placeBidMutation.isPending ? "Placing Bid..." : "Confirm Bid"}
+                </Button>
+                <Button variant="outline" onClick={() => setShowBidConfirm(false)} className="h-12 px-5">
+                  Cancel
+                </Button>
+              </div>
+            </div>
           )}
 
           {/* Make It Mine button */}
