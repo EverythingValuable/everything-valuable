@@ -287,14 +287,19 @@ export default function BidSection({ item }) {
                <p className="font-serif text-3xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
              </div>
 
-             <div className="rounded-lg border border-border bg-card p-4 space-y-2 text-sm">
-               <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3">Fee Information</p>
+             <div className="rounded-lg border border-border bg-card p-4 space-y-3 text-sm">
+               <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">If Your Bid Wins</p>
                <div className="flex justify-between">
-                 <span className="text-muted-foreground">Bid Amount</span>
+                 <span className="text-muted-foreground">Item Price</span>
                  <span>${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                </div>
-               <div className="border-t border-border my-2 pt-2 flex justify-between text-xs text-muted-foreground">
-                 <span>Note: If your bid wins, you'll be charged a 10% + $30 service fee on the final sale price.</span>
+               <div className="flex justify-between">
+                 <span className="text-muted-foreground">Service Fee (10% + $30)</span>
+                 <span>${(parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+               </div>
+               <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold">
+                 <span>Total Cost</span>
+                 <span>${(parseFloat(bidAmount) + parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                </div>
              </div>
 
