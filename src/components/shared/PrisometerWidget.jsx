@@ -88,6 +88,58 @@ export default function PrisometerWidget({ item, compact = false }) {
     );
   }
 
+  return <WidgetFull item={item} displayPrice={displayPrice} cents={cents} isActive={isActive} isPaused={isPaused} pauseTimeLeft={pauseTimeLeft} formatPrice={formatPrice} />;
+}
+
+function PriceTrack({ startPrice, highestBid, currentPrice, isActive }) {
+  // progress = 0 means at start, 1 means at highest bid
+  const range = startPrice - highestBid;
+  const progress = range > 0 ? Math.min(Math.max((startPrice - currentPrice) / range, 0), 1) : 0;
+  const pct = progress * 100;
+
+  return (
+    <div className="pt-3 border-t border-border space-y-2">
+      {/* Labels */}
+      <div className="flex justify-between text-xs text-muted-foreground/70">
+        <span>Start Price</span>
+        <span>Highest Bid</span>
+      </div>
+
+      {/* Track */}
+      <div className="relative h-1.5 rounded-full bg-secondary overflow-visible">
+        {/* Filled portion */}
+        <motion.div
+          className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-muted-foreground/30 to-primary/60"
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        />
+        {/* Glowing dot */}
+        <motion.div
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2"
+          animate={{ left: `${pct}%` }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <div className={`w-3.5 h-3.5 rounded-full border-2 border-background shadow-sm ${isActive ? "bg-red-500" : "bg-primary"}`} />
+          {isActive && (
+            <motion.div
+              className="absolute inset-0 rounded-full bg-red-400"
+              animate={{ scale: [1, 2], opacity: [0.6, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: "easeOut" }}
+            />
+          )}
+        </motion.div>
+      </div>
+
+      {/* Price labels */}
+      <div className="flex justify-between">
+        <span className="font-price text-sm font-semibold text-foreground">${startPrice?.toLocaleString()}</span>
+        <span className="font-price text-sm font-semibold text-foreground">${highestBid.toLocaleString()}</span>
+      </div>
+    </div>
+  );
+}
+
+function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLeft, formatPrice }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-4">
       <div className="flex items-center justify-between">
