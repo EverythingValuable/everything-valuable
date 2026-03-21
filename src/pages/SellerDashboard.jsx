@@ -178,9 +178,14 @@ export default function SellerDashboard() {
                           }
                         </td>
                         <td className="px-4 py-4 text-right">
-                          <Link to={`/item/${item.id}`}>
-                            <Button variant="ghost" size="sm" className="text-xs">View <ArrowRight className="w-3 h-3 ml-1" /></Button>
-                          </Link>
+                          <div className="flex items-center justify-end gap-1">
+                            <Link to={`/seller/studio?edit=${item.id}`}>
+                              <Button variant="outline" size="sm" className="text-xs">Edit</Button>
+                            </Link>
+                            <Link to={`/item/${item.id}`}>
+                              <Button variant="ghost" size="sm" className="text-xs">View</Button>
+                            </Link>
+                          </div>
                         </td>
                       </tr>
                     ))}
