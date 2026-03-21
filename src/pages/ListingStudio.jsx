@@ -1,15 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import {
   Camera, FileText, AlignLeft, TrendingDown, CheckCircle2,
-  ChevronLeft, ChevronRight, Upload, X, GripVertical,
-  Info, Sparkles, Eye, Save, Calendar, Rocket
+  ChevronLeft, ChevronRight, Upload, X,
+  Info, Save, Calendar, Rocket
 } from "lucide-react";
 
 const STEPS = [
