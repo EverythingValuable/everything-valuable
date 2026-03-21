@@ -11,19 +11,30 @@ export default function PrisometerWidget({ item, compact = false }) {
 
   const isActive = item.status === "prisometer" && !item.make_it_mine_active;
   const isPaused = item.make_it_mine_active;
+  const queryClient = useQueryClient();
 
-  // Countdown timer for paused state
+  // Countdown timer for paused state — auto-resumes when it hits 0
   const [pauseTimeLeft, setPauseTimeLeft] = useState(0);
+  const resumedRef = useRef(false);
   useEffect(() => {
     if (!isPaused || !item.make_it_mine_expires) return;
-    const update = () => {
+    resumedRef.current = false;
+    const update = async () => {
       const secs = Math.max(0, Math.round((new Date(item.make_it_mine_expires) - Date.now()) / 1000));
       setPauseTimeLeft(secs);
+      if (secs === 0 && !resumedRef.current) {
+        resumedRef.current = true;
+        await base44.entities.Item.update(item.id, {
+          make_it_mine_active: false,
+          make_it_mine_expires: null,
+        });
+        queryClient.invalidateQueries({ queryKey: ["item", item.id] });
+      }
     };
     update();
     const t = setInterval(update, 1000);
     return () => clearInterval(t);
-  }, [isPaused, item.make_it_mine_expires]);
+  }, [isPaused, item.make_it_mine_expires, item.id]);
 
   useEffect(() => {
     if (isActive && item.prisometer_activated_at && item.prisometer_duration_hours) {
