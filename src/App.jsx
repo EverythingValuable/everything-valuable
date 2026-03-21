@@ -18,6 +18,7 @@ import About from './pages/About';
 import SellerOnboarding from './pages/SellerOnboarding';
 import ListingStudio from './pages/ListingStudio';
 import SellWithUs from './pages/SellWithUs';
+import SellerSettings from './pages/SellerSettings';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -56,6 +57,7 @@ const AuthenticatedApp = () => {
         <Route path="/sell" element={<SellWithUs />} />
         <Route path="/seller/onboarding" element={<SellerOnboarding />} />
         <Route path="/seller/studio" element={<ListingStudio />} />
+        <Route path="/seller/settings" element={<SellerSettings />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

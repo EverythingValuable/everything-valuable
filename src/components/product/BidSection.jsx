@@ -38,8 +38,15 @@ export default function BidSection({ item }) {
   const placeBidMutation = useMutation({
     mutationFn: async () => {
       const amount = parseFloat(bidAmount);
-      if (!amount || amount <= (item.highest_bid || 0)) {
-        throw new Error("Bid must be higher than current highest bid");
+      const currentHighest = item.highest_bid || 0;
+      const increment = getMinBidIncrement(currentHighest, item.seller_bid_increment_tiers);
+      const minRequired = currentHighest + increment;
+
+      if (!amount || amount < minRequired) {
+        throw new Error(`Bid must be at least $${minRequired.toLocaleString()} (${increment > 1 ? `$${increment} increment` : "minimum bid"})`);
+      }
+      if ((amount - currentHighest) % increment !== 0) {
+        throw new Error(`Bid must increase by increments of $${increment}`);
       }
       await base44.entities.Bid.create({ item_id: item.id, amount, phase: item.status });
       await base44.entities.Item.update(item.id, {
@@ -135,10 +142,18 @@ export default function BidSection({ item }) {
     },
   });
 
+  const getMinBidIncrement = (currentBid, sellerTiers) => {
+    if (!sellerTiers || !Array.isArray(sellerTiers)) return 1;
+    const tier = sellerTiers.find(t => currentBid >= t.min && currentBid <= t.max);
+    return tier ? tier.increment : 1;
+  };
+
   const canBid = item.status === "first_bids" || item.status === "prisometer";
   const canMakeItMine = item.status === "prisometer" && !item.make_it_mine_active;
   const currentPrice = item.current_price || item.prisometer_start_price;
-  const minBid = (item.highest_bid || 0) + 1;
+  const currentHighestBid = item.highest_bid || 0;
+  const increment = getMinBidIncrement(currentHighestBid, item.seller_bid_increment_tiers);
+  const minBid = currentHighestBid + increment;
 
   const price = lockedPrice || currentPrice;
   const serviceFee = price * 0.10 + 30;
