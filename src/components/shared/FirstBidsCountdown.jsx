@@ -77,7 +77,7 @@ export default function FirstBidsCountdown({ endTime, compact = false }) {
           { val: timeLeft.seconds, label: "Sec" },
         ].map(({ val, label }) => (
           <div key={label} className="bg-card rounded-lg p-2 border border-border">
-            <span className="font-serif text-2xl font-bold tabular-nums text-foreground block">
+            <span className="font-price text-2xl font-bold tabular-nums text-foreground block">
               {val.toString().padStart(2, "0")}
             </span>
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</span>
