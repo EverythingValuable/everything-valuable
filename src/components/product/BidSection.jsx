@@ -124,49 +124,15 @@ export default function BidSection({ item }) {
       )}
 
       {/* Make It Mine */}
-      {canMakeItMine && !showMakeItMine && (
+      {canMakeItMine && (
         <Button
-          onClick={() => setShowMakeItMine(true)}
+          onClick={() => makeItMineMutation.mutate()}
+          disabled={makeItMineMutation.isPending}
           className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-base font-semibold gap-2"
         >
           <ShoppingBag className="w-5 h-5" />
-          Make It Mine — ${currentPrice?.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+          {makeItMineMutation.isPending ? "Securing..." : `Make It Mine — $${currentPrice?.toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
         </Button>
-      )}
-
-      {/* Make It Mine confirmation */}
-      {showMakeItMine && (
-        <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-6 space-y-4">
-          <div className="flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-primary" />
-            <h3 className="font-serif text-xl font-semibold">Secure This Item</h3>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Complete your purchase at the current PRI$OMETER price. A transparent service fee applies — 
-            half is credited back to your final invoice.
-          </p>
-          <FeeCalculator price={currentPrice} showDetailed />
-          <div className="flex gap-3">
-            <Button
-              onClick={() => makeItMineMutation.mutate()}
-              disabled={makeItMineMutation.isPending}
-              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-semibold"
-            >
-              {makeItMineMutation.isPending ? "Securing..." : "Confirm Purchase"}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowMakeItMine(false)}
-              className="h-12"
-            >
-              Cancel
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
-            <AlertCircle className="w-3 h-3" />
-            You have 60 seconds to complete this purchase
-          </p>
-        </div>
       )}
     </div>
   );
