@@ -209,8 +209,30 @@ export default function BidSection({ item }) {
         </Button>
       )}
 
+      {/* Make It Mine result screen */}
+      {confirmResult && (
+        <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-4 text-center">
+          <CheckCircle2 className="w-10 h-10 text-primary mx-auto" />
+          {confirmResult === "above" ? (
+            <>
+              <h3 className="font-serif text-xl font-semibold">Congratulations!</h3>
+              <p className="text-sm text-muted-foreground">
+                Your locked price was at or above the reserve. Your service fee has been charged and your purchase is confirmed. Check your buyer dashboard for the invoice.
+              </p>
+            </>
+          ) : (
+            <>
+              <h3 className="font-serif text-xl font-semibold">Offer Submitted</h3>
+              <p className="text-sm text-muted-foreground">
+                Your locked price was below the reserve. Your offer has been sent to the seller for review. If confirmed, you will be charged the service fee. Please keep a look out for your email.
+              </p>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Make It Mine confirmation panel */}
-      {showConfirm && (
+      {showConfirm && !confirmResult && (
         <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
           {/* Header + timer */}
           <div className="flex items-center justify-between">
