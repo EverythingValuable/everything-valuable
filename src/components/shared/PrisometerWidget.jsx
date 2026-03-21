@@ -66,7 +66,6 @@ export default function PrisometerWidget({ item, compact = false }) {
   }, [item, isActive]);
 
   const formatPrice = (price) => {
-
     const main = Math.floor(price).toLocaleString("en-US");
     return main;
   };
