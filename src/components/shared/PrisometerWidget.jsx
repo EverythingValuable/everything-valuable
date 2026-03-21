@@ -80,9 +80,9 @@ export default function PrisometerWidget({ item, compact = false }) {
             className="w-2 h-2 rounded-full bg-red-500"
           />
         )}
-        <span className="font-serif text-xl font-bold text-foreground">
+        <span className="font-price text-xl font-bold text-foreground">
           ${formatPrice(displayPrice)}
-          {isActive && <span className="text-sm text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>}
+          {isActive && <span className="font-price text-sm text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>}
         </span>
       </div>
     );
