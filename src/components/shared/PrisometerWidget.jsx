@@ -148,11 +148,11 @@ export default function PrisometerWidget({ item, compact = false }) {
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02 }}
           animate={{ scale: 1 }}
-          className="font-serif text-4xl md:text-5xl font-bold text-foreground"
+          className="font-price text-4xl md:text-5xl font-bold text-foreground"
         >
           ${formatPrice(displayPrice)}
           {isActive && (
-            <span className="text-xl text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
+            <span className="font-price text-xl text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
           )}
         </motion.div>
       </div>
