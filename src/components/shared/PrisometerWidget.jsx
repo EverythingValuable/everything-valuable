@@ -96,6 +96,27 @@ export default function PrisometerWidget({ item, compact = false }) {
         )}
       </div>
 
+      {isPaused && (
+        <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 space-y-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-amber-700">
+              <Clock className="w-3.5 h-3.5" />
+              <span className="text-xs font-semibold">Transaction in Progress</span>
+            </div>
+            <span className="font-mono text-sm font-bold text-amber-700">
+              {Math.floor(pauseTimeLeft / 60)}:{(pauseTimeLeft % 60).toString().padStart(2, "0")}
+            </span>
+          </div>
+          <p className="text-xs text-amber-600">
+            A buyer is completing a Make It Mine purchase. The PRI$OMETER will resume automatically if the transaction is cancelled or the timer expires.
+          </p>
+        </div>
+      )}
+
+      {/* dummy close tag fix — remove the extra one below */}
+      <div className="hidden">
+      </div>
+
       <div className="text-center py-3">
         <p className="text-xs text-muted-foreground mb-1">Current Price</p>
         <motion.div
