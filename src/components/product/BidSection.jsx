@@ -1,16 +1,14 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Gavel, ShoppingBag, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Gavel, ShoppingBag, CheckCircle2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
-import FeeCalculator from "../shared/FeeCalculator";
 
 export default function BidSection({ item }) {
   const [bidAmount, setBidAmount] = useState("");
-  const [showMakeItMine, setShowMakeItMine] = useState(false);
-  const [confirmCountdown, setConfirmCountdown] = useState(null);
+
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -66,7 +64,7 @@ export default function BidSection({ item }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["item", item.id] });
       toast({ title: "It's yours!", description: "Congratulations. Your purchase has been secured." });
-      setShowMakeItMine(false);
+
     },
   });
 
