@@ -1,13 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Clock, TrendingDown, ShoppingBag, CheckCircle, AlertCircle, Gavel, DollarSign } from "lucide-react";
+import { ArrowRight, Clock, TrendingDown, ShoppingBag, CheckCircle, Gavel, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 
 const steps = [
   {
     num: "01",
-    icon: Package,
+    icon: CheckCircle,
     title: "Seller Lists the Item",
     description: "A verified seller creates a detailed listing with photos, description, provenance, and condition information. They set a PRI$OMETER start price, a hidden reserve, and choose how long each phase will last.",
   },
@@ -49,7 +49,6 @@ const steps = [
   },
 ];
 
-// Use a simple box icon stand-in since Package is already imported in the shared scope
 import { Package } from "lucide-react";
 
 export default function HowItWorks() {
