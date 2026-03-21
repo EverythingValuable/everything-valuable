@@ -9,7 +9,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import AppLayout from './components/layout/AppLayout';
 import Home from './pages/Home';
 import Browse from './pages/Browse';
-import ProductDetail from './pages/ProductDetail';
+import ProductDetail from './pages/ProductDetail.jsx';
 import SellerDashboard from './pages/SellerDashboard';
 import BuyerDashboard from './pages/BuyerDashboard';
 import HowItWorks from './pages/HowItWorks';
