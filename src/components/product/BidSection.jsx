@@ -191,9 +191,9 @@ export default function BidSection({ item }) {
             </Button>
           </div>
           {item.highest_bid > 0 && (
-            <p className="text-xs text-muted-foreground">
-              Current highest bid: ${item.highest_bid?.toLocaleString()} ({item.bid_count} bid{item.bid_count !== 1 ? "s" : ""})
-            </p>
+           <p className="text-xs text-muted-foreground">
+             {item.status === "first_bids" ? "Highest Preview Bid" : "Current highest bid"}: ${item.highest_bid?.toLocaleString()} ({item.bid_count} bid{item.bid_count !== 1 ? "s" : ""})
+           </p>
           )}
         </div>
       )}

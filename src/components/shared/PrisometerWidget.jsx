@@ -188,7 +188,12 @@ function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLe
       )}
 
       <div className="text-center py-3">
-        <p className="text-xs text-muted-foreground mb-1">Current Price</p>
+        <p className="text-xs text-muted-foreground mb-1">
+          {item.status === "first_bids" ? "PRI$OMETER Start Price" : "Current Price"}
+        </p>
+        {item.status === "first_bids" && (
+          <p className="text-xs text-primary/70 mb-2">Activates After Preview</p>
+        )}
         <motion.div
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02 }}
