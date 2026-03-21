@@ -48,9 +48,10 @@ export default function PrisometerWidget({ item, compact = false }) {
       const updatePrice = () => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / durationMs, 1);
-        const currentPrice = startPrice - (startPrice - floorPrice) * progress;
-        setDisplayPrice(Math.max(currentPrice, floorPrice));
-        setCents(Math.floor(Math.random() * 99));
+        const currentPrice = Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
+        setDisplayPrice(currentPrice);
+        // Derive cents from the actual fractional price so they drop in order
+        setCents(Math.floor((currentPrice % 1) * 100));
       };
 
       updatePrice();
