@@ -29,8 +29,13 @@ const CONDITIONS = ["excellent","very_good","good","fair","as_is"];
 
 export default function ListingStudio() {
   const navigate = useNavigate();
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get("edit");
+  const isEditMode = !!editId;
+
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(isEditMode);
   const [form, setForm] = useState({
     images: [],
     title: "", category: "", subcategory: "", maker: "",
@@ -46,6 +51,42 @@ export default function ListingStudio() {
     make_it_mine_enabled: true,
     estimated_low: "", estimated_high: "",
   });
+
+  // Load existing item if editing
+  useEffect(() => {
+    if (!editId) return;
+    base44.entities.Item.filter({ id: editId }).then(items => {
+      const item = items[0];
+      if (!item) return;
+      setForm({
+        images: item.images || [],
+        title: item.title || "",
+        category: item.category || "",
+        subcategory: item.subcategory || "",
+        maker: item.maker || "",
+        period: item.period || "",
+        materials: item.materials || "",
+        dimensions: item.dimensions || "",
+        origin: item.origin || "",
+        condition: item.condition || "very_good",
+        provenance: item.provenance || "",
+        description: item.description || "",
+        short_description: item.short_description || "",
+        condition_notes: item.condition_notes || "",
+        shipping_notes: item.shipping_notes || "",
+        marks: item.marks || "",
+        first_bids_duration_hours: item.first_bids_duration_hours || 72,
+        prisometer_start_price: item.prisometer_start_price || "",
+        reserve_price: item.reserve_price || "",
+        below_reserve_percent: item.below_reserve_percent || 10,
+        prisometer_duration_hours: item.prisometer_duration_hours || 48,
+        make_it_mine_enabled: item.make_it_mine_active !== false,
+        estimated_low: item.estimated_low || "",
+        estimated_high: item.estimated_high || "",
+      });
+      setLoading(false);
+    });
+  }, [editId]);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
