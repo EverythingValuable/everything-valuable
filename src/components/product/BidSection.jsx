@@ -271,11 +271,50 @@ export default function BidSection({ item }) {
               </div>
             </div>
           )}
-        </div>
-      )}
+          </div>
+          )}
 
-      {/* Make It Mine button */}
-      {canMakeItMine && !showConfirm && (
+          {/* Bid Confirmation Modal */}
+          {showBidConfirm && (
+           <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
+             <div className="flex items-center gap-2">
+               <Gavel className="w-5 h-5 text-primary" />
+               <h3 className="font-serif text-lg font-semibold">Confirm Your Bid</h3>
+             </div>
+
+             <div className="text-center py-2">
+               <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your Bid Amount</p>
+               <p className="font-serif text-3xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
+             </div>
+
+             <div className="rounded-lg border border-border bg-card p-4 space-y-2 text-sm">
+               <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3">Fee Information</p>
+               <div className="flex justify-between">
+                 <span className="text-muted-foreground">Bid Amount</span>
+                 <span>${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+               </div>
+               <div className="border-t border-border my-2 pt-2 flex justify-between text-xs text-muted-foreground">
+                 <span>Note: If your bid wins, you'll be charged a 10% + $30 service fee on the final sale price.</span>
+               </div>
+             </div>
+
+             <div className="flex gap-3">
+               <Button
+                 onClick={() => placeBidMutation.mutate()}
+                 disabled={placeBidMutation.isPending}
+                 className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+               >
+                 {placeBidMutation.isPending ? "Placing Bid..." : "Confirm Bid"}
+               </Button>
+               <Button variant="outline" onClick={() => setShowBidConfirm(false)} className="h-12 px-5">
+                 Cancel
+               </Button>
+             </div>
+           </div>
+          )}
+
+          {/* Make It Mine button */}
+          {canMakeItMine && !showConfirm && !showBidConfirm && (
         <Button
           onClick={handleOpenConfirm}
           className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-base font-semibold gap-2"
