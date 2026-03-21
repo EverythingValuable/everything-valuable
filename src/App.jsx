@@ -15,6 +15,8 @@ import BuyerDashboard from './pages/BuyerDashboard';
 import HowItWorks from './pages/HowItWorks';
 import Pricing from './pages/Pricing';
 import About from './pages/About';
+import SellerOnboarding from './pages/SellerOnboarding';
+import ListingStudio from './pages/ListingStudio';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -50,6 +52,8 @@ const AuthenticatedApp = () => {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/about" element={<About />} />
+        <Route path="/seller/onboarding" element={<SellerOnboarding />} />
+        <Route path="/seller/studio" element={<ListingStudio />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
