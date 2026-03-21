@@ -125,11 +125,6 @@ export default function ProductDetail() {
             {/* Bidding */}
             <BidSection item={item} />
 
-            {/* Fee explanation */}
-            {item.status === "prisometer" && (
-              <FeeCalculator price={item.current_price || item.prisometer_start_price} />
-            )}
-
             <Separator />
 
             {/* Actions */}
