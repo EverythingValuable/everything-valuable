@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Clock } from "lucide-react";
+import { Clock, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+const FIRSTBIDS_INFO = "1stBid$™ is the preview bidding phase before the PRI$OMETER™ opens. Place early bids to signal interest and help set the competitive tone. The highest bid from this phase carries over when the live declining-price engine begins.";
 
 export default function FirstBidsCountdown({ endTime, compact = false }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
