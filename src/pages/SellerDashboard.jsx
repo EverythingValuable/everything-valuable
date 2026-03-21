@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import DashboardSidebar from "@/components/seller/DashboardSidebar";
 import ProfileEditor from "@/components/seller/ProfileEditor";
+import SellerSettings from "./SellerSettings";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -125,8 +126,11 @@ export default function SellerDashboard() {
           {/* Profile Editor */}
           {view === "profile" && <ProfileEditor />}
 
+          {/* Settings */}
+          {view === "settings" && <SellerSettings />}
+
           {/* Listings table */}
-          <div className={view === "profile" ? "hidden" : ""}>
+          <div className={["profile", "settings"].includes(view) ? "hidden" : ""}>
             {view !== "overview" && (
               <h2 className="font-serif text-lg font-semibold mb-4">{viewTitle(view)}</h2>
             )}
