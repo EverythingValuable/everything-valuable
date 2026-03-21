@@ -157,16 +157,12 @@ export default function PrisometerWidget({ item, compact = false }) {
         </motion.div>
       </div>
 
-      <div className="flex justify-between text-xs text-muted-foreground pt-2 border-t border-border">
-        <div>
-          <span className="block text-muted-foreground/60">Start Price</span>
-          <span className="font-medium text-foreground">${item.prisometer_start_price?.toLocaleString()}</span>
-        </div>
-        <div className="text-right">
-          <span className="block text-muted-foreground/60">Highest Bid</span>
-          <span className="font-medium text-foreground">${(item.highest_bid || 0).toLocaleString()}</span>
-        </div>
-      </div>
+      <PriceTrack
+        startPrice={item.prisometer_start_price}
+        highestBid={item.highest_bid || 0}
+        currentPrice={displayPrice}
+        isActive={isActive}
+      />
     </div>
   );
 }
