@@ -130,13 +130,8 @@ export default function BidSection({ item }) {
     },
     onSuccess: ({ aboveReserve }) => {
       clearInterval(timerRef.current);
-      setShowConfirm(false);
       queryClient.invalidateQueries({ queryKey: ["item", item.id] });
-      if (aboveReserve) {
-        toast({ title: "It's yours!", description: "Your purchase is confirmed. Check your dashboard for the invoice." });
-      } else {
-        toast({ title: "Offer submitted for review", description: "The seller will be notified. Your service fee is held pending their decision." });
-      }
+      setConfirmResult(aboveReserve ? "above" : "below");
     },
   });
 
