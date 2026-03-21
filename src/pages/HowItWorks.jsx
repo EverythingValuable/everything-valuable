@@ -49,7 +49,7 @@ const steps = [
   },
 ];
 
-import { Package } from "lucide-react";
+
 
 export default function HowItWorks() {
   return (
