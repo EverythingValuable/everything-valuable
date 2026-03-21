@@ -93,7 +93,19 @@ export default function PrisometerWidget({ item, compact = false }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TrendingDown className="w-4 h-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-primary">PRI$OMETER</span>
+          <span className="font-display text-xs font-bold uppercase tracking-wider text-primary">
+            PRI$OMETER<sup className="text-[8px] ml-0.5">™</sup>
+          </span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
+                {PRISOMETER_INFO}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         {isActive && (
           <motion.div
