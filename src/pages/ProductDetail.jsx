@@ -97,7 +97,7 @@ export default function ProductDetail() {
 
             {/* Title */}
             <div>
-              <h1 className="font-serif text-3xl md:text-4xl font-semibold leading-tight text-foreground">
+              <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground">
                 {item.title}
               </h1>
               {item.seller_name && (
