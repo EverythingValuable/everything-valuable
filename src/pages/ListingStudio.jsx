@@ -162,6 +162,14 @@ export default function ListingStudio() {
     navigate("/seller");
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
@@ -170,13 +178,13 @@ export default function ListingStudio() {
           <ChevronLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
-          <p className="font-serif text-sm font-semibold">Listing Studio</p>
+          <p className="font-serif text-sm font-semibold">{isEditMode ? "Edit Listing" : "Listing Studio"}</p>
           <p className="text-[11px] text-muted-foreground">
             {form.title || "Untitled listing"} · Step {step} of {STEPS.length}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={saveDraft} disabled={saving} className="gap-1.5 text-xs">
-          <Save className="w-3.5 h-3.5" /> Save Draft
+          <Save className="w-3.5 h-3.5" /> {isEditMode ? "Save Changes" : "Save Draft"}
         </Button>
       </header>
 
