@@ -57,8 +57,23 @@ export default function BidSection({ item }) {
     },
   });
 
+  const getLivePrice = () => {
+    if (item.prisometer_activated_at && item.prisometer_duration_hours && item.prisometer_start_price) {
+      const startTime = new Date(item.prisometer_activated_at).getTime();
+      const startPrice = item.prisometer_start_price;
+      const reservePrice = item.reserve_price || startPrice * 0.5;
+      const belowPercent = item.below_reserve_percent || 10;
+      const floorPrice = reservePrice * (1 - belowPercent / 100);
+      const durationMs = item.prisometer_duration_hours * 3600000;
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      return Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
+    }
+    return item.current_price || item.prisometer_start_price;
+  };
+
   const handleOpenConfirm = async () => {
-    const price = item.current_price || item.prisometer_start_price;
+    const price = getLivePrice();
     setLockedPrice(price);
     // Pause the prisometer
     const expires = new Date(Date.now() + CONFIRM_SECONDS * 1000).toISOString();
