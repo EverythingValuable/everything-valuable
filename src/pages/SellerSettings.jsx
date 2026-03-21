@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import BidIncrementEditor from "@/components/seller/BidIncrementEditor";
 import { Save } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function SellerSettings() {
   const { toast } = useToast();
