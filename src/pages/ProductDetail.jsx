@@ -88,10 +88,10 @@ export default function ProductDetail() {
                 {categoryLabels[item.category] || item.category}
               </Badge>
               {item.status === "first_bids" && (
-                <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">1stBid$ Active</Badge>
+                <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>
               )}
               {item.status === "prisometer" && (
-                <Badge className="bg-red-50 text-red-600 border-red-200 text-xs">PRI$OMETER Live</Badge>
+                <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
               )}
             </div>
 
