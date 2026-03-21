@@ -12,6 +12,7 @@ export default function BidSection({ item }) {
   const [bidAmount, setBidAmount] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [lockedPrice, setLockedPrice] = useState(null);
+  const [confirmResult, setConfirmResult] = useState(null); // null | 'above' | 'below'
   const [timeLeft, setTimeLeft] = useState(CONFIRM_SECONDS);
   const timerRef = useRef(null);
   const queryClient = useQueryClient();
