@@ -54,7 +54,19 @@ export default function FirstBidsCountdown({ endTime, compact = false }) {
     <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-3">
       <div className="flex items-center gap-2">
         <Clock className="w-4 h-4 text-primary" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-primary">1stBid$ Preview</span>
+        <span className="font-display text-xs font-bold uppercase tracking-wider text-primary">
+          1stBid$<sup className="text-[8px] ml-0.5">™</sup> Preview
+        </span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
+              {FIRSTBIDS_INFO}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <p className="text-xs text-muted-foreground">Preview bidding closes in:</p>
       <div className="grid grid-cols-4 gap-2 text-center">
