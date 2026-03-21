@@ -10,6 +10,19 @@ export default function PrisometerWidget({ item, compact = false }) {
   const isActive = item.status === "prisometer" && !item.make_it_mine_active;
   const isPaused = item.make_it_mine_active;
 
+  // Countdown timer for paused state
+  const [pauseTimeLeft, setPauseTimeLeft] = useState(0);
+  useEffect(() => {
+    if (!isPaused || !item.make_it_mine_expires) return;
+    const update = () => {
+      const secs = Math.max(0, Math.round((new Date(item.make_it_mine_expires) - Date.now()) / 1000));
+      setPauseTimeLeft(secs);
+    };
+    update();
+    const t = setInterval(update, 1000);
+    return () => clearInterval(t);
+  }, [isPaused, item.make_it_mine_expires]);
+
   useEffect(() => {
     if (isActive && item.prisometer_activated_at && item.prisometer_duration_hours) {
       const startTime = new Date(item.prisometer_activated_at).getTime();
