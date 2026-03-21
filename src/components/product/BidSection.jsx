@@ -325,7 +325,7 @@ export default function BidSection({ item }) {
       )}
 
       {/* Make It Mine result screen */}
-      {confirmResult && (
+      {confirmResult && !showBidConfirm && (
         <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-4 text-center">
           <CheckCircle2 className="w-10 h-10 text-primary mx-auto" />
           {confirmResult === "above" ? (
@@ -347,7 +347,7 @@ export default function BidSection({ item }) {
       )}
 
       {/* Make It Mine confirmation panel */}
-      {showConfirm && !confirmResult && (
+      {showConfirm && !confirmResult && !showBidConfirm && (
         <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
           {/* Header + timer */}
           <div className="flex items-center justify-between">
