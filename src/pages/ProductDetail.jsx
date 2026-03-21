@@ -2,7 +2,7 @@ import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Heart, Share2, Shield, Truck, ChevronRight, ArrowLeft } from "lucide-react";
+import { Heart, Share2, Shield, Truck, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -10,19 +10,15 @@ import ProductGallery from "../components/product/ProductGallery";
 import PrisometerWidget from "../components/shared/PrisometerWidget";
 import FirstBidsCountdown from "../components/shared/FirstBidsCountdown";
 import BidSection from "../components/product/BidSection";
-import FeeCalculator from "../components/shared/FeeCalculator";
+import LotDetails from "../components/product/LotDetails";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
   decorative_arts: "Decorative Arts", design: "Design", antiques: "Antiques",
   collectibles: "Collectibles", luxury_goods: "Luxury Goods", other: "Other",
 };
-const conditionLabels = {
-  excellent: "Excellent", very_good: "Very Good", good: "Good", fair: "Fair", as_is: "As Is",
-};
 
 export default function ProductDetail() {
-  const params = new URLSearchParams(window.location.search);
   const pathParts = window.location.pathname.split("/");
   const itemId = pathParts[pathParts.length - 1];
 
@@ -73,17 +69,19 @@ export default function ProductDetail() {
         </nav>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-8 pb-16">
-        <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
-          {/* Gallery — 3 cols */}
+      <div className="max-w-7xl mx-auto px-6 md:px-8 pb-20">
+        {/* Main grid: gallery (3) | details (3) | bid panel (2) */}
+        <div className="grid lg:grid-cols-8 gap-8 lg:gap-10 items-start">
+
+          {/* Gallery */}
           <div className="lg:col-span-3">
             <ProductGallery images={item.images || []} />
           </div>
 
-          {/* Details — 2 cols */}
-          <div className="lg:col-span-2 space-y-6">
+          {/* Lot Info + Details */}
+          <div className="lg:col-span-3">
             {/* Status + Category */}
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap mb-4">
               <Badge variant="outline" className="text-xs">
                 {categoryLabels[item.category] || item.category}
               </Badge>
@@ -96,25 +94,27 @@ export default function ProductDetail() {
             </div>
 
             {/* Title */}
-            <div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground">
-                {item.title}
-              </h1>
-              {item.seller_name && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  Offered by <span className="font-medium text-foreground">{item.seller_name}</span>
-                </p>
-              )}
-            </div>
-
-            {/* Estimates */}
+            <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground mb-2">
+              {item.title}
+            </h1>
+            {item.seller_name && (
+              <p className="text-sm text-muted-foreground mb-3">
+                Offered by <span className="font-medium text-foreground">{item.seller_name}</span>
+              </p>
+            )}
             {item.estimated_low && item.estimated_high && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mb-4">
                 Estimate: ${item.estimated_low?.toLocaleString()} – ${item.estimated_high?.toLocaleString()}
               </p>
             )}
 
-            {/* PRI$OMETER or Countdown */}
+            {/* Collapsible lot details */}
+            <LotDetails item={item} />
+          </div>
+
+          {/* Sticky Bid Panel */}
+          <div className="lg:col-span-2 lg:sticky lg:top-6 space-y-4">
+            {/* PRI$OMETER / Countdown */}
             {item.status === "first_bids" && item.first_bids_end && (
               <FirstBidsCountdown endTime={item.first_bids_end} />
             )}
@@ -138,91 +138,24 @@ export default function ProductDetail() {
             </div>
 
             {/* Trust signals */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                <Shield className="w-4 h-4 text-primary mt-0.5" />
+                <Shield className="w-4 h-4 text-primary mt-0.5 shrink-0" />
                 <div>
                   <p className="text-xs font-medium">Buyer Protection</p>
                   <p className="text-[10px] text-muted-foreground">Every purchase is guaranteed</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                <Truck className="w-4 h-4 text-primary mt-0.5" />
+                <Truck className="w-4 h-4 text-primary mt-0.5 shrink-0" />
                 <div>
                   <p className="text-xs font-medium">Insured Shipping</p>
                   <p className="text-[10px] text-muted-foreground">Full-value coverage available</p>
                 </div>
               </div>
             </div>
-
-            <Separator />
-
-            {/* Description */}
-            <div className="space-y-4">
-              <h3 className="font-serif text-xl font-semibold">About This Lot</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {item.description || "No description available."}
-              </p>
-            </div>
-
-            {/* Details grid */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              {item.condition && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Condition</span>
-                  <span className="font-medium">{conditionLabels[item.condition] || item.condition}</span>
-                </div>
-              )}
-              {item.period && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Period</span>
-                  <span className="font-medium">{item.period}</span>
-                </div>
-              )}
-              {item.dimensions && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Dimensions</span>
-                  <span className="font-medium">{item.dimensions}</span>
-                </div>
-              )}
-              {item.materials && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Materials</span>
-                  <span className="font-medium">{item.materials}</span>
-                </div>
-              )}
-              {item.origin && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Origin</span>
-                  <span className="font-medium">{item.origin}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Provenance */}
-            {item.provenance && (
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Provenance</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.provenance}</p>
-              </div>
-            )}
-
-            {/* Condition notes */}
-            {item.condition_notes && (
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Condition Report</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.condition_notes}</p>
-              </div>
-            )}
-
-            {/* Shipping */}
-            {item.shipping_notes && (
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Shipping</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.shipping_notes}</p>
-              </div>
-            )}
           </div>
+
         </div>
       </div>
     </div>
