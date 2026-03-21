@@ -41,12 +41,12 @@ export default function Home() {
 
       {/* Categories */}
       <CategoryGrid categoryImages={{
-        fine_art: "/__generating__/img_7046f8a118d8.png",
-        jewelry: "/__generating__/img_0b56d1e098fd.png",
-        watches: "/__generating__/img_8a2fe9384230.png",
-        furniture: "/__generating__/img_12a2f0925c03.png",
-        decorative_arts: "/__generating__/img_9712282e9e6e.png",
-        antiques: "/__generating__/img_4b18d32035dd.png",
+        fine_art: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/6d666716e_generated_9a429800.png",
+        jewelry: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/c894b9de2_generated_3f9f3e97.png",
+        watches: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/f02dc2c2e_generated_8f5e1cef.png",
+        furniture: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/f8e1d8b42_generated_de31f2d3.png",
+        decorative_arts: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/ed9fee0f0_generated_c17be360.png",
+        antiques: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/12b23eaea_generated_2e276788.png",
       }} />
 
       {/* Editorial / Trust block */}

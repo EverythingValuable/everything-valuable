@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function HeroSection({ heroImage = "/__generating__/img_f54dd2c0e8db.png" }) {
+export default function HeroSection({ heroImage = "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/2a97ae510_generated_667cc82e.png" }) {
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden">
       {/* Background */}
