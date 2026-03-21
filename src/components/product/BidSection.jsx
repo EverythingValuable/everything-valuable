@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Gavel, ShoppingBag, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Gavel, ShoppingBag, CheckCircle2, Clock, AlertCircle, ChevronDown } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 
 const CONFIRM_SECONDS = 120;
@@ -14,9 +14,16 @@ export default function BidSection({ item }) {
   const [lockedPrice, setLockedPrice] = useState(null);
   const [confirmResult, setConfirmResult] = useState(null); // null | 'above' | 'below'
   const [timeLeft, setTimeLeft] = useState(CONFIRM_SECONDS);
+  const [showTiers, setShowTiers] = useState(false);
   const timerRef = useRef(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  const { data: sellerProfile } = useQuery({
+    queryKey: ["sellerProfile", item?.seller_email],
+    queryFn: () => base44.entities.SellerProfile.filter({ user_email: item?.seller_email }).then(p => p[0]),
+    enabled: !!item?.seller_email,
+  });
 
   // Start countdown when confirm panel opens
   useEffect(() => {
@@ -148,11 +155,18 @@ export default function BidSection({ item }) {
     return tier ? tier.increment : 1;
   };
 
+  const getTierInfo = () => {
+    const currentHighestBid = item.highest_bid || 0;
+    const tiers = sellerProfile?.bid_increment_tiers || [];
+    return tiers.length > 0 ? tiers : [{ min: 0, max: 999999999, increment: 1 }];
+  };
+
   const canBid = item.status === "first_bids" || item.status === "prisometer";
   const canMakeItMine = item.status === "prisometer" && !item.make_it_mine_active;
   const currentPrice = item.current_price || item.prisometer_start_price;
   const currentHighestBid = item.highest_bid || 0;
-  const increment = getMinBidIncrement(currentHighestBid, item.seller_bid_increment_tiers);
+  const sellerTiers = sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers;
+  const increment = getMinBidIncrement(currentHighestBid, sellerTiers);
   const minBid = currentHighestBid + increment;
 
   const price = lockedPrice || currentPrice;
@@ -209,6 +223,28 @@ export default function BidSection({ item }) {
            <p className="text-xs text-muted-foreground">
              {item.status === "first_bids" ? "Highest Preview Bid" : "Current highest bid"}: ${item.highest_bid?.toLocaleString()} ({item.bid_count} bid{item.bid_count !== 1 ? "s" : ""})
            </p>
+          )}
+          {getTierInfo().length > 0 && (
+            <button
+              onClick={() => setShowTiers(!showTiers)}
+              className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors mt-2"
+            >
+              <ChevronDown className={`w-3 h-3 transition-transform ${showTiers ? "rotate-180" : ""}`} />
+              View bidding tiers
+            </button>
+          )}
+          {showTiers && (
+            <div className="mt-3 rounded-lg bg-muted/50 p-3 space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground">Minimum Increments:</p>
+              <div className="space-y-1">
+                {getTierInfo().map((tier, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>${tier.min.toLocaleString()} – ${tier.max.toLocaleString()}</span>
+                    <span className="font-medium">+${tier.increment.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}
