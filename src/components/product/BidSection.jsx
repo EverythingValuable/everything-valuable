@@ -17,6 +17,7 @@ const CONFIRM_SECONDS = 120;
 export default function BidSection({ item }) {
   const [bidAmount, setBidAmount] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showBidConfirm, setShowBidConfirm] = useState(false);
   const [lockedPrice, setLockedPrice] = useState(null);
   const [confirmResult, setConfirmResult] = useState(null); // null | 'above' | 'below'
   const [timeLeft, setTimeLeft] = useState(CONFIRM_SECONDS);
@@ -52,11 +53,11 @@ export default function BidSection({ item }) {
     mutationFn: async () => {
       const amount = parseFloat(bidAmount);
       const currentHighest = item.highest_bid || 0;
-      const increment = getMinBidIncrement(currentHighest, item.seller_bid_increment_tiers);
+      const increment = getMinBidIncrement(currentHighest, sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers);
       const minRequired = currentHighest + increment;
 
       if (!amount || amount < minRequired) {
-        throw new Error(`Bid must be at least $${minRequired.toLocaleString()} (${increment > 1 ? `$${increment} increment` : "minimum bid"})`);
+        throw new Error(`Bid must be at least $${minRequired.toLocaleString()}`);
       }
       if ((amount - currentHighest) % increment !== 0) {
         throw new Error(`Bid must increase by increments of $${increment}`);
@@ -72,9 +73,11 @@ export default function BidSection({ item }) {
       queryClient.invalidateQueries({ queryKey: ["bids", item.id] });
       toast({ title: "Bid placed successfully", description: `Your bid of $${parseFloat(bidAmount).toLocaleString()} has been recorded.` });
       setBidAmount("");
+      setShowBidConfirm(false);
     },
     onError: (err) => {
       toast({ title: "Bid failed", description: err.message, variant: "destructive" });
+      setShowBidConfirm(false);
     },
   });
 
@@ -167,6 +170,19 @@ export default function BidSection({ item }) {
     return tiers.length > 0 ? tiers : [{ min: 0, max: 999999999, increment: 1 }];
   };
 
+  const generateBidOptions = () => {
+    const options = [];
+    const currentHighest = item.highest_bid || 0;
+    const sellerTiers = sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers;
+    const increment = getMinBidIncrement(currentHighest, sellerTiers);
+    let start = currentHighest > 0 ? currentHighest + increment : startingBid;
+
+    for (let i = 0; i < 10; i++) {
+      options.push(start + increment * i);
+    }
+    return options;
+  };
+
   const canBid = item.status === "first_bids" || item.status === "prisometer";
   const canMakeItMine = item.status === "prisometer" && !item.make_it_mine_active;
   const currentPrice = item.current_price || item.prisometer_start_price;
@@ -201,29 +217,31 @@ export default function BidSection({ item }) {
   return (
     <div className="space-y-4">
       {/* Place a Bid */}
-      {canBid && !showConfirm && (
+      {canBid && !showConfirm && !showBidConfirm && (
         <div className="rounded-xl border border-border bg-card p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Gavel className="w-4 h-4 text-primary" />
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Place a Bid</span>
           </div>
           <div className="flex gap-2">
-            <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-              <Input
-                type="number"
-                placeholder={`${minBid.toLocaleString()} or more`}
-                value={bidAmount}
-                onChange={(e) => setBidAmount(e.target.value)}
-                className="pl-7 h-11"
-              />
-            </div>
+            <Select value={bidAmount} onValueChange={setBidAmount}>
+              <SelectTrigger className="flex-1 h-11">
+                <SelectValue placeholder={`Starting at $${minBid.toLocaleString()}`} />
+              </SelectTrigger>
+              <SelectContent>
+                {generateBidOptions().map((option) => (
+                  <SelectItem key={option} value={option.toString()}>
+                    ${option.toLocaleString()}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button
-              onClick={() => placeBidMutation.mutate()}
-              disabled={placeBidMutation.isPending}
+              onClick={() => setShowBidConfirm(true)}
+              disabled={!bidAmount}
               className="h-11 px-6 bg-foreground text-background hover:bg-foreground/90"
             >
-              {placeBidMutation.isPending ? "Placing..." : "Bid"}
+              Bid
             </Button>
           </div>
           {item.highest_bid > 0 && (
