@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { TrendingDown, Pause, Play } from "lucide-react";
+import { TrendingDown, Pause, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function PrisometerWidget({ item, compact = false }) {
