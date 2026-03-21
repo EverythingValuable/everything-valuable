@@ -192,7 +192,7 @@ export default function BidSection({ item }) {
           className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-base font-semibold gap-2"
         >
           <ShoppingBag className="w-5 h-5" />
-          Make It Mine — ${currentPrice?.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+          Make It Mine
         </Button>
       )}
 
