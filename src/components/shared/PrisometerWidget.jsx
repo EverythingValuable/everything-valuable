@@ -119,14 +119,7 @@ function PriceTrack({ startPrice, highestBid, currentPrice, isActive }) {
           animate={{ left: `${pct}%` }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <div className={`w-3.5 h-3.5 rounded-full border-2 border-background shadow-sm ${isActive ? "bg-red-500" : "bg-primary"}`} />
-          {isActive && (
-            <motion.div
-              className="absolute inset-0 rounded-full bg-red-400"
-              animate={{ scale: [1, 2], opacity: [0.6, 0] }}
-              transition={{ duration: 1.2, repeat: Infinity, ease: "easeOut" }}
-            />
-          )}
+          <div className="w-3.5 h-3.5 rounded-full border-2 border-background shadow-sm bg-green-500" />
         </motion.div>
       </div>
 
