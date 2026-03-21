@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { TrendingDown, Pause, Clock } from "lucide-react";
 import { motion } from "framer-motion";
+import { base44 } from "@/api/base44Client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function PrisometerWidget({ item, compact = false }) {
   const [displayPrice, setDisplayPrice] = useState(item.current_price || item.prisometer_start_price);
