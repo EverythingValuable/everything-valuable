@@ -1,0 +1,152 @@
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Search, Heart, User, Menu, X, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+
+const categories = [
+  { label: "Fine Art", path: "/browse?category=fine_art" },
+  { label: "Jewelry", path: "/browse?category=jewelry" },
+  { label: "Watches", path: "/browse?category=watches" },
+  { label: "Furniture", path: "/browse?category=furniture" },
+  { label: "Decorative Arts", path: "/browse?category=decorative_arts" },
+  { label: "Design", path: "/browse?category=design" },
+  { label: "Antiques", path: "/browse?category=antiques" },
+  { label: "Collectibles", path: "/browse?category=collectibles" },
+  { label: "Luxury Goods", path: "/browse?category=luxury_goods" },
+];
+
+export default function Navbar() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
+      {/* Top bar */}
+      <div className="hidden md:flex items-center justify-between px-8 py-1.5 text-xs text-muted-foreground border-b border-border/50">
+        <div className="flex gap-6">
+          <Link to="/how-it-works" className="hover:text-foreground transition-colors">How It Works</Link>
+          <Link to="/pricing" className="hover:text-foreground transition-colors">Pricing & Fees</Link>
+          <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
+        </div>
+        <div className="flex gap-6">
+          <span>Secure Transactions</span>
+          <span>•</span>
+          <span>Vetted Sellers</span>
+          <span>•</span>
+          <span>Buyer Protection</span>
+        </div>
+      </div>
+
+      {/* Main nav */}
+      <div className="flex items-center justify-between px-6 md:px-8 h-16 md:h-20">
+        <div className="flex items-center gap-8">
+          <button
+            className="md:hidden p-1"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+
+          <Link to="/" className="flex items-center gap-2">
+            <span className="font-serif text-xl md:text-2xl font-semibold tracking-tight text-foreground">
+              Everything Valuable
+            </span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-6">
+            <div
+              className="relative"
+              onMouseEnter={() => setCategoriesOpen(true)}
+              onMouseLeave={() => setCategoriesOpen(false)}
+            >
+              <button className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Categories <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+              <AnimatePresence>
+                {categoriesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-xl py-2 z-50"
+                  >
+                    {categories.map(cat => (
+                      <Link
+                        key={cat.path}
+                        to={cat.path}
+                        className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        onClick={() => setCategoriesOpen(false)}
+                      >
+                        {cat.label}
+                      </Link>
+                    ))}
+                    <div className="border-t border-border mt-1 pt-1">
+                      <Link
+                        to="/browse"
+                        className="block px-4 py-2.5 text-sm font-medium text-primary hover:bg-muted transition-colors"
+                        onClick={() => setCategoriesOpen(false)}
+                      >
+                        View All
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <Link to="/browse" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Browse
+            </Link>
+            <Link to="/browse?status=prisometer" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+              Live Now
+            </Link>
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link to="/browse" className="p-2 rounded-full hover:bg-muted transition-colors">
+            <Search className="w-4.5 h-4.5 text-muted-foreground" />
+          </Link>
+          <Link to="/buyer" className="p-2 rounded-full hover:bg-muted transition-colors hidden sm:flex">
+            <Heart className="w-4.5 h-4.5 text-muted-foreground" />
+          </Link>
+          <Link to="/seller" className="hidden md:inline-flex">
+            <Button variant="outline" size="sm" className="text-xs font-medium border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all">
+              Sell With Us
+            </Button>
+          </Link>
+          <Link to="/buyer" className="p-2 rounded-full hover:bg-muted transition-colors">
+            <User className="w-4.5 h-4.5 text-muted-foreground" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="md:hidden overflow-hidden border-t border-border"
+          >
+            <nav className="px-6 py-4 space-y-1">
+              <Link to="/browse" className="block py-3 text-sm font-medium border-b border-border/50" onClick={() => setMobileOpen(false)}>Browse All</Link>
+              {categories.map(cat => (
+                <Link key={cat.path} to={cat.path} className="block py-2.5 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>
+                  {cat.label}
+                </Link>
+              ))}
+              <div className="pt-3 border-t border-border/50 space-y-2">
+                <Link to="/how-it-works" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>How It Works</Link>
+                <Link to="/pricing" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>Pricing & Fees</Link>
+                <Link to="/seller" className="block py-2 text-sm font-medium text-primary" onClick={() => setMobileOpen(false)}>Sell With Us</Link>
+              </div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
