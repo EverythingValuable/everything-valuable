@@ -297,9 +297,17 @@ export default function BidSection({ item }) {
                  <span className="text-muted-foreground">Service Fee (10% + $30)</span>
                  <span>${(parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                </div>
-               <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold">
-                 <span>Total Cost</span>
-                 <span>${(parseFloat(bidAmount) + parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+               <div className="border-t border-border my-2 pt-2 flex justify-between text-green-700 font-medium">
+                 <span>50% Credit Applied</span>
+                 <span>−${((parseFloat(bidAmount) * 0.1 + 30) * 0.5).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+               </div>
+               <div className="pt-1 flex justify-between font-semibold">
+                 <span>Card Charged Now</span>
+                 <span>${(parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+               </div>
+               <div className="border-t border-border mt-2 pt-3 flex justify-between font-semibold">
+                 <span>Invoice Total (excl. shipping & tax)</span>
+                 <span>${(parseFloat(bidAmount) + ((parseFloat(bidAmount) * 0.1 + 30) * 0.5)).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                </div>
              </div>
 
