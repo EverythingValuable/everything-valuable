@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Heart, Share2, Shield, Truck, ChevronRight, ArrowLeft } from "lucide-react";
+import { Heart, Share2, Shield, Truck, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +10,6 @@ import ProductGallery from "../components/product/ProductGallery";
 import PrisometerWidget from "../components/shared/PrisometerWidget";
 import FirstBidsCountdown from "../components/shared/FirstBidsCountdown";
 import BidSection from "../components/product/BidSection";
-import FeeCalculator from "../components/shared/FeeCalculator";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -21,8 +20,25 @@ const conditionLabels = {
   excellent: "Excellent", very_good: "Very Good", good: "Good", fair: "Fair", as_is: "As Is",
 };
 
+function CollapsibleSection({ title, defaultOpen = true, children }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-t border-border">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between py-4 text-left group"
+      >
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">
+          {title}
+        </span>
+        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && <div className="pb-5">{children}</div>}
+    </div>
+  );
+}
+
 export default function ProductDetail() {
-  const params = new URLSearchParams(window.location.search);
   const pathParts = window.location.pathname.split("/");
   const itemId = pathParts[pathParts.length - 1];
 
@@ -40,7 +56,6 @@ export default function ProductDetail() {
           <div className="space-y-4">
             <div className="h-4 w-20 bg-muted rounded" />
             <div className="h-8 w-3/4 bg-muted rounded" />
-            <div className="h-4 w-full bg-muted rounded" />
           </div>
         </div>
       </div>
@@ -73,156 +88,159 @@ export default function ProductDetail() {
         </nav>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-8 pb-16">
+      <div className="max-w-7xl mx-auto px-6 md:px-8 pb-20">
         <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
-          {/* Gallery — 3 cols */}
-          <div className="lg:col-span-3">
-            <ProductGallery images={item.images || []} />
-          </div>
 
-          {/* Details — 2 cols */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Status + Category */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="outline" className="text-xs">
-                {categoryLabels[item.category] || item.category}
-              </Badge>
-              {item.status === "first_bids" && (
-                <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>
+          {/* LEFT — Gallery + Info Sections */}
+          <div className="lg:col-span-3 space-y-0">
+            <ProductGallery images={item.images || []} />
+
+            {/* Collapsible Info Sections */}
+            <div className="mt-8">
+              {item.description && (
+                <CollapsibleSection title="About This Lot" defaultOpen={true}>
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {item.description}
+                  </p>
+                </CollapsibleSection>
               )}
-              {item.status === "prisometer" && (
-                <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
+
+              {/* Details grid */}
+              {(item.condition || item.period || item.dimensions || item.materials || item.origin) && (
+                <CollapsibleSection title="Details" defaultOpen={true}>
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                    {item.condition && (
+                      <div>
+                        <span className="text-muted-foreground text-xs block mb-0.5">Condition</span>
+                        <span className="font-medium">{conditionLabels[item.condition] || item.condition}</span>
+                      </div>
+                    )}
+                    {item.period && (
+                      <div>
+                        <span className="text-muted-foreground text-xs block mb-0.5">Period</span>
+                        <span className="font-medium">{item.period}</span>
+                      </div>
+                    )}
+                    {item.dimensions && (
+                      <div>
+                        <span className="text-muted-foreground text-xs block mb-0.5">Dimensions</span>
+                        <span className="font-medium">{item.dimensions}</span>
+                      </div>
+                    )}
+                    {item.materials && (
+                      <div>
+                        <span className="text-muted-foreground text-xs block mb-0.5">Materials</span>
+                        <span className="font-medium">{item.materials}</span>
+                      </div>
+                    )}
+                    {item.origin && (
+                      <div>
+                        <span className="text-muted-foreground text-xs block mb-0.5">Origin</span>
+                        <span className="font-medium">{item.origin}</span>
+                      </div>
+                    )}
+                  </div>
+                </CollapsibleSection>
+              )}
+
+              {item.provenance && (
+                <CollapsibleSection title="Provenance" defaultOpen={false}>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.provenance}</p>
+                </CollapsibleSection>
+              )}
+
+              {item.condition_notes && (
+                <CollapsibleSection title="Condition Report" defaultOpen={false}>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.condition_notes}</p>
+                </CollapsibleSection>
+              )}
+
+              {item.shipping_notes && (
+                <CollapsibleSection title="Shipping" defaultOpen={false}>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.shipping_notes}</p>
+                </CollapsibleSection>
               )}
             </div>
+          </div>
 
-            {/* Title */}
-            <div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground">
-                {item.title}
-              </h1>
-              {item.seller_name && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  Offered by <span className="font-medium text-foreground">{item.seller_name}</span>
+          {/* RIGHT — Sticky Bid Panel */}
+          <div className="lg:col-span-2">
+            <div className="lg:sticky lg:top-6 space-y-5">
+              {/* Status + Category */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="outline" className="text-xs">
+                  {categoryLabels[item.category] || item.category}
+                </Badge>
+                {item.status === "first_bids" && (
+                  <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>
+                )}
+                {item.status === "prisometer" && (
+                  <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
+                )}
+              </div>
+
+              {/* Title */}
+              <div>
+                <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground">
+                  {item.title}
+                </h1>
+                {item.seller_name && (
+                  <p className="text-sm text-muted-foreground mt-1.5">
+                    Offered by <span className="font-medium text-foreground">{item.seller_name}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Estimates */}
+              {item.estimated_low && item.estimated_high && (
+                <p className="text-sm text-muted-foreground">
+                  Estimate: ${item.estimated_low?.toLocaleString()} – ${item.estimated_high?.toLocaleString()}
                 </p>
               )}
-            </div>
 
-            {/* Estimates */}
-            {item.estimated_low && item.estimated_high && (
-              <p className="text-sm text-muted-foreground">
-                Estimate: ${item.estimated_low?.toLocaleString()} – ${item.estimated_high?.toLocaleString()}
-              </p>
-            )}
+              {/* PRI$OMETER or Countdown */}
+              {item.status === "first_bids" && item.first_bids_end && (
+                <FirstBidsCountdown endTime={item.first_bids_end} />
+              )}
+              {(item.status === "prisometer" || item.status === "first_bids") && (
+                <PrisometerWidget item={item} />
+              )}
 
-            {/* PRI$OMETER or Countdown */}
-            {item.status === "first_bids" && item.first_bids_end && (
-              <FirstBidsCountdown endTime={item.first_bids_end} />
-            )}
-            {(item.status === "prisometer" || item.status === "first_bids") && (
-              <PrisometerWidget item={item} />
-            )}
+              {/* Bidding */}
+              <BidSection item={item} />
 
-            {/* Bidding */}
-            <BidSection item={item} />
+              <Separator />
 
-            <Separator />
-
-            {/* Actions */}
-            <div className="flex gap-3">
-              <Button variant="outline" className="flex-1 gap-2 h-10">
-                <Heart className="w-4 h-4" /> Save
-              </Button>
-              <Button variant="outline" className="flex-1 gap-2 h-10">
-                <Share2 className="w-4 h-4" /> Share
-              </Button>
-            </div>
-
-            {/* Trust signals */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                <Shield className="w-4 h-4 text-primary mt-0.5" />
-                <div>
-                  <p className="text-xs font-medium">Buyer Protection</p>
-                  <p className="text-[10px] text-muted-foreground">Every purchase is guaranteed</p>
-                </div>
+              {/* Actions */}
+              <div className="flex gap-3">
+                <Button variant="outline" className="flex-1 gap-2 h-10">
+                  <Heart className="w-4 h-4" /> Save
+                </Button>
+                <Button variant="outline" className="flex-1 gap-2 h-10">
+                  <Share2 className="w-4 h-4" /> Share
+                </Button>
               </div>
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                <Truck className="w-4 h-4 text-primary mt-0.5" />
-                <div>
-                  <p className="text-xs font-medium">Insured Shipping</p>
-                  <p className="text-[10px] text-muted-foreground">Full-value coverage available</p>
+
+              {/* Trust signals */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                  <Shield className="w-4 h-4 text-primary mt-0.5" />
+                  <div>
+                    <p className="text-xs font-medium">Buyer Protection</p>
+                    <p className="text-[10px] text-muted-foreground">Every purchase is guaranteed</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                  <Truck className="w-4 h-4 text-primary mt-0.5" />
+                  <div>
+                    <p className="text-xs font-medium">Insured Shipping</p>
+                    <p className="text-[10px] text-muted-foreground">Full-value coverage available</p>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <Separator />
-
-            {/* Description */}
-            <div className="space-y-4">
-              <h3 className="font-serif text-xl font-semibold">About This Lot</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {item.description || "No description available."}
-              </p>
-            </div>
-
-            {/* Details grid */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              {item.condition && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Condition</span>
-                  <span className="font-medium">{conditionLabels[item.condition] || item.condition}</span>
-                </div>
-              )}
-              {item.period && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Period</span>
-                  <span className="font-medium">{item.period}</span>
-                </div>
-              )}
-              {item.dimensions && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Dimensions</span>
-                  <span className="font-medium">{item.dimensions}</span>
-                </div>
-              )}
-              {item.materials && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Materials</span>
-                  <span className="font-medium">{item.materials}</span>
-                </div>
-              )}
-              {item.origin && (
-                <div>
-                  <span className="text-muted-foreground text-xs block mb-0.5">Origin</span>
-                  <span className="font-medium">{item.origin}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Provenance */}
-            {item.provenance && (
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Provenance</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.provenance}</p>
-              </div>
-            )}
-
-            {/* Condition notes */}
-            {item.condition_notes && (
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Condition Report</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.condition_notes}</p>
-              </div>
-            )}
-
-            {/* Shipping */}
-            {item.shipping_notes && (
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Shipping</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.shipping_notes}</p>
-              </div>
-            )}
           </div>
+
         </div>
       </div>
     </div>
