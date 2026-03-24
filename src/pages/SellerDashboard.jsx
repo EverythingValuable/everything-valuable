@@ -5,6 +5,8 @@ import { base44 } from "@/api/base44Client";
 import DashboardSidebar from "@/components/seller/DashboardSidebar";
 import ProfileEditor from "@/components/seller/ProfileEditor";
 import SellerSettings from "./SellerSettings";
+import SellerMessages from "@/components/seller/SellerMessages";
+import SellerAnalytics from "@/components/seller/SellerAnalytics";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
