@@ -114,7 +114,7 @@ export default function SellerSettings() {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="bidding">Bidding Increments</TabsTrigger>
-          <TabsTrigger value="terms">Terms & Shipping</TabsTrigger>
+          <TabsTrigger value="terms">Invoice Defaults</TabsTrigger>
         </TabsList>
 
         {/* General Tab */}
