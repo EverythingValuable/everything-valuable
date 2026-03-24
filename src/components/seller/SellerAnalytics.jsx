@@ -79,6 +79,7 @@ export default function SellerAnalytics({ user }) {
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
               <Icon className={`w-4 h-4 ${color}`} />
+              
             </div>
             <p className={`font-serif text-2xl font-semibold ${color}`}>{value}</p>
           </div>
