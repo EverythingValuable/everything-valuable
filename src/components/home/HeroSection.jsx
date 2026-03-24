@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import PricingConvergenceAnimation from "./PricingConvergenceAnimation";
 
 const heroImage = "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=1400&q=85&fit=crop";
 
@@ -68,8 +67,7 @@ export default function HeroSection() {
           </p>
         </motion.div>
 
-        {/* Right — Pricing Animation */}
-        <PricingConvergenceAnimation />
+
 
       </div>
     </section>
