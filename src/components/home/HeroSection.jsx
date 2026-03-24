@@ -68,7 +68,8 @@ export default function HeroSection() {
           </p>
         </motion.div>
 
-
+        {/* Right — Pricing Animation */}
+        <PricingConvergenceAnimation />
 
       </div>
     </section>
