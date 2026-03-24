@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
-  Plus, Trash2, FileText, Send, Download, ExternalLink,
-  ChevronDown, ChevronUp, Loader2
+  Plus, Trash2, FileText, Download, Loader2,
+  BookTemplate, Save, CheckCircle2, AlertTriangle, User
 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
@@ -23,13 +23,50 @@ const STATUS_STYLES = {
   disputed: "bg-red-100 text-red-700",
 };
 
-function calcTotal(itemPrice, extras) {
+// Platform fee: 5% service fee (adjust as needed)
+const SERVICE_FEE_RATE = 0.05;
+
+function calcTotal(itemPrice, serviceFee, feeCredit, extras) {
   const base = Number(itemPrice) || 0;
+  const fee = Number(servicefee) || 0;
+  const credit = Number(feeCredit) || 0;
   const extra = (extras || []).reduce((s, li) => {
     const amt = Number(li.amount) || 0;
     return li.type === "discount" ? s - amt : s + amt;
   }, 0);
-  return base + extra;
+  return base + fee - credit + extra;
+}
+
+// Separate pure total calc
+function computeTotal(itemPrice, serviceFeePct, feeCredit, extras) {
+  const base = Number(itemPrice) || 0;
+  const fee = Math.round(base * (Number(serviceFeePct) || 0) / 100 * 100) / 100;
+  const credit = Number(feeCredit) || 0;
+  const extra = (extras || []).reduce((s, li) => {
+    const amt = Number(li.amount) || 0;
+    return li.type === "discount" ? s - amt : s + amt;
+  }, 0);
+  return { fee, total: base + fee - credit + extra };
+}
+
+function defaultForm(profileDefaults = {}) {
+  return {
+    item_id: "",
+    item_title: "",
+    buyer_email: "",
+    buyer_name: "",
+    buyer_phone: "",
+    buyer_address: "",
+    item_price: "",
+    service_fee_pct: SERVICE_FEE_RATE * 100,
+    fee_credit: "",
+    additional_line_items: [],
+    payment_instructions: profileDefaults.payment_instructions || "",
+    terms_and_conditions: profileDefaults.terms_and_conditions || "",
+    notes: "",
+    status: "draft",
+    purchase_method: "manual",
+  };
 }
 
 export default function InvoiceBuilder({ user }) {
@@ -40,24 +77,13 @@ export default function InvoiceBuilder({ user }) {
   const [editingId, setEditingId] = useState(null);
   const [generatingPdf, setGeneratingPdf] = useState(null);
   const [form, setForm] = useState(defaultForm());
+  const [savingTemplate, setSavingTemplate] = useState(false);
+  const [templateName, setTemplateName] = useState("");
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [buyerProfileWarning, setBuyerProfileWarning] = useState(false);
 
-  function defaultForm() {
-    return {
-      item_id: "",
-      item_title: "",
-      buyer_email: "",
-      buyer_name: "",
-      item_price: "",
-      additional_line_items: [],
-      payment_instructions: "",
-      terms_and_conditions: "",
-      notes: "",
-      status: "draft",
-    };
-  }
-
-  const { data: soldItems = [] } = useQuery({
-    queryKey: ["seller-sold-items", user?.email],
+  const { data: allItems = [] } = useQuery({
+    queryKey: ["seller-all-items", user?.email],
     queryFn: () => base44.entities.Item.filter({ seller_email: user?.email }),
     enabled: !!user?.email,
   });
@@ -69,36 +95,132 @@ export default function InvoiceBuilder({ user }) {
     enabled: !!user?.email,
   });
 
+  const { data: templates = [] } = useQuery({
+    queryKey: ["invoice-templates", user?.email],
+    queryFn: () => base44.entities.InvoiceTemplate.filter({ seller_email: user?.email }),
+    enabled: !!user?.email,
+  });
+
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ["seller-invoices", user?.email],
     queryFn: () => base44.entities.Invoice.filter({ seller_email: user?.email }),
     enabled: !!user?.email,
   });
 
-  // Pre-fill defaults from seller profile
+  // Pre-fill defaults from seller profile when opening a new form
   useEffect(() => {
-    if (profile && !editingId) {
+    if (profile && !editingId && showForm) {
       setForm(f => ({
         ...f,
         payment_instructions: f.payment_instructions || profile.payment_instructions || "",
         terms_and_conditions: f.terms_and_conditions || profile.terms_and_conditions || "",
       }));
     }
-  }, [profile]);
+  }, [profile, showForm]);
+
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  // When an item is selected, auto-populate everything
+  const handleItemSelect = async (itemId) => {
+    if (!itemId) {
+      set("item_id", "");
+      return;
+    }
+    const item = allItems.find(i => i.id === itemId);
+    if (!item) return;
+
+    const soldPrice = item.sold_price || item.current_price || item.prisometer_start_price || 0;
+    const buyerEmail = item.sold_to_email || item.highest_bidder_email || "";
+
+    // Try to load buyer profile
+    let buyerProfile = null;
+    if (buyerEmail) {
+      const results = await base44.entities.BuyerProfile.filter({ user_email: buyerEmail });
+      buyerProfile = results[0] || null;
+    }
+
+    const feeCredit = item.fee_credit || 0;
+    const purchaseMethod = item.sold_via || "bid";
+
+    const buyerAddress = buyerProfile
+      ? [buyerProfile.address_line1, buyerProfile.address_line2, buyerProfile.city, buyerProfile.state, buyerProfile.zip, buyerProfile.country].filter(Boolean).join(", ")
+      : "";
+
+    setBuyerProfileWarning(!!buyerEmail && !buyerProfile?.profile_complete);
+
+    setForm(f => ({
+      ...f,
+      item_id: itemId,
+      item_title: item.title || "",
+      item_price: soldPrice,
+      service_fee_pct: SERVICE_FEE_RATE * 100,
+      fee_credit: feeCredit,
+      purchase_method: purchaseMethod,
+      buyer_email: buyerEmail,
+      buyer_name: buyerProfile?.full_name || f.buyer_name,
+      buyer_phone: buyerProfile?.phone || f.buyer_phone,
+      buyer_address: buyerAddress || f.buyer_address,
+    }));
+  };
+
+  // Load a template
+  const handleLoadTemplate = (templateId) => {
+    const tmpl = templates.find(t => t.id === templateId);
+    if (!tmpl) return;
+    setForm(f => ({
+      ...f,
+      payment_instructions: tmpl.payment_instructions || f.payment_instructions,
+      terms_and_conditions: tmpl.terms_and_conditions || f.terms_and_conditions,
+      notes: tmpl.notes || f.notes,
+      additional_line_items: tmpl.additional_line_items?.length
+        ? tmpl.additional_line_items.map(li => ({ ...li, amount: li.amount || "" }))
+        : f.additional_line_items,
+    }));
+    toast({ title: `Template "${tmpl.name}" loaded` });
+  };
+
+  const saveTemplateMutation = useMutation({
+    mutationFn: async () => {
+      return base44.entities.InvoiceTemplate.create({
+        seller_email: user.email,
+        name: templateName,
+        payment_instructions: form.payment_instructions,
+        terms_and_conditions: form.terms_and_conditions,
+        notes: form.notes,
+        additional_line_items: form.additional_line_items,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["invoice-templates", user?.email] });
+      setShowSaveTemplate(false);
+      setTemplateName("");
+      toast({ title: "Template saved" });
+    },
+  });
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const total = calcTotal(form.item_price, form.additional_line_items);
+      const { fee, total } = computeTotal(form.item_price, form.service_fee_pct, form.fee_credit, form.additional_line_items);
       const payload = {
-        ...form,
+        item_id: form.item_id || undefined,
+        item_title: form.item_title,
+        buyer_email: form.buyer_email,
+        buyer_name: form.buyer_name,
+        buyer_phone: form.buyer_phone,
+        buyer_address: form.buyer_address,
         seller_email: user.email,
         item_price: Number(form.item_price) || 0,
+        service_fee: fee,
+        fee_credit: Number(form.fee_credit) || 0,
+        additional_line_items: form.additional_line_items.map(li => ({ ...li, amount: Number(li.amount) || 0 })),
         total_amount: total,
         purchase_method: form.purchase_method || "manual",
+        payment_instructions: form.payment_instructions,
+        terms_and_conditions: form.terms_and_conditions,
+        notes: form.notes,
+        status: form.status,
       };
-      if (editingId) {
-        return base44.entities.Invoice.update(editingId, payload);
-      }
+      if (editingId) return base44.entities.Invoice.update(editingId, payload);
       return base44.entities.Invoice.create(payload);
     },
     onSuccess: () => {
@@ -106,6 +228,7 @@ export default function InvoiceBuilder({ user }) {
       setShowForm(false);
       setEditingId(null);
       setForm(defaultForm());
+      setBuyerProfileWarning(false);
       toast({ title: editingId ? "Invoice updated" : "Invoice created" });
     },
   });
@@ -115,6 +238,11 @@ export default function InvoiceBuilder({ user }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["seller-invoices", user?.email] }),
   });
 
+  const deleteTemplateMutation = useMutation({
+    mutationFn: (id) => base44.entities.InvoiceTemplate.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["invoice-templates", user?.email] }),
+  });
+
   const handleEdit = (inv) => {
     setEditingId(inv.id);
     setForm({
@@ -122,46 +250,36 @@ export default function InvoiceBuilder({ user }) {
       item_title: inv.item_title || "",
       buyer_email: inv.buyer_email || "",
       buyer_name: inv.buyer_name || "",
+      buyer_phone: inv.buyer_phone || "",
+      buyer_address: inv.buyer_address || "",
       item_price: inv.item_price ?? "",
+      service_fee_pct: inv.service_fee && inv.item_price ? Math.round((inv.service_fee / inv.item_price) * 100) : SERVICE_FEE_RATE * 100,
+      fee_credit: inv.fee_credit ?? "",
       additional_line_items: inv.additional_line_items || [],
       payment_instructions: inv.payment_instructions || "",
       terms_and_conditions: inv.terms_and_conditions || "",
       notes: inv.notes || "",
       status: inv.status || "draft",
+      purchase_method: inv.purchase_method || "manual",
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleItemSelect = (itemId) => {
-    const item = soldItems.find(i => i.id === itemId);
-    setForm(f => ({
-      ...f,
-      item_id: itemId,
-      item_title: item?.title || "",
-      item_price: item?.sold_price || item?.current_price || item?.prisometer_start_price || f.item_price,
-      buyer_email: item?.sold_to_email || item?.highest_bidder_email || f.buyer_email,
-    }));
-  };
+  const addLineItem = () => setForm(f => ({
+    ...f,
+    additional_line_items: [...f.additional_line_items, { description: "", amount: "", type: "tax" }],
+  }));
 
-  const addLineItem = () => {
-    setForm(f => ({
-      ...f,
-      additional_line_items: [...f.additional_line_items, { description: "", amount: "", type: "tax" }],
-    }));
-  };
+  const updateLineItem = (idx, key, val) => setForm(f => {
+    const updated = [...f.additional_line_items];
+    updated[idx] = { ...updated[idx], [key]: val };
+    return { ...f, additional_line_items: updated };
+  });
 
-  const updateLineItem = (idx, key, val) => {
-    setForm(f => {
-      const updated = [...f.additional_line_items];
-      updated[idx] = { ...updated[idx], [key]: val };
-      return { ...f, additional_line_items: updated };
-    });
-  };
-
-  const removeLineItem = (idx) => {
-    setForm(f => ({ ...f, additional_line_items: f.additional_line_items.filter((_, i) => i !== idx) }));
-  };
+  const removeLineItem = (idx) => setForm(f => ({
+    ...f, additional_line_items: f.additional_line_items.filter((_, i) => i !== idx),
+  }));
 
   const handleGeneratePdf = async (invoiceId) => {
     setGeneratingPdf(invoiceId);
@@ -175,17 +293,17 @@ export default function InvoiceBuilder({ user }) {
     }
   };
 
-  const total = calcTotal(form.item_price, form.additional_line_items);
+  const { fee: liveServiceFee, total: liveTotal } = computeTotal(form.item_price, form.service_fee_pct, form.fee_credit, form.additional_line_items);
 
   return (
     <div className="max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-serif text-xl font-semibold">Invoices</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">Create and send invoices to buyers with custom payment terms.</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Create and send invoices with auto-populated buyer info and pricing.</p>
         </div>
         {!showForm && (
-          <Button onClick={() => { setEditingId(null); setForm(defaultForm()); setShowForm(true); }} className="gap-2">
+          <Button onClick={() => { setEditingId(null); setForm(defaultForm({ payment_instructions: profile?.payment_instructions, terms_and_conditions: profile?.terms_and_conditions })); setShowForm(true); }} className="gap-2">
             <Plus className="w-4 h-4" /> New Invoice
           </Button>
         )}
@@ -196,57 +314,122 @@ export default function InvoiceBuilder({ user }) {
         <div className="rounded-xl border border-border bg-card p-6 space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="font-serif text-lg font-semibold">{editingId ? "Edit Invoice" : "Create Invoice"}</h3>
-            <button onClick={() => { setShowForm(false); setEditingId(null); }} className="text-muted-foreground hover:text-foreground text-sm">Cancel</button>
+            <div className="flex items-center gap-3">
+              {/* Load template */}
+              {templates.length > 0 && (
+                <select
+                  onChange={e => { if (e.target.value) handleLoadTemplate(e.target.value); e.target.value = ""; }}
+                  className="h-8 rounded-md border border-input bg-transparent px-3 text-xs text-muted-foreground"
+                  defaultValue=""
+                >
+                  <option value="">Load template…</option>
+                  {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
+              )}
+              <button onClick={() => { setShowForm(false); setEditingId(null); setBuyerProfileWarning(false); }} className="text-muted-foreground hover:text-foreground text-sm">Cancel</button>
+            </div>
           </div>
 
-          {/* Link to item */}
+          {buyerProfileWarning && (
+            <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
+              <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+              <p className="text-xs text-amber-800">Buyer has not completed their profile — some fields may be missing. They should add their shipping address and payment info in their account settings.</p>
+            </div>
+          )}
+
+          {/* Item Selection */}
           <Section title="Item">
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Select Listed Item (optional)">
+              <Field label="Select Listed Item">
                 <select
                   value={form.item_id}
                   onChange={e => handleItemSelect(e.target.value)}
                   className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
                 >
                   <option value="">— Manual entry —</option>
-                  {soldItems.map(item => (
+                  {allItems.map(item => (
                     <option key={item.id} value={item.id}>{item.title} ({item.status})</option>
                   ))}
                 </select>
               </Field>
               <Field label="Item Title">
-                <Input value={form.item_title} onChange={e => setForm(f => ({ ...f, item_title: e.target.value }))} placeholder="e.g. Vintage Oil Painting" />
+                <Input value={form.item_title} onChange={e => set("item_title", e.target.value)} placeholder="e.g. Vintage Oil Painting" />
               </Field>
             </div>
           </Section>
 
-          {/* Buyer */}
-          <Section title="Buyer">
+          {/* Buyer Info — auto-populated */}
+          <Section title="Buyer Information">
             <div className="grid grid-cols-2 gap-4">
               <Field label="Buyer Email">
-                <Input type="email" value={form.buyer_email} onChange={e => setForm(f => ({ ...f, buyer_email: e.target.value }))} placeholder="buyer@email.com" />
+                <Input type="email" value={form.buyer_email} onChange={e => set("buyer_email", e.target.value)} placeholder="buyer@email.com" />
               </Field>
-              <Field label="Buyer Name (optional)">
-                <Input value={form.buyer_name} onChange={e => setForm(f => ({ ...f, buyer_name: e.target.value }))} placeholder="Full name" />
+              <Field label="Full Name">
+                <Input value={form.buyer_name} onChange={e => set("buyer_name", e.target.value)} placeholder="Jane Smith" />
+              </Field>
+              <Field label="Phone">
+                <Input value={form.buyer_phone} onChange={e => set("buyer_phone", e.target.value)} placeholder="+1 (555) 000-0000" />
+              </Field>
+              <Field label="Shipping Address">
+                <Input value={form.buyer_address} onChange={e => set("buyer_address", e.target.value)} placeholder="Auto-filled from buyer profile" />
               </Field>
             </div>
+            {form.buyer_email && !form.buyer_phone && !form.buyer_name && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                <User className="w-3 h-3" />
+                <span>Buyer profile info will auto-fill when you select an item with a known buyer.</span>
+              </div>
+            )}
           </Section>
 
-          {/* Pricing */}
+          {/* Line Items */}
           <Section title="Line Items">
             <div className="space-y-3">
-              {/* Base item price */}
+              {/* Base price */}
               <div className="flex items-center gap-3 bg-secondary/30 rounded-lg px-4 py-3">
                 <div className="flex-1 text-sm font-medium">{form.item_title || "Item"}</div>
-                <div className="text-xs text-muted-foreground">Item</div>
-                <div className="w-32">
+                <span className="text-xs text-muted-foreground w-20 text-center">Item</span>
+                <Input
+                  type="number" min="0"
+                  value={form.item_price}
+                  onChange={e => set("item_price", e.target.value)}
+                  placeholder="0.00"
+                  className="w-32 text-right"
+                />
+              </div>
+
+              {/* Service fee row */}
+              <div className="flex items-center gap-3 bg-secondary/20 rounded-lg px-4 py-3">
+                <div className="flex-1 text-sm text-muted-foreground">
+                  Platform Service Fee
+                  <span className="text-xs ml-1 text-muted-foreground/70">(editable %)</span>
+                </div>
+                <div className="flex items-center gap-1 w-20">
                   <Input
-                    type="number"
-                    min="0"
-                    value={form.item_price}
-                    onChange={e => setForm(f => ({ ...f, item_price: e.target.value }))}
+                    type="number" min="0" max="100"
+                    value={form.service_fee_pct}
+                    onChange={e => set("service_fee_pct", e.target.value)}
+                    className="w-14 text-right text-xs"
+                  />
+                  <span className="text-xs text-muted-foreground">%</span>
+                </div>
+                <span className="w-32 text-right text-sm font-medium">
+                  ${liveServiceFee.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </span>
+              </div>
+
+              {/* Fee credit row */}
+              <div className="flex items-center gap-3 px-4 py-2">
+                <div className="flex-1 text-sm text-muted-foreground">Fee Credit Applied</div>
+                <span className="text-xs text-muted-foreground w-20 text-center">Credit</span>
+                <div className="w-32 flex items-center gap-1">
+                  <span className="text-sm text-muted-foreground">−$</span>
+                  <Input
+                    type="number" min="0"
+                    value={form.fee_credit}
+                    onChange={e => set("fee_credit", e.target.value)}
                     placeholder="0.00"
-                    className="text-right"
+                    className="text-right flex-1"
                   />
                 </div>
               </div>
@@ -258,7 +441,7 @@ export default function InvoiceBuilder({ user }) {
                     className="flex-1"
                     value={li.description}
                     onChange={e => updateLineItem(idx, "description", e.target.value)}
-                    placeholder="Description (e.g. NY State Tax 8.875%)"
+                    placeholder="e.g. NY State Tax 8.875%"
                   />
                   <select
                     value={li.type}
@@ -268,8 +451,7 @@ export default function InvoiceBuilder({ user }) {
                     {LINE_TYPES.map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
                   </select>
                   <Input
-                    type="number"
-                    min="0"
+                    type="number" min="0"
                     className="w-32 text-right"
                     value={li.amount}
                     onChange={e => updateLineItem(idx, "amount", e.target.value)}
@@ -289,49 +471,74 @@ export default function InvoiceBuilder({ user }) {
               <div className="flex items-center justify-between border-t border-border pt-3 mt-2">
                 <span className="font-semibold text-sm">Total Due</span>
                 <span className="font-serif text-xl font-semibold text-primary">
-                  ${total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  ${liveTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </div>
           </Section>
 
-          {/* Payment & Terms */}
+          {/* Payment Instructions */}
           <Section title="Payment Instructions">
             <Textarea
               rows={3}
               value={form.payment_instructions}
-              onChange={e => setForm(f => ({ ...f, payment_instructions: e.target.value }))}
-              placeholder="e.g. Wire transfer to: Bank Name, Account #12345, Routing #67890. Or PayPal: seller@email.com"
+              onChange={e => set("payment_instructions", e.target.value)}
+              placeholder="e.g. Wire transfer to: Bank Name, Account #12345. Or PayPal: seller@email.com"
               className="text-sm"
             />
           </Section>
 
+          {/* Terms */}
           <Section title="Terms & Conditions">
             <Textarea
               rows={3}
               value={form.terms_and_conditions}
-              onChange={e => setForm(f => ({ ...f, terms_and_conditions: e.target.value }))}
-              placeholder="e.g. Payment due within 7 days of invoice date. All sales are final. Item ships within 5 business days of cleared payment."
+              onChange={e => set("terms_and_conditions", e.target.value)}
+              placeholder="e.g. Payment due within 7 days. All sales are final. Ships within 5 business days of cleared payment."
               className="text-sm"
             />
           </Section>
 
+          {/* Notes */}
           <Section title="Notes (optional)">
             <Textarea
               rows={2}
               value={form.notes}
-              onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+              onChange={e => set("notes", e.target.value)}
               placeholder="Any additional notes for the buyer…"
               className="text-sm"
             />
           </Section>
 
+          {/* Save as Template */}
+          {showSaveTemplate ? (
+            <div className="flex items-center gap-3 bg-secondary/30 rounded-lg px-4 py-3">
+              <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+              <Input
+                value={templateName}
+                onChange={e => setTemplateName(e.target.value)}
+                placeholder="Template name, e.g. Standard Sale"
+                className="flex-1 text-sm"
+              />
+              <Button size="sm" variant="outline" onClick={() => { setShowSaveTemplate(false); setTemplateName(""); }}>Cancel</Button>
+              <Button size="sm" onClick={() => saveTemplateMutation.mutate()} disabled={!templateName.trim() || saveTemplateMutation.isPending} className="gap-1">
+                {saveTemplateMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                Save
+              </Button>
+            </div>
+          ) : (
+            <button onClick={() => setShowSaveTemplate(true)} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors">
+              <Save className="w-3 h-3" /> Save current settings as template
+            </button>
+          )}
+
+          {/* Footer */}
           <div className="flex items-center justify-between pt-2 border-t border-border">
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground">Status:</span>
               <select
                 value={form.status}
-                onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                onChange={e => set("status", e.target.value)}
                 className="h-8 rounded-md border border-input bg-transparent px-3 text-sm"
               >
                 {["draft", "sent", "paid", "shipped", "delivered", "disputed"].map(s => (
@@ -343,6 +550,26 @@ export default function InvoiceBuilder({ user }) {
               {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
               {editingId ? "Save Changes" : "Create Invoice"}
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Templates list (collapsible) */}
+      {templates.length > 0 && !showForm && (
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Saved Templates</p>
+          <div className="space-y-2">
+            {templates.map(t => (
+              <div key={t.id} className="flex items-center justify-between text-sm">
+                <span className="font-medium">{t.name}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{format(new Date(t.created_date), "MMM d, yyyy")}</span>
+                  <button onClick={() => deleteTemplateMutation.mutate(t.id)} className="text-muted-foreground hover:text-destructive p-1">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -369,11 +596,11 @@ export default function InvoiceBuilder({ user }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {invoices.sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).map(inv => (
+              {[...invoices].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).map(inv => (
                 <tr key={inv.id} className="hover:bg-secondary/20 transition-colors">
                   <td className="px-5 py-4">
                     <p className="font-medium line-clamp-1">{inv.item_title || "—"}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{inv.buyer_email}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{inv.buyer_name ? `${inv.buyer_name} · ` : ""}{inv.buyer_email}</p>
                   </td>
                   <td className="px-4 py-4 hidden md:table-cell text-muted-foreground text-xs">
                     {format(new Date(inv.created_date), "MMM d, yyyy")}
@@ -403,9 +630,7 @@ export default function InvoiceBuilder({ user }) {
                         </a>
                       ) : (
                         <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs gap-1"
+                          variant="outline" size="sm" className="text-xs gap-1"
                           onClick={() => handleGeneratePdf(inv.id)}
                           disabled={generatingPdf === inv.id}
                         >
