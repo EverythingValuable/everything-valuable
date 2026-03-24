@@ -111,27 +111,31 @@ export default function HowItWorks() {
           </div>
 
           <div className="bg-card rounded-2xl border border-border p-8 md:p-12 max-w-2xl mx-auto">
-            <h3 className="font-serif text-xl font-semibold mb-6">Example: Make It Mine at $3,999.10</h3>
+            <h3 className="font-serif text-xl font-semibold mb-6">Example: Make It Mine at $1,000</h3>
             <div className="space-y-4">
               <div className="flex justify-between py-3 border-b border-border">
                 <span className="text-sm text-muted-foreground">Item Price</span>
-                <span className="font-medium">$3,999.10</span>
+                <span className="font-medium">$1,000</span>
               </div>
               <div className="flex justify-between py-3 border-b border-border">
                 <span className="text-sm text-muted-foreground">Service Fee (10% + $30)</span>
-                <span className="font-medium">$429.91</span>
+                <span className="font-medium">$130</span>
               </div>
               <div className="flex justify-between py-3 border-b border-border text-primary">
                 <span className="text-sm">Fee Credit (50% back)</span>
-                <span className="font-medium">-$214.95</span>
+                <span className="font-medium">-$65</span>
               </div>
               <div className="flex justify-between py-3 border-b border-border">
-                <span className="text-sm font-semibold">Final Invoice</span>
-                <span className="font-semibold">$3,784.14</span>
+                <span className="text-sm font-semibold">Final Invoice Total</span>
+                <span className="font-semibold">$1,065</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-border text-muted-foreground">
+                <span className="text-sm">Upfront Service Fee Already Paid</span>
+                <span className="font-medium">-$130</span>
               </div>
               <div className="flex justify-between py-3">
-                <span className="text-sm font-bold">Total Cost to Buyer</span>
-                <span className="font-serif text-xl font-bold">$4,214.05</span>
+                <span className="text-sm font-bold">Remaining Due</span>
+                <span className="font-serif text-xl font-bold">$935</span>
               </div>
               <p className="text-xs text-muted-foreground text-center pt-2">
                 Shipping, taxes, and duties not included
