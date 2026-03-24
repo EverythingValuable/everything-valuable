@@ -10,7 +10,7 @@ export default function HeroSection() {
   return (
     <section
       className="relative flex items-stretch overflow-hidden bg-[hsl(40,33%,97%)]"
-      style={{ minHeight: "72vh", maxHeight: "820px" }}
+      style={{ minHeight: "44vh", maxHeight: "520px" }}
     >
       <div className="flex w-full flex-col lg:flex-row">
 
@@ -19,7 +19,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex flex-col justify-center px-8 md:px-12 lg:px-16 py-14 lg:py-0 w-full lg:w-[55%] z-10"
+          className="flex flex-col justify-center px-8 md:px-12 lg:px-16 py-10 lg:py-0 w-full z-10"
         >
           {/* Eyebrow */}
           <div className="inline-flex items-center gap-2.5 mb-6">
