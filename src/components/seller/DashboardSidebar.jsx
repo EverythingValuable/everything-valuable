@@ -32,6 +32,7 @@ const navGroups = [
     label: "ACCOUNT",
     items: [
       { label: "Messages", icon: MessageSquare, href: "/seller?view=messages" },
+      { label: "Invoices", icon: FileText, href: "/seller?view=invoices" },
       { label: "Analytics", icon: BarChart2, href: "/seller?view=analytics" },
       { label: "My Profile", icon: User, href: "/seller?view=profile" },
       { label: "Settings", icon: Settings, href: "/seller?view=settings" },

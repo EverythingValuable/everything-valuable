@@ -7,6 +7,7 @@ import ProfileEditor from "@/components/seller/ProfileEditor";
 import SellerSettings from "./SellerSettings";
 import SellerMessages from "@/components/seller/SellerMessages";
 import SellerAnalytics from "@/components/seller/SellerAnalytics";
+import InvoiceBuilder from "@/components/seller/InvoiceBuilder";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
