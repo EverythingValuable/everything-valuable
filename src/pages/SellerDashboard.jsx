@@ -140,8 +140,11 @@ export default function SellerDashboard() {
           {/* Analytics */}
           {view === "analytics" && <SellerAnalytics user={user} />}
 
+          {/* Invoices */}
+          {view === "invoices" && <InvoiceBuilder user={user} />}
+
           {/* Listings table */}
-          <div className={["profile", "settings", "messages", "analytics"].includes(view) ? "hidden" : ""}>
+          <div className={["profile", "settings", "messages", "analytics", "invoices"].includes(view) ? "hidden" : ""}>
             {view !== "overview" && (
               <h2 className="font-serif text-lg font-semibold mb-4">{viewTitle(view)}</h2>
             )}
@@ -269,7 +272,7 @@ function viewTitle(view) {
     listings: "All Listings", draft: "Drafts", first_bids: "Live in 1stBid$™",
     prisometer: "Live in PRI$OMETER™", pending_review: "Pending Review",
     sold: "Sold Items", unsold: "Unsold Items", messages: "Messages",
-    analytics: "Analytics", profile: "My Profile", settings: "Settings",
+    invoices: "Invoices", analytics: "Analytics", profile: "My Profile", settings: "Settings",
   };
   return map[view] || "Overview";
 }
