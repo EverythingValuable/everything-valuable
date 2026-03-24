@@ -212,7 +212,9 @@ Deno.serve(async (req) => {
 
     const pdfBytes = doc.output('arraybuffer');
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const { file_url } = await base44.asServiceRole.integrations.Core.UploadFile({ file: blob });
+    const formData = new FormData();
+    formData.append('file', blob, `invoice-${invoiceId.slice(-8)}.pdf`);
+    const { file_url } = await base44.asServiceRole.integrations.Core.UploadFile(formData);
 
     // Save PDF url back to invoice
     await base44.asServiceRole.entities.Invoice.update(invoiceId, { pdf_url: file_url });
