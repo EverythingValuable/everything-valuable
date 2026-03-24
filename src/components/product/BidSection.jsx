@@ -229,7 +229,17 @@ export default function BidSection({ item }) {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Place a Bid</span>
           </div>
           <div className="flex gap-2">
-            <Select value={bidAmount} onValueChange={setBidAmount}>
+            <Select
+              value={bidAmount}
+              onValueChange={(val) => {
+                if (val === "make_it_mine") {
+                  setBidAmount("");
+                  handleOpenConfirm();
+                } else {
+                  setBidAmount(val);
+                }
+              }}
+            >
               <SelectTrigger className="flex-1 h-11">
                 <SelectValue placeholder={`Starting at $${minBid.toLocaleString()}`} />
               </SelectTrigger>
@@ -239,11 +249,16 @@ export default function BidSection({ item }) {
                     ${option.toLocaleString()}
                   </SelectItem>
                 ))}
+                {canMakeItMine && (
+                  <SelectItem value="make_it_mine" className="text-primary font-semibold border-t border-border mt-1 pt-1">
+                    🛍 Make It Mine — ${Math.floor(getLivePrice()).toLocaleString()}
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
             <Button
               onClick={() => setShowBidConfirm(true)}
-              disabled={!bidAmount}
+              disabled={!bidAmount || bidAmount === "make_it_mine"}
               className="h-11 px-6 bg-foreground text-background hover:bg-foreground/90"
             >
               Bid
