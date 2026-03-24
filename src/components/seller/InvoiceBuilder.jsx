@@ -23,17 +23,25 @@ const STATUS_STYLES = {
   disputed: "bg-red-100 text-red-700",
 };
 
-// Platform fee: 5% service fee (adjust as needed)
-const SERVICE_FEE_RATE = 0.05;
+// service_fee = (item_price * 0.10) + 30
+// credit_on_invoice = service_fee * 0.50
+// final_invoice_total = item_price + service_fee - credit_on_invoice
+// remaining_due = final_invoice_total - service_fee (= item_price - credit_on_invoice)
 
-function computeTotal(itemPrice, serviceFeePct, feeCredit, extras) {
+function computeServiceFee(itemPrice) {
   const base = Number(itemPrice) || 0;
-  const fee = Math.round(base * (Number(serviceFeePct) || 0) / 100 * 100) / 100;
+  return Math.round((base * 0.10 + 30) * 100) / 100;
+}
+
+function computeTotal(itemPrice, _unused, feeCredit, extras) {
+  const base = Number(itemPrice) || 0;
+  const fee = computeServiceFee(base);
   const credit = Number(feeCredit) || 0;
   const extra = (extras || []).reduce((s, li) => {
     const amt = Number(li.amount) || 0;
     return li.type === "discount" ? s - amt : s + amt;
   }, 0);
+  // final_invoice_total = item_price + service_fee - credit + extras
   return { fee, total: base + fee - credit + extra };
 }
 
