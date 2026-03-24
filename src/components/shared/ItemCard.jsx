@@ -27,6 +27,36 @@ export default function ItemCard({ item, index = 0 }) {
     ? item.current_price
     : item.prisometer_start_price;
 
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState(null);
+  const [watchlistEntry, setWatchlistEntry] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!user?.email) return;
+    base44.entities.WatchlistItem.filter({ item_id: item.id, user_email: user.email })
+      .then(r => setWatchlistEntry(r[0] || null));
+  }, [user?.email, item.id]);
+
+  const isSaved = !!watchlistEntry;
+
+  const handleWatchlist = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) { base44.auth.redirectToLogin(); return; }
+    if (isSaved) {
+      await base44.entities.WatchlistItem.delete(watchlistEntry.id);
+      setWatchlistEntry(null);
+    } else {
+      const created = await base44.entities.WatchlistItem.create({ item_id: item.id, user_email: user.email });
+      setWatchlistEntry(created);
+    }
+    queryClient.invalidateQueries({ queryKey: ["buyer-watchlist"] });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
