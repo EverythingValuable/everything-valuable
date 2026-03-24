@@ -56,6 +56,28 @@ export default function ProductDetail() {
     enabled: !!itemId,
   });
 
+  const { data: watchlistEntry } = useQuery({
+    queryKey: ["watchlist", itemId, user?.email],
+    queryFn: () => base44.entities.WatchlistItem.filter({ item_id: itemId, user_email: user.email }).then(r => r[0] || null),
+    enabled: !!itemId && !!user?.email,
+  });
+
+  const isSaved = !!watchlistEntry;
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      if (isSaved) {
+        await base44.entities.WatchlistItem.delete(watchlistEntry.id);
+      } else {
+        await base44.entities.WatchlistItem.create({ item_id: itemId, user_email: user.email });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["watchlist", itemId, user?.email] });
+      toast({ title: isSaved ? "Removed from saved items" : "Saved to your watchlist" });
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-12 animate-pulse">
