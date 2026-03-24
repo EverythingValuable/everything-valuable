@@ -126,7 +126,7 @@ export default function SellerMessages({ user }) {
         </div>
       </div>
 
-      {threads.length === 0 ? (
+      {threadsWithItems.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border bg-card p-16 text-center space-y-2">
           <MessageSquare className="w-8 h-8 text-muted-foreground/40 mx-auto" />
           <p className="font-serif text-lg text-muted-foreground">No messages yet</p>
