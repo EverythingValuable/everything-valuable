@@ -28,9 +28,16 @@ export default function ProfileEditor() {
     enabled: !!user?.email,
   });
 
+  const DEFAULT_FORM = {
+    display_name: "", phone: "", bio: "", about: "", website: "", instagram: "",
+    city: "", state: "", country: "", specialties: [], logo_url: "", banner_url: "",
+    shipping_preferences: "worldwide", return_policy: "no_returns",
+    default_first_bids_hours: 72, default_prisometer_hours: 48, default_below_reserve_percent: 10,
+  };
+
   useEffect(() => {
-    if (profile && !form) {
-      setForm({
+    if (profile !== undefined) {
+      setForm(profile ? {
         display_name: profile.display_name || "",
         phone: profile.phone || "",
         bio: profile.bio || "",
@@ -48,11 +55,11 @@ export default function ProfileEditor() {
         default_first_bids_hours: profile.default_first_bids_hours || 72,
         default_prisometer_hours: profile.default_prisometer_hours || 48,
         default_below_reserve_percent: profile.default_below_reserve_percent || 10,
-      });
+      } : DEFAULT_FORM);
     }
   }, [profile]);
 
-  if (!form) return <div className="p-8 text-sm text-muted-foreground">Loading profile…</div>;
+  if (!user || form === null) return <div className="p-8 text-sm text-muted-foreground">Loading profile…</div>;
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const toggleSpecialty = (s) =>
