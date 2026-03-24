@@ -70,11 +70,11 @@ export default function SellerAnalytics({ user }) {
       {/* KPI cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Total Listings", value: items.length, icon: Package, color: "text-muted-foreground" },
-          { label: "Live Now", value: liveItems.length, icon: TrendingUp, color: "text-green-600" },
-          { label: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, icon: DollarSign, color: "text-primary" },
-          { label: "Avg Sale Price", value: avgSalePrice ? `$${Math.round(avgSalePrice).toLocaleString()}` : "—", icon: Eye, color: "text-primary" },
-        ].map(({ label, value, icon: Icon, color }) => (
+          { label: "Total Listings", value: items.length, Icon: Package, color: "text-muted-foreground" },
+          { label: "Live Now", value: liveItems.length, Icon: TrendingUp, color: "text-green-600" },
+          { label: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, Icon: DollarSign, color: "text-primary" },
+          { label: "Avg Sale Price", value: avgSalePrice ? `$${Math.round(avgSalePrice).toLocaleString()}` : "—", Icon: Eye, color: "text-primary" },
+        ].map(({ label, value, Icon, color }) => (
           <div key={label} className="bg-card rounded-xl border border-border px-5 py-4 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
