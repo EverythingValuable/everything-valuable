@@ -223,7 +223,13 @@ export default function ProductDetail() {
                 </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
                   <p className="text-sm text-muted-foreground mt-1.5">
-                    Offered by <span className="font-medium text-foreground">{sellerProfile?.display_name || item.seller_name}</span>
+                    Offered by{" "}
+                    <Link
+                      to={`/seller/profile?seller=${item.seller_email}`}
+                      className="font-medium text-foreground hover:text-primary transition-colors"
+                    >
+                      {sellerProfile?.display_name || item.seller_name}
+                    </Link>
                   </p>
                 )}
               </div>
