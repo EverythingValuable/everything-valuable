@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Gavel, ShoppingBag, Settings, Package } from "lucide-react";
 import { Link } from "react-router-dom";
+import BuyerProfileForm from "@/components/buyer/BuyerProfileForm";
 
 const statusColors = {
   active: "bg-green-50 text-green-700 border-green-200",
@@ -45,6 +46,8 @@ function ItemRow({ itemId, children }) {
 
 export default function BuyerDashboard() {
   const [tab, setTab] = useState("watchlist");
+
+  const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
 
   const { data: watchlist = [] } = useQuery({
     queryKey: ["buyer-watchlist"],
@@ -189,21 +192,11 @@ export default function BuyerDashboard() {
 
           {/* SETTINGS */}
           <TabsContent value="settings">
-            <Card>
-              <CardContent className="p-8 space-y-6">
-                <h3 className="font-serif text-xl font-semibold">Account Settings</h3>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Shipping Address</h4>
-                    <p className="text-sm text-muted-foreground">No shipping address saved yet. Add one when completing your first purchase.</p>
-                  </div>
-                  <div className="space-y-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Payment Methods</h4>
-                    <p className="text-sm text-muted-foreground">No payment methods saved. Payment will be collected at invoice.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="mb-4">
+              <h3 className="font-serif text-xl font-semibold">My Profile</h3>
+              <p className="text-sm text-muted-foreground mt-1">Required to confirm purchases. Your info is auto-filled on invoices.</p>
+            </div>
+            <BuyerProfileForm user={user} />
           </TabsContent>
         </Tabs>
       </div>
