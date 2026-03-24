@@ -442,8 +442,8 @@ export default function BidSection({ item }) {
               <span>−${feeCredit.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
             </div>
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Remaining balance on final invoice</span>
-              <span>${(price + feeCredit).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+              <span>Remaining due after upfront payment</span>
+              <span>${(price + serviceFee - feeCredit - serviceFee).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
 
