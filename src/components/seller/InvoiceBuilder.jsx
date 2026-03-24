@@ -135,7 +135,8 @@ export default function InvoiceBuilder({ user }) {
       buyerProfile = results[0] || null;
     }
 
-    const feeCredit = item.fee_credit || 0;
+    const computedFee = computeServiceFee(soldPrice);
+    const feeCredit = item.fee_credit || computedFee * 0.50;
     const purchaseMethod = item.sold_via || "bid";
 
     const buyerAddress = buyerProfile
