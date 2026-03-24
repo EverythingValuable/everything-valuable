@@ -73,7 +73,7 @@ export default function SellerMessages({ user }) {
   }));
 
   const activeThread = selectedThread
-    ? threads.find(t => t.item_id === selectedThread.item_id && t.buyerEmail === selectedThread.buyerEmail)
+    ? threadsWithItems.find(t => t.item_id === selectedThread.item_id && t.buyerEmail === selectedThread.buyerEmail)
     : null;
 
   // Mark as read when thread opens
