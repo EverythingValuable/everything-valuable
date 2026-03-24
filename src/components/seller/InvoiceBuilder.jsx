@@ -457,11 +457,19 @@ export default function InvoiceBuilder({ user }) {
               </Button>
 
               {/* Total */}
-              <div className="flex items-center justify-between border-t border-border pt-3 mt-2">
-                <span className="font-semibold text-sm">Total Due</span>
-                <span className="font-serif text-xl font-semibold text-primary">
-                  ${liveTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                </span>
+              <div className="border-t border-border pt-3 mt-2 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-sm">Final Invoice Total</span>
+                  <span className="font-serif text-xl font-semibold text-primary">
+                    ${liveTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Remaining due after upfront service fee payment</span>
+                  <span className="font-medium text-foreground">
+                    ${Math.max(0, liveTotal - liveServiceFee).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
               </div>
             </div>
           </Section>
