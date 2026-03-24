@@ -175,10 +175,15 @@ export default function BidSection({ item }) {
     const currentHighest = item.highest_bid || 0;
     const sellerTiers = sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers;
     const increment = getMinBidIncrement(currentHighest, sellerTiers);
-    let start = currentHighest > 0 ? currentHighest + increment : startingBid;
+    let start = currentHighest > 0 ? currentHighest + increment : (startingBid || increment);
+
+    // For prisometer phase, cap options at (or below) the live current price
+    const livePrice = item.status === "prisometer" ? Math.floor(getLivePrice()) : Infinity;
 
     for (let i = 0; i < 10; i++) {
-      options.push(start + increment * i);
+      const val = start + increment * i;
+      if (val > livePrice) break; // don't show bids above live price
+      options.push(val);
     }
     return options;
   };
