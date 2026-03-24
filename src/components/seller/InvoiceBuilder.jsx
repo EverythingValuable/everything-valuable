@@ -241,6 +241,14 @@ export default function InvoiceBuilder({ user }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["invoice-templates", user?.email] }),
   });
 
+  const deleteInvoiceMutation = useMutation({
+    mutationFn: (id) => base44.entities.Invoice.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["seller-invoices", user?.email] });
+      toast({ title: "Invoice deleted" });
+    },
+  });
+
   const handleEdit = (inv) => {
     setEditingId(inv.id);
     setForm({
