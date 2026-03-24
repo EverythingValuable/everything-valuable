@@ -42,6 +42,13 @@ function CollapsibleSection({ title, defaultOpen = true, children }) {
 export default function ProductDetail() {
   const pathParts = window.location.pathname.split("/");
   const itemId = pathParts[pathParts.length - 1];
+  const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   const { data: item, isLoading } = useQuery({
     queryKey: ["item", itemId],
