@@ -54,7 +54,7 @@ function defaultForm(profileDefaults = {}) {
     buyer_phone: "",
     buyer_address: "",
     item_price: "",
-    service_fee_pct: SERVICE_FEE_RATE * 100,
+    service_fee_pct: 10,
     fee_credit: "",
     additional_line_items: [],
     payment_instructions: profileDefaults.payment_instructions || "",
