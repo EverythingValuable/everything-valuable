@@ -343,8 +343,8 @@ export default function BidSection({ item }) {
                   <span>−${((parseFloat(bidAmount) * 0.1 + 30) * 0.5).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                 </div>
                 <div className="border-t border-border mt-2 pt-3 flex justify-between font-semibold text-xs text-muted-foreground">
-                  <span>Remaining balance on final invoice</span>
-                  <span className="text-foreground">${(parseFloat(bidAmount) + ((parseFloat(bidAmount) * 0.1 + 30) * 0.5)).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                  <span>Remaining due after upfront payment</span>
+                  <span className="text-foreground">${(parseFloat(bidAmount) + (parseFloat(bidAmount) * 0.1 + 30) * 0.5 - (parseFloat(bidAmount) * 0.1 + 30)).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
 
