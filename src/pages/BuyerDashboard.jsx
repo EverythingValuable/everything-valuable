@@ -52,11 +52,21 @@ export default function BuyerDashboard() {
     initialData: [],
   });
 
-  const { data: bids = [] } = useQuery({
+  const { data: rawBids = [] } = useQuery({
     queryKey: ["buyer-bids"],
     queryFn: () => base44.entities.Bid.list("-created_date", 50),
     initialData: [],
   });
+
+  // Deduplicate: one entry per item, keeping the most recent bid
+  const bids = Object.values(
+    rawBids.reduce((acc, bid) => {
+      if (!acc[bid.item_id] || new Date(bid.created_date) > new Date(acc[bid.item_id].created_date)) {
+        acc[bid.item_id] = bid;
+      }
+      return acc;
+    }, {})
+  );
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["buyer-invoices"],
