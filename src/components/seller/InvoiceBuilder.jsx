@@ -250,7 +250,7 @@ export default function InvoiceBuilder({ user }) {
       buyer_phone: inv.buyer_phone || "",
       buyer_address: inv.buyer_address || "",
       item_price: inv.item_price ?? "",
-      service_fee_pct: inv.service_fee && inv.item_price ? Math.round((inv.service_fee / inv.item_price) * 100) : SERVICE_FEE_RATE * 100,
+      service_fee_pct: 10,
       fee_credit: inv.fee_credit ?? "",
       additional_line_items: inv.additional_line_items || [],
       payment_instructions: inv.payment_instructions || "",
