@@ -8,8 +8,9 @@ import { cn } from "@/lib/utils";
 import {
   Camera, FileText, AlignLeft, TrendingDown, CheckCircle2,
   ChevronLeft, ChevronRight, Upload, X,
-  Info, Save, Calendar, Rocket
+  Info, Save, Calendar, Rocket, GripVertical
 } from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const STEPS = [
   { id: 1, label: "Media",       icon: Camera },
