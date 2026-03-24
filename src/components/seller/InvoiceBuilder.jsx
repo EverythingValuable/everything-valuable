@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Plus, Trash2, FileText, Download, Loader2,
-  BookTemplate, Save, CheckCircle2, AlertTriangle, User
+  BookTemplate, Save, CheckCircle2, AlertTriangle, User, X
 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
