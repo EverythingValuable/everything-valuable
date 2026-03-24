@@ -86,7 +86,7 @@ export default function BuyerDashboard() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             { label: "Saved Items", value: watchlist.length, icon: Heart },
-            { label: "Active Bids", value: bids.filter(b => b.status === "active").length, icon: Gavel },
+            { label: "Active Bids", value: rawBids.filter(b => b.status === "active").length, icon: Gavel },
             { label: "Purchases", value: invoices.length, icon: ShoppingBag },
             { label: "Won", value: bids.filter(b => b.status === "won").length, icon: Package },
           ].map(s => (
