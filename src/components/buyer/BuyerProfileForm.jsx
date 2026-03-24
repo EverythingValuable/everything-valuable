@@ -6,10 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Save, AlertTriangle, CreditCard } from "lucide-react";
 
-export default function BuyerProfileForm({ user }) {
+export default function BuyerProfileForm({ user: userProp }) {
   const queryClient = useQueryClient();
   const [form, setForm] = useState(null);
   const [saved, setSaved] = useState(false);
+
+  const { data: user } = useQuery({
+    queryKey: ["me"],
+    queryFn: () => base44.auth.me(),
+    initialData: userProp || undefined,
+    staleTime: 60000,
+  });
 
   const { data: profile } = useQuery({
     queryKey: ["buyer-profile", user?.email],
