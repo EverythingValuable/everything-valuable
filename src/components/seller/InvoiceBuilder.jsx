@@ -26,18 +26,6 @@ const STATUS_STYLES = {
 // Platform fee: 5% service fee (adjust as needed)
 const SERVICE_FEE_RATE = 0.05;
 
-function calcTotal(itemPrice, serviceFee, feeCredit, extras) {
-  const base = Number(itemPrice) || 0;
-  const fee = Number(servicefee) || 0;
-  const credit = Number(feeCredit) || 0;
-  const extra = (extras || []).reduce((s, li) => {
-    const amt = Number(li.amount) || 0;
-    return li.type === "discount" ? s - amt : s + amt;
-  }, 0);
-  return base + fee - credit + extra;
-}
-
-// Separate pure total calc
 function computeTotal(itemPrice, serviceFeePct, feeCredit, extras) {
   const base = Number(itemPrice) || 0;
   const fee = Math.round(base * (Number(serviceFeePct) || 0) / 100 * 100) / 100;
