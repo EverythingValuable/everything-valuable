@@ -22,8 +22,17 @@ export default function BidSection({ item }) {
   const [confirmResult, setConfirmResult] = useState(null); // null | 'above' | 'below'
   const [timeLeft, setTimeLeft] = useState(CONFIRM_SECONDS);
   const [showTiers, setShowTiers] = useState(false);
+  const [livePriceTick, setLivePriceTick] = useState(0);
   const timerRef = useRef(null);
+  const priceTickRef = useRef(null);
   const queryClient = useQueryClient();
+
+  // Re-evaluate live price every 5 seconds so bid options stay current
+  useEffect(() => {
+    if (item.status !== "prisometer") return;
+    priceTickRef.current = setInterval(() => setLivePriceTick(t => t + 1), 5000);
+    return () => clearInterval(priceTickRef.current);
+  }, [item.status]);
   const { toast } = useToast();
 
   const { data: sellerProfile } = useQuery({
