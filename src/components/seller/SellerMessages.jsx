@@ -50,8 +50,27 @@ export default function SellerMessages({ user }) {
     const sorted = [...t.messages].sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
     const item = items.find(i => i.id === t.item_id);
     const unread = t.messages.filter(m => !m.read && m.recipient_email === user?.email).length;
-    return { ...t, messages: sorted, lastMessage: sorted[sorted.length - 1], item, unread };
+    return { ...t, messages: sorted, lastMessage: sorted[sorted.length - 1], item: item || null, unread };
   }).sort((a, b) => new Date(b.lastMessage?.created_date) - new Date(a.lastMessage?.created_date));
+
+  // For threads where item wasn't found in seller's items (e.g. buyer viewing messages),
+  // fetch missing items by their IDs
+  const missingItemIds = threads.filter(t => !t.item && t.item_id).map(t => t.item_id);
+  const { data: extraItems = [] } = useQuery({
+    queryKey: ["thread-items", missingItemIds.join(",")],
+    queryFn: async () => {
+      const results = await Promise.all(missingItemIds.map(id => base44.entities.Item.filter({ id })));
+      return results.flat();
+    },
+    enabled: missingItemIds.length > 0,
+    staleTime: 60000,
+  });
+
+  const allItems = [...items, ...extraItems];
+  const threadsWithItems = threads.map(t => ({
+    ...t,
+    item: t.item || allItems.find(i => i.id === t.item_id) || null,
+  }));
 
   const activeThread = selectedThread
     ? threads.find(t => t.item_id === selectedThread.item_id && t.buyerEmail === selectedThread.buyerEmail)
