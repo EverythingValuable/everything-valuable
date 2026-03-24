@@ -221,9 +221,9 @@ export default function ProductDetail() {
                 <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground">
                   {item.title}
                 </h1>
-                {item.seller_name && (
+                {(sellerProfile?.display_name || item.seller_name) && (
                   <p className="text-sm text-muted-foreground mt-1.5">
-                    Offered by <span className="font-medium text-foreground">{item.seller_name}</span>
+                    Offered by <span className="font-medium text-foreground">{sellerProfile?.display_name || item.seller_name}</span>
                   </p>
                 )}
               </div>
