@@ -80,9 +80,15 @@ export default function InvoiceBuilder({ user }) {
 
   const { data: allItems = [] } = useQuery({
     queryKey: ["seller-all-items", user?.email],
-    queryFn: () => base44.entities.Item.filter({ seller_email: user?.email }),
+    queryFn: () => base44.entities.Item.filter({ seller_email: user?.email, status: "sold" }),
     enabled: !!user?.email,
   });
+
+  // Items that already have an invoice
+  const invoicedItemIds = new Set((invoices || []).map(inv => inv.item_id).filter(Boolean));
+
+  // Only show sold items that don't yet have an invoice
+  const availableItems = allItems.filter(item => !invoicedItemIds.has(item.id));
 
   const { data: profile } = useQuery({
     queryKey: ["seller-profile", user?.email],
