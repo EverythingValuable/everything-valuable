@@ -43,6 +43,15 @@ export default function DashboardSidebar() {
   const location = useLocation();
   const urlView = new URLSearchParams(location.search).get("view");
 
+  const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
+  const { data: unreadMessages = [] } = useQuery({
+    queryKey: ["unread-messages", user?.email],
+    queryFn: () => base44.entities.Message.filter({ recipient_email: user.email, read: false }),
+    enabled: !!user?.email,
+    refetchInterval: 30000,
+  });
+  const unreadCount = unreadMessages.length;
+
   const isActive = (item) => {
     if (item.exact) return location.pathname === "/seller" && !urlView;
     if (item.href.includes("?view=")) {
