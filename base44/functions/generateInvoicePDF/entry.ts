@@ -71,6 +71,8 @@ Deno.serve(async (req) => {
     const buyerLines = [
       invoice.buyer_name || invoice.buyer_email,
       invoice.buyer_email,
+      invoice.buyer_phone || "",
+      invoice.buyer_address || "",
     ].filter(Boolean);
 
     const maxLines = Math.max(sellerLines.length, buyerLines.length);
@@ -108,6 +110,22 @@ Deno.serve(async (req) => {
     doc.text('Item', pageW - 200, y);
     doc.text(`$${Number(invoice.item_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y, { align: 'right' });
     y += 16;
+
+    // Service fee row
+    if (invoice.service_fee > 0) {
+      doc.text('Platform Service Fee', margin + 8, y);
+      doc.text('Fee', pageW - 200, y);
+      doc.text(`$${Number(invoice.service_fee).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y, { align: 'right' });
+      y += 16;
+    }
+
+    // Fee credit row
+    if (invoice.fee_credit > 0) {
+      doc.text('Fee Credit Applied', margin + 8, y);
+      doc.text('Credit', pageW - 200, y);
+      doc.text(`-$${Number(invoice.fee_credit).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y, { align: 'right' });
+      y += 16;
+    }
 
     // Additional line items
     const extras = invoice.additional_line_items || [];
