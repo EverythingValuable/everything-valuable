@@ -628,6 +628,13 @@ export default function InvoiceBuilder({ user }) {
                   <td className="px-4 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="sm" className="text-xs" onClick={() => handleEdit(inv)}>Edit</Button>
+                      <Button
+                        variant="ghost" size="sm"
+                        className="text-xs text-muted-foreground hover:text-destructive"
+                        onClick={() => { if (confirm("Delete this invoice?")) deleteInvoiceMutation.mutate(inv.id); }}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </Button>
                       {inv.pdf_url ? (
                         <a href={inv.pdf_url} target="_blank" rel="noopener noreferrer">
                           <Button variant="outline" size="sm" className="text-xs gap-1">
