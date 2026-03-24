@@ -42,6 +42,8 @@ export default function SellerSettings() {
         display_name: sellerProfile.display_name || "",
         legal_name: sellerProfile.legal_name || "",
         terms_and_conditions: sellerProfile.terms_and_conditions || "",
+        payment_instructions: sellerProfile.payment_instructions || "",
+        notes: sellerProfile.notes || "",
         shipping_info: sellerProfile.shipping_info || "",
         bid_increment_tiers: sellerProfile.bid_increment_tiers || [
           { min: 0, max: 1000, increment: 50 },
