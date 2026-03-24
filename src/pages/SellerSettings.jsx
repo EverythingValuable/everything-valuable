@@ -158,32 +158,61 @@ export default function SellerSettings() {
           </div>
         </TabsContent>
 
-        {/* Terms & Shipping Tab */}
+        {/* Invoice Defaults Tab */}
         <TabsContent value="terms" className="space-y-6">
-          <div className="rounded-lg border border-border bg-card p-5 space-y-4">
+          <p className="text-sm text-muted-foreground -mt-2">
+            These defaults auto-fill every new invoice you create. You can still override them per invoice.
+          </p>
+          <div className="rounded-lg border border-border bg-card p-5 space-y-6">
             <div>
-              <h3 className="font-serif text-lg font-semibold mb-3">Terms & Conditions of Sale</h3>
+              <h3 className="font-serif text-lg font-semibold mb-1">Terms & Conditions</h3>
               <p className="text-xs text-muted-foreground mb-3">
-                These terms will be displayed on item listings and cannot be changed once an auction is live.
+                Default terms applied to all invoices (e.g. payment window, return policy, all sales final).
               </p>
               <Textarea
                 value={formData.terms_and_conditions || ""}
                 onChange={(e) => handleFieldChange("terms_and_conditions", e.target.value)}
-                placeholder="Enter your terms and conditions of sale..."
-                className="min-h-[150px]"
+                placeholder="e.g. Payment due within 7 days. All sales are final. Ships within 5 business days of cleared payment."
+                className="min-h-[120px]"
               />
             </div>
             <Separator />
             <div>
-              <h3 className="font-serif text-lg font-semibold mb-3">Shipping Information</h3>
+              <h3 className="font-serif text-lg font-semibold mb-1">Payment Instructions</h3>
               <p className="text-xs text-muted-foreground mb-3">
-                Default shipping details for all items. These are locked once an auction begins.
+                How buyers should pay you (bank wire, PayPal, check, etc.).
+              </p>
+              <Textarea
+                value={formData.payment_instructions || ""}
+                onChange={(e) => handleFieldChange("payment_instructions", e.target.value)}
+                placeholder="e.g. Wire transfer to: Bank Name, Account #12345. Or PayPal: seller@email.com"
+                className="min-h-[100px]"
+              />
+            </div>
+            <Separator />
+            <div>
+              <h3 className="font-serif text-lg font-semibold mb-1">Default Notes</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                Any recurring notes you want to include on every invoice.
+              </p>
+              <Textarea
+                value={formData.notes || ""}
+                onChange={(e) => handleFieldChange("notes", e.target.value)}
+                placeholder="e.g. Please include your invoice number in the payment reference."
+                className="min-h-[80px]"
+              />
+            </div>
+            <Separator />
+            <div>
+              <h3 className="font-serif text-lg font-semibold mb-1">Shipping Information</h3>
+              <p className="text-xs text-muted-foreground mb-3">
+                General shipping details displayed on listings.
               </p>
               <Textarea
                 value={formData.shipping_info || ""}
                 onChange={(e) => handleFieldChange("shipping_info", e.target.value)}
                 placeholder="Enter your shipping information..."
-                className="min-h-[150px]"
+                className="min-h-[80px]"
               />
             </div>
           </div>
