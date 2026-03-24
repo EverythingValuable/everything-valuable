@@ -49,6 +49,8 @@ export default function SellerDashboard() {
     queryFn: () => base44.entities.SellerProfile.filter({ user_email: user?.email }),
     select: (d) => d[0],
     enabled: !!user?.email,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
   const stats = {
