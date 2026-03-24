@@ -94,10 +94,8 @@ export default function ItemMessaging({ item, user }) {
     );
   }
 
-  // Seller: only show if they have incoming messages
-  if (isSeller && messages.length === 0 && !open) {
-    return null;
-  }
+  // Buyers can't message their own listing
+  if (isSeller) return null;
 
   const canSend = isSeller
     ? messages.some((m) => m.sender_email !== user.email)
