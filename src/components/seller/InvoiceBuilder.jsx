@@ -150,7 +150,7 @@ export default function InvoiceBuilder({ user }) {
       item_id: itemId,
       item_title: item.title || "",
       item_price: soldPrice,
-      service_fee_pct: SERVICE_FEE_RATE * 100,
+      service_fee_pct: 10,
       fee_credit: feeCredit,
       purchase_method: purchaseMethod,
       buyer_email: buyerEmail,
