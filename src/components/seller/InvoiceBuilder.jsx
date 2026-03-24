@@ -399,17 +399,9 @@ export default function InvoiceBuilder({ user }) {
               <div className="flex items-center gap-3 bg-secondary/20 rounded-lg px-4 py-3">
                 <div className="flex-1 text-sm text-muted-foreground">
                   Platform Service Fee
-                  <span className="text-xs ml-1 text-muted-foreground/70">(editable %)</span>
+                  <span className="text-xs ml-1 text-muted-foreground/70">(10% + $30)</span>
                 </div>
-                <div className="flex items-center gap-1 w-20">
-                  <Input
-                    type="number" min="0" max="100"
-                    value={form.service_fee_pct}
-                    onChange={e => set("service_fee_pct", e.target.value)}
-                    className="w-14 text-right text-xs"
-                  />
-                  <span className="text-xs text-muted-foreground">%</span>
-                </div>
+                <span className="text-xs text-muted-foreground w-20 text-center">Fee</span>
                 <span className="w-32 text-right text-sm font-medium">
                   ${liveServiceFee.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </span>
