@@ -227,27 +227,58 @@ export default function ListingStudio() {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-sm font-medium">{form.images.length} image{form.images.length !== 1 ? "s" : ""} uploaded</p>
-                    <p className="text-xs text-muted-foreground">First image is your cover photo</p>
+                    <p className="text-xs text-muted-foreground">Drag to reorder · First image is cover</p>
                   </div>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                    {form.images.map((url, i) => (
-                      <div key={i} className={cn(
-                        "relative rounded-xl overflow-hidden border-2 aspect-square group",
-                        i === 0 ? "border-primary" : "border-border"
-                      )}>
-                        <img src={url} alt="" className="w-full h-full object-cover" />
-                        {i === 0 && (
-                          <div className="absolute bottom-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded font-medium">
-                            Cover
-                          </div>
-                        )}
-                        <button onClick={() => removeImage(i)}
-                          className="absolute top-1.5 right-1.5 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  <DragDropContext onDragEnd={({ source, destination }) => {
+                    if (!destination || source.index === destination.index) return;
+                    const imgs = [...form.images];
+                    const [moved] = imgs.splice(source.index, 1);
+                    imgs.splice(destination.index, 0, moved);
+                    set("images", imgs);
+                  }}>
+                    <Droppable droppableId="images" direction="horizontal">
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="grid grid-cols-3 sm:grid-cols-4 gap-3"
+                        >
+                          {form.images.map((url, i) => (
+                            <Draggable key={url + i} draggableId={`img-${i}`} index={i}>
+                              {(drag, snapshot) => (
+                                <div
+                                  ref={drag.innerRef}
+                                  {...drag.draggableProps}
+                                  className={cn(
+                                    "relative rounded-xl overflow-hidden border-2 aspect-square group",
+                                    i === 0 ? "border-primary" : "border-border",
+                                    snapshot.isDragging && "shadow-xl scale-105 z-10"
+                                  )}
+                                >
+                                  <img src={url} alt="" className="w-full h-full object-cover" />
+                                  {/* Drag handle */}
+                                  <div {...drag.dragHandleProps}
+                                    className="absolute top-1.5 left-1.5 bg-black/50 text-white rounded p-0.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
+                                    <GripVertical className="w-3 h-3" />
+                                  </div>
+                                  {i === 0 && (
+                                    <div className="absolute bottom-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded font-medium">
+                                      Cover
+                                    </div>
+                                  )}
+                                  <button onClick={() => removeImage(i)}
+                                    className="absolute top-1.5 right-1.5 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
                 </div>
               )}
               <Tip>Tip: Upload 6–12 high-resolution images including all angles, maker's marks, and condition details. Natural light photography performs best.</Tip>
