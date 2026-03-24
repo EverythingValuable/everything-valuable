@@ -90,10 +90,10 @@ export default function ItemCard({ item, index = 0 }) {
 
           {/* Watchlist */}
           <button
-            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
-            onClick={(e) => e.preventDefault()}
+            className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background ${isSaved ? "!opacity-100" : ""}`}
+            onClick={handleWatchlist}
           >
-            <Heart className="w-4 h-4 text-muted-foreground" />
+            <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
           </button>
 
           {/* Bid count */}
