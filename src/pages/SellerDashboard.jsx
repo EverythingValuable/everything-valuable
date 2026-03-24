@@ -131,6 +131,12 @@ export default function SellerDashboard() {
           {/* Settings */}
           {view === "settings" && <SellerSettings />}
 
+          {/* Messages */}
+          {view === "messages" && <SellerMessages user={user} />}
+
+          {/* Analytics */}
+          {view === "analytics" && <SellerAnalytics user={user} />}
+
           {/* Listings table */}
           <div className={["profile", "settings"].includes(view) ? "hidden" : ""}>
             {view !== "overview" && (
