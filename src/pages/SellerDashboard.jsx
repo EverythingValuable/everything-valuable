@@ -30,8 +30,8 @@ const STATUS_STYLES = {
 };
 
 export default function SellerDashboard() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const view = urlParams.get("view") || "overview";
+  const [searchParams] = useSearchParams();
+  const view = searchParams.get("view") || "overview";
 
   const { data: user } = useQuery({
     queryKey: ["me"],
