@@ -4,8 +4,44 @@ import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Gavel, ShoppingBag, FileText, Settings, Package } from "lucide-react";
+import { Heart, Gavel, ShoppingBag, Settings, Package } from "lucide-react";
 import { Link } from "react-router-dom";
+
+const statusColors = {
+  active: "bg-green-50 text-green-700 border-green-200",
+  outbid: "bg-orange-50 text-orange-700 border-orange-200",
+  won: "bg-primary/10 text-primary border-primary/20",
+  lost: "bg-muted text-muted-foreground border-border",
+};
+
+function ItemRow({ itemId, children }) {
+  const { data: item } = useQuery({
+    queryKey: ["item-mini", itemId],
+    queryFn: () => base44.entities.Item.filter({ id: itemId }).then(r => r[0]),
+    enabled: !!itemId,
+    staleTime: 60000,
+  });
+
+  return (
+    <Link to={`/item/${itemId}`} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:border-primary/30 hover:shadow-sm transition-all group">
+      <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted shrink-0">
+        {item?.images?.[0]
+          ? <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          : <div className="w-full h-full bg-muted" />
+        }
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-sm text-foreground truncate">
+          {item?.title || `Item #${itemId?.slice(-8)}`}
+        </p>
+        {item?.category && (
+          <p className="text-xs text-muted-foreground capitalize mt-0.5">{item.category.replace("_", " ")}</p>
+        )}
+        {children}
+      </div>
+    </Link>
+  );
+}
 
 export default function BuyerDashboard() {
   const [tab, setTab] = useState("watchlist");
@@ -30,7 +66,7 @@ export default function BuyerDashboard() {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <div className="max-w-7xl mx-auto px-6 md:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-6 md:px-8 py-8">
         <div className="mb-8">
           <h1 className="font-serif text-3xl font-semibold text-foreground">My Account</h1>
           <p className="text-sm text-muted-foreground mt-1">Track your bids, purchases, and saved items</p>
@@ -66,90 +102,82 @@ export default function BuyerDashboard() {
             <TabsTrigger value="settings" className="gap-1.5"><Settings className="w-3.5 h-3.5" /> Settings</TabsTrigger>
           </TabsList>
 
+          {/* SAVED */}
           <TabsContent value="watchlist">
             {watchlist.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Heart className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                  <p className="font-serif text-xl text-muted-foreground">No saved items</p>
-                  <p className="text-sm text-muted-foreground mt-1 mb-4">Browse the marketplace and save items you love</p>
-                  <Link to="/browse" className="text-sm text-primary font-medium">Browse →</Link>
-                </CardContent>
-              </Card>
+              <Card><CardContent className="p-12 text-center">
+                <Heart className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                <p className="font-serif text-xl text-muted-foreground">No saved items</p>
+                <p className="text-sm text-muted-foreground mt-1 mb-4">Browse the marketplace and save items you love</p>
+                <Link to="/browse" className="text-sm text-primary font-medium">Browse →</Link>
+              </CardContent></Card>
             ) : (
               <div className="space-y-3">
                 {watchlist.map(w => (
-                  <Card key={w.id}>
-                    <CardContent className="p-4">
-                      <Link to={`/item/${w.item_id}`} className="text-sm font-medium hover:text-primary">
-                        Item #{w.item_id?.slice(-8)}
-                      </Link>
-                    </CardContent>
-                  </Card>
+                  <ItemRow key={w.id} itemId={w.item_id} />
                 ))}
               </div>
             )}
           </TabsContent>
 
+          {/* BIDS */}
           <TabsContent value="bids">
             {bids.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Gavel className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                  <p className="font-serif text-xl text-muted-foreground">No bids placed</p>
-                  <p className="text-sm text-muted-foreground mt-1">Start bidding on items in the marketplace</p>
-                </CardContent>
-              </Card>
+              <Card><CardContent className="p-12 text-center">
+                <Gavel className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                <p className="font-serif text-xl text-muted-foreground">No bids placed</p>
+                <p className="text-sm text-muted-foreground mt-1">Start bidding on items in the marketplace</p>
+              </CardContent></Card>
             ) : (
               <div className="space-y-3">
                 {bids.map(bid => (
-                  <Card key={bid.id}>
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div>
-                        <Link to={`/item/${bid.item_id}`} className="text-sm font-medium hover:text-primary">
-                          Item #{bid.item_id?.slice(-8)}
-                        </Link>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          ${bid.amount?.toLocaleString()} • {bid.phase === "first_bids" ? "1stBid$" : "PRI$OMETER"}
-                        </p>
-                      </div>
-                      <Badge variant="outline" className="text-xs">
+                  <ItemRow key={bid.id} itemId={bid.item_id}>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className="text-xs font-price font-semibold text-foreground">
+                        ${bid.amount?.toLocaleString()}
+                      </span>
+                      <span className="text-xs text-muted-foreground">·</span>
+                      <span className="text-xs text-muted-foreground">
+                        {bid.phase === "first_bids" ? "1stBid$™" : "PRI$OMETER™"}
+                      </span>
+                      <Badge className={`text-[10px] px-2 py-0 border ml-auto ${statusColors[bid.status] || ""}`}>
                         {bid.status}
                       </Badge>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </ItemRow>
                 ))}
               </div>
             )}
           </TabsContent>
 
+          {/* PURCHASES */}
           <TabsContent value="purchases">
             {invoices.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <ShoppingBag className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                  <p className="font-serif text-xl text-muted-foreground">No purchases yet</p>
-                </CardContent>
-              </Card>
+              <Card><CardContent className="p-12 text-center">
+                <ShoppingBag className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                <p className="font-serif text-xl text-muted-foreground">No purchases yet</p>
+              </CardContent></Card>
             ) : (
               <div className="space-y-3">
                 {invoices.map(inv => (
-                  <Card key={inv.id}>
-                    <CardContent className="p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-sm">Invoice #{inv.id?.slice(-8)}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Total: ${inv.total_cost?.toLocaleString("en-US", { minimumFractionDigits: 2 })} • via {inv.purchase_method === "make_it_mine" ? "Make It Mine" : "Bid"}
-                        </p>
-                      </div>
-                      <Badge variant="outline">{inv.status}</Badge>
-                    </CardContent>
-                  </Card>
+                  <ItemRow key={inv.id} itemId={inv.item_id}>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className="text-xs font-price font-semibold text-foreground">
+                        ${inv.total_cost?.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      </span>
+                      <span className="text-xs text-muted-foreground">·</span>
+                      <span className="text-xs text-muted-foreground">
+                        {inv.purchase_method === "make_it_mine" ? "Make It Mine" : "Bid"}
+                      </span>
+                      <Badge variant="outline" className="text-[10px] px-2 py-0 ml-auto">{inv.status}</Badge>
+                    </div>
+                  </ItemRow>
                 ))}
               </div>
             )}
           </TabsContent>
 
+          {/* SETTINGS */}
           <TabsContent value="settings">
             <Card>
               <CardContent className="p-8 space-y-6">
