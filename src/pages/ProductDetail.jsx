@@ -257,23 +257,8 @@ export default function ProductDetail() {
                 </Button>
               </div>
 
-              {/* Trust signals */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                  <Shield className="w-4 h-4 text-primary mt-0.5" />
-                  <div>
-                    <p className="text-xs font-medium">Buyer Protection</p>
-                    <p className="text-[10px] text-muted-foreground">Every purchase is guaranteed</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                  <Truck className="w-4 h-4 text-primary mt-0.5" />
-                  <div>
-                    <p className="text-xs font-medium">Insured Shipping</p>
-                    <p className="text-[10px] text-muted-foreground">Full-value coverage available</p>
-                  </div>
-                </div>
-              </div>
+              {/* Messaging */}
+              <ItemMessaging item={item} user={user} />
             </div>
           </div>
 
