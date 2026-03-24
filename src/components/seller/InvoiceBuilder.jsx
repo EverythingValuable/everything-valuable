@@ -110,6 +110,7 @@ export default function InvoiceBuilder({ user }) {
         ...f,
         payment_instructions: f.payment_instructions || profile.payment_instructions || "",
         terms_and_conditions: f.terms_and_conditions || profile.terms_and_conditions || "",
+        notes: f.notes || profile.notes || "",
       }));
     }
   }, [profile, showForm]);
