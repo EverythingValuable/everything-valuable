@@ -111,7 +111,7 @@ export default function SellerMessages({ user }) {
     },
   });
 
-  const totalUnread = threads.reduce((s, t) => s + t.unread, 0);
+  const totalUnread = threadsWithItems.reduce((s, t) => s + t.unread, 0);
 
   if (isLoading) return <div className="p-8 text-sm text-muted-foreground">Loading messages…</div>;
 
