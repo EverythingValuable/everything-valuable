@@ -57,6 +57,12 @@ export default function ProductDetail() {
     enabled: !!itemId,
   });
 
+  const { data: sellerProfile } = useQuery({
+    queryKey: ["seller-profile", item?.seller_email],
+    queryFn: () => base44.entities.SellerProfile.filter({ user_email: item.seller_email }).then(r => r[0]),
+    enabled: !!item?.seller_email,
+  });
+
   const { data: watchlistEntry } = useQuery({
     queryKey: ["watchlist", itemId, user?.email],
     queryFn: () => base44.entities.WatchlistItem.filter({ item_id: itemId, user_email: user.email }).then(r => r[0] || null),
