@@ -35,6 +35,7 @@ export default function ProfileEditor() {
     city: "", state: "", country: "", specialties: [], logo_url: "", banner_url: "",
     shipping_preferences: "worldwide", return_policy: "no_returns",
     default_first_bids_hours: 72, default_prisometer_hours: 48, default_below_reserve_percent: 10,
+    payment_instructions: "", terms_and_conditions: "",
   };
 
   useEffect(() => {
@@ -57,6 +58,8 @@ export default function ProfileEditor() {
         default_first_bids_hours: profile.default_first_bids_hours || 72,
         default_prisometer_hours: profile.default_prisometer_hours || 48,
         default_below_reserve_percent: profile.default_below_reserve_percent || 10,
+        payment_instructions: profile.payment_instructions || "",
+        terms_and_conditions: profile.terms_and_conditions || "",
       } : DEFAULT_FORM);
     }
   }, [profile]);
@@ -188,6 +191,16 @@ export default function ProfileEditor() {
             </select>
           </Field>
         </div>
+      </Section>
+
+      {/* Invoice Defaults */}
+      <Section title="Invoice Defaults">
+        <Field label="Default Payment Instructions" hint="Pre-filled on new invoices">
+          <Textarea className="h-20" value={form.payment_instructions} onChange={e => set("payment_instructions", e.target.value)} placeholder="e.g. Wire transfer: Bank of America, Account #12345, Routing #67890" />
+        </Field>
+        <Field label="Default Terms & Conditions" hint="Pre-filled on new invoices">
+          <Textarea className="h-20" value={form.terms_and_conditions} onChange={e => set("terms_and_conditions", e.target.value)} placeholder="e.g. Payment due within 7 days. All sales are final." />
+        </Field>
       </Section>
 
       <div className="flex justify-end pt-2">
