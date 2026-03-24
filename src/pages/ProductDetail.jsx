@@ -11,6 +11,7 @@ import ProductGallery from "../components/product/ProductGallery";
 import PrisometerWidget from "../components/shared/PrisometerWidget";
 import FirstBidsCountdown from "../components/shared/FirstBidsCountdown";
 import BidSection from "../components/product/BidSection";
+import ItemMessaging from "../components/product/ItemMessaging";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
