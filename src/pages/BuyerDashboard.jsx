@@ -151,7 +151,7 @@ export default function BuyerDashboard() {
                         {bid.phase === "first_bids" ? "1stBid$™" : "PRI$OMETER™"}
                       </span>
                       <Badge className={`text-[10px] px-2 py-0 border ml-auto ${statusColors[bid.status] || ""}`}>
-                        {bid.status}
+                        {bid.status === "active" ? "High Bidder" : bid.status}
                       </Badge>
                     </div>
                   </ItemRow>
