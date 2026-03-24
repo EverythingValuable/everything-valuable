@@ -243,8 +243,13 @@ export default function ProductDetail() {
 
               {/* Actions */}
               <div className="flex gap-3">
-                <Button variant="outline" className="flex-1 gap-2 h-10">
-                  <Heart className="w-4 h-4" /> Save
+                <Button
+                  variant="outline"
+                  className={`flex-1 gap-2 h-10 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`}
+                  onClick={() => user ? saveMutation.mutate() : base44.auth.redirectToLogin()}
+                  disabled={saveMutation.isPending}
+                >
+                  <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} /> {isSaved ? "Saved" : "Save"}
                 </Button>
                 <Button variant="outline" className="flex-1 gap-2 h-10">
                   <Share2 className="w-4 h-4" /> Share
