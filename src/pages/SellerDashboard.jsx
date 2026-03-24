@@ -138,7 +138,7 @@ export default function SellerDashboard() {
           {view === "analytics" && <SellerAnalytics user={user} />}
 
           {/* Listings table */}
-          <div className={["profile", "settings"].includes(view) ? "hidden" : ""}>
+          <div className={["profile", "settings", "messages", "analytics"].includes(view) ? "hidden" : ""}>
             {view !== "overview" && (
               <h2 className="font-serif text-lg font-semibold mb-4">{viewTitle(view)}</h2>
             )}
