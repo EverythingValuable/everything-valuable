@@ -88,7 +88,7 @@ export default function BuyerDashboard() {
             { label: "Saved Items", value: watchlist.length, icon: Heart },
             { label: "Active Bids", value: rawBids.filter(b => b.status === "active").length, icon: Gavel },
             { label: "Purchases", value: invoices.length, icon: ShoppingBag },
-            { label: "Won", value: bids.filter(b => b.status === "won").length, icon: Package },
+            { label: "Won", value: rawBids.filter(b => b.status === "won").length, icon: Package },
           ].map(s => (
             <Card key={s.label}>
               <CardContent className="p-5 flex items-start gap-3">
