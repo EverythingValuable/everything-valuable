@@ -67,21 +67,7 @@ export default function HeroSection() {
           </p>
         </motion.div>
 
-        {/* Right — Image Panel */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.0, ease: "easeOut", delay: 0.1 }}
-          className="relative w-full lg:w-[45%] min-h-[45vw] lg:min-h-0"
-        >
-          <img
-            src={heroImage}
-            alt="Luxury collectible objects at auction"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-          />
-          {/* Thin left-edge blend only */}
-          <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[hsl(40,33%,97%)] to-transparent" />
-        </motion.div>
+
 
       </div>
     </section>
