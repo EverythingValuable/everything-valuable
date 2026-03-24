@@ -190,10 +190,10 @@ export default function BidSection({ item }) {
     const livePrice = item.status === "prisometer" ? Math.floor(getLivePrice()) : Infinity;
 
     let val = start;
-    while (val <= livePrice) {
+    while (val <= livePrice && options.length < 200) {
       options.push(val);
-      // recalculate increment at each step since tiers can change
       const nextIncrement = getMinBidIncrement(val, sellerTiers);
+      if (!nextIncrement || nextIncrement <= 0) break; // guard against infinite loop
       val = val + nextIncrement;
     }
     return options;
