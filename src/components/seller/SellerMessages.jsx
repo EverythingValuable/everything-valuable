@@ -140,7 +140,7 @@ export default function SellerMessages({ user }) {
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Conversations</p>
             </div>
             <div className="flex-1 overflow-y-auto">
-              {threads.map((t) => {
+              {threadsWithItems.map((t) => {
                 const isActive = activeThread?.item_id === t.item_id && activeThread?.buyerEmail === t.buyerEmail;
                 return (
                   <button
