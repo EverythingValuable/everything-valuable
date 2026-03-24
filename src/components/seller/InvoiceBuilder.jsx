@@ -359,8 +359,11 @@ export default function InvoiceBuilder({ user }) {
                   className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
                 >
                   <option value="">— Manual entry —</option>
-                  {allItems.map(item => (
-                    <option key={item.id} value={item.id}>{item.title} ({item.status})</option>
+                  {availableItems.length === 0 && (
+                    <option disabled value="">No sold items pending invoice</option>
+                  )}
+                  {availableItems.map(item => (
+                    <option key={item.id} value={item.id}>{item.title}</option>
                   ))}
                 </select>
               </Field>
