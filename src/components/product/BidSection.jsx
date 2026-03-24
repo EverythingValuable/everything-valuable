@@ -189,10 +189,12 @@ export default function BidSection({ item }) {
     // For prisometer phase, cap options at (or below) the live current price
     const livePrice = item.status === "prisometer" ? Math.floor(getLivePrice()) : Infinity;
 
-    for (let i = 0; i < 10; i++) {
-      const val = start + increment * i;
-      if (val > livePrice) break; // don't show bids above live price
+    let val = start;
+    while (val <= livePrice) {
       options.push(val);
+      // recalculate increment at each step since tiers can change
+      const nextIncrement = getMinBidIncrement(val, sellerTiers);
+      val = val + nextIncrement;
     }
     return options;
   };
