@@ -105,6 +105,11 @@ export default function InvoiceBuilder({ user }) {
     enabled: !!user?.email,
   });
 
+  // Items that already have an invoice
+  const invoicedItemIds = new Set(invoices.map(inv => inv.item_id).filter(Boolean));
+  // Only show sold items that don't yet have an invoice
+  const availableItems = allItems.filter(item => !invoicedItemIds.has(item.id));
+
   // Pre-fill defaults from seller profile when opening a new form
   useEffect(() => {
     if (profile && !editingId && showForm) {
