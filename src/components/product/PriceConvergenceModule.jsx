@@ -158,7 +158,19 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
 
       {/* Main: Current PRI$OMETER Price (large, dominant) */}
       <div className="text-center space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current PRI$OMETER™ Price</p>
+        <div className="flex items-center justify-center gap-1.5">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current PRI$OMETER™ Price</p>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
+                {PRISOMETER_INFO}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <motion.div
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02, opacity: 0.8 }}
