@@ -479,7 +479,7 @@ export default function InvoiceBuilder({ user }) {
               <div className="border-t border-border pt-3 mt-2 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-sm">Final Invoice Total</span>
-                  <span className="font-serif text-xl font-semibold text-primary">
+                  <span className="font-price text-xl font-semibold text-primary">
                     ${liveTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>

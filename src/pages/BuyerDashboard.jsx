@@ -100,7 +100,7 @@ export default function BuyerDashboard() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">{s.label}</p>
-                  <p className="font-serif text-2xl font-bold mt-0.5">{s.value}</p>
+                  <p className="font-price text-2xl font-bold mt-0.5">{s.value}</p>
                 </div>
               </CardContent>
             </Card>
