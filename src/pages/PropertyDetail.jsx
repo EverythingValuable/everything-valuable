@@ -96,20 +96,20 @@ export default function PropertyDetail() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-card p-4 sticky top-0 z-40">
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm p-4 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/real-estate")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/real-estate")} className="hover:bg-accent">
             <ChevronLeft className="w-5 h-5" />
           </Button>
-          <h2 className="font-serif text-lg font-semibold flex items-center gap-2">
+          <h2 className="font-serif text-base font-semibold flex items-center gap-2 text-center flex-1">
             <Home className="w-4 h-4" />
-            {property.address}
+            <span className="truncate">{property.address}</span>
           </h2>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => watchMutation.mutate()}
-            className={isWatched ? "text-red-500" : ""}
+            className={`hover:bg-accent ${isWatched ? "text-red-500" : ""}`}
           >
             <Heart className={`w-5 h-5 ${isWatched ? "fill-current" : ""}`} />
           </Button>
@@ -117,50 +117,50 @@ export default function PropertyDetail() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="max-w-7xl mx-auto p-6 lg:p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left: Gallery */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-6">
             <PropertyGallery property={property} />
 
             {/* Property Specs */}
-            <div className="grid grid-cols-3 gap-4 mt-6 bg-card rounded-xl border border-border p-6">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-1">Bedrooms</p>
-                <p className="font-serif text-2xl font-bold">{property.bedrooms}</p>
+            <div className="grid grid-cols-3 gap-6 bg-gradient-to-br from-card to-card/50 rounded-lg border border-border p-8">
+              <div className="text-center space-y-2">
+                <p className="text-xs font-display font-bold uppercase tracking-wider text-muted-foreground">Bedrooms</p>
+                <p className="font-serif text-3xl font-bold text-foreground">{property.bedrooms}</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-1">Bathrooms</p>
-                <p className="font-serif text-2xl font-bold">{property.bathrooms}</p>
+              <div className="text-center space-y-2 border-l border-r border-border/50">
+                <p className="text-xs font-display font-bold uppercase tracking-wider text-muted-foreground">Bathrooms</p>
+                <p className="font-serif text-3xl font-bold text-foreground">{property.bathrooms}</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-1">Sq Ft</p>
-                <p className="font-serif text-2xl font-bold">{property.square_feet?.toLocaleString()}</p>
+              <div className="text-center space-y-2">
+                <p className="text-xs font-display font-bold uppercase tracking-wider text-muted-foreground">Sq Ft</p>
+                <p className="font-serif text-3xl font-bold text-foreground">{property.square_feet?.toLocaleString()}</p>
               </div>
             </div>
 
             {/* Description */}
             {property.description && (
-              <div className="mt-6 bg-card rounded-xl border border-border p-6">
-                <h3 className="font-serif text-lg font-semibold mb-4">About This Property</h3>
+              <div className="bg-card rounded-lg border border-border p-8 space-y-3">
+                <h3 className="font-serif text-xl font-semibold">About This Property</h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">{property.description}</p>
               </div>
             )}
 
             {/* Realtor Info */}
             {property.realtor_name && (
-              <div className="mt-6 bg-card rounded-xl border border-border p-6 text-center">
-                <p className="text-xs text-muted-foreground mb-2">Listed by</p>
-                <p className="font-serif text-lg font-semibold">{property.realtor_name}</p>
+              <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg border border-border/50 p-8 text-center space-y-2">
+                <p className="text-xs font-display font-bold uppercase tracking-wider text-muted-foreground">Listed by</p>
+                <p className="font-serif text-lg font-semibold text-foreground">{property.realtor_name}</p>
               </div>
             )}
           </div>
 
-          {/* Right: Pricing & Bid */}
-           <div className="space-y-4">
+          {/* Right: Pricing & Bid (Sticky) */}
+          <div className="lg:sticky lg:top-24 h-fit space-y-4">
             <PropertyPriceModule property={property} isActive={isActive} isPaused={isPaused} pauseTimeLeft={pauseTimeLeft} displayPrice={displayPrice} cents={cents} formatPrice={formatPrice} />
             <PropertyBidSection property={property} />
-           </div>
+          </div>
         </div>
       </div>
     </div>
