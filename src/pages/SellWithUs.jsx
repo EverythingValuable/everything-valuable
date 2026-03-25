@@ -146,7 +146,7 @@ export default function SellWithUs() {
               ["List in the Studio", "Upload photos, write your description, and configure your PRI$OMETER settings using our guided Listing Studio."],
               ["1stBid$™ Preview", "Buyers place advance bids during your preview window, building interest before the live phase."],
               ["PRI$OMETER™ Goes Live", "Price descends live from your start price toward the floor. The first buyer to claim it — wins it."],
-              ["Sale & Payout", "If the price meets your reserve, the sale is automatic. You receive payment directly to your account."],
+              ["Sale & Payout", "When a transaction is initiated, the sale remains directly between buyer and seller. Everything Valuable provides the tools to generate invoices and support the payment process. The platform allows you to issue an invoice and collect payment on your own terms."],
             ].map(([title, desc], i) => (
               <div key={i} className="flex gap-4 items-start">
                 <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
