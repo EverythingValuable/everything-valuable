@@ -185,16 +185,7 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
         </motion.div>
       </div>
 
-      {/* Visual Convergence Cue */}
-      <div className="flex justify-center py-3">
-        <div className="flex flex-col items-center gap-2">
-          <div className="w-0.5 h-6 bg-gradient-to-b from-primary/40 to-primary/0" />
-          <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }}>
-            <TrendingDown className="w-4 h-4 text-primary/60" />
-          </motion.div>
-          <span className="text-xs text-muted-foreground/60 font-medium">descending toward bid</span>
-        </div>
-      </div>
+
 
       {/* Bottom: Current Highest Bid (smaller, secondary) */}
       {item.highest_bid > 0 && (
