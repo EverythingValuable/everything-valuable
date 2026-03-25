@@ -114,6 +114,9 @@ export default function Navbar() {
             <Link to="/browse?status=prisometer" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
               Live Now
             </Link>
+            <Link to="/real-estate" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Real Estate
+            </Link>
           </nav>
         </div>
 
