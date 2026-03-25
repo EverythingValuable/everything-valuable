@@ -111,7 +111,7 @@ export default function Home() {
             to reach a global audience of discerning buyers.
           </p>
           <div className="flex justify-center gap-4">
-            <Link to="/seller">
+            <Link to="/sell">
               <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 rounded-full h-12 px-8">
                 Become a Seller <ArrowRight className="w-4 h-4" />
               </Button>
