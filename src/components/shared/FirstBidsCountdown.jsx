@@ -51,39 +51,30 @@ export default function FirstBidsCountdown({ endTime, compact = false }) {
   }
 
   return (
-    <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-3">
-      <div className="flex items-center gap-2">
-        <Clock className="w-4 h-4 text-primary" />
-        <span className="font-display text-sm font-bold uppercase tracking-wider text-primary">
-          1stBid$<sup className="text-[9px] ml-0.5">™</sup> Preview
-        </span>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
-              {FIRSTBIDS_INFO}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-      <p className="text-sm text-muted-foreground">Preview bidding closes in:</p>
-      <div className="grid grid-cols-4 gap-2 text-center">
-        {[
-          { val: timeLeft.days, label: "Days" },
-          { val: timeLeft.hours, label: "Hrs" },
-          { val: timeLeft.minutes, label: "Min" },
-          { val: timeLeft.seconds, label: "Sec" },
-        ].map(({ val, label }) => (
-          <div key={label} className="bg-card rounded-lg p-2 border border-border">
-            <span className="font-price text-2xl font-bold tabular-nums text-foreground block" style={{fontFamily: "'Space Grotesk', sans-serif"}}>
-              {val.toString().padStart(2, "0")}
-            </span>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+     <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-3">
+       <div className="flex items-center gap-2">
+         <Clock className="w-4 h-4 text-primary" />
+         <span className="font-display text-sm font-bold uppercase tracking-wider text-primary">
+           1stBid$<sup className="text-[9px] ml-0.5">™</sup> Preview
+         </span>
+         <TooltipProvider>
+           <Tooltip>
+             <TooltipTrigger asChild>
+               <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+             </TooltipTrigger>
+             <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
+               {FIRSTBIDS_INFO}
+             </TooltipContent>
+           </Tooltip>
+         </TooltipProvider>
+       </div>
+       <div className="flex items-center gap-3">
+         <p className="text-sm text-muted-foreground">Preview bidding closes in:</p>
+         <span className="font-price text-sm font-bold tabular-nums text-foreground">
+           {timeLeft.days > 0 && `${timeLeft.days}d `}
+           {timeLeft.hours.toString().padStart(2, "0")}h {timeLeft.minutes.toString().padStart(2, "0")}m {timeLeft.seconds.toString().padStart(2, "0")}s
+         </span>
+       </div>
+     </div>
+   );
 }
