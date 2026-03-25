@@ -45,7 +45,7 @@ export default function SellerPublicProfile() {
   const location = [profile.city, profile.state, profile.country].filter(Boolean).join(", ");
 
   return (
-    <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 pb-20">
+    <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-8 pb-20">
       {/* Back */}
       <Link to="/browse" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-6 transition-colors">
         <ArrowLeft className="w-3.5 h-3.5" /> Back to Browse
