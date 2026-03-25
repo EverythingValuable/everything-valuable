@@ -125,6 +125,7 @@ export default function ListingStudio() {
     below_reserve_percent: form.below_reserve_percent,
     prisometer_duration_hours: form.prisometer_duration_hours,
     first_bids_duration_hours: form.first_bids_duration_hours,
+    make_it_mine_active: true,
     estimated_low: +form.estimated_low || undefined,
     estimated_high: +form.estimated_high || undefined,
     ...extraFields,
