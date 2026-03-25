@@ -108,17 +108,7 @@ export default function SellWithUs() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="border-b border-border bg-card">
-        <div className="max-w-4xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {STATS.map(s => (
-            <div key={s.label}>
-              <p className="font-serif text-3xl font-semibold text-primary">{s.value}</p>
-              <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* Why sell here */}
       <section className="max-w-5xl mx-auto px-6 py-20">
