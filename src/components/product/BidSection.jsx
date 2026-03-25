@@ -275,7 +275,11 @@ export default function BidSection({ item }) {
               Bid
             </Button>
           </div>
-
+          {item.highest_bid > 0 && (
+           <p className="text-sm font-medium text-foreground">
+             {item.status === "first_bids" ? "Highest Preview Bid" : "Current highest bid"}: ${item.highest_bid?.toLocaleString()} <span className="text-muted-foreground font-normal">({item.bid_count} bid{item.bid_count !== 1 ? "s" : ""})</span>
+           </p>
+          )}
           {getTierInfo().length > 0 && (
             <button
               onClick={() => setShowTiers(!showTiers)}

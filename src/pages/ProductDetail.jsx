@@ -11,7 +11,6 @@ import ProductGallery from "../components/product/ProductGallery";
 import PrisometerWidget from "../components/shared/PrisometerWidget";
 import FirstBidsCountdown from "../components/shared/FirstBidsCountdown";
 import BidSection from "../components/product/BidSection";
-import HighestBidDisplay from "../components/product/HighestBidDisplay";
 import ItemMessaging from "../components/product/ItemMessaging";
 
 const categoryLabels = {
@@ -242,9 +241,6 @@ export default function ProductDetail() {
               {(item.status === "prisometer" || item.status === "first_bids") && (
                 <PrisometerWidget item={item} />
               )}
-
-              {/* Highest Bid */}
-              <HighestBidDisplay item={item} />
 
               {/* Bidding */}
               <BidSection item={item} />
