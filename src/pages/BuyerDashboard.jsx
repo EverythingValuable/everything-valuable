@@ -201,9 +201,9 @@ export default function BuyerDashboard() {
                 <Link to="/browse" className="text-sm text-primary font-medium">Browse →</Link>
               </CardContent></Card>
             ) : (
-              <div className="space-y-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
                 {watchlist.map(w => (
-                  <ItemRow key={w.id} itemId={w.item_id} />
+                  <SavedItemCard key={w.id} itemId={w.item_id} watchlistId={w.id} />
                 ))}
               </div>
             )}
