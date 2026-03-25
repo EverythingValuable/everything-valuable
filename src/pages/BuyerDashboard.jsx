@@ -80,7 +80,7 @@ export default function BuyerDashboard() {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <div className="max-w-4xl mx-auto px-6 md:px-8 py-8">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-8">
         <div className="mb-8">
           <h1 className="font-serif text-3xl font-semibold text-foreground">My Account</h1>
           <p className="text-sm text-muted-foreground mt-1">Track your bids, purchases, and saved items</p>

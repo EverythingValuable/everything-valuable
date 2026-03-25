@@ -73,7 +73,7 @@ export default function Browse() {
         </div>
       </div>
 
-      <div className="max-w-screen-2xl mx-auto px-6 md:px-10 py-8">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-8">
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3 mb-8">
           <div className="relative flex-1 min-w-[200px] max-w-md">
