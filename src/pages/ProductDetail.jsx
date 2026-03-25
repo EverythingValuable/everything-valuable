@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import ProductGallery from "../components/product/ProductGallery";
 import PrisometerWidget from "../components/shared/PrisometerWidget";
-import FirstBidsCountdown from "../components/shared/FirstBidsCountdown";
+import PriceConvergenceModule from "../components/product/PriceConvergenceModule";
 import BidSection from "../components/product/BidSection";
 import ItemMessaging from "../components/product/ItemMessaging";
 
