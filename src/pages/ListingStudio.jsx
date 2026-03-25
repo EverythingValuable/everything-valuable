@@ -529,7 +529,7 @@ export default function ListingStudio() {
                     ["Reserve", "Hidden from buyers"],
                     ["Price Floor", floorPrice ? `$${Number(floorPrice).toLocaleString()} (${form.below_reserve_percent}% below reserve)` : "—"],
                     ["PRI$OMETER Duration", form.prisometer_duration_hours ? `${form.prisometer_duration_hours} hours` : "—"],
-                    ["Make It Mine™", form.make_it_mine_enabled ? "Enabled" : "Disabled"],
+                    ["Make It Mine™", "Always Enabled"],
                   ].filter(([,v]) => v).map(([k,v]) => (
                     <div key={k} className="flex justify-between px-5 py-3">
                       <span className="text-muted-foreground">{k}</span>
