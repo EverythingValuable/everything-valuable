@@ -63,6 +63,8 @@ const AuthenticatedApp = () => {
         <Route path="/seller/studio" element={<ListingStudio />} />
         <Route path="/seller/settings" element={<SellerSettings />} />
         <Route path="/seller/profile" element={<SellerPublicProfile />} />
+        <Route path="/real-estate" element={<RealEstateBrowse />} />
+        <Route path="/property/:id" element={<PropertyDetail />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
