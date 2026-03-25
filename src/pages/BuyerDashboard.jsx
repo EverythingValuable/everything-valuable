@@ -45,6 +45,81 @@ function ItemRow({ itemId, children }) {
   );
 }
 
+const invoiceStatusConfig = {
+  draft:     { label: "Invoice Pending",   icon: Clock,         color: "text-amber-600 bg-amber-50 border-amber-200" },
+  sent:      { label: "Payment Due",       icon: AlertTriangle, color: "text-red-600 bg-red-50 border-red-200" },
+  paid:      { label: "Payment Received",  icon: CheckCircle2,  color: "text-green-700 bg-green-50 border-green-200" },
+  shipped:   { label: "Shipped",           icon: Truck,         color: "text-blue-700 bg-blue-50 border-blue-200" },
+  delivered: { label: "Delivered",         icon: CheckCircle2,  color: "text-green-700 bg-green-50 border-green-200" },
+  disputed:  { label: "Disputed",          icon: AlertTriangle, color: "text-red-600 bg-red-50 border-red-200" },
+};
+
+function InvoiceCard({ inv }) {
+  const { data: item } = useQuery({
+    queryKey: ["item-mini", inv.item_id],
+    queryFn: () => base44.entities.Item.filter({ id: inv.item_id }).then(r => r[0]),
+    enabled: !!inv.item_id,
+    staleTime: 60000,
+  });
+
+  const cfg = invoiceStatusConfig[inv.status] || invoiceStatusConfig.draft;
+  const StatusIcon = cfg.icon;
+
+  return (
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
+      {/* Invoice header bar */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 bg-muted/40 border-b border-border text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">Invoice #{inv.id?.slice(-8).toUpperCase()}</span>
+        <span>{inv.created_date ? format(new Date(inv.created_date), "MMM d, yyyy") : ""}</span>
+        {inv.seller_email && <span className="font-medium text-foreground">{inv.seller_email}</span>}
+        <span className="ml-auto font-sans font-semibold text-sm text-foreground">
+          Total: ${Number(inv.total_amount ?? inv.item_price ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+        </span>
+      </div>
+
+      {/* Status banner */}
+      <div className={`flex items-center justify-between px-5 py-3 border-b border-border ${cfg.color}`}>
+        <div className="flex items-center gap-2">
+          <StatusIcon className="w-4 h-4 shrink-0" />
+          <span className="text-sm font-medium">{cfg.label}</span>
+          {inv.status === "sent" && (
+            <span className="text-xs ml-1">— Please arrange payment with the seller</span>
+          )}
+          {inv.status === "shipped" && inv.tracking_number && (
+            <span className="text-xs ml-1">· Tracking: {inv.tracking_number}</span>
+          )}
+        </div>
+        {inv.payment_instructions && (
+          <span className="text-xs underline cursor-pointer opacity-70 hover:opacity-100">Payment Info</span>
+        )}
+      </div>
+
+      {/* Item row */}
+      <Link to={`/item/${inv.item_id}`} className="flex items-center gap-4 px-5 py-4 hover:bg-muted/20 transition-colors group">
+        <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted shrink-0">
+          {item?.images?.[0]
+            ? <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            : <div className="w-full h-full bg-muted" />}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-sm text-foreground line-clamp-1">
+            {inv.item_title || item?.title || `Item #${inv.item_id?.slice(-8)}`}
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5 capitalize">
+            {inv.purchase_method === "make_it_mine" ? "Make It Mine™" : inv.purchase_method === "bid" ? "Won via Bid" : "Purchase"}
+          </p>
+        </div>
+        <div className="text-right shrink-0">
+          <p className="font-sans font-semibold text-sm text-foreground">
+            ${Number(inv.item_price ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">Hammer price</p>
+        </div>
+      </Link>
+    </div>
+  );
+}
+
 export default function BuyerDashboard() {
   const [tab, setTab] = useState("watchlist");
 
