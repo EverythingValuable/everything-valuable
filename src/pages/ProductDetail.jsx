@@ -11,6 +11,7 @@ import ProductGallery from "../components/product/ProductGallery";
 import PrisometerWidget from "../components/shared/PrisometerWidget";
 import FirstBidsCountdown from "../components/shared/FirstBidsCountdown";
 import BidSection from "../components/product/BidSection";
+import HighestBidDisplay from "../components/product/HighestBidDisplay";
 import ItemMessaging from "../components/product/ItemMessaging";
 
 const categoryLabels = {
