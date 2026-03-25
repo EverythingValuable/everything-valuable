@@ -163,7 +163,7 @@ function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLe
               {Math.floor(pauseTimeLeft / 60)}:{(pauseTimeLeft % 60).toString().padStart(2, "0")}
             </span>
           </div>
-          <p className="text-xs text-amber-600">
+          <p className="text-base text-amber-600">
             A buyer is completing a Make It Mine purchase. The PRI$OMETER will resume automatically if the transaction is cancelled or the timer expires.
           </p>
         </div>
