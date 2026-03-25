@@ -479,7 +479,7 @@ export default function InvoiceBuilder({ user }) {
               <div className="border-t border-border pt-3 mt-2 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-sm">Final Invoice Total</span>
-                  <span className="font-price text-xl font-semibold text-primary">
+                  <span className="font-sans text-xl font-semibold text-primary">
                     ${liveTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -621,7 +621,7 @@ export default function InvoiceBuilder({ user }) {
                   <td className="px-4 py-4 hidden md:table-cell text-muted-foreground text-xs">
                     {format(new Date(inv.created_date), "MMM d, yyyy")}
                   </td>
-                  <td className="px-4 py-4 font-price font-semibold text-primary">
+                  <td className="px-4 py-4 font-sans font-semibold text-primary">
                     ${Number(inv.total_amount ?? inv.item_price ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </td>
                   <td className="px-4 py-4">

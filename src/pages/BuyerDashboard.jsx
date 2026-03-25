@@ -100,7 +100,7 @@ export default function BuyerDashboard() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">{s.label}</p>
-                  <p className="font-price text-2xl font-bold mt-0.5">{s.value}</p>
+                  <p className="font-sans text-2xl font-bold mt-0.5">{s.value}</p>
                 </div>
               </CardContent>
             </Card>
@@ -146,7 +146,7 @@ export default function BuyerDashboard() {
                 {bids.map(bid => (
                   <ItemRow key={bid.id} itemId={bid.item_id}>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-xs font-price font-semibold text-foreground">
+                      <span className="text-xs font-sans font-semibold text-foreground">
                         ${bid.amount?.toLocaleString()}
                       </span>
                       <span className="text-xs text-muted-foreground">·</span>
@@ -175,7 +175,7 @@ export default function BuyerDashboard() {
                 {invoices.map(inv => (
                   <ItemRow key={inv.id} itemId={inv.item_id}>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-xs font-price font-semibold text-foreground">
+                      <span className="text-xs font-sans font-semibold text-foreground">
                         ${inv.total_cost?.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                       </span>
                       <span className="text-xs text-muted-foreground">·</span>

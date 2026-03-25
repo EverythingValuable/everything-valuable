@@ -65,7 +65,7 @@ export default function FeeCalculator({ price, showDetailed = false }) {
             <>
               <div className="border-t border-border pt-3 flex justify-between items-baseline">
                 <span className="text-sm font-bold">Total Cost</span>
-                <span className="text-lg font-price font-bold">{formatCurrency(totalCost)}</span>
+                <span className="text-lg font-sans font-bold">{formatCurrency(totalCost)}</span>
               </div>
               <p className="text-xs text-muted-foreground">
                 Shipping, taxes, and duties billed separately

@@ -80,9 +80,9 @@ export default function PrisometerWidget({ item, compact = false }) {
             className="w-2 h-2 rounded-full bg-red-500"
           />
         )}
-        <span className="font-price text-xl font-bold text-foreground">
+        <span className="font-sans text-xl font-bold text-foreground">
           ${formatPrice(displayPrice)}
-          {isActive && <span className="font-price text-sm text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>}
+          {isActive && <span className="font-sans text-sm text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>}
         </span>
       </div>
     );
@@ -125,8 +125,8 @@ function PriceTrack({ startPrice, highestBid, currentPrice, isActive }) {
 
       {/* Price labels */}
       <div className="flex justify-between">
-        <span className="font-price text-sm font-semibold text-foreground">${startPrice?.toLocaleString()}</span>
-        <span className="font-price text-sm font-semibold text-foreground">${highestBid.toLocaleString()}</span>
+        <span className="font-sans text-sm font-semibold text-foreground">${startPrice?.toLocaleString()}</span>
+        <span className="font-sans text-sm font-semibold text-foreground">${highestBid.toLocaleString()}</span>
       </div>
     </div>
   );
@@ -198,11 +198,11 @@ function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLe
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02 }}
           animate={{ scale: 1 }}
-          className="font-price text-4xl md:text-5xl font-bold text-foreground"
+          className="font-sans text-4xl md:text-5xl font-bold text-foreground"
         >
           ${formatPrice(displayPrice)}
           {isActive && (
-            <span className="font-price text-xl text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
+            <span className="font-sans text-xl text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
           )}
         </motion.div>
       </div>
