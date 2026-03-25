@@ -178,9 +178,6 @@ export default function ItemCard({ item, index = 0 }) {
           {item.seller_name && (
             <p className="text-xs text-muted-foreground">{item.seller_name}</p>
           )}
-          {item.bid_count > 0 && (
-            <p className="text-xs text-muted-foreground">{item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}</p>
-          )}
           <div className="pt-1">
             <span className="font-price text-lg font-semibold text-foreground">
               ${Math.floor(livePrice).toLocaleString("en-US")}
