@@ -160,14 +160,14 @@ export default function ItemCard({ item, index = 0 }) {
         </div>
 
         <div className="mt-3 space-y-1">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">
-            {categoryLabels[item.category] || item.category}
-          </p>
           <h3 className="font-serif text-lg font-medium leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2">
             {item.title}
           </h3>
           {item.seller_name && (
             <p className="text-xs text-muted-foreground">{item.seller_name}</p>
+          )}
+          {item.bid_count > 0 && (
+            <p className="text-xs text-muted-foreground">{item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}</p>
           )}
           <div className="pt-1">
             <span className="font-price text-lg font-semibold text-foreground">
