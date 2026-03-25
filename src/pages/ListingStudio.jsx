@@ -37,6 +37,7 @@ export default function ListingStudio() {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(isEditMode);
+  const [sellerProfile, setSellerProfile] = useState(null);
   const [form, setForm] = useState({
     images: [],
     title: "", category: "", subcategory: "", maker: "",
@@ -53,41 +54,52 @@ export default function ListingStudio() {
     estimated_low: "", estimated_high: "",
   });
 
-  // Load existing item if editing
+  // Load seller profile and existing item if editing
   useEffect(() => {
-    if (!editId) return;
-    base44.entities.Item.filter({ id: editId }).then(items => {
-      const item = items[0];
-      if (!item) return;
-      setForm({
-        images: item.images || [],
-        title: item.title || "",
-        category: item.category || "",
-        subcategory: item.subcategory || "",
-        maker: item.maker || "",
-        period: item.period || "",
-        materials: item.materials || "",
-        dimensions: item.dimensions || "",
-        origin: item.origin || "",
-        location: item.location || "",
-        condition: item.condition || "very_good",
-        provenance: item.provenance || "",
-        description: item.description || "",
-        short_description: item.short_description || "",
-        condition_notes: item.condition_notes || "",
-        shipping_notes: item.shipping_notes || "",
-        marks: item.marks || "",
-        first_bids_duration_hours: item.first_bids_duration_hours || 72,
-        prisometer_start_price: item.prisometer_start_price || "",
-        reserve_price: item.reserve_price || "",
-        below_reserve_percent: item.below_reserve_percent || 10,
-        prisometer_duration_hours: item.prisometer_duration_hours || 48,
-        make_it_mine_enabled: item.make_it_mine_active !== false,
-        estimated_low: item.estimated_low || "",
-        estimated_high: item.estimated_high || "",
-      });
+    const loadData = async () => {
+      const user = await base44.auth.me();
+      const profiles = await base44.entities.SellerProfile.filter({ user_email: user.email });
+      setSellerProfile(profiles[0] || null);
+
+      if (editId) {
+        const items = await base44.entities.Item.filter({ id: editId });
+        const item = items[0];
+        if (item) {
+          setForm({
+            images: item.images || [],
+            title: item.title || "",
+            category: item.category || "",
+            subcategory: item.subcategory || "",
+            maker: item.maker || "",
+            period: item.period || "",
+            materials: item.materials || "",
+            dimensions: item.dimensions || "",
+            origin: item.origin || "",
+            location: item.location || profiles[0]?.location || "",
+            condition: item.condition || "very_good",
+            provenance: item.provenance || "",
+            description: item.description || "",
+            short_description: item.short_description || "",
+            condition_notes: item.condition_notes || "",
+            shipping_notes: item.shipping_notes || "",
+            marks: item.marks || "",
+            first_bids_duration_hours: item.first_bids_duration_hours || 72,
+            prisometer_start_price: item.prisometer_start_price || "",
+            reserve_price: item.reserve_price || "",
+            below_reserve_percent: item.below_reserve_percent || 10,
+            prisometer_duration_hours: item.prisometer_duration_hours || 48,
+            make_it_mine_enabled: item.make_it_mine_active !== false,
+            estimated_low: item.estimated_low || "",
+            estimated_high: item.estimated_high || "",
+          });
+        }
+      } else {
+        // Pre-fill location from seller profile for new items
+        setForm(f => ({ ...f, location: profiles[0]?.location || "" }));
+      }
       setLoading(false);
-    });
+    };
+    loadData();
   }, [editId]);
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
