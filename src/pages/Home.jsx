@@ -13,17 +13,17 @@ import { motion } from "framer-motion";
 export default function Home() {
   const { data: liveItems = [] } = useQuery({
     queryKey: ["items-live"],
-    queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 8),
+    queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 10),
     initialData: [],
   });
 
   const { data: previewItems = [] } = useQuery({
     queryKey: ["items-preview"],
-    queryFn: () => base44.entities.Item.filter({ status: "first_bids" }, "-created_date", 8),
+    queryFn: () => base44.entities.Item.filter({ status: "first_bids" }, "-created_date", 10),
     initialData: [],
   });
 
-  const allFeatured = [...liveItems, ...previewItems].slice(0, 8);
+  const allFeatured = [...liveItems, ...previewItems].slice(0, 10);
 
   return (
     <div>
