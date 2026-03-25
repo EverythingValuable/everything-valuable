@@ -25,7 +25,7 @@ export default function SellerPublicProfile() {
 
   if (loadingProfile) {
     return (
-      <div className="max-w-5xl mx-auto px-6 py-16 animate-pulse space-y-6">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-16 animate-pulse space-y-6">
         <div className="h-48 bg-muted rounded-xl" />
         <div className="h-8 w-48 bg-muted rounded" />
         <div className="h-4 w-96 bg-muted rounded" />
