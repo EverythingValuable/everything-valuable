@@ -234,16 +234,17 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              {/* PRI$OMETER or Countdown */}
-              {item.status === "first_bids" && item.first_bids_end && (
-                <FirstBidsCountdown endTime={item.first_bids_end} />
-              )}
-              {(item.status === "prisometer" || item.status === "first_bids") && (
-                <PrisometerWidget item={item} />
+              {/* Price & Bidding Module */}
+              {(item.status === "first_bids" || item.status === "prisometer") && (
+                <div className="space-y-4">
+                  <PrisometerWidgetData item={item} />
+                </div>
               )}
 
               {/* Bidding */}
-              <BidSection item={item} />
+              {(item.status === "first_bids" || item.status === "prisometer") && (
+                <BidSection item={item} />
+              )}
 
               <Separator />
 
