@@ -60,11 +60,11 @@ export default function Navbar() {
           <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
         </div>
         <div className="flex gap-6">
-          <span>Secure Transactions</span>
+          <span>Transparent Fees</span>
           <span>•</span>
-          <span>Vetted Sellers</span>
+          <span>Verified Sellers</span>
           <span>•</span>
-          <span>Buyer Protection</span>
+          <span>Seller-Defined Terms</span>
         </div>
       </div>
 
