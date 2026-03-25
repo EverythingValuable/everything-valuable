@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Heart, Share2, ChevronRight, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -193,7 +194,7 @@ export default function ProductDetail() {
               )}
 
               {item.shipping_notes && (
-                <CollapsibleSection title="Shipping" defaultOpen={false}>
+                <CollapsibleSection title="Shipping & Pickup Terms" defaultOpen={false}>
                   <p className="text-sm text-muted-foreground leading-relaxed">{item.shipping_notes}</p>
                 </CollapsibleSection>
               )}
@@ -202,71 +203,109 @@ export default function ProductDetail() {
 
           {/* RIGHT — Sticky Bid Panel */}
           <div className="lg:col-span-2">
-            <div className="lg:sticky lg:top-6 space-y-5">
-              {/* Status + Category */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="outline" className="text-xs">
-                  {categoryLabels[item.category] || item.category}
-                </Badge>
-                {item.status === "first_bids" && (
-                  <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>
-                )}
-                {item.status === "prisometer" && (
-                  <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
-                )}
-              </div>
-
-              {/* Title */}
+            <div className="lg:sticky lg:top-6 space-y-6">
+              {/* Title & Seller */}
               <div>
-                <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground">
+                <div className="flex items-center gap-2 flex-wrap mb-3">
+                  <Badge variant="outline" className="text-xs">
+                    {categoryLabels[item.category] || item.category}
+                  </Badge>
+                </div>
+                <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight text-foreground mb-4">
                   {item.title}
                 </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
-                  <p className="text-sm text-muted-foreground mt-1.5">
-                    Offered by{" "}
-                    <Link
-                      to={`/seller/profile?seller=${item.seller_email}`}
-                      className="font-medium text-foreground hover:text-primary transition-colors"
-                    >
-                      {sellerProfile?.display_name || item.seller_name}
-                    </Link>
-                  </p>
+                  <Link
+                    to={`/seller/profile?seller=${item.seller_email}`}
+                    className="inline-block"
+                  >
+                    <div className="border border-border rounded-lg p-3 hover:bg-secondary/50 transition-colors">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">Offered by</p>
+                      <p className="font-medium text-foreground text-sm hover:text-primary transition-colors">
+                        {sellerProfile?.display_name || item.seller_name}
+                      </p>
+                      {item.location && (
+                        <p className="text-xs text-muted-foreground mt-1.5">{item.location}</p>
+                      )}
+                    </div>
+                  </Link>
                 )}
               </div>
 
-              {/* PRI$OMETER or Countdown */}
-              {item.status === "first_bids" && item.first_bids_end && (
-                <FirstBidsCountdown endTime={item.first_bids_end} />
-              )}
-              {(item.status === "prisometer" || item.status === "first_bids") && (
-                <PrisometerWidget item={item} />
-              )}
-
-              {/* Bidding */}
-              <BidSection item={item} />
-
-              <Separator />
-
-              {/* Location */}
-              {item.location && (
-                <div className="bg-secondary/40 rounded-lg p-4 space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Location</p>
-                  <p className="text-sm font-medium text-foreground">{item.location}</p>
+              {/* Unified Bidding Module */}
+              <div className="border border-border rounded-xl bg-card overflow-hidden">
+                {/* Status Badge */}
+                <div className="border-b border-border px-5 py-3 bg-secondary/30">
+                  {item.status === "first_bids" && (
+                    <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active — Preview Bidding</Badge>
+                  )}
+                  {item.status === "prisometer" && (
+                    <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
+                  )}
                 </div>
-              )}
 
-              {/* Actions */}
-              <div className="flex gap-3">
+                {/* Countdown or Prisometer */}
+                <div className="px-5 py-4 space-y-4">
+                  {item.status === "first_bids" && item.first_bids_end && (
+                    <FirstBidsCountdown endTime={item.first_bids_end} />
+                  )}
+
+                  {/* PRI$OMETER Start Price Section */}
+                  {(item.status === "prisometer" || item.status === "first_bids") && (
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        PRI$OMETER<sup className="text-[8px] ml-0.5">™</sup> Start Price
+                      </p>
+                      <p className="font-price text-4xl md:text-5xl font-bold text-foreground">
+                        ${item.prisometer_start_price?.toLocaleString("en-US")}
+                      </p>
+                      {item.status === "first_bids" && (
+                        <p className="text-xs text-muted-foreground italic">Live pricing begins when preview ends.</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Current Price if Prisometer Active */}
+                  {item.status === "prisometer" && !item.make_it_mine_active && (
+                    <div className="pt-3 border-t border-border">
+                      <PrisometerWidget item={item} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Bidding Section */}
+                <div className="border-t border-border px-5 py-4">
+                  <BidSection item={item} />
+                </div>
+              </div>
+
+              {/* How It Works Expandable */}
+              <details className="border border-border rounded-lg group">
+                <summary className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-secondary/50 transition-colors font-medium text-sm">
+                  <span>How 1stBid$™ and PRI$OMETER™ Work</span>
+                  <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="border-t border-border px-4 py-3 text-xs space-y-2 text-muted-foreground bg-secondary/20">
+                  <p>• <strong>Preview Phase:</strong> Place a bid during 1stBid$™ preview period</p>
+                  <p>• <strong>At Preview End:</strong> If your bid is highest and clears the PRI$OMETER™ start price, you win</p>
+                  <p>• <strong>If Not Won:</strong> Your bid carries forward and may win if PRI$OMETER™ descends to it above reserve</p>
+                  <p>• <strong>Make It Mine™:</strong> Instantly lock in the live price at any point during PRI$OMETER™</p>
+                </div>
+              </details>
+
+              {/* Save/Share - Compact */}
+              <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className={`flex-1 gap-2 h-10 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`}
+                  size="sm"
+                  className={`flex-1 gap-2 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`}
                   onClick={() => user ? saveMutation.mutate() : base44.auth.redirectToLogin()}
                   disabled={saveMutation.isPending}
                 >
-                  <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} /> {isSaved ? "Saved" : "Save"}
+                  <Heart className={`w-3.5 h-3.5 ${isSaved ? "fill-red-500" : ""}`} /> {isSaved ? "Saved" : "Save"}
                 </Button>
-                <Button variant="outline" className="flex-1 gap-2 h-10">
-                  <Share2 className="w-4 h-4" /> Share
+                <Button variant="outline" size="sm" className="flex-1 gap-2">
+                  <Share2 className="w-3.5 h-3.5" /> Share
                 </Button>
               </div>
 
