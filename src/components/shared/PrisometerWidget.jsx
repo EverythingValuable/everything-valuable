@@ -169,41 +169,56 @@ function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLe
         </div>
       )}
 
-      <div className="text-center py-3">
-        {(item.status === "first_bids" || item.status === "prisometer") && (
-          <div className="flex items-center justify-center gap-1.5 mb-1">
-            <p className="text-sm font-semibold text-foreground">
-              PRI$OMETER<sup className="text-[9px] ml-0.5">™</sup>
+      <div className="space-y-4">
+        {/* Highest bid section - moved to top */}
+        {item.highest_bid > 0 && (
+          <div className="text-center py-3 bg-primary/5 rounded-lg border border-primary/10 px-4">
+            <p className="text-xs text-muted-foreground mb-1.5">
+              {item.status === "first_bids" ? "Highest Preview Bid" : "Current Highest Bid"}
             </p>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
-                  {PRISOMETER_INFO}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <p className="font-sans text-3xl md:text-4xl font-bold text-primary">
+              ${item.highest_bid.toLocaleString("en-US")}
+            </p>
           </div>
         )}
-        {item.status !== "first_bids" && item.status !== "prisometer" && (
-          <p className="text-xs text-muted-foreground mb-1">Current Price</p>
-        )}
-        {item.status === "first_bids" && (
-          <p className="text-xs text-primary/70 mb-2">Activates After Preview</p>
-        )}
-        <motion.div
-          key={Math.floor(displayPrice)}
-          initial={{ scale: 1.02 }}
-          animate={{ scale: 1 }}
-          className={`font-sans text-4xl md:text-5xl font-bold ${item.status === "first_bids" ? "text-muted-foreground/40" : "text-foreground"}`}
-        >
-          ${formatPrice(displayPrice)}
-          {isActive && (
-            <span className="font-sans text-xl text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
+
+        {/* PRI$OMETER price section */}
+        <div className="text-center py-3">
+          {(item.status === "first_bids" || item.status === "prisometer") && (
+            <div className="flex items-center justify-center gap-1.5 mb-1">
+              <p className="text-sm font-semibold text-foreground">
+                PRI$OMETER<sup className="text-[9px] ml-0.5">™</sup>
+              </p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
+                    {PRISOMETER_INFO}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           )}
-        </motion.div>
+          {item.status !== "first_bids" && item.status !== "prisometer" && (
+            <p className="text-xs text-muted-foreground mb-1">Current Price</p>
+          )}
+          {item.status === "first_bids" && (
+            <p className="text-xs text-primary/70 mb-2">Activates After Preview</p>
+          )}
+          <motion.div
+            key={Math.floor(displayPrice)}
+            initial={{ scale: 1.02 }}
+            animate={{ scale: 1 }}
+            className={`font-sans text-4xl md:text-5xl font-bold ${item.status === "first_bids" ? "text-muted-foreground/40" : "text-foreground"}`}
+          >
+            ${formatPrice(displayPrice)}
+            {isActive && (
+              <span className="font-sans text-xl text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
+            )}
+          </motion.div>
+        </div>
       </div>
 
 
