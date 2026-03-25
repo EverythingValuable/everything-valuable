@@ -40,7 +40,7 @@ export default function ListingStudio() {
   const [form, setForm] = useState({
     images: [],
     title: "", category: "", subcategory: "", maker: "",
-    period: "", materials: "", dimensions: "", origin: "",
+    period: "", materials: "", dimensions: "", origin: "", location: "",
     condition: "very_good", provenance: "",
     description: "", short_description: "", condition_notes: "",
     shipping_notes: "", marks: "",
@@ -69,6 +69,7 @@ export default function ListingStudio() {
         materials: item.materials || "",
         dimensions: item.dimensions || "",
         origin: item.origin || "",
+        location: item.location || "",
         condition: item.condition || "very_good",
         provenance: item.provenance || "",
         description: item.description || "",
@@ -118,6 +119,7 @@ export default function ListingStudio() {
     dimensions: form.dimensions,
     period: form.period,
     origin: form.origin,
+    location: form.location,
     condition_notes: form.condition_notes,
     shipping_notes: form.shipping_notes,
     prisometer_start_price: +form.prisometer_start_price || 0,
@@ -322,16 +324,19 @@ export default function ListingStudio() {
                   </Field>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Origin / Country">
-                    <Input placeholder="e.g. France" value={form.origin} onChange={e => set("origin", e.target.value)} />
-                  </Field>
-                  <Field label="Condition">
-                    <select value={form.condition} onChange={e => set("condition", e.target.value)}
-                      className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm capitalize">
-                      {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g," ")}</option>)}
-                    </select>
-                  </Field>
-                </div>
+                   <Field label="Origin / Country">
+                     <Input placeholder="e.g. France" value={form.origin} onChange={e => set("origin", e.target.value)} />
+                   </Field>
+                   <Field label="Condition">
+                     <select value={form.condition} onChange={e => set("condition", e.target.value)}
+                       className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm capitalize">
+                       {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g," ")}</option>)}
+                     </select>
+                   </Field>
+                 </div>
+                 <Field label="Location">
+                   <Input placeholder="e.g. Kingston NY 12401" value={form.location} onChange={e => set("location", e.target.value)} />
+                 </Field>
                 <Field label="Provenance Summary">
                   <Input placeholder="e.g. Private collection, Paris; acquired 1974" value={form.provenance} onChange={e => set("provenance", e.target.value)} />
                 </Field>
