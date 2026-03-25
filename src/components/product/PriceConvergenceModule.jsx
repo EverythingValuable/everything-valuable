@@ -70,7 +70,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
 
       {/* Main: PRI$OMETER Start Price (large, dominant) */}
       <div className="text-center space-y-2 opacity-50">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">PRI$OMETER™ Start Price</p>
+        <p className="text-xs font-semibold text-black uppercase tracking-wider">PRI$OMETER™ Start Price</p>
         <motion.div
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02, opacity: 0.8 }}
