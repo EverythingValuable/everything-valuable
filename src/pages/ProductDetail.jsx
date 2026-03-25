@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import ProductGallery from "../components/product/ProductGallery";
-import PrisometerWidget from "../components/shared/PrisometerWidget";
 import PriceConvergenceModule from "../components/product/PriceConvergenceModule";
 import BidSection from "../components/product/BidSection";
 import ItemMessaging from "../components/product/ItemMessaging";
