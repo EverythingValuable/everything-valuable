@@ -197,7 +197,7 @@ function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLe
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02 }}
           animate={{ scale: 1 }}
-          className="font-sans text-4xl md:text-5xl font-bold text-foreground"
+          className={`font-sans text-4xl md:text-5xl font-bold ${item.status === "first_bids" ? "text-muted-foreground/40" : "text-foreground"}`}
         >
           ${formatPrice(displayPrice)}
           {isActive && (
