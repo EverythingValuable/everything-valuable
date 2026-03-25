@@ -45,6 +45,98 @@ function ItemRow({ itemId, children }) {
   );
 }
 
+const categoryLabels = {
+  fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
+  decorative_arts: "Decorative Arts", design: "Design", antiques: "Antiques",
+  collectibles: "Collectibles", photography: "Photography", sculpture: "Sculpture",
+  ceramics: "Ceramics", textiles: "Textiles", books: "Books", wine: "Wine",
+  luxury_goods: "Luxury Goods", other: "Other"
+};
+
+const savedStatusConfig = {
+  first_bids: { label: "1stBid$ Active", color: "bg-primary/10 text-primary border-primary/20" },
+  prisometer:  { label: "PRI$OMETER Live", color: "bg-red-50 text-red-600 border-red-200" },
+  sold:        { label: "Sold", color: "bg-muted text-muted-foreground border-border" },
+};
+
+function SavedItemCard({ itemId, watchlistId }) {
+  const { data: item } = useQuery({
+    queryKey: ["item-mini", itemId],
+    queryFn: () => base44.entities.Item.filter({ id: itemId }).then(r => r[0]),
+    enabled: !!itemId,
+    staleTime: 60000,
+  });
+
+  const [removing, setRemoving] = useState(false);
+  const { refetch: refetchWatchlist } = useQuery({ queryKey: ["buyer-watchlist"] });
+
+  const handleRemove = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setRemoving(true);
+    await base44.entities.WatchlistItem.delete(watchlistId);
+    refetchWatchlist();
+  };
+
+  const status = savedStatusConfig[item?.status];
+  const displayPrice = item?.status === "prisometer" && item?.current_price
+    ? item.current_price
+    : item?.prisometer_start_price;
+
+  return (
+    <Link to={`/item/${itemId}`} className="group block relative">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
+        {item?.images?.[0] ? (
+          <img
+            src={item.images[0]}
+            alt={item.title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
+            <span className="font-serif text-4xl">EV</span>
+          </div>
+        )}
+
+        {status && (
+          <div className="absolute top-3 left-3">
+            <Badge variant="outline" className={`${status.color} text-xs font-medium backdrop-blur-sm`}>
+              {status.label}
+            </Badge>
+          </div>
+        )}
+
+        <button
+          onClick={handleRemove}
+          disabled={removing}
+          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+        >
+          <Heart className="w-4 h-4 fill-red-500 text-red-500" />
+        </button>
+      </div>
+
+      <div className="mt-3 space-y-1">
+        <p className="text-xs text-muted-foreground uppercase tracking-wider">
+          {categoryLabels[item?.category] || item?.category || ""}
+        </p>
+        <h3 className="font-serif text-base font-medium leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2">
+          {item?.title || "Loading…"}
+        </h3>
+        {item?.seller_name && (
+          <p className="text-xs text-muted-foreground">{item.seller_name}</p>
+        )}
+        {displayPrice && (
+          <div className="pt-1">
+            <span className="font-sans text-base font-semibold text-foreground">
+              ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            </span>
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+}
+
 const invoiceStatusConfig = {
   draft:     { label: "Invoice Pending",   icon: Clock,         color: "text-amber-600 bg-amber-50 border-amber-200" },
   sent:      { label: "Payment Due",       icon: AlertTriangle, color: "text-red-600 bg-red-50 border-red-200" },
