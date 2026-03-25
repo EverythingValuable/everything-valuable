@@ -40,6 +40,71 @@ function CollapsibleSection({ title, defaultOpen = true, children }) {
   );
 }
 
+function PriceConvergenceModuleWrapper({ item }) {
+  const [displayPrice, setDisplayPrice] = useState(item.current_price || item.prisometer_start_price);
+  const [cents, setCents] = useState(0);
+  const [pauseTimeLeft, setPauseTimeLeft] = useState(0);
+  const intervalRef = useRef(null);
+  const resumedRef = useRef(false);
+  const queryClient = useQueryClient();
+
+  const isActive = item.status === "prisometer" && !item.make_it_mine_active;
+  const isPaused = item.status === "prisometer" && item.make_it_mine_active;
+
+  // Pause countdown timer
+  useEffect(() => {
+    if (!isPaused || !item.make_it_mine_expires) return;
+    resumedRef.current = false;
+    const update = async () => {
+      const secs = Math.max(0, Math.round((new Date(item.make_it_mine_expires) - Date.now()) / 1000));
+      setPauseTimeLeft(secs);
+      if (secs === 0 && !resumedRef.current) {
+        resumedRef.current = true;
+        await base44.entities.Item.update(item.id, {
+          make_it_mine_active: false,
+          make_it_mine_expires: null,
+        });
+        queryClient.invalidateQueries({ queryKey: ["item", item.id] });
+      }
+    };
+    update();
+    const t = setInterval(update, 1000);
+    return () => clearInterval(t);
+  }, [isPaused, item.make_it_mine_expires, item.id, queryClient]);
+
+  // Live price calculation
+  useEffect(() => {
+    if (isActive && item.prisometer_activated_at && item.prisometer_duration_hours) {
+      const startTime = new Date(item.prisometer_activated_at).getTime();
+      const startPrice = item.prisometer_start_price;
+      const reservePrice = item.reserve_price || startPrice * 0.5;
+      const belowPercent = item.below_reserve_percent || 10;
+      const floorPrice = reservePrice * (1 - belowPercent / 100);
+      const durationMs = item.prisometer_duration_hours * 3600000;
+
+      const updatePrice = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+        const currentPrice = Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
+        setDisplayPrice(currentPrice);
+        setCents(Math.floor((currentPrice % 1) * 100));
+      };
+
+      updatePrice();
+      intervalRef.current = setInterval(updatePrice, 800);
+      return () => clearInterval(intervalRef.current);
+    } else {
+      setDisplayPrice(item.current_price || item.prisometer_start_price);
+    }
+  }, [item, isActive]);
+
+  const formatPrice = (price) => {
+    return Math.floor(price).toLocaleString("en-US");
+  };
+
+  return <PriceConvergenceModule item={item} isActive={isActive} isPaused={isPaused} pauseTimeLeft={pauseTimeLeft} displayPrice={displayPrice} cents={cents} formatPrice={formatPrice} />;
+}
+
 export default function ProductDetail() {
   const pathParts = window.location.pathname.split("/");
   const itemId = pathParts[pathParts.length - 1];
