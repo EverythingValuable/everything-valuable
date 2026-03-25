@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 export default function Home() {
   const { data: liveItems = [] } = useQuery({
     queryKey: ["items-live"],
-    queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 10),
+    queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 8),
     initialData: [],
   });
 
