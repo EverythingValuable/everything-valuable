@@ -12,6 +12,15 @@ const heroImages = [
 ];
 
 export default function HeroSection() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent(prev => (prev + 1) % heroImages.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section
       className="relative flex items-stretch overflow-hidden bg-[hsl(40,33%,97%)]"
