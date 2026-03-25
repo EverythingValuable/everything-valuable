@@ -205,5 +205,6 @@ export default function ItemCard({ item, index = 0 }) {
         </div>
       </Link>
     </motion.div>
+    </>
   );
 }
