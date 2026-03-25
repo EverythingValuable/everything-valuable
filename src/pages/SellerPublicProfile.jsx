@@ -35,7 +35,7 @@ export default function SellerPublicProfile() {
 
   if (!profile) {
     return (
-      <div className="max-w-5xl mx-auto px-6 py-20 text-center">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-20 text-center">
         <p className="font-serif text-2xl text-muted-foreground">Seller not found</p>
         <Link to="/browse" className="text-sm text-primary mt-4 inline-block">Return to browse</Link>
       </div>
