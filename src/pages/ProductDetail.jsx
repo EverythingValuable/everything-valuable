@@ -136,7 +136,7 @@ export default function ProductDetail() {
             {/* Collapsible Info Sections */}
             <div className="mt-8">
               {item.description && (
-                <CollapsibleSection title="About This Lot" defaultOpen={true}>
+                <CollapsibleSection title="About This Lot" defaultOpen={true} defaultOpen={true}>
                   <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                     {item.description}
                   </p>
@@ -145,7 +145,7 @@ export default function ProductDetail() {
 
               {/* Details grid */}
               {(item.condition || item.period || item.dimensions || item.materials || item.origin) && (
-                <CollapsibleSection title="Details" defaultOpen={true}>
+                <CollapsibleSection title="Details" defaultOpen={false}>
                   <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
                     {item.condition && (
                       <div>
