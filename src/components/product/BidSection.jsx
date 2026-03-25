@@ -275,22 +275,17 @@ export default function BidSection({ item }) {
               Bid
             </Button>
           </div>
-          {item.highest_bid > 0 && (
-           <p className="text-sm font-medium text-foreground">
-             {item.status === "first_bids" ? "Highest Preview Bid" : "Current highest bid"}: ${item.highest_bid?.toLocaleString()} <span className="text-muted-foreground font-normal">({item.bid_count} bid{item.bid_count !== 1 ? "s" : ""})</span>
-           </p>
-          )}
           {getTierInfo().length > 0 && (
             <button
               onClick={() => setShowTiers(!showTiers)}
-              className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors mt-2"
+              className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors"
             >
               <ChevronDown className={`w-3 h-3 transition-transform ${showTiers ? "rotate-180" : ""}`} />
-              View bidding tiers
+              View bidding increments
             </button>
           )}
           {showTiers && (
-            <div className="mt-3 rounded-lg bg-muted/50 p-3 space-y-2">
+            <div className="rounded-lg bg-muted/50 p-3 space-y-2">
               <p className="text-xs font-semibold text-muted-foreground">Minimum Increments:</p>
               <div className="space-y-1">
                 {getTierInfo().map((tier, idx) => (
@@ -302,8 +297,8 @@ export default function BidSection({ item }) {
               </div>
             </div>
           )}
-          </div>
-          )}
+        </div>
+      )}
 
           {/* Bid Confirmation Modal */}
           {showBidConfirm && (
