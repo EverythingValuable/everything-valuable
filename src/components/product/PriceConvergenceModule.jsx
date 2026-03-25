@@ -170,7 +170,7 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
         >
           ${formatPrice(displayPrice)}
           {isActive && (
-            <span className="font-sans text-xl text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
+            <span className="font-sans text-xl text-red-500 animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
           )}
         </motion.div>
       </div>
