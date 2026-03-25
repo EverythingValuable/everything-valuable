@@ -21,6 +21,8 @@ import ListingStudio from './pages/ListingStudio';
 import SellWithUs from './pages/SellWithUs';
 import SellerSettings from './pages/SellerSettings';
 import SellerPublicProfile from './pages/SellerPublicProfile';
+import RealEstateBrowse from './pages/RealEstateBrowse';
+import PropertyDetail from './pages/PropertyDetail';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
