@@ -21,11 +21,66 @@ const statusConfig = {
   pending_review: { label: "Pending", color: "bg-amber-50 text-amber-700 border-amber-200" },
 };
 
+function useLivePrice(item) {
+  const [livePrice, setLivePrice] = useState(item.current_price || item.prisometer_start_price);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    const isActive = item.status === "prisometer" && !item.make_it_mine_active && item.prisometer_activated_at && item.prisometer_duration_hours;
+    if (!isActive) {
+      setLivePrice(item.current_price || item.prisometer_start_price);
+      return;
+    }
+    const startTime = new Date(item.prisometer_activated_at).getTime();
+    const startPrice = item.prisometer_start_price;
+    const reservePrice = item.reserve_price || startPrice * 0.5;
+    const belowPercent = item.below_reserve_percent || 10;
+    const floorPrice = reservePrice * (1 - belowPercent / 100);
+    const durationMs = item.prisometer_duration_hours * 3600000;
+
+    const update = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      setLivePrice(Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice));
+    };
+    update();
+    intervalRef.current = setInterval(update, 800);
+    return () => clearInterval(intervalRef.current);
+  }, [item]);
+
+  return livePrice;
+}
+
+function useCountdown(endDateStr) {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    if (!endDateStr) return;
+    const update = () => {
+      const diff = new Date(endDateStr) - Date.now();
+      if (diff <= 0) { setTimeLeft("Ended"); return; }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      if (h >= 24) {
+        const d = Math.floor(h / 24);
+        setTimeLeft(`${d}d ${h % 24}h`);
+      } else {
+        setTimeLeft(`${h}h ${m.toString().padStart(2,"0")}m ${s.toString().padStart(2,"0")}s`);
+      }
+    };
+    update();
+    const t = setInterval(update, 1000);
+    return () => clearInterval(t);
+  }, [endDateStr]);
+
+  return timeLeft;
+}
+
 export default function ItemCard({ item, index = 0 }) {
   const status = statusConfig[item.status] || {};
-  const displayPrice = item.status === "prisometer" && item.current_price
-    ? item.current_price
-    : item.prisometer_start_price;
+  const livePrice = useLivePrice(item);
+  const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
 
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
