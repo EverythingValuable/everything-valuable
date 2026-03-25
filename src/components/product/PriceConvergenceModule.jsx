@@ -70,7 +70,19 @@ function PreviewState({ item, displayPrice, formatPrice }) {
 
       {/* Main: PRI$OMETER Start Price (large, dominant) */}
       <div className="text-center space-y-2 opacity-50">
-        <p className="text-xs font-semibold text-black uppercase tracking-wider">PRI$OMETER™ Start Price</p>
+        <div className="flex items-center justify-center gap-1.5">
+          <p className="text-xs font-semibold text-black uppercase tracking-wider">PRI$OMETER™ Start Price</p>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-3.5 h-3.5 text-black cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
+                The price at which live PRI$OMETER™ bidding will begin after the preview period ends.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <motion.div
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02, opacity: 0.8 }}
