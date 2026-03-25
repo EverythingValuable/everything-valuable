@@ -23,7 +23,7 @@ export default function Home() {
     initialData: [],
   });
 
-  const allFeatured = [...liveItems, ...previewItems].slice(0, 10);
+  const allFeatured = [...liveItems, ...previewItems].slice(0, 16);
 
   return (
     <div>
