@@ -135,40 +135,22 @@ function PriceTrack({ startPrice, highestBid, currentPrice, isActive }) {
 function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLeft, formatPrice }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <TrendingDown className="w-4 h-4 text-primary" />
-          <span className="font-display text-xs font-bold uppercase tracking-wider text-primary">
-            PRI$OMETER<sup className="text-[8px] ml-0.5">™</sup>
-          </span>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
-                {PRISOMETER_INFO}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+      {isActive && (
+        <motion.div
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="flex items-center gap-1.5"
+        >
+          <div className="w-2 h-2 rounded-full bg-red-500" />
+          <span className="text-xs font-medium text-red-600">LIVE</span>
+        </motion.div>
+      )}
+      {isPaused && (
+        <div className="flex items-center gap-1.5 text-amber-600">
+          <Pause className="w-3.5 h-3.5" />
+          <span className="text-xs font-medium">PAUSED</span>
         </div>
-        {isActive && (
-          <motion.div
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="flex items-center gap-1.5"
-          >
-            <div className="w-2 h-2 rounded-full bg-red-500" />
-            <span className="text-xs font-medium text-red-600">LIVE</span>
-          </motion.div>
-        )}
-        {isPaused && (
-          <div className="flex items-center gap-1.5 text-amber-600">
-            <Pause className="w-3.5 h-3.5" />
-            <span className="text-xs font-medium">PAUSED</span>
-          </div>
-        )}
-      </div>
+      )}
 
       {isPaused && (
         <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 space-y-1">
@@ -188,9 +170,21 @@ function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLe
       )}
 
       <div className="text-center py-3">
-        <p className="text-xs text-muted-foreground mb-1">
-          {item.status === "first_bids" ? "PRI$OMETER Start Price" : "Current Price"}
-        </p>
+        <div className="flex items-center justify-center gap-1.5 mb-1">
+          <p className="text-xs text-muted-foreground">
+            {item.status === "first_bids" ? "PRI$OMETER Start Price" : "Current Price"}
+          </p>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
+                {PRISOMETER_INFO}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         {item.status === "first_bids" && (
           <p className="text-xs text-primary/70 mb-2">Activates After Preview</p>
         )}
