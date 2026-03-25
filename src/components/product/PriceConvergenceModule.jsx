@@ -83,17 +83,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
         <p className="text-xs text-muted-foreground/70 italic">Activates after preview</p>
       </div>
 
-      {/* Visual Convergence Cue */}
-      <div className="flex justify-center py-2">
-        <motion.div
-          animate={{ y: [0, 4, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center gap-1"
-        >
-          <TrendingDown className="w-4 h-4 text-muted-foreground/50" />
-          <span className="text-xs text-muted-foreground/50 font-medium">moves toward bid</span>
-        </motion.div>
-      </div>
+
 
       {/* Bottom: Highest Preview Bid (smaller, secondary) */}
       {item.highest_bid > 0 && (
