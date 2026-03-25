@@ -12,12 +12,61 @@ export default function PropertyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isWatched, setIsWatched] = useState(false);
+  const [displayPrice, setDisplayPrice] = useState(0);
+  const [cents, setCents] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [pauseTimeLeft, setPauseTimeLeft] = useState(0);
   const queryClient = useQueryClient();
 
   const { data: property } = useQuery({
     queryKey: ["property", id],
     queryFn: () => base44.entities.Property.get(id),
   });
+
+  // Calculate live price and manage pause state
+  useEffect(() => {
+    if (!property) return;
+
+    if (property.status === "first_bids") {
+      setDisplayPrice(property.prisometer_start_price);
+      setCents(0);
+      return;
+    }
+
+    if (property.status === "prisometer" && property.prisometer_activated_at) {
+      const updatePrice = () => {
+        const startTime = new Date(property.prisometer_activated_at).getTime();
+        const startPrice = property.prisometer_start_price;
+        const reservePrice = property.reserve_price || startPrice * 0.5;
+        const belowPercent = property.below_reserve_percent || 10;
+        const floorPrice = reservePrice * (1 - belowPercent / 100);
+        const durationMs = property.prisometer_duration_hours * 3600000;
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+        const price = Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
+        
+        setDisplayPrice(Math.floor(price));
+        setCents(Math.round((price % 1) * 100));
+
+        // Check pause state
+        if (property.make_it_mine_active) {
+          const expiresAt = new Date(property.make_it_mine_expires).getTime();
+          const timeRemaining = Math.max(0, (expiresAt - Date.now()) / 1000);
+          setIsPaused(true);
+          setPauseTimeLeft(timeRemaining);
+        } else {
+          setIsPaused(false);
+        }
+      };
+
+      updatePrice();
+      const interval = setInterval(updatePrice, 100);
+      return () => clearInterval(interval);
+    }
+  }, [property]);
+
+  const isActive = property?.status === "prisometer" && !isPaused;
+  const formatPrice = (price) => Math.floor(price).toLocaleString("en-US");
 
   const watchMutation = useMutation({
     mutationFn: async () => {
