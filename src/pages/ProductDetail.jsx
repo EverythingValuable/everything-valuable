@@ -3,7 +3,6 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Heart, Share2, ChevronRight, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -136,7 +135,7 @@ export default function ProductDetail() {
             {/* Collapsible Info Sections */}
             <div className="mt-8">
               {item.description && (
-                <CollapsibleSection title="About This Lot" defaultOpen={true} defaultOpen={true}>
+                <CollapsibleSection title="About This Lot" defaultOpen={true}>
                   <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                     {item.description}
                   </p>
