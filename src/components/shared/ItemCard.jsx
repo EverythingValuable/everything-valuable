@@ -115,6 +115,8 @@ export default function ItemCard({ item, index = 0 }) {
   };
 
   return (
+    <>
+    {showPreview && <ItemPreviewModal item={item} onClose={() => setShowPreview(false)} />}
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
