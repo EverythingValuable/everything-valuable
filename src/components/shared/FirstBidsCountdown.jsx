@@ -51,8 +51,8 @@ export default function FirstBidsCountdown({ endTime, compact = false }) {
   }
 
   return (
-     <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-3">
-       <div className="flex items-center gap-2">
+     <div className="rounded-xl border border-primary/20 bg-primary/5 p-6 space-y-4">
+       <div className="flex items-center justify-center gap-2">
          <Clock className="w-4 h-4 text-primary" />
          <span className="font-display text-sm font-bold uppercase tracking-wider text-primary">
            1stBid$<sup className="text-[9px] ml-0.5">™</sup> Preview
@@ -68,9 +68,9 @@ export default function FirstBidsCountdown({ endTime, compact = false }) {
            </Tooltip>
          </TooltipProvider>
        </div>
-       <div className="flex items-center gap-3">
+       <div className="flex items-center justify-center gap-3">
          <p className="text-sm text-muted-foreground">Preview bidding closes in:</p>
-         <span className="font-price text-sm font-bold tabular-nums text-foreground">
+         <span className="font-price text-base font-bold tabular-nums text-amber-600">
            {timeLeft.days > 0 && `${timeLeft.days}d `}
            {timeLeft.hours.toString().padStart(2, "0")}h {timeLeft.minutes.toString().padStart(2, "0")}m {timeLeft.seconds.toString().padStart(2, "0")}s
          </span>
