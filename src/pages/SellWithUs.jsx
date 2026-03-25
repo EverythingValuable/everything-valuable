@@ -100,7 +100,7 @@ export default function SellWithUs() {
               </Button>
             </a>
             <Link to="/how-it-works">
-              <Button variant="outline" className="border-background/30 text-background hover:bg-background/10 h-12 px-8 text-base">
+              <Button variant="outline" className="border-background/30 text-background hover:bg-background/10 h-12 px-8 text-base bg-transparent">
                 How It Works
               </Button>
             </Link>
