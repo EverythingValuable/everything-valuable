@@ -98,6 +98,7 @@ export default function ItemCard({ item, index = 0 }) {
   }, [user?.email, item.id]);
 
   const isSaved = !!watchlistEntry;
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleWatchlist = async (e) => {
     e.preventDefault();
