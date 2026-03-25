@@ -369,17 +369,6 @@ export default function BidSection({ item }) {
             </div>
           )}
 
-          {/* Make It Mine button */}
-          {canMakeItMine && !showConfirm && !showBidConfirm && (
-        <Button
-          onClick={handleOpenConfirm}
-          className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-base font-semibold gap-2"
-        >
-          <ShoppingBag className="w-5 h-5" />
-          Make It Mine
-        </Button>
-      )}
-
       {/* Make It Mine result screen */}
       {confirmResult && !showBidConfirm && (
         <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-4 text-center">
