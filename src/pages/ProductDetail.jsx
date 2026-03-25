@@ -243,6 +243,9 @@ export default function ProductDetail() {
                 <PrisometerWidget item={item} />
               )}
 
+              {/* Highest Bid */}
+              <HighestBidDisplay item={item} />
+
               {/* Bidding */}
               <BidSection item={item} />
 
