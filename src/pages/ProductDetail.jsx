@@ -234,11 +234,9 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              {/* Price & Bidding Module */}
+              {/* Price Convergence Module */}
               {(item.status === "first_bids" || item.status === "prisometer") && (
-                <div className="space-y-4">
-                  <PrisometerWidgetData item={item} />
-                </div>
+                <PriceConvergenceModuleWrapper item={item} />
               )}
 
               {/* Bidding */}
