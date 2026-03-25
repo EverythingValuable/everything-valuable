@@ -466,19 +466,12 @@ export default function ListingStudio() {
                 </Field>
 
                 {/* Make It Mine */}
-                <div className="flex items-center justify-between rounded-xl border border-border px-5 py-4">
+                <div className="flex items-center justify-between rounded-xl border border-border px-5 py-4 bg-primary/5">
                   <div>
-                    <p className="text-sm font-medium">Enable Make It Mine™</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Allows buyers to instantly pause and purchase at the live price.</p>
+                    <p className="text-sm font-medium">Make It Mine™</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Always enabled — buyers can instantly pause and purchase at the live price.</p>
                   </div>
-                  <button onClick={() => set("make_it_mine_enabled", !form.make_it_mine_enabled)}
-                    className={cn("w-11 h-6 rounded-full transition-colors relative",
-                      form.make_it_mine_enabled ? "bg-primary" : "bg-secondary border border-border"
-                    )}>
-                    <div className={cn("w-4 h-4 rounded-full bg-white absolute top-1 transition-all",
-                      form.make_it_mine_enabled ? "left-6" : "left-1"
-                    )} />
-                  </button>
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">Always On</span>
                 </div>
 
                 {/* Live Simulation */}
