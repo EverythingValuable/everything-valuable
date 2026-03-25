@@ -247,6 +247,14 @@ export default function ProductDetail() {
 
               <Separator />
 
+              {/* Location */}
+              {item.location && (
+                <div className="bg-secondary/40 rounded-lg p-4 space-y-2">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Location</p>
+                  <p className="text-sm font-medium text-foreground">{item.location}</p>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex gap-3">
                 <Button
