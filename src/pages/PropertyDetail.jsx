@@ -156,10 +156,10 @@ export default function PropertyDetail() {
           </div>
 
           {/* Right: Pricing & Bid */}
-          <div className="space-y-4">
-            <PropertyPriceModule property={property} />
+           <div className="space-y-4">
+            <PropertyPriceModule property={property} isActive={isActive} isPaused={isPaused} pauseTimeLeft={pauseTimeLeft} displayPrice={displayPrice} cents={cents} formatPrice={formatPrice} />
             <PropertyBidSection property={property} />
-          </div>
+           </div>
         </div>
       </div>
     </div>
