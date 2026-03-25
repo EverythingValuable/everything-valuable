@@ -13,7 +13,7 @@ export default function PrisometerWidget({ item, compact = false }) {
   const intervalRef = useRef(null);
 
   const isActive = item.status === "prisometer" && !item.make_it_mine_active;
-  const isPaused = item.make_it_mine_active;
+  const isPaused = item.status === "prisometer" && item.make_it_mine_active;
   const queryClient = useQueryClient();
 
   // Countdown timer for paused state — auto-resumes when it hits 0
