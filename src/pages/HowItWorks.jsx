@@ -44,8 +44,8 @@ const steps = [
   {
     num: "07",
     icon: DollarSign,
-    title: "Transparent Invoice",
-    description: "There is no traditional buyer's premium. Make It Mine purchases include a transparent service fee — 50% of which is credited back to the buyer's final invoice. Shipping and taxes are billed separately.",
+    title: "Sale & Fulfillment",
+    description: "When a transaction is initiated, the sale remains directly between buyer and seller. Everything Valuable provides tools to generate invoices and support the payment process. Shipping, payment, and fulfillment terms are set by each seller.",
   },
 ];
 
