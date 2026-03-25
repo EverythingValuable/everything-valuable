@@ -321,7 +321,7 @@ export default function BidSection({ item }) {
 
               <div className="text-center py-2">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your High Bid</p>
-                <p className="font-serif text-3xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
+                <p className="font-price text-3xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
               </div>
 
               <div className="rounded-lg border border-border bg-card p-4 space-y-3 text-sm">
@@ -419,7 +419,7 @@ export default function BidSection({ item }) {
           {/* Locked price */}
           <div className="text-center py-2">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Locked Price</p>
-            <p className="font-serif text-3xl font-semibold">${price.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
+            <p className="font-price text-3xl font-semibold">${price.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
           </div>
 
           {/* Fee breakdown */}

@@ -115,7 +115,7 @@ export default function ItemCard({ item, index = 0 }) {
             <p className="text-xs text-muted-foreground">{item.seller_name}</p>
           )}
           <div className="flex items-baseline gap-2 pt-1">
-            <span className="text-lg font-semibold text-foreground">
+            <span className="font-price text-lg font-semibold text-foreground">
               ${displayPrice?.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </span>
             {item.highest_bid > 0 && (
