@@ -23,7 +23,7 @@ export default function FeaturedItems({ items, title = "Featured Live Sales", su
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-          {items.slice(0, 8).map((item, i) => (
+          {items.slice(0, 15).map((item, i) => (
             <ItemCard key={item.id} item={item} index={i} />
           ))}
         </div>
