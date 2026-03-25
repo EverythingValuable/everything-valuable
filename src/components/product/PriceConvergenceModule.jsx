@@ -80,7 +80,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
         >
           ${formatPrice(displayPrice)}
         </motion.div>
-        <p className="text-xs text-foreground italic">Activates after preview</p>
+        <p className="text-xs text-black italic">Activates after preview</p>
       </div>
 
 
