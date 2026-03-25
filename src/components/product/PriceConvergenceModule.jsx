@@ -194,6 +194,11 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
 
 
 
+      {/* Visual connector: Subtle downward movement indicator */}
+      <div className="flex justify-center py-2">
+        <div className="w-px h-8 bg-gradient-to-b from-muted-foreground/40 via-muted-foreground/20 to-transparent" style={{backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 4px, hsl(var(--muted-foreground)) 4px, hsl(var(--muted-foreground)) 6px)'}}></div>
+      </div>
+
       {/* Bottom: Current Highest Bid (smaller, secondary) */}
       {item.highest_bid > 0 && (
         <div className="text-center space-y-1 pt-3 border-t border-border/50">
