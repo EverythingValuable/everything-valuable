@@ -54,8 +54,8 @@ export default function FirstBidsCountdown({ endTime, compact = false }) {
     <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-3">
       <div className="flex items-center gap-2">
         <Clock className="w-4 h-4 text-primary" />
-        <span className="font-display text-xs font-bold uppercase tracking-wider text-primary">
-          1stBid$<sup className="text-[8px] ml-0.5">™</sup> Preview
+        <span className="font-display text-sm font-bold uppercase tracking-wider text-primary">
+          1stBid$<sup className="text-[9px] ml-0.5">™</sup> Preview
         </span>
         <TooltipProvider>
           <Tooltip>
@@ -68,7 +68,7 @@ export default function FirstBidsCountdown({ endTime, compact = false }) {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <p className="text-xs text-muted-foreground">Preview bidding closes in:</p>
+      <p className="text-sm text-muted-foreground">Preview bidding closes in:</p>
       <div className="grid grid-cols-4 gap-2 text-center">
         {[
           { val: timeLeft.days, label: "Days" },
