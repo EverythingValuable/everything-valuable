@@ -54,7 +54,7 @@ export default function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="h-11 px-7 text-sm font-semibold rounded-none border-foreground/30 hover:border-foreground/70 tracking-wide"
+                className="h-11 px-7 text-sm font-semibold rounded-none border-foreground/30 hover:border-foreground/70 tracking-wide text-foreground"
               >
                 How PRI$OMETER™ Works
               </Button>
