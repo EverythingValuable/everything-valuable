@@ -36,7 +36,7 @@ export default function HeroSection() {
 
           {/* Subhead */}
           <p className="font-sans text-sm md:text-base text-muted-foreground leading-relaxed max-w-[420px] mb-8">
-            Discover rare objects through a marketplace built around transparency. Every lot opens in our exclusive <span className="font-semibold text-foreground">1stBid$™</span> preview phase, then moves into live <span className="font-semibold text-foreground">PRI$OMETER™</span> pricing — where the price drops in real time until someone buys.
+            Discover exceptional objects through a marketplace reimagined for transparency. Every lot begins in our exclusive <span className="font-semibold text-foreground">1stBid$™</span> preview phase, then enters live <span className="font-semibold text-foreground">PRI$OMETER™</span> pricing for a more dynamic and engaging path to purchase.
           </p>
 
           {/* CTAs */}
