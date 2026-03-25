@@ -197,11 +197,7 @@ export default function ItemCard({ item, index = 0 }) {
               <span className="font-price">{countdown}</span>
             </div>
           )}
-          {item.estimated_low && item.estimated_high && (
-            <p className="text-xs text-muted-foreground">
-              Est. ${item.estimated_low.toLocaleString()} – ${item.estimated_high.toLocaleString()}
-            </p>
-          )}
+
         </div>
       </Link>
     </motion.div>

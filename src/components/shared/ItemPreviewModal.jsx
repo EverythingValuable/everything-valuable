@@ -171,13 +171,6 @@ export default function ItemPreviewModal({ item, onClose }) {
                 )}
               </div>
 
-              {/* Estimates */}
-              {item.estimated_low && item.estimated_high && (
-                <p className="text-sm text-muted-foreground">
-                  Estimate: ${item.estimated_low.toLocaleString()} – ${item.estimated_high.toLocaleString()}
-                </p>
-              )}
-
               {/* Countdown + Prisometer */}
               {item.status === "first_bids" && item.first_bids_end && (
                 <FirstBidsCountdown endTime={item.first_bids_end} />

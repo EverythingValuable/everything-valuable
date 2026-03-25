@@ -234,13 +234,6 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              {/* Estimates */}
-              {item.estimated_low && item.estimated_high && (
-                <p className="text-sm text-muted-foreground">
-                  Estimate: ${item.estimated_low?.toLocaleString()} – ${item.estimated_high?.toLocaleString()}
-                </p>
-              )}
-
               {/* PRI$OMETER or Countdown */}
               {item.status === "first_bids" && item.first_bids_end && (
                 <FirstBidsCountdown endTime={item.first_bids_end} />
