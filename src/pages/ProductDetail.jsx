@@ -300,7 +300,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Price Convergence Module */}
-              {(item.status === "first_bids" || item.status === "prisometer") && (
+              {(item.status === "first_bids" || item.status === "prisometer") && item && (
                 <PriceConvergenceModuleWrapper item={item} />
               )}
 
