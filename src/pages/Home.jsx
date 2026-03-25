@@ -104,7 +104,7 @@ export default function Home() {
       <section className="py-20 md:py-28 text-center">
         <div className="max-w-2xl mx-auto px-6">
           <h2 className="font-serif text-3xl md:text-5xl font-semibold text-foreground">
-            Start Selling Today
+            Sell With Everything Valuable
           </h2>
           <p className="text-muted-foreground mt-4 mb-8 leading-relaxed">
             Join thousands of galleries, dealers, and collectors using Everything Valuable 
