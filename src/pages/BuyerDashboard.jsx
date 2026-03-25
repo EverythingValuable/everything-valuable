@@ -164,29 +164,17 @@ export default function BuyerDashboard() {
             )}
           </TabsContent>
 
-          {/* PURCHASES */}
+          {/* PURCHASES / WON ITEMS */}
           <TabsContent value="purchases">
             {invoices.length === 0 ? (
               <Card><CardContent className="p-12 text-center">
                 <ShoppingBag className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
                 <p className="font-serif text-xl text-muted-foreground">No purchases yet</p>
+                <p className="text-sm text-muted-foreground mt-1">Won items and invoices will appear here</p>
               </CardContent></Card>
             ) : (
-              <div className="space-y-3">
-                {invoices.map(inv => (
-                  <ItemRow key={inv.id} itemId={inv.item_id}>
-                    <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-xs font-sans font-semibold text-foreground">
-                        ${inv.total_cost?.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                      </span>
-                      <span className="text-xs text-muted-foreground">·</span>
-                      <span className="text-xs text-muted-foreground">
-                        {inv.purchase_method === "make_it_mine" ? "Make It Mine" : "Bid"}
-                      </span>
-                      <Badge variant="outline" className="text-[10px] px-2 py-0 ml-auto">{inv.status}</Badge>
-                    </div>
-                  </ItemRow>
-                ))}
+              <div className="space-y-4">
+                {invoices.map(inv => <InvoiceCard key={inv.id} inv={inv} />)}
               </div>
             )}
           </TabsContent>
