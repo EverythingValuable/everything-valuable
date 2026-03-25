@@ -81,7 +81,32 @@ export default function HeroSection() {
           </p>
         </motion.div>
 
+        {/* Right — Rotating Image */}
+        <div className="hidden lg:block relative w-full lg:w-[45%] shrink-0 overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={current}
+              src={heroImages[current]}
+              alt="Featured object"
+              initial={{ opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.97 }}
+              transition={{ duration: 0.9, ease: "easeInOut" }}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </AnimatePresence>
 
+          {/* Dot indicators */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            {heroImages.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === current ? "bg-white scale-125" : "bg-white/50"}`}
+              />
+            ))}
+          </div>
+        </div>
 
       </div>
     </section>
