@@ -207,12 +207,7 @@ function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLe
         </motion.div>
       </div>
 
-      <PriceTrack
-        startPrice={item.prisometer_start_price}
-        highestBid={item.highest_bid || 0}
-        currentPrice={displayPrice}
-        isActive={isActive}
-      />
+
     </div>
   );
 }
