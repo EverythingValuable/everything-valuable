@@ -231,18 +231,9 @@ export default function BidSection({ item }) {
   }
 
   return (
-     <div className="space-y-4">
-       {/* Highest Bid Display */}
-       {item.highest_bid > 0 && !showConfirm && (
-         <div className="rounded-xl border border-border bg-card p-4">
-           <p className="text-sm font-medium text-foreground">
-             {item.status === "first_bids" ? "Highest Preview Bid" : "Current highest bid"}: ${item.highest_bid?.toLocaleString()} <span className="text-muted-foreground font-normal">({item.bid_count} bid{item.bid_count !== 1 ? "s" : ""})</span>
-           </p>
-         </div>
-       )}
-
-       {/* Place a Bid */}
-       {canBid && !showConfirm && !showBidConfirm && (
+    <div className="space-y-4">
+      {/* Place a Bid */}
+      {canBid && !showConfirm && !showBidConfirm && (
         <div className="rounded-xl border border-border bg-card p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Gavel className="w-4 h-4 text-primary" />
@@ -284,6 +275,11 @@ export default function BidSection({ item }) {
               Bid
             </Button>
           </div>
+          {item.highest_bid > 0 && (
+           <p className="text-sm font-medium text-foreground">
+             {item.status === "first_bids" ? "Highest Preview Bid" : "Current highest bid"}: ${item.highest_bid?.toLocaleString()} <span className="text-muted-foreground font-normal">({item.bid_count} bid{item.bid_count !== 1 ? "s" : ""})</span>
+           </p>
+          )}
           {getTierInfo().length > 0 && (
             <button
               onClick={() => setShowTiers(!showTiers)}
