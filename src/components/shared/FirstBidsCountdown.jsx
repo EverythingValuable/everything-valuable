@@ -51,16 +51,16 @@ export default function FirstBidsCountdown({ endTime, compact = false }) {
   }
 
   return (
-    <div className="rounded-lg border border-primary/15 bg-primary/3 px-4 py-3 space-y-2.5">
-      <div className="flex items-center gap-1.5">
-        <Clock className="w-3.5 h-3.5 text-primary" />
-        <span className="font-display text-xs font-bold uppercase tracking-wider text-primary">
-          1stBid$<sup className="text-[7px] ml-0.5">™</sup> Preview
+    <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-3">
+      <div className="flex items-center gap-2">
+        <Clock className="w-4 h-4 text-primary" />
+        <span className="font-display text-sm font-bold uppercase tracking-wider text-primary">
+          1stBid$<sup className="text-[9px] ml-0.5">™</sup> Preview
         </span>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Info className="w-3 h-3 text-muted-foreground cursor-help ml-auto" />
+              <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
             </TooltipTrigger>
             <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
               {FIRSTBIDS_INFO}
@@ -68,18 +68,19 @@ export default function FirstBidsCountdown({ endTime, compact = false }) {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <div className="grid grid-cols-4 gap-1.5 text-center">
+      <p className="text-sm text-muted-foreground">Preview bidding closes in:</p>
+      <div className="grid grid-cols-4 gap-2 text-center">
         {[
           { val: timeLeft.days, label: "Days" },
           { val: timeLeft.hours, label: "Hrs" },
           { val: timeLeft.minutes, label: "Min" },
           { val: timeLeft.seconds, label: "Sec" },
         ].map(({ val, label }) => (
-          <div key={label} className="bg-card rounded-md p-1.5 border border-border/50">
-            <span className="font-price text-lg font-bold tabular-nums text-foreground block" style={{fontFamily: "'Space Grotesk', sans-serif"}}>
+          <div key={label} className="bg-card rounded-lg p-2 border border-border">
+            <span className="font-price text-2xl font-bold tabular-nums text-foreground block" style={{fontFamily: "'Space Grotesk', sans-serif"}}>
               {val.toString().padStart(2, "0")}
             </span>
-            <span className="text-[9px] text-muted-foreground uppercase tracking-wide">{label}</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</span>
           </div>
         ))}
       </div>
