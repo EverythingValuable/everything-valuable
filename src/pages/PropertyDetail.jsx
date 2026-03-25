@@ -33,15 +33,16 @@ export default function PropertyDetail() {
       return;
     }
 
-    if (property.status === "prisometer" && property.prisometer_activated_at) {
+    if (property.status === "prisometer") {
       const updatePrice = () => {
-        const startTime = new Date(property.prisometer_activated_at).getTime();
+        // Use activated_at if set, otherwise use created_date as fallback
+        const activatedTime = property.prisometer_activated_at ? new Date(property.prisometer_activated_at).getTime() : new Date(property.created_date).getTime();
         const startPrice = property.prisometer_start_price;
         const reservePrice = property.reserve_price || startPrice * 0.5;
         const belowPercent = property.below_reserve_percent || 10;
         const floorPrice = reservePrice * (1 - belowPercent / 100);
         const durationMs = property.prisometer_duration_hours * 3600000;
-        const elapsed = Date.now() - startTime;
+        const elapsed = Date.now() - activatedTime;
         const progress = Math.min(elapsed / durationMs, 1);
         const price = Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
         
