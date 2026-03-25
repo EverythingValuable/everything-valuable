@@ -69,18 +69,18 @@ function PreviewState({ item, displayPrice, formatPrice }) {
       </div>
 
       {/* Main: PRI$OMETER Start Price (large, dominant) */}
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-2 opacity-50">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">PRI$OMETER™ Start Price</p>
         <motion.div
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02, opacity: 0.8 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="font-sans text-4xl md:text-5xl font-bold text-foreground"
+          className="font-sans text-4xl md:text-5xl font-bold text-muted-foreground"
         >
           ${formatPrice(displayPrice)}
         </motion.div>
-        <p className="text-xs text-muted-foreground/70 italic">Activates after preview</p>
+        <p className="text-xs text-muted-foreground/60 italic">Activates after preview</p>
       </div>
 
 
