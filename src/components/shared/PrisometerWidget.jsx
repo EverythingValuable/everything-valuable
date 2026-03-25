@@ -170,21 +170,26 @@ function WidgetFull({ item, displayPrice, cents, isActive, isPaused, pauseTimeLe
       )}
 
       <div className="text-center py-3">
-        <div className="flex items-center justify-center gap-1.5 mb-1">
-          <p className="text-xs text-muted-foreground">
-            {item.status === "first_bids" ? "PRI$OMETER Start Price" : "Current Price"}
-          </p>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
-                {PRISOMETER_INFO}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+        {(item.status === "first_bids" || item.status === "prisometer") && (
+          <div className="flex items-center justify-center gap-1.5 mb-1">
+            <p className="text-sm font-semibold text-foreground">
+              PRI$OMETER<sup className="text-[9px] ml-0.5">™</sup>
+            </p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
+                  {PRISOMETER_INFO}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        )}
+        {item.status !== "first_bids" && item.status !== "prisometer" && (
+          <p className="text-xs text-muted-foreground mb-1">Current Price</p>
+        )}
         {item.status === "first_bids" && (
           <p className="text-xs text-primary/70 mb-2">Activates After Preview</p>
         )}
