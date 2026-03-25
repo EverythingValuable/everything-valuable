@@ -10,18 +10,18 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
           <div className="flex flex-col items-center gap-2">
             <Shield className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium">Buyer Protection</span>
-            <span className="text-xs text-background/60">Every purchase is backed by our guarantee</span>
+            <span className="font-serif text-sm font-medium">Verified Sellers</span>
+            <span className="text-xs text-background/60">Sellers are reviewed and approved before listing</span>
           </div>
           <div className="flex flex-col items-center gap-2">
             <Lock className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium">Secure Transactions</span>
-            <span className="text-xs text-background/60">End-to-end encrypted payment processing</span>
+            <span className="font-serif text-sm font-medium">Transparent Fees</span>
+            <span className="text-xs text-background/60">No buyer's premium — clear service fee with built-in credit</span>
           </div>
           <div className="flex flex-col items-center gap-2">
             <Truck className="w-5 h-5 text-primary" />
-            <span className="text-sm font-medium">Insured Shipping</span>
-            <span className="text-xs text-background/60">Full-value coverage on every shipment</span>
+            <span className="font-serif text-sm font-medium">Seller-Defined Fulfillment</span>
+            <span className="text-xs text-background/60">Shipping and payment terms set by each seller</span>
           </div>
         </div>
       </div>
