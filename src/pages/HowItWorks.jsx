@@ -135,7 +135,7 @@ export default function HowItWorks() {
               </div>
               <div className="flex justify-between py-3">
                 <span className="text-sm font-bold">Remaining Due</span>
-                <span className="font-serif text-xl font-bold">$935</span>
+                <span className="font-price text-xl font-bold">$935</span>
               </div>
               <p className="text-xs text-muted-foreground text-center pt-2">
                 Shipping, taxes, and duties not included
