@@ -155,6 +155,14 @@ export default function ItemCard({ item, index = 0 }) {
             <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
           </button>
 
+          {/* Preview button */}
+          <button
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur-sm text-xs font-medium text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background shadow-sm"
+            onClick={e => { e.preventDefault(); e.stopPropagation(); setShowPreview(true); }}
+          >
+            <Eye className="w-3.5 h-3.5" /> Preview
+          </button>
+
           {/* Bid count */}
           {item.bid_count > 0 && (
             <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
