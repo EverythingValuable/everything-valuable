@@ -280,6 +280,11 @@ export default function BidSection({ item }) {
              {item.status === "first_bids" ? "Highest Preview Bid" : "Current highest bid"}: ${item.highest_bid?.toLocaleString()} <span className="text-muted-foreground font-normal">({item.bid_count} bid{item.bid_count !== 1 ? "s" : ""})</span>
            </p>
           )}
+          {item.status === "first_bids" && (
+            <p className="text-xs text-muted-foreground italic">
+              Your preview bid stays active after preview. If it clears the PRI$OMETER™ start price, you win. Otherwise, it may still win if PRI$OMETER™ descends to it above reserve.
+            </p>
+          )}
           {getTierInfo().length > 0 && (
             <button
               onClick={() => setShowTiers(!showTiers)}
