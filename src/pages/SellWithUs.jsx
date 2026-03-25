@@ -14,32 +14,32 @@ const WHY_ITEMS = [
   {
     icon: TrendingDown,
     title: "PRI$OMETER™ Technology",
-    desc: "Our proprietary descending-price engine creates urgency and maximizes realized prices — often above traditional auction estimates."
+    desc: "A proprietary pricing engine that gives sellers a more dynamic way to bring property to market."
   },
   {
     icon: Users,
-    title: "Qualified Buyer Network",
-    desc: "Every buyer on Everything Valuable is vetted. You sell to serious collectors, not browsers."
+    title: "Targeted Buyer Network",
+    desc: "Everything Valuable is designed to attract buyers specifically interested in art, antiques, jewelry, watches, and other valuable objects."
   },
   {
     icon: DollarSign,
-    title: "Transparent, Seller-Friendly Fees",
-    desc: "No upfront listing fees. Our commission is only charged on successful sales. You keep the majority of every sale."
+    title: "Clear, Seller-Focused Structure",
+    desc: "A platform built to support sellers with transparent tools, flexible listing strategies, and straightforward selling workflows."
   },
   {
     icon: Shield,
-    title: "Secure & Insured",
-    desc: "Every transaction is secured end-to-end. Shipments are fully insured. You're covered at every step."
+    title: "Seller-Defined Fulfillment",
+    desc: "Shipping, pickup, payment, and related terms are set by each seller. Everything Valuable provides the platform and tools that support the transaction."
   },
   {
     icon: Globe,
-    title: "Global Reach",
-    desc: "Your items are discovered by collectors worldwide. No geographic limitations, no local auction house constraints."
+    title: "Global Exposure",
+    desc: "Present your property to collectors, dealers, and buyers across a broader market through a digital-first platform."
   },
   {
     icon: Clock,
-    title: "You Control the Timeline",
-    desc: "Set your own 1stBid$ preview window and PRI$OMETER duration. Your item sells on your schedule."
+    title: "Flexible Selling Windows",
+    desc: "Sellers define their preview timing and PRI$OMETER duration to match their goals and strategy."
   },
 ];
 
