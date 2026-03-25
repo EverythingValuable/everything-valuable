@@ -77,10 +77,10 @@ export default function Home() {
 
             <div className="grid grid-cols-2 gap-4">
               {[
-                { icon: Shield, title: "Buyer Protection", desc: "Every purchase backed by our guarantee" },
-                { icon: Star, title: "Vetted Sellers", desc: "Rigorously verified gallery partners" },
-                { icon: Award, title: "No Buyer's Premium", desc: "Transparent fees, no hidden costs" },
-                { icon: Shield, title: "Secure Payments", desc: "End-to-end encrypted transactions" },
+                { icon: Shield, title: "Seller-Defined Terms", desc: "Shipping, payment, and fulfillment set by each seller" },
+                { icon: Star, title: "Verified Sellers", desc: "Sellers are reviewed and approved before listing" },
+                { icon: Award, title: "No Buyer's Premium", desc: "Transparent service fee with a built-in credit" },
+                { icon: Shield, title: "Platform-Facilitated", desc: "Tools to support invoicing and the transaction process" },
               ].map((item, i) => (
                 <motion.div
                   key={item.title}
