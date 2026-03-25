@@ -114,9 +114,6 @@ export default function Navbar() {
             <Link to="/browse?status=prisometer" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
               Live Now
             </Link>
-            <Link to="/real-estate" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Real Estate
-            </Link>
           </nav>
         </div>
 
@@ -198,7 +195,6 @@ export default function Navbar() {
               <div className="pt-3 border-t border-border/50 space-y-2">
                 <Link to="/how-it-works" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>How It Works</Link>
                 <Link to="/pricing" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>Pricing & Fees</Link>
-                <Link to="/real-estate" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>Real Estate</Link>
                 <Link to="/sell" className="block py-2 text-sm font-medium text-primary" onClick={() => setMobileOpen(false)}>Sell With Us</Link>
                 <Link to="/buyer?view=saves" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>My Saves</Link>
                 <Link to="/buyer?view=won" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>Won Items</Link>
