@@ -20,9 +20,9 @@ export default function ProductGallery({ images = [] }) {
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Main image */}
-        <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted group shadow-sm">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted group">
           <AnimatePresence mode="wait">
             <motion.img
               key={activeIndex}
@@ -64,13 +64,13 @@ export default function ProductGallery({ images = [] }) {
 
         {/* Thumbnails */}
         {images.length > 1 && (
-          <div className="flex gap-3 overflow-x-auto pb-2">
+          <div className="flex gap-2 overflow-x-auto pb-1">
             {images.map((img, i) => (
               <button
                 key={i}
                 onClick={() => setActiveIndex(i)}
-                className={`flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
-                  i === activeIndex ? "border-foreground ring-2 ring-primary/30" : "border-border opacity-60 hover:opacity-100 hover:border-foreground/50"
+                className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+                  i === activeIndex ? "border-primary" : "border-transparent hover:border-border"
                 }`}
               >
                 <img src={img} alt="" className="w-full h-full object-cover" />
