@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { X, Heart, Clock, TrendingDown, Info, ChevronRight } from "lucide-react";
+import { X, Heart, Clock, TrendingDown, ChevronLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 
 const statusConfig = {
@@ -10,9 +10,10 @@ const statusConfig = {
   prisometer: { label: "PRI$OMETER™ Live", icon: TrendingDown, color: "bg-red-50 text-red-600 border-red-200" },
 };
 
-export default function ItemHotspotPopover({ hotspot, item, onClose }) {
+export default function ItemHotspotPopover({ hotspot, item, onClose, listingId }) {
   const [isSaved, setIsSaved] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
+  const navigate = useNavigate();
 
   if (!item) return null;
 
@@ -41,213 +42,128 @@ export default function ItemHotspotPopover({ hotspot, item, onClose }) {
   const status = statusConfig[item.status] || {};
   const StatusIcon = status.icon;
 
+  const handleViewListing = () => {
+    navigate(`/item/${item.id}`);
+  };
+
+  const handleBackToProperty = () => {
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 bg-background overflow-y-auto" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="min-h-screen">
-        {/* Close button */}
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">Item from Property</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20" onClick={onClose}>
+      <div
+        className="bg-card rounded-xl shadow-2xl max-w-sm w-full border border-border overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header with back button */}
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <button
+            onClick={handleBackToProperty}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+            Back to Property
+          </button>
           <button
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 pb-20">
-          <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
-            {/* LEFT — Image & Description */}
-            <div className="lg:col-span-3 space-y-6">
-              {/* Main Image */}
-              {item.images && item.images.length > 0 && (
-                <div className="aspect-square bg-muted rounded-lg overflow-hidden">
-                  <img
-                    src={item.images[0]}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
+        {/* Image */}
+        {item.images && item.images.length > 0 && (
+          <div className="aspect-video bg-muted overflow-hidden">
+            <img
+              src={item.images[0]}
+              alt={item.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
 
-              {/* Description Section */}
-              {item.description && (
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">About This Item</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {item.description}
-                  </p>
-                </div>
-              )}
+        {/* Content */}
+        <div className="p-5 space-y-4">
+          {/* Status badge */}
+          {status.label && (
+            <Badge className={`${status.color} text-xs font-medium`}>
+              {StatusIcon && <StatusIcon className="w-3 h-3 mr-1" />}
+              {status.label}
+            </Badge>
+          )}
 
-              {/* Item Details */}
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Item Details</h3>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                  {item.category && (
-                    <div>
-                      <span className="text-muted-foreground text-xs block mb-1">Category</span>
-                      <span className="font-medium text-foreground capitalize">
-                        {item.category.replace(/_/g, " ")}
-                      </span>
-                    </div>
-                  )}
-                  {item.condition && (
-                    <div>
-                      <span className="text-muted-foreground text-xs block mb-1">Condition</span>
-                      <span className="font-medium text-foreground capitalize">
-                        {item.condition.replace(/_/g, " ")}
-                      </span>
-                    </div>
-                  )}
-                  {item.location && (
-                    <div>
-                      <span className="text-muted-foreground text-xs block mb-1">Location</span>
-                      <span className="font-medium text-foreground">{item.location}</span>
-                    </div>
-                  )}
-                  {item.dimensions && (
-                    <div>
-                      <span className="text-muted-foreground text-xs block mb-1">Dimensions</span>
-                      <span className="font-medium text-foreground">{item.dimensions}</span>
-                    </div>
-                  )}
-                  {item.materials && (
-                    <div>
-                      <span className="text-muted-foreground text-xs block mb-1">Materials</span>
-                      <span className="font-medium text-foreground">{item.materials}</span>
-                    </div>
-                  )}
-                  {item.period && (
-                    <div>
-                      <span className="text-muted-foreground text-xs block mb-1">Period</span>
-                      <span className="font-medium text-foreground">{item.period}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+          {/* Title */}
+          <h2 className="font-serif text-lg font-semibold text-foreground line-clamp-2">
+            {item.title}
+          </h2>
 
-              {/* Seller Info */}
-              {item.seller_name && (
-                <div className="border-t border-border pt-6">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Seller</h3>
-                  <p className="font-medium text-foreground">{item.seller_name}</p>
-                </div>
-              )}
+          {/* Currently Available Badge */}
+          <div className="inline-flex items-center px-3 py-1.5 bg-green-50 border border-green-200 rounded-full">
+            <div className="w-2 h-2 bg-green-600 rounded-full mr-2" />
+            <span className="text-xs font-medium text-green-700">Currently Available</span>
+          </div>
+
+          {/* Category */}
+          {item.category && (
+            <p className="text-sm text-muted-foreground">
+              <span className="text-xs text-muted-foreground">Category: </span>
+              <span className="font-medium text-foreground capitalize">
+                {item.category.replace(/_/g, " ")}
+              </span>
+            </p>
+          )}
+
+          {/* Description snippet */}
+          {item.description && (
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {item.description}
+            </p>
+          )}
+
+          {/* Price */}
+          <div className="pt-2">
+            {item.status === "first_bids" && (
+              <p className="font-price text-2xl font-semibold text-foreground">
+                ${item.prisometer_start_price?.toLocaleString()}
+              </p>
+            )}
+            {item.status === "prisometer" && (
+              <p className="font-price text-2xl font-semibold text-foreground">
+                ${item.current_price?.toLocaleString()}
+              </p>
+            )}
+          </div>
+
+          {/* Countdown */}
+          {timeLeft && (
+            <div className="text-xs bg-primary/5 border border-primary/15 rounded p-2 flex items-center gap-2">
+              <Clock className="w-3 h-3 text-primary shrink-0" />
+              <span className="text-muted-foreground">Ends <span className="font-medium text-foreground">{timeLeft}</span></span>
             </div>
+          )}
 
-            {/* RIGHT — Price & Bidding */}
-            <div className="lg:col-span-2">
-              <div className="lg:sticky lg:top-24 space-y-5">
-                {/* Status badges */}
-                <div>
-                  {status.label && (
-                    <Badge className={`${status.color} text-xs font-medium`}>
-                      {StatusIcon && <StatusIcon className="w-3 h-3 mr-1" />}
-                      {status.label}
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Title */}
-                <div>
-                  <h1 className="font-serif text-2xl md:text-3xl font-bold leading-tight text-foreground">
-                    {item.title}
-                  </h1>
-                </div>
-
-                <Separator />
-
-                {/* Price Section */}
-                <div className="space-y-3">
-                  {item.status === "first_bids" && (
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-2">Preview Price</p>
-                      <p className="font-price text-4xl font-bold text-foreground">
-                        ${item.prisometer_start_price?.toLocaleString()}
-                      </p>
-                      {item.highest_bid > 0 && (
-                        <p className="text-sm text-muted-foreground mt-2">
-                          Highest bid: ${item.highest_bid?.toLocaleString()}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {item.status === "prisometer" && (
-                    <div>
-                      <p className="text-xs text-muted-foreground mb-2">Current Price</p>
-                      <p className="font-price text-4xl font-bold text-foreground animate-pulse">
-                        ${item.current_price?.toLocaleString()}
-                      </p>
-                      {item.highest_bid > 0 && (
-                        <p className="text-sm text-muted-foreground mt-2">
-                          Highest bid: ${item.highest_bid?.toLocaleString()}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Countdown */}
-                  {timeLeft && (
-                    <div className="bg-primary/5 border border-primary/15 rounded-lg p-3 flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-primary shrink-0" />
-                      <span className="text-sm text-muted-foreground">
-                        Ends <span className="font-medium text-foreground">{timeLeft}</span>
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Bid stats */}
-                  {(item.bid_count > 0 || item.watcher_count > 0) && (
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                      {item.bid_count > 0 && (
-                        <div className="text-center p-2 bg-secondary/50 rounded">
-                          <p className="text-xs text-muted-foreground">Bids</p>
-                          <p className="text-lg font-semibold text-foreground">{item.bid_count}</p>
-                        </div>
-                      )}
-                      {item.watcher_count > 0 && (
-                        <div className="text-center p-2 bg-secondary/50 rounded">
-                          <p className="text-xs text-muted-foreground">Watchers</p>
-                          <p className="text-lg font-semibold text-foreground">{item.watcher_count}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <Separator />
-
-                {/* Actions */}
-                <div className="space-y-2">
-                  <Button className="w-full h-10 gap-2">
-                    {item.status === "first_bids" ? "Place Bid" : "Bid / Make Offer"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className={`w-full h-10 gap-2 ${isSaved ? "text-red-500 border-red-200 bg-red-50" : ""}`}
-                    onClick={() => setIsSaved(!isSaved)}
-                  >
-                    <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} />
-                    {isSaved ? "Saved" : "Save"}
-                  </Button>
-                </div>
-
-                {/* Info Box */}
-                <div className="bg-secondary/30 border border-border/50 rounded-lg p-4 space-y-2">
-                  <div className="flex items-start gap-2">
-                    <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      This item is featured on the property listing photos. Click on the hotspot to learn more about included items.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Actions */}
+          <div className="pt-3 space-y-2">
+            <Button 
+              onClick={handleViewListing}
+              className="w-full h-10 gap-2"
+            >
+              View Listing
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Button>
+            <Button
+              variant="outline"
+              className={`w-full h-10 gap-2 ${isSaved ? "text-red-500 border-red-200 bg-red-50" : ""}`}
+              onClick={() => setIsSaved(!isSaved)}
+            >
+              <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} />
+              {isSaved ? "Saved" : "Save"}
+            </Button>
           </div>
         </div>
       </div>
     </div>
   );
-          }
+  }
