@@ -186,7 +186,7 @@ export default function ItemPreviewModal({ item: initialItem, onClose }) {
             </div>
 
             {/* RIGHT — Bid panel */}
-            <div className="lg:col-span-2 border-l border-border p-6 space-y-4 overflow-y-auto">
+            <div className="lg:col-span-2 border-l border-border p-4 space-y-4 overflow-y-auto overflow-x-hidden">
               {/* Status badges */}
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="outline" className="text-xs">{categoryLabels[item.category] || item.category}</Badge>
