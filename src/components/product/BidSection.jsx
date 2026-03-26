@@ -336,23 +336,16 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
 
       {/* Make It Mine result screen */}
       {confirmResult && !showBidConfirm && (
-        <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-4 text-center">
-          <CheckCircle2 className="w-10 h-10 text-primary mx-auto" />
-          {confirmResult === "above" ? (
-            <>
-              <h3 className="font-serif text-xl font-semibold">Congratulations!</h3>
-              <p className="text-sm text-muted-foreground">
-                Your offer has been accepted. Your $500 service fee has been charged. Check your email and buyer dashboard for next steps.
-              </p>
-            </>
-          ) : (
-            <>
-              <h3 className="font-serif text-xl font-semibold">Offer Submitted</h3>
-              <p className="text-sm text-muted-foreground">
-                Your $500 service fee has been charged. Your offer is pending seller review. Check your email for updates.
-              </p>
-            </>
-          )}
+        <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-8 space-y-5 text-center">
+          <CheckCircle2 className="w-12 h-12 text-primary mx-auto" />
+          <div className="space-y-2">
+            <h3 className="font-serif text-2xl font-semibold">Your Offer Has Been Placed!</h3>
+            <p className="text-sm text-muted-foreground">Please check your email for confirmation and next steps</p>
+          </div>
+          <div className="bg-card/50 border border-border rounded-lg p-4 text-sm space-y-2">
+            <p className="text-muted-foreground">Details about your offer located in</p>
+            <p className="font-semibold text-foreground">"My Account"</p>
+          </div>
         </div>
       )}
 
