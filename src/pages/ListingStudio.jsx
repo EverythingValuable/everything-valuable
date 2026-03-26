@@ -469,7 +469,7 @@ export default function ListingStudio() {
                 {/* Below reserve buffer */}
                 <Field label="Below-Reserve Drop Allowance" hint="how far below reserve the price may descend">
                   <div className="flex gap-2">
-                    {[5, 10, 15].map(pct => (
+                    {[10, 15, 20].map(pct => (
                       <button key={pct} onClick={() => set("below_reserve_percent", pct)}
                         className={cn("px-4 py-2 rounded-lg border text-sm font-medium transition-all flex-1",
                           form.below_reserve_percent === pct ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-foreground/30"
