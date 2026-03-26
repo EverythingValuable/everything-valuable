@@ -24,6 +24,7 @@ import SellerPublicProfile from './pages/SellerPublicProfile';
 import RealEstateHome from './pages/RealEstateHome';
 import RealEstateDetail from './pages/RealEstateDetail';
 import Portal from './pages/Portal';
+import HotspotManager from './pages/HotspotManager';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -67,6 +68,7 @@ const AuthenticatedApp = () => {
         <Route path="/seller/profile" element={<SellerPublicProfile />} />
         <Route path="/real-property" element={<RealEstateHome />} />
         <Route path="/real-property/listing/:id" element={<RealEstateDetail />} />
+        <Route path="/hotspot-manager" element={<HotspotManager />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
