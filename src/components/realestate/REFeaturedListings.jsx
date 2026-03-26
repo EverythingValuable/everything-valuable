@@ -71,7 +71,7 @@ function REListingCard({ listing, index }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
-      <div className="group block cursor-default">
+      <Link to={`/real-estate/listing/${listing.id}`} className="group block">
         <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
           <img
             src={listing.image}
@@ -117,7 +117,7 @@ function REListingCard({ listing, index }) {
             </span>
           </div>
         </div>
-      </div>
+      </Link>
     </motion.div>
   );
 }

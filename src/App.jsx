@@ -22,6 +22,7 @@ import SellWithUs from './pages/SellWithUs';
 import SellerSettings from './pages/SellerSettings';
 import SellerPublicProfile from './pages/SellerPublicProfile';
 import RealEstateHome from './pages/RealEstateHome';
+import RealEstateDetail from './pages/RealEstateDetail';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -63,6 +64,7 @@ const AuthenticatedApp = () => {
         <Route path="/seller/settings" element={<SellerSettings />} />
         <Route path="/seller/profile" element={<SellerPublicProfile />} />
         <Route path="/real-estate" element={<RealEstateHome />} />
+        <Route path="/real-estate/listing/:id" element={<RealEstateDetail />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
