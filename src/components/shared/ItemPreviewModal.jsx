@@ -112,7 +112,7 @@ export default function ItemPreviewModal({ item: initialItem, onClose }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 20 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[780px] md:max-h-[600px] z-50 bg-background rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        className="fixed inset-0 m-auto w-[90vw] max-w-[700px] h-fit max-h-[80vh] z-50 bg-background rounded-2xl shadow-2xl overflow-hidden flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         {/* Header bar */}
@@ -137,7 +137,7 @@ export default function ItemPreviewModal({ item: initialItem, onClose }) {
             {/* LEFT — Images */}
             <div className="lg:col-span-3 bg-muted/20">
               {/* Main image */}
-              <div className="aspect-[4/3] lg:aspect-auto lg:h-[55vh] overflow-hidden">
+              <div className="aspect-[4/3] lg:aspect-auto lg:h-[320px] overflow-hidden">
                 <img
                   src={images[selectedImage] || ""}
                   alt={item.title}
