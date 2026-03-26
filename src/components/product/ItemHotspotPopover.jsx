@@ -94,45 +94,6 @@ export default function ItemHotspotPopover({ hotspot, item, onClose, listingId }
             <span className="text-xs font-medium text-green-700">Currently Available</span>
           </div>
 
-          {/* Category */}
-          {item.category && (
-            <p className="text-sm text-muted-foreground">
-              <span className="text-xs text-muted-foreground">Category: </span>
-              <span className="font-medium text-foreground capitalize">
-                {item.category.replace(/_/g, " ")}
-              </span>
-            </p>
-          )}
-
-          {/* Description snippet */}
-          {item.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {item.description}
-            </p>
-          )}
-
-          {/* Price */}
-          <div className="pt-2">
-            {item.status === "first_bids" && (
-              <p className="font-price text-2xl font-semibold text-foreground">
-                ${item.prisometer_start_price?.toLocaleString()}
-              </p>
-            )}
-            {item.status === "prisometer" && (
-              <p className="font-price text-2xl font-semibold text-foreground">
-                ${item.current_price?.toLocaleString()}
-              </p>
-            )}
-          </div>
-
-          {/* Countdown */}
-          {timeLeft && (
-            <div className="text-xs bg-primary/5 border border-primary/15 rounded p-2 flex items-center gap-2">
-              <Clock className="w-3 h-3 text-primary shrink-0" />
-              <span className="text-muted-foreground">Ends <span className="font-medium text-foreground">{timeLeft}</span></span>
-            </div>
-          )}
-
           {/* Actions */}
           <div className="pt-3 space-y-2">
             <Button 
