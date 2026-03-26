@@ -299,6 +299,7 @@ export default function RealEstateDetail() {
                  <CollapsibleSection title="About This Property" defaultOpen={true}>
                    <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none">
                      <ReactMarkdown
+                       skipHtml={false}
                        components={{
                          a: ({ node, ...props }) => <a {...props} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" />,
                          p: ({ node, ...props }) => <p {...props} className="mb-3" />,
