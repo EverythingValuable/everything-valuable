@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import { Heart, Share2, ChevronRight, ChevronDown, Bed, Bath, Square, MapPin, FileText, Shield, BookOpen } from "lucide-react";
 import DocumentDownloadModal from "../components/realestate/DocumentDownloadModal";
 import RealEstateAgentMessaging from "../components/realestate/RealEstateAgentMessaging";
@@ -295,12 +296,19 @@ export default function RealEstateDetail() {
 
             <div className="mt-8">
               {listing.description && (
-                <CollapsibleSection title="About This Property" defaultOpen={true}>
-                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {listing.description}
-                  </p>
-                </CollapsibleSection>
-              )}
+                 <CollapsibleSection title="About This Property" defaultOpen={true}>
+                   <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                     <ReactMarkdown
+                       components={{
+                         a: ({ node, ...props }) => <a {...props} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" />,
+                         p: ({ node, ...props }) => <p {...props} className="mb-3" />,
+                       }}
+                     >
+                       {listing.description}
+                     </ReactMarkdown>
+                   </div>
+                 </CollapsibleSection>
+               )}
 
               <CollapsibleSection title="Property Details" defaultOpen={true}>
                 <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
