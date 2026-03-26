@@ -16,6 +16,7 @@ const CONFIRM_SECONDS = 120;
 
 export default function BidSection({ item, onMakeItMine, onCancel }) {
   const [bidAmount, setBidAmount] = useState("");
+  const [customBid, setCustomBid] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [showBidConfirm, setShowBidConfirm] = useState(false);
   const [lockedPrice, setLockedPrice] = useState(null);
@@ -290,6 +291,35 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">Choose from suggested amounts or enter a custom bid</p>
+
+          <div className="border-t border-border pt-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Or Enter Custom Bid</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter custom amount"
+                value={customBid}
+                onChange={(e) => setCustomBid(e.target.value.replace(/\D/g, ""))}
+                className="flex-1 h-10 px-3 border border-input rounded-md bg-background text-foreground text-sm"
+              />
+              <Button
+                onClick={() => {
+                  const amt = parseInt(customBid) || 0;
+                  if (amt > 0) {
+                    setBidAmount(amt.toString());
+                    setCustomBid("");
+                    setShowBidConfirm(true);
+                  } else {
+                    toast({ title: "Invalid bid", description: "Enter a valid amount", variant: "destructive" });
+                  }
+                }}
+                disabled={!customBid}
+                className="h-10 px-4 bg-foreground text-background hover:bg-foreground/90 text-sm"
+              >
+                Submit
+              </Button>
+            </div>
+          </div>
 
           {bidAmount && (
             <div className="rounded-lg border border-border bg-background/50 p-4 space-y-3 text-sm">
