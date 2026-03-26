@@ -7,20 +7,20 @@ import { motion } from "framer-motion";
 const steps = [
   {
     icon: Clock,
-    title: "1stBid$™ Preview",
-    description: "Place early bids during the preview period. Like a traditional open house bidding process, but smarter — building transparency and competitive offers before the live phase.",
+    title: "1stBid$™ Qualified Preview",
+    description: "A serious pre-market window — not casual browsing. Registered, verified buyers with confirmed proof of funds or pre-approval submit qualified bids. Inspections, disclosures, and terms are available up front. The seller controls the preview length: 7, 14, or 21 days. Real demand is established before anything goes live.",
     accent: "bg-primary/10 text-primary",
   },
   {
     icon: TrendingDown,
-    title: "PRI$OMETER™ Live",
-    description: "Our patented price engine activates. Watch the price descend in real time. When it meets the highest qualified offer, the sale executes automatically.",
+    title: "PRI$OMETER™ Live Market Alignment",
+    description: "If the preview phase does not produce an accepted result, the PRI$OMETER activates — only with seller approval. The displayed price adjusts gradually downward over a controlled window, aligning seller expectations with qualified buyer demand. This is not a distressed countdown. It is a transparent, measured path to a real transaction.",
     accent: "bg-red-50 text-red-600",
   },
   {
     icon: ShoppingBag,
-    title: "Make It Mine™",
-    description: "Can't wait? Secure any property instantly during the PRI$OMETER phase. Pay a transparent service fee — half credited back to your invoice. No buyer's premium.",
+    title: "Secure & Move to Contract",
+    description: "When a qualified buyer commits at the live price — or through competitive bidding — the property is immediately secured. The buyer submits their earnest money deposit and the property moves to pending status, subject to standard contract execution. No ambiguity. No delay.",
     accent: "bg-emerald-50 text-emerald-600",
   },
 ];
@@ -32,11 +32,12 @@ export default function REHowItWorksPreview() {
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Our Innovation</span>
           <h2 className="font-serif text-3xl md:text-5xl font-semibold mt-3 text-foreground">
-            A Smarter Way to Buy & Sell Property
+            A Credible, Transparent Path to Transaction
           </h2>
           <p className="text-muted-foreground mt-4 text-sm md:text-base leading-relaxed">
-            Every listing is its own dynamic sale event. Two proprietary phases work together 
-            to find the true value of extraordinary real estate.
+            Every property is its own structured sale event. Qualified buyer interest is gathered first. 
+            If preview bidding does not produce an accepted result, the PRI$OMETER™ activates — 
+            gradually aligning price with real market demand rather than letting a listing sit stale.
           </p>
         </div>
 

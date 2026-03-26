@@ -34,12 +34,12 @@ export default function RealEstateHome() {
             >
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Why Everything Valuable Real Estate</span>
               <h2 className="font-serif text-3xl md:text-5xl font-semibold leading-tight">
-                The Future of<br />Real Estate Commerce
+                Real Estate Deserves<br />a Better Process
               </h2>
               <p className="text-background/70 leading-relaxed">
-                We've reimagined how extraordinary properties change hands. No buyer's premium. 
-                No hidden fees. Just our proprietary PRI$OMETER™ technology finding the true 
-                value — transparently.
+                Normal listings sit, weaken, and invite lowball offers. Everything Valuable replaces 
+                that with a structured, transparent process — qualified buyer interest first, 
+                then a controlled live pricing phase that aligns the market without manufactured urgency or distress.
               </p>
               <Link to="/how-it-works">
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 rounded-full h-11 px-8 mt-4">
@@ -50,10 +50,10 @@ export default function RealEstateHome() {
 
             <div className="grid grid-cols-2 gap-4">
               {[
-                { icon: Shield, title: "Seller-Defined Terms", desc: "Closing, inspections, and fulfillment set by each seller" },
-                { icon: Star, title: "Verified Sellers", desc: "Sellers are reviewed and approved before listing" },
-                { icon: Award, title: "No Buyer's Premium", desc: "Transparent service fee with a built-in credit" },
-                { icon: Shield, title: "Platform-Facilitated", desc: "Tools to support the entire transaction process" },
+                { icon: Shield, title: "Qualified Buyers Only", desc: "Verified identity, proof of funds or pre-approval required before bidding" },
+                { icon: Star, title: "Seller-Controlled Terms", desc: "Preview length, reserve, disclosures, and contract terms set by you" },
+                { icon: Award, title: "No Stale Listings", desc: "Dynamic pricing replaces passive waiting — demand is visible and active" },
+                { icon: Shield, title: "Deposit & Contract Workflow", desc: "Winners move immediately to earnest money and contract execution" },
               ].map((item, i) => (
                 <motion.div
                   key={item.title}

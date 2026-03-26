@@ -50,7 +50,7 @@ export default function REHeroSection() {
 
           {/* Subhead */}
           <p className="font-sans text-sm md:text-base text-muted-foreground leading-relaxed max-w-[420px] mb-8">
-            Discover exceptional properties through a marketplace reimagined for transparency. Every listing begins in our exclusive <span className="font-semibold text-foreground">1stBid$™</span> preview phase, then enters live <span className="font-semibold text-foreground">PRI$OMETER™</span> pricing for a more dynamic and engaging path to purchase.
+            Extraordinary properties deserve a better process. Qualified buyers establish real demand during the <span className="font-semibold text-foreground">1stBid$™ Preview</span>, then our <span className="font-semibold text-foreground">PRI$OMETER™</span> gradually aligns live price with market interest — transparently, credibly, and on a timeline that respects the weight of the transaction.
           </p>
 
           {/* CTAs */}
@@ -77,7 +77,7 @@ export default function REHeroSection() {
 
           {/* Micro-line */}
           <p className="text-[10px] text-muted-foreground/50 tracking-[0.18em] uppercase font-display">
-            Live Sales · 1stBid$™ Preview · PRI$OMETER™ Pricing
+            Qualified Buyer Preview · Live Market Alignment · Deposit & Contract Workflow
           </p>
         </motion.div>
 
