@@ -19,7 +19,6 @@ const categoryLabels = {
 const statusLabels = {
   first_bids: "1stBid$ Active",
   prisometer: "PRI$OMETER Live",
-  sold: "Sold",
 };
 
 export default function Browse() {
@@ -32,7 +31,7 @@ export default function Browse() {
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["items-browse"],
     queryFn: () => base44.entities.Item.filter(
-      { status: ["first_bids", "prisometer", "sold", "pending_review"] },
+      { status: ["first_bids", "prisometer"] },
       "-created_date",
       100
     ),
