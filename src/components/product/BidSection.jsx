@@ -350,9 +350,15 @@ export default function BidSection({ item }) {
       {/* Make It Mine confirmation panel */}
       {showConfirm && !confirmResult && !showBidConfirm && (
         <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
-          <div>
-            <p className="text-xs text-green-600 font-semibold">Registration Status: Confirmed</p>
-            <h3 className="font-serif text-lg font-semibold mt-2">Confirm Your Offer Now</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-green-600 font-semibold">Registration Status: Confirmed</p>
+              <h3 className="font-serif text-lg font-semibold mt-2">Confirm Your Offer Now</h3>
+            </div>
+            <div className={`flex items-center gap-1.5 font-mono font-semibold text-lg ${timerColor}`}>
+              <Clock className="w-4 h-4" />
+              {mins}:{secs.toString().padStart(2, "0")}
+            </div>
           </div>
 
           <div className="bg-background/50 rounded-lg p-4 space-y-1 text-sm">
