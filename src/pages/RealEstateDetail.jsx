@@ -309,6 +309,29 @@ export default function RealEstateDetail() {
                 </div>
               </CollapsibleSection>
 
+              <CollapsibleSection title="Fees & Transaction Terms" defaultOpen={false}>
+                <div className="space-y-5 text-sm text-muted-foreground leading-relaxed">
+
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-foreground">Service Fee — $500 (non-refundable)</p>
+                    <p>Upon placing an accepted offer, purchaser's credit card will be charged a non-refundable service fee of <strong className="text-foreground">$500.00</strong>. Upon receipt, purchaser will receive the exclusive right and option to purchase, granting the exclusive right to purchase the property at the agreed price pursuant to the terms of use and sale. This initial option is valid for <strong className="text-foreground">15 days</strong>.</p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-foreground">Option Extension — 2% Deposit (non-refundable)</p>
+                    <p>Prior to the end of the 15-day period, if purchaser wishes to proceed, the option may be extended for an additional <strong className="text-foreground">60 days</strong>. To extend, purchaser shall deposit a non-refundable amount equal to <strong className="text-foreground">2% of the purchase price</strong>. This 2% is credited toward the purchase price at closing.</p>
+                    <p>If purchaser chooses not to exercise the option or the option expires, the non-refundable 2% is divided: <strong className="text-foreground">1% to 1BidWins</strong> and <strong className="text-foreground">1% to the seller</strong> to compensate for carrying costs and expenses.</p>
+                    <p>If purchaser exercises the option and closes title: <strong className="text-foreground">1% is retained by 1BidWins</strong> as a seller's service fee, <strong className="text-foreground">1% is paid to the seller</strong>, and the full 2% is credited toward the purchase price.</p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-foreground">Tax & Title Adjustments</p>
+                    <p>Tax adjustments are calculated from the date of the initial issuance of the option. Title charges for the provided initial title search and municipal report shall be credited and reimbursed to the seller and paid by purchaser together with customary closing adjustments (fuel, etc.). Purchaser shall receive a credit for these prepaid customary title costs and charges.</p>
+                  </div>
+
+                </div>
+              </CollapsibleSection>
+
               {/* Document Download Buttons */}
               <div className="border-t border-border pt-6 space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Documents</p>
