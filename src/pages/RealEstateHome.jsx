@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Star, Award } from "lucide-react";
 import { motion } from "framer-motion";
 import REHeroSection from "../components/realestate/REHeroSection";
+import RealEstateSearchBar from "../components/realestate/RealEstateSearchBar";
 import REFeaturedListings from "../components/realestate/REFeaturedListings";
 import RECategoryGrid from "../components/realestate/RECategoryGrid";
 import REHowItWorksPreview from "../components/realestate/REHowItWorksPreview";
@@ -12,6 +13,9 @@ export default function RealEstateHome() {
   return (
     <div>
       <REHeroSection />
+
+      {/* Search Bar */}
+      <RealEstateSearchBar />
 
       {/* Featured listings */}
       <REFeaturedListings />
