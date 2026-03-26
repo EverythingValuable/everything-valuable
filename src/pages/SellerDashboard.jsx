@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Upload, TrendingUp, Package, CheckCircle2, Clock,
-  XCircle, DollarSign, Eye, ArrowRight, Plus
+  XCircle, DollarSign, Eye, ArrowRight, Plus, Tag
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -123,6 +123,13 @@ export default function SellerDashboard() {
                   href="/seller?view=sold"
                   cta="View Sales"
                   icon={<CheckCircle2 className="w-5 h-5" />}
+                />
+                <ActionCard
+                  title="Tag Items on Listings"
+                  desc="Link personal property items to hotspots on your real estate photos."
+                  href="/hotspot-manager"
+                  cta="Open Manager"
+                  icon={<Tag className="w-5 h-5" />}
                 />
               </div>
             </>
