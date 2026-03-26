@@ -187,7 +187,7 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
         ) : (
           <p className="text-sm text-muted-foreground mt-1 italic">No bids yet — be the first</p>
         )}
-        <ExpandableInfoBox explanation="If the PRI$OMETER™ price descends to meet or fall below the highest bid and the reserve is met, the sale completes automatically at that price." />
+        <ExpandableInfoBox explanation="If the PRI$OMETER™ price descends to meet the highest bid, the sale is concluded. If the price is at or above the reserve, it's an automatic sale. If below, the seller is notified and may choose to accept." />
       </div>
 
       {/* Helper text */}
