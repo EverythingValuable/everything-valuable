@@ -343,8 +343,8 @@ export default function RealEstateDetail() {
                   <div className="space-y-1.5">
                     <p className="text-xs font-semibold uppercase tracking-wider text-foreground">Option Extension — 2% Deposit (non-refundable)</p>
                     <p>Prior to the end of the 15-day period, if purchaser wishes to proceed, the option may be extended for an additional <strong className="text-foreground">60 days</strong>. To extend, purchaser shall deposit a non-refundable amount equal to <strong className="text-foreground">2% of the purchase price</strong>. This 2% is credited toward the purchase price at closing.</p>
-                    <p>If purchaser chooses not to exercise the option or the option expires, the non-refundable 2% is divided: <strong className="text-foreground">1% to 1BidWins</strong> and <strong className="text-foreground">1% to the seller</strong> to compensate for carrying costs and expenses.</p>
-                    <p>If purchaser exercises the option and closes title: <strong className="text-foreground">1% is retained by 1BidWins</strong> as a seller's service fee, <strong className="text-foreground">1% is paid to the seller</strong>, and the full 2% is credited toward the purchase price.</p>
+                    <p>If purchaser chooses not to exercise the option or the option expires, the non-refundable 2% is divided: <strong className="text-foreground">1% to Everything Valuable</strong> and <strong className="text-foreground">1% to the seller</strong> to compensate for carrying costs and expenses.</p>
+                    <p>If purchaser exercises the option and closes title: <strong className="text-foreground">1% is retained by Everything Valuable</strong> as a seller's service fee, <strong className="text-foreground">1% is paid to the seller</strong>, and the full 2% is credited toward the purchase price.</p>
                   </div>
 
                   <div className="space-y-1.5">
