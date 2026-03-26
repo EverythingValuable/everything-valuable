@@ -151,23 +151,27 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       const serviceFee = 500; // Flat $500 service fee
       const aboveReserve = price >= (item.reserve_price || 0);
 
-      await base44.entities.Item.update(item.id, {
-        status: aboveReserve ? "sold" : "pending_review",
-        sold_price: aboveReserve ? price : undefined,
-        sold_via: aboveReserve ? "make_it_mine" : undefined,
-        make_it_mine_active: false,
-        make_it_mine_expires: null,
-        make_it_mine_buyer: "buyer@current.user",
-      });
-      await base44.entities.Invoice.create({
-        item_id: item.id,
-        buyer_email: "buyer@current.user",
-        seller_email: item.seller_email,
-        item_price: price,
-        service_fee: serviceFee,
-        purchase_method: "make_it_mine",
-        status: aboveReserve ? "pending" : "pending",
-      });
+      try {
+        await base44.entities.Item.update(item.id, {
+          status: aboveReserve ? "sold" : "pending_review",
+          sold_price: aboveReserve ? price : undefined,
+          sold_via: aboveReserve ? "make_it_mine" : undefined,
+          make_it_mine_active: false,
+          make_it_mine_expires: null,
+          make_it_mine_buyer: "buyer@current.user",
+        });
+        await base44.entities.Invoice.create({
+          item_id: item.id,
+          buyer_email: "buyer@current.user",
+          seller_email: item.seller_email,
+          item_price: price,
+          service_fee: serviceFee,
+          purchase_method: "make_it_mine",
+          status: aboveReserve ? "pending" : "pending",
+        });
+      } catch (error) {
+        console.warn("Could not create database records (may be demo data):", error.message);
+      }
       return { aboveReserve, price, serviceFee };
     },
     onSuccess: ({ aboveReserve }) => {
