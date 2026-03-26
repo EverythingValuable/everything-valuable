@@ -14,7 +14,7 @@ import {
 
 const CONFIRM_SECONDS = 120;
 
-export default function BidSection({ item }) {
+export default function BidSection({ item, onMakeItMine, onCancel }) {
   const [bidAmount, setBidAmount] = useState("");
   const [customBid, setCustomBid] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
@@ -111,6 +111,7 @@ export default function BidSection({ item }) {
     const price = getLivePrice();
     setLockedPrice(price);
     setIsPaused(true);
+    if (onMakeItMine) onMakeItMine();
     // Pause the prisometer and save the locked price
     const expires = new Date(Date.now() + CONFIRM_SECONDS * 1000).toISOString();
     try {
@@ -132,6 +133,7 @@ export default function BidSection({ item }) {
     setLockedPrice(null);
     setConfirmResult(null);
     setIsPaused(false);
+    if (onCancel) onCancel();
     try {
       await base44.entities.Item.update(item.id, {
         make_it_mine_active: false,

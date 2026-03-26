@@ -136,14 +136,14 @@ function CollapsibleSection({ title, defaultOpen = true, children }) {
   );
 }
 
-function PriceWrapper({ item }) {
+function PriceWrapper({ item, isPaused, pauseTimeLeft }) {
   const [displayPrice, setDisplayPrice] = useState(item.current_price || item.prisometer_start_price);
   const [cents, setCents] = useState(0);
   const intervalRef = useRef(null);
   const isActive = item.status === "prisometer";
 
   useEffect(() => {
-    if (isActive && item.prisometer_activated_at && item.prisometer_duration_hours) {
+    if (isActive && item.prisometer_activated_at && item.prisometer_duration_hours && !isPaused) {
       const startTime = new Date(item.prisometer_activated_at).getTime();
       const startPrice = item.prisometer_start_price;
       const floorPrice = (item.reserve_price || startPrice * 0.5) * (1 - (item.below_reserve_percent || 10) / 100);
@@ -157,17 +157,20 @@ function PriceWrapper({ item }) {
       update();
       intervalRef.current = setInterval(update, 800);
       return () => clearInterval(intervalRef.current);
+    } else if (isPaused) {
+      // Keep current price frozen while paused
+      return () => clearInterval(intervalRef.current);
     } else {
       setDisplayPrice(item.current_price || item.prisometer_start_price);
     }
-  }, [item, isActive]);
+  }, [item, isActive, isPaused]);
 
   return (
     <PriceConvergenceModule
       item={item}
       isActive={isActive}
-      isPaused={false}
-      pauseTimeLeft={0}
+      isPaused={isPaused}
+      pauseTimeLeft={pauseTimeLeft}
       displayPrice={displayPrice}
       cents={cents}
       formatPrice={p => Math.floor(p).toLocaleString("en-US")}
@@ -180,10 +183,30 @@ export default function RealEstateDetail() {
   const listingId = pathParts[pathParts.length - 1];
   const [user, setUser] = useState(null);
   const { toast } = useToast();
+  const [isPaused, setIsPaused] = useState(false);
+  const [pauseTimeLeft, setPauseTimeLeft] = useState(0);
+  const pauseTimerRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  // Start pause countdown when paused
+  useEffect(() => {
+    if (!isPaused) return;
+    setPauseTimeLeft(120);
+    pauseTimerRef.current = setInterval(() => {
+      setPauseTimeLeft(t => {
+        if (t <= 1) {
+          clearInterval(pauseTimerRef.current);
+          setIsPaused(false);
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(pauseTimerRef.current);
+  }, [isPaused]);
 
   // Use fake data for demo; real implementation would query an entity
   const listing = FAKE_LISTINGS[listingId];
@@ -400,12 +423,12 @@ export default function RealEstateDetail() {
 
               {/* Price / phase module */}
               {(listing.status === "first_bids" || listing.status === "prisometer") && (
-                <PriceWrapper item={listing} />
+                <PriceWrapper item={listing} isPaused={isPaused} pauseTimeLeft={pauseTimeLeft} />
               )}
 
               {/* Bid section */}
               {(listing.status === "first_bids" || listing.status === "prisometer") && (
-                <BidSection item={listing} />
+                <BidSection item={listing} onMakeItMine={() => setIsPaused(true)} onCancel={() => setIsPaused(false)} />
               )}
 
               <Separator />
