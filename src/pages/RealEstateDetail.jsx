@@ -86,6 +86,7 @@ const FAKE_LISTINGS = {
     seller_name: "Millbrook Estate Group",
     images: [
       "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200&q=80",
+      "https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6266dc1b-6783-4359-ab40-562f1ab357a5/ChatGPT+Image+Jan+28%2C+2026%2C+11_09_41+AM+copy.jpg?content-type=image%2Fjpeg",
       "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80",
     ],
     condition_notes: "Full property inspection, well and septic reports, and structural assessment available to verified buyers.",
