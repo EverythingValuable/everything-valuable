@@ -16,6 +16,7 @@ const CONFIRM_SECONDS = 120;
 
 export default function BidSection({ item }) {
   const [bidAmount, setBidAmount] = useState("");
+  const [customBid, setCustomBid] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [showBidConfirm, setShowBidConfirm] = useState(false);
   const [lockedPrice, setLockedPrice] = useState(null);
@@ -61,16 +62,15 @@ export default function BidSection({ item }) {
   const placeBidMutation = useMutation({
     mutationFn: async () => {
       const amount = parseFloat(bidAmount);
-      const currentHighest = item.highest_bid || 0;
-      const increment = getMinBidIncrement(currentHighest, sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers);
-      const minRequired = currentHighest + increment;
 
-      if (!amount || amount < minRequired) {
-        throw new Error(`Bid must be at least $${minRequired.toLocaleString()}`);
+      if (!amount || amount % 100 !== 0) {
+        throw new Error("Bid must be a multiple of $100");
       }
-      if ((amount - currentHighest) % increment !== 0) {
-        throw new Error(`Bid must increase by increments of $${increment}`);
+      const currentHighest = item.highest_bid || 0;
+      if (amount <= currentHighest) {
+        throw new Error(`Bid must be higher than current high bid of $${currentHighest.toLocaleString()}`);
       }
+
       await base44.entities.Bid.create({ item_id: item.id, amount, phase: item.status });
       await base44.entities.Item.update(item.id, {
         highest_bid: amount,
@@ -82,6 +82,7 @@ export default function BidSection({ item }) {
       queryClient.invalidateQueries({ queryKey: ["bids", item.id] });
       toast({ title: "Bid placed successfully", description: `Your bid of $${parseFloat(bidAmount).toLocaleString()} has been recorded.` });
       setBidAmount("");
+      setCustomBid("");
       setShowBidConfirm(false);
     },
     onError: (err) => {
@@ -134,8 +135,7 @@ export default function BidSection({ item }) {
   const confirmMutation = useMutation({
     mutationFn: async () => {
       const price = lockedPrice;
-      const serviceFee = price * 0.10 + 30;
-      const feeCredit = serviceFee * 0.50;
+      const serviceFee = 500; // Flat $500 service fee
       const aboveReserve = price >= (item.reserve_price || 0);
 
       await base44.entities.Item.update(item.id, {
@@ -152,13 +152,10 @@ export default function BidSection({ item }) {
         seller_email: item.seller_email,
         item_price: price,
         service_fee: serviceFee,
-        fee_credit: feeCredit,
-        final_amount: price - feeCredit,
-        total_cost: price + serviceFee - feeCredit,
         purchase_method: "make_it_mine",
         status: aboveReserve ? "pending" : "pending",
       });
-      return { aboveReserve, price, serviceFee, feeCredit };
+      return { aboveReserve, price, serviceFee };
     },
     onSuccess: ({ aboveReserve }) => {
       clearInterval(timerRef.current);
@@ -209,9 +206,7 @@ export default function BidSection({ item }) {
   const minBid = currentHighestBid > 0 ? currentHighestBid + increment : startingBid;
 
   const price = lockedPrice || currentPrice;
-  const serviceFee = price * 0.10 + 30;
-  const feeCredit = serviceFee * 0.50;
-  const upfrontDue = serviceFee;
+  const serviceFee = 500; // Flat $500 service fee
   const aboveReserve = price >= (item.reserve_price || 0);
 
   const mins = Math.floor(timeLeft / 60);
@@ -251,119 +246,80 @@ export default function BidSection({ item }) {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Place a Bid</span>
           </div>
           <div className="flex gap-2">
-            <Select
-              value={bidAmount}
-              onValueChange={(val) => {
-                if (val === "make_it_mine") {
-                  setBidAmount("");
-                  handleOpenConfirm();
+            <input
+              type="text"
+              placeholder={`Min: $${(currentHighestBid + 100).toLocaleString()}`}
+              value={customBid}
+              onChange={(e) => setCustomBid(e.target.value.replace(/\D/g, ""))}
+              className="flex-1 h-11 px-3 border border-input rounded-md bg-background text-foreground"
+            />
+            <Button
+              onClick={() => {
+                const amt = parseInt(customBid) || 0;
+                if (amt > 0 && amt % 100 === 0) {
+                  setBidAmount(amt.toString());
+                  setShowBidConfirm(true);
                 } else {
-                  setBidAmount(val);
+                  toast({ title: "Invalid bid", description: "Enter a multiple of $100", variant: "destructive" });
                 }
               }}
-            >
-              <SelectTrigger className="flex-1 h-11">
-                <SelectValue placeholder={`Starting at $${minBid.toLocaleString()}`} />
-              </SelectTrigger>
-              <SelectContent>
-                {generateBidOptions().map((option) => (
-                  <SelectItem key={option} value={option.toString()}>
-                    ${option.toLocaleString()}
-                  </SelectItem>
-                ))}
-                {canMakeItMine && (
-                  <SelectItem value="make_it_mine" className="text-primary font-semibold border-t border-border mt-1 pt-1">
-                    🛍 Make It Mine — ${Math.floor(getLivePrice()).toLocaleString()}
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-            <Button
-              onClick={() => setShowBidConfirm(true)}
-              disabled={!bidAmount || bidAmount === "make_it_mine"}
+              disabled={!customBid}
               className="h-11 px-6 bg-foreground text-background hover:bg-foreground/90"
             >
               Bid
             </Button>
           </div>
-          {getTierInfo().length > 0 && (
-            <button
-              onClick={() => setShowTiers(!showTiers)}
-              className="flex items-center gap-2 text-xs text-primary hover:text-primary/80 transition-colors"
-            >
-              <ChevronDown className={`w-3 h-3 transition-transform ${showTiers ? "rotate-180" : ""}`} />
-              View bidding increments
-            </button>
-          )}
-          {showTiers && (
-            <div className="rounded-lg bg-muted/50 p-3 space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground">Minimum Increments:</p>
-              <div className="space-y-1">
-                {getTierInfo().map((tier, idx) => (
-                  <div key={idx} className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>${tier.min.toLocaleString()} – ${tier.max.toLocaleString()}</span>
-                    <span className="font-medium">+${tier.increment.toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <p className="text-xs text-muted-foreground">Bids must be multiples of $100</p>
         </div>
       )}
 
           {/* Bid Confirmation Modal */}
-          {showBidConfirm && (
-            <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Gavel className="w-5 h-5 text-primary" />
-                  <h3 className="font-serif text-lg font-semibold">Confirm Your Bid</h3>
-                </div>
-              </div>
+           {showBidConfirm && (
+             <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
+               <div className="flex items-center gap-2">
+                 <Gavel className="w-5 h-5 text-primary" />
+                 <h3 className="font-serif text-lg font-semibold">Confirm Your Bid</h3>
+               </div>
 
-              <div className="text-center py-2">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your High Bid</p>
-                <p className="font-price text-3xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
-              </div>
+               <div className="text-center py-2">
+                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your High Bid</p>
+                 <p className="font-price text-4xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US")}.00</p>
+               </div>
 
-              <div className="rounded-lg border border-border bg-card p-4 space-y-3 text-sm">
-                <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3">Fee Breakdown</p>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Item Price</span>
-                  <span>${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Service Fee (10% + $30)</span>
-                  <span>${(parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold">
-                  <span>If prisometer meets your high bid, you will be charged</span>
-                  <span>${(parseFloat(bidAmount) * 0.1 + 30).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div className="flex justify-between text-green-700 font-medium">
-                  <span>50% Credit Applied on Final Invoice</span>
-                  <span>−${((parseFloat(bidAmount) * 0.1 + 30) * 0.5).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div className="border-t border-border mt-2 pt-3 flex justify-between font-semibold text-xs text-muted-foreground">
-                  <span>Remaining due after upfront payment</span>
-                  <span className="text-foreground">${(parseFloat(bidAmount) + (parseFloat(bidAmount) * 0.1 + 30) * 0.5 - (parseFloat(bidAmount) * 0.1 + 30)).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-                </div>
-              </div>
+               <div className="rounded-lg border border-border bg-card p-4 space-y-3 text-sm">
+                 <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3">Fee Breakdown</p>
+                 <div className="flex justify-between">
+                   <span className="text-muted-foreground">Item Price</span>
+                   <span>${parseFloat(bidAmount).toLocaleString("en-US")}.00</span>
+                 </div>
+                 <div className="flex justify-between">
+                   <span className="text-muted-foreground">Service Fee if you win</span>
+                   <span>$500.00</span>
+                 </div>
+                 <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold">
+                   <span>If prisometer meets your high bid, you will be charged</span>
+                   <span>$500.00</span>
+                 </div>
+                 <div className="border-t border-border mt-2 pt-3 flex justify-between font-semibold text-xs text-muted-foreground">
+                   <span>Remaining due at closing</span>
+                   <span className="text-foreground">${parseFloat(bidAmount).toLocaleString("en-US")}.00</span>
+                 </div>
+               </div>
 
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => placeBidMutation.mutate()}
-                  disabled={placeBidMutation.isPending}
-                  className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-                >
-                  {placeBidMutation.isPending ? "Placing Bid..." : "Confirm Bid"}
-                </Button>
-                <Button variant="outline" onClick={() => setShowBidConfirm(false)} className="h-12 px-5">
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
+               <div className="flex gap-3">
+                 <Button
+                   onClick={() => placeBidMutation.mutate()}
+                   disabled={placeBidMutation.isPending}
+                   className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                 >
+                   {placeBidMutation.isPending ? "Confirming..." : "Confirm Bid"}
+                 </Button>
+                 <Button variant="outline" onClick={() => { setShowBidConfirm(false); setCustomBid(""); }} className="h-12 px-5">
+                   Cancel
+                 </Button>
+               </div>
+             </div>
+           )}
 
       {/* Make It Mine result screen */}
       {confirmResult && !showBidConfirm && (
@@ -373,14 +329,14 @@ export default function BidSection({ item }) {
             <>
               <h3 className="font-serif text-xl font-semibold">Congratulations!</h3>
               <p className="text-sm text-muted-foreground">
-                Your locked price was at or above the reserve. Your service fee has been charged and your purchase is confirmed. Check your buyer dashboard for the invoice.
+                Your offer has been accepted. Your $500 service fee has been charged. Check your email and buyer dashboard for next steps.
               </p>
             </>
           ) : (
             <>
               <h3 className="font-serif text-xl font-semibold">Offer Submitted</h3>
               <p className="text-sm text-muted-foreground">
-                Your locked price was below the reserve. Your offer has been sent to the seller for review. If confirmed, you will be charged the service fee. Please keep a look out for your email.
+                Your $500 service fee has been charged. Your offer is pending seller review. Check your email for updates.
               </p>
             </>
           )}
@@ -390,72 +346,35 @@ export default function BidSection({ item }) {
       {/* Make It Mine confirmation panel */}
       {showConfirm && !confirmResult && !showBidConfirm && (
         <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
-          {/* Header + timer */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5 text-primary" />
-              <h3 className="font-serif text-lg font-semibold">Make It Mine</h3>
-            </div>
-            <div className={`flex items-center gap-1.5 font-mono font-semibold text-lg ${timerColor}`}>
-              <Clock className="w-4 h-4" />
-              {mins}:{secs.toString().padStart(2, "0")}
-            </div>
+          <div>
+            <p className="text-xs text-green-600 font-semibold">Registration Status: Confirmed</p>
+            <h3 className="font-serif text-lg font-semibold mt-2">Confirm Your Offer Now</h3>
           </div>
 
-          {/* Paused notice */}
-          <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
-            The PRI$OMETER is paused while you complete this purchase. Your price is locked at the amount shown below.
-          </p>
-
-          {/* Locked price */}
-          <div className="text-center py-2">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Locked Price</p>
-            <p className="font-price text-3xl font-semibold">${price.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
+          <div className="bg-background/50 rounded-lg p-4 space-y-1 text-sm">
+            <p>The PRI$OMETER is currently paused at <strong>${price.toLocaleString("en-US")}</strong></p>
+            <p className="text-red-600 font-medium mt-2">Please review the bid amount and ensure you are ready to proceed.</p>
           </div>
 
-          {/* Fee breakdown */}
-          <div className="rounded-lg border border-border bg-card p-4 space-y-2 text-sm">
-            <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3">Fee Breakdown</p>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Item Price</span>
-              <span>${price.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Service Fee (10% + $30)</span>
-              <span>${serviceFee.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="border-t border-border my-1 pt-2 flex justify-between font-semibold">
-              <span>Due Now (service fee)</span>
-              <span>${upfrontDue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="flex justify-between text-green-700 text-xs">
-              <span>Credit applied to final invoice</span>
-              <span>−${feeCredit.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-            </div>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Remaining due after upfront payment</span>
-              <span>${(price - feeCredit).toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-            </div>
+          <div className="text-center space-y-1">
+            <p className="text-sm font-semibold">$500 Service Fee Required</p>
+            <p className="text-xs text-muted-foreground">The card you used to register with will be automatically charged the agreed upon $500</p>
           </div>
 
-          {/* Actions */}
+          <p className="text-xs text-muted-foreground text-center">Press "Confirm" to place your offer</p>
+
           <div className="flex gap-3">
             <Button
               onClick={() => confirmMutation.mutate()}
               disabled={confirmMutation.isPending}
-              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+              className="flex-1 h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-lg"
             >
-              {confirmMutation.isPending ? "Processing..." : "Confirm & Pay Service Fee"}
+              {confirmMutation.isPending ? "Processing..." : "Confirm"}
             </Button>
-            <Button variant="outline" onClick={handleCancel} className="h-12 px-5">
+            <Button variant="outline" onClick={handleCancel} className="h-11 px-6 rounded-lg">
               Cancel
             </Button>
           </div>
-
-          <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
-            <AlertCircle className="w-3 h-3" />
-            Timer expires in {mins}:{secs.toString().padStart(2, "0")} — cancellation unpauses the PRI$OMETER
-          </p>
         </div>
       )}
     </div>
