@@ -36,7 +36,7 @@ function CollapsibleSection({ title, defaultOpen = true, children }) {
   );
 }
 
-export default function ItemPreviewModal({ item, onClose }) {
+export default function ItemPreviewModal({ item: initialItem, onClose }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [user, setUser] = useState(null);
 
@@ -46,6 +46,15 @@ export default function ItemPreviewModal({ item, onClose }) {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
   }, []);
+
+  // Fetch a fresh copy of the item so the modal always has up-to-date data
+  const { data: freshItem } = useQuery({
+    queryKey: ["item", initialItem.id],
+    queryFn: () => base44.entities.Item.filter({ id: initialItem.id }).then(r => r[0]),
+    enabled: !!initialItem.id,
+  });
+
+  const item = freshItem || initialItem;
 
   // Close on Escape
   useEffect(() => {
