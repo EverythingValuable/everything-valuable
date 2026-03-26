@@ -82,7 +82,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
       </div>
 
       {/* Box 2: PRI$OMETER Start Price */}
-      <div className="rounded-xl border border-border bg-card px-5 py-4 opacity-60 shadow-sm">
+      <div className="rounded-xl border border-border bg-amber-50 px-5 py-4 opacity-50 shadow-sm">
         <p className="text-xs font-bold text-foreground/60 uppercase tracking-widest">PRI$OMETER™ Start Price</p>
         <motion.div
           key={Math.floor(displayPrice)}
