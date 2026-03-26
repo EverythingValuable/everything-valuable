@@ -47,7 +47,7 @@ export default function Portal() {
           className="group relative overflow-hidden bg-gradient-to-bl from-amber-900 to-amber-800 flex items-center justify-center cursor-pointer transition-transform hover:scale-105"
         >
           <img
-            src="https://images.unsplash.com/photo-1578500494198-246f612d03b3?w=800&q=80"
+            src="https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6266dc1b-6783-4359-ab40-562f1ab357a5/ChatGPT+Image+Jan+28%2C+2026%2C+11_09_41+AM+copy.jpg?content-type=image%2Fjpeg"
             alt="Personal Property"
             className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity"
           />
