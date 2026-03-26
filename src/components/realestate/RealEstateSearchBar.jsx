@@ -19,8 +19,8 @@ export default function RealEstateSearchBar() {
       viewport={{ once: true }}
       className="bg-gradient-to-r from-primary/5 to-primary/10 py-8"
     >
-      <div className="max-w-screen-2xl mx-auto px-4 md:px-6">
-        <form onSubmit={handleSearch} className="flex gap-3 max-w-md">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 flex justify-center">
+        <form onSubmit={handleSearch} className="flex gap-3 w-full max-w-2xl">
           <div className="flex-1 relative">
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
