@@ -129,11 +129,15 @@ export default function BidSection({ item }) {
     setShowConfirm(false);
     setLockedPrice(null);
     setConfirmResult(null);
-    await base44.entities.Item.update(item.id, {
-      make_it_mine_active: false,
-      make_it_mine_expires: null,
-    });
-    queryClient.invalidateQueries({ queryKey: ["item", item.id] });
+    try {
+      await base44.entities.Item.update(item.id, {
+        make_it_mine_active: false,
+        make_it_mine_expires: null,
+      });
+      queryClient.invalidateQueries({ queryKey: ["item", item.id] });
+    } catch (error) {
+      console.warn("Could not update item state (may be demo data):", error.message);
+    }
   };
 
   const confirmMutation = useMutation({
