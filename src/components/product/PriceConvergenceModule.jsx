@@ -60,10 +60,10 @@ function PreviewState({ item, displayPrice, formatPrice }) {
   }, [item.first_bids_end]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1.5">
 
       {/* Box 1: 1stBid$ Preview Timer */}
-      <div className="rounded-xl border border-border bg-card px-5 py-4">
+      <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-primary" />
@@ -79,13 +79,8 @@ function PreviewState({ item, displayPrice, formatPrice }) {
         <ExpandableInfoBox explanation="1stBid$™ is the preview bidding phase before live pricing begins. Place early bids to signal interest — the highest bid carries over when the PRI$OMETER™ opens." />
       </div>
 
-      {/* Visual connector */}
-      <div className="flex justify-center">
-        <div className="w-px h-5" style={{backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 4px, hsl(var(--muted-foreground) / 0.4) 4px, hsl(var(--muted-foreground) / 0.4) 6px)'}}></div>
-      </div>
-
       {/* Box 2: PRI$OMETER Start Price */}
-      <div className="rounded-xl border border-border bg-card px-5 py-4 opacity-60">
+      <div className="rounded-xl border border-border bg-card px-5 py-4 opacity-60 shadow-sm">
         <p className="text-xs font-semibold text-foreground uppercase tracking-wider">PRI$OMETER™ Start Price</p>
         <motion.div
           key={Math.floor(displayPrice)}
@@ -100,13 +95,8 @@ function PreviewState({ item, displayPrice, formatPrice }) {
         <ExpandableInfoBox explanation="This is the price at which the live PRI$OMETER™ will begin once the preview phase ends. From here, the price descends continuously until it's claimed or the session closes." />
       </div>
 
-      {/* Visual connector */}
-      <div className="flex justify-center">
-        <div className="w-px h-5" style={{backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 4px, hsl(var(--muted-foreground) / 0.4) 4px, hsl(var(--muted-foreground) / 0.4) 6px)'}}></div>
-      </div>
-
       {/* Box 3: Highest Preview Bid */}
-      <div className="rounded-xl border border-border bg-card px-5 py-4">
+      <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Highest Preview Bid</p>
         {item.highest_bid > 0 ? (
           <>
@@ -127,99 +117,86 @@ function PreviewState({ item, displayPrice, formatPrice }) {
 
 function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cents, formatPrice }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-6 space-y-6">
-      {/* Header: Live Status */}
-      <div>
-        {isActive && (
+    <div className="space-y-1.5">
+
+      {/* Box 1: Live PRI$OMETER Price */}
+      <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
+        <div className="flex items-center justify-between mb-2">
+          {isActive && (
+            <motion.div
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="flex items-center gap-1.5"
+            >
+              <div className="w-2 h-2 rounded-full bg-red-500" />
+              <span className="text-xs font-bold text-red-600 uppercase tracking-wider">PRI$OMETER™ Live</span>
+            </motion.div>
+          )}
+          {isPaused && (
+            <div className="flex items-center gap-1.5 text-amber-600">
+              <Pause className="w-3.5 h-3.5" />
+              <span className="text-xs font-bold uppercase tracking-wider">PRI$OMETER™ Paused</span>
+            </div>
+          )}
+        </div>
+
+        {isPaused && (
           <motion.div
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="flex items-center gap-1.5"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 space-y-2 mb-3"
           >
-            <div className="w-2 h-2 rounded-full bg-red-500" />
-            <span className="text-xs font-bold text-red-600 uppercase tracking-wider">PRI$OMETER™ Live</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-amber-700">Transaction in Progress</span>
+              <span className="font-mono text-sm font-bold text-amber-700">
+                {Math.floor(pauseTimeLeft / 60)}:{(pauseTimeLeft % 60).toString().padStart(2, "0")}
+              </span>
+            </div>
+            <p className="text-xs text-amber-600 leading-relaxed">
+              A buyer is completing a Make It Mine purchase. The PRI$OMETER will resume if the transaction is cancelled or expires.
+            </p>
           </motion.div>
         )}
-        {isPaused && (
-          <div className="flex items-center gap-1.5 text-amber-600">
-            <Pause className="w-3.5 h-3.5" />
-            <span className="text-xs font-bold uppercase tracking-wider">PRI$OMETER™ Paused</span>
-          </div>
-        )}
-      </div>
 
-      {/* Pause Notice (if paused) */}
-      {isPaused && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 space-y-2"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-700">Transaction in Progress</span>
-            <span className="font-mono text-sm font-bold text-amber-700">
-              {Math.floor(pauseTimeLeft / 60)}:{(pauseTimeLeft % 60).toString().padStart(2, "0")}
-            </span>
-          </div>
-          <p className="text-xs text-amber-600 leading-relaxed">
-            A buyer is completing a Make It Mine purchase. The PRI$OMETER will resume if the transaction is cancelled or expires.
-          </p>
-        </motion.div>
-      )}
-
-      {/* Main: Current PRI$OMETER Price (large, dominant) */}
-      <div className="text-center space-y-2">
-        <div className="flex items-center justify-center gap-1.5">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current PRI$OMETER™ Price</p>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs text-xs leading-relaxed" side="bottom">
-                {PRISOMETER_INFO}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current PRI$OMETER™ Price</p>
         <motion.div
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02, opacity: 0.8 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="font-sans text-5xl md:text-6xl font-bold text-foreground"
+          className="font-sans text-5xl md:text-6xl font-bold text-foreground mt-1"
         >
           ${formatPrice(displayPrice)}
           {isActive && (
             <span className="font-sans text-xl text-red-500 animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
           )}
         </motion.div>
+        <ExpandableInfoBox explanation={PRISOMETER_INFO} />
       </div>
 
-
-
-      {/* Visual connector: Subtle downward movement indicator */}
-      <div className="flex justify-center py-2">
-        <div className="w-px h-8 bg-gradient-to-b from-muted-foreground/40 via-muted-foreground/20 to-transparent" style={{backgroundImage: 'repeating-linear-gradient(to bottom, transparent, transparent 4px, hsl(var(--muted-foreground)) 4px, hsl(var(--muted-foreground)) 6px)'}}></div>
+      {/* Box 2: Current Highest Bid */}
+      <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current Highest Bid</p>
+        {item.highest_bid > 0 ? (
+          <>
+            <p className="font-sans text-2xl md:text-3xl font-bold text-foreground mt-1">
+              ${item.highest_bid.toLocaleString("en-US")}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">{item.bid_count} bid{item.bid_count !== 1 ? "s" : ""} placed</p>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground mt-1 italic">No bids yet — be the first</p>
+        )}
+        <ExpandableInfoBox explanation="If the PRI$OMETER™ price descends to meet or fall below the highest bid and the reserve is met, the sale completes automatically at that price." />
       </div>
-
-      {/* Bottom: Current Highest Bid (smaller, secondary) */}
-      {item.highest_bid > 0 && (
-        <div className="text-center space-y-1 pt-3 border-t border-border/50">
-          <p className="text-xs text-muted-foreground">Current Highest Bid</p>
-          <p className="font-sans text-2xl md:text-3xl font-bold text-foreground">
-            ${item.highest_bid.toLocaleString("en-US")}
-          </p>
-          <p className="text-xs text-muted-foreground">({item.bid_count} bid{item.bid_count !== 1 ? "s" : ""})</p>
-        </div>
-      )}
 
       {/* Helper text */}
-      <p className="text-xs text-muted-foreground text-center bg-secondary/30 rounded-lg p-3 italic">
+      <p className="text-xs text-muted-foreground text-center bg-secondary/30 rounded-lg px-4 py-3 italic">
         {item.highest_bid > 0
           ? "If the PRI$OMETER reaches the highest bid above reserve, the sale completes."
           : "Place a bid or use Make It Mine to purchase at the current price."}
       </p>
+
     </div>
   );
 }
