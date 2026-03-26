@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Heart, Share2, ChevronRight, ChevronDown, Bed, Bath, Square, MapPin, FileText, Shield, Clock } from "lucide-react";
+import { Heart, Share2, ChevronRight, ChevronDown, Bed, Bath, Square, MapPin, FileText, Shield, BookOpen } from "lucide-react";
+import DocumentDownloadModal from "../components/realestate/DocumentDownloadModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -188,6 +189,36 @@ export default function RealEstateDetail() {
   const listing = FAKE_LISTINGS[listingId];
 
   const [isSaved, setIsSaved] = useState(false);
+  const [openModal, setOpenModal] = useState(null); // "property" | "transaction" | "disclosure"
+
+  const PROPERTY_DOCS = [
+    { label: "Deed" },
+    { label: "Tax Bills" },
+    { label: "Survey" },
+    { label: "Municipal Reports" },
+    { label: "Offering Plan" },
+    { label: "Home Inspection Report" },
+    { label: "Listing Link" },
+    { label: "Tax Map" },
+  ];
+
+  const TRANSACTION_DOCS = [
+    { label: "Option Agreement" },
+    { label: "Election to Extend", note: "Sample Document — Not for site" },
+    { label: "Election to Exercise Option", note: "Sample Document — Not for site" },
+  ];
+
+  const DISCLOSURE_DOCS = [
+    { label: "Lead Paint Disclosure Form" },
+    { label: "Environmental Hazard Pamphlet" },
+    { label: "Homeowner's Guide to Earthquake Safety" },
+    { label: "Megan's Law Disclosure" },
+    { label: "Transfer Disclosure Statement" },
+    { label: "Water Heater and Smoke Detector Statement of Compliance" },
+    { label: "Water-Conserving Fixtures and Detector Notice" },
+    { label: "Wood Destroying Pests and Organisms Inspection Report" },
+    { label: "Property Condition Disclosure" },
+  ];
 
   if (!listing) {
     return (
@@ -206,6 +237,16 @@ export default function RealEstateDetail() {
 
   return (
     <div>
+      {openModal === "property" && (
+        <DocumentDownloadModal title="Property Documents" documents={PROPERTY_DOCS} onClose={() => setOpenModal(null)} />
+      )}
+      {openModal === "transaction" && (
+        <DocumentDownloadModal title="Transaction Documents" documents={TRANSACTION_DOCS} onClose={() => setOpenModal(null)} />
+      )}
+      {openModal === "disclosure" && (
+        <DocumentDownloadModal title="Disclosure Documents" documents={DISCLOSURE_DOCS} onClose={() => setOpenModal(null)} />
+      )}
+
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-6 md:px-8 py-4">
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -268,33 +309,30 @@ export default function RealEstateDetail() {
                 </div>
               </CollapsibleSection>
 
-              {listing.condition_notes && (
-                <CollapsibleSection title="Inspections & Disclosures" defaultOpen={false}>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{listing.condition_notes}</p>
-                </CollapsibleSection>
-              )}
-
-              {listing.shipping_notes && (
-                <CollapsibleSection title="Contract & Deposit Terms" defaultOpen={false}>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{listing.shipping_notes}</p>
-                </CollapsibleSection>
-              )}
-
-              <CollapsibleSection title="Buyer Qualification" defaultOpen={false}>
-                <div className="space-y-3">
-                  {[
-                    { icon: Shield, text: "Identity verification required before bidding" },
-                    { icon: FileText, text: "Proof of funds or mortgage pre-approval must be submitted" },
-                    { icon: Clock, text: "Earnest money deposit due within 48–72 hours of winning" },
-                    { icon: FileText, text: "Inspection reports and disclosures available to verified buyers" },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <item.icon className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                      <p className="text-sm text-muted-foreground">{item.text}</p>
+              {/* Document Download Buttons */}
+              <div className="border-t border-border pt-6 space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Documents</p>
+                {[
+                  { key: "property", icon: FileText, label: "Property Information", desc: "Deed, survey, inspection, tax docs" },
+                  { key: "transaction", icon: BookOpen, label: "Transaction Documents", desc: "Option agreement and related forms" },
+                  { key: "disclosure", icon: Shield, label: "Disclosures", desc: "Lead paint, transfer, condition disclosures" },
+                ].map(({ key, icon: Icon, label, desc }) => (
+                  <button
+                    key={key}
+                    onClick={() => setOpenModal(key)}
+                    className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 transition-all text-left group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4 text-primary" />
                     </div>
-                  ))}
-                </div>
-              </CollapsibleSection>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{label}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
