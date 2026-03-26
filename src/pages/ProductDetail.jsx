@@ -178,7 +178,7 @@ export default function ProductDetail() {
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-6 md:px-8 py-4">
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-foreground">Home</Link>
+          <Link to="/personal-property" className="hover:text-foreground">Home</Link>
           <ChevronRight className="w-3 h-3" />
           <Link to="/browse" className="hover:text-foreground">Browse</Link>
           <ChevronRight className="w-3 h-3" />
