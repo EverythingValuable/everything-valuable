@@ -45,7 +45,7 @@ export default function HeroSection() {
 
           {/* Headline */}
           <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.6rem] font-semibold leading-[1.08] tracking-tight text-foreground mb-5">
-            A New Standard for <em className="not-italic text-primary">Valuable</em> Things
+            A New Standard for <em className="not-italic text-primary">Everything Valuable</em>
           </h1>
 
           {/* Subhead */}
