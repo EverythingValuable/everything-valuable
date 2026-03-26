@@ -438,15 +438,6 @@ export default function RealEstateDetail() {
 
               <Separator />
 
-              {/* Qualification notice */}
-              <div className="bg-primary/5 border border-primary/15 rounded-lg p-4 space-y-1.5">
-                <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Qualified Buyers Only</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Participation requires verified identity and proof of funds or pre-approval. 
-                  Winning a bid initiates the deposit and contract execution workflow.
-                </p>
-              </div>
-
               {/* Actions */}
               <div className="flex gap-3">
                 <Button
