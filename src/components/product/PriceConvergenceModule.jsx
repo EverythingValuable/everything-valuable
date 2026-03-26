@@ -64,14 +64,16 @@ function PreviewState({ item, displayPrice, formatPrice }) {
 
       {/* Box 1: 1stBid$ Preview Timer */}
       <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-primary" />
             <span className="font-display text-sm font-bold uppercase tracking-wider text-primary">
               1stBid$<sup className="text-[9px] ml-0.5">™</sup> Preview
             </span>
           </div>
-          <div className="font-price text-sm font-bold tabular-nums text-amber-600">
+        </div>
+        <div className="text-center mb-4">
+          <div className="font-price text-2xl md:text-3xl font-bold tabular-nums text-amber-600">
             {countdown.days > 0 && `${countdown.days}d `}
             {countdown.hours.toString().padStart(2, "0")}h {countdown.minutes.toString().padStart(2, "0")}m {countdown.seconds.toString().padStart(2, "0")}s
           </div>
