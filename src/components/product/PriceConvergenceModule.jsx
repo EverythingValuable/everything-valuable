@@ -72,7 +72,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
             </span>
           </div>
         </div>
-        <div className="text-center mb-4">
+        <div className="text-left mb-4">
           <div className="font-price text-2xl md:text-3xl font-bold tabular-nums text-amber-600">
             {countdown.days > 0 && `${countdown.days}d `}
             {countdown.hours.toString().padStart(2, "0")}h {countdown.minutes.toString().padStart(2, "0")}m {countdown.seconds.toString().padStart(2, "0")}s
