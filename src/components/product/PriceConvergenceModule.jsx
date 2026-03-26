@@ -81,13 +81,13 @@ function PreviewState({ item, displayPrice, formatPrice }) {
 
       {/* Box 2: PRI$OMETER Start Price */}
       <div className="rounded-xl border border-border bg-card px-5 py-4 opacity-60 shadow-sm">
-        <p className="text-xs font-semibold text-foreground uppercase tracking-wider">PRI$OMETER™ Start Price</p>
+        <p className="text-xs font-bold text-foreground/60 uppercase tracking-widest">PRI$OMETER™ Start Price</p>
         <motion.div
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02, opacity: 0.8 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="font-sans text-3xl md:text-4xl font-bold text-foreground mt-1"
+          className="font-sans text-3xl md:text-4xl font-bold text-foreground/40 mt-1"
         >
           ${formatPrice(displayPrice)}
         </motion.div>
@@ -97,10 +97,10 @@ function PreviewState({ item, displayPrice, formatPrice }) {
 
       {/* Box 3: Highest Preview Bid */}
       <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Highest Preview Bid</p>
+        <p className="text-xs font-bold text-foreground/70 uppercase tracking-widest">Highest Preview Bid</p>
         {item.highest_bid > 0 ? (
           <>
-            <p className="font-sans text-2xl md:text-3xl font-bold text-foreground mt-1">
+            <p className="font-sans text-2xl md:text-3xl font-bold text-primary mt-1">
               ${item.highest_bid.toLocaleString("en-US")}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">{item.bid_count} bid{item.bid_count !== 1 ? "s" : ""} placed</p>
@@ -158,7 +158,7 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
           </motion.div>
         )}
 
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current PRI$OMETER™ Price</p>
+        <p className="text-xs font-bold text-foreground/60 uppercase tracking-widest">Current PRI$OMETER™ Price</p>
         <motion.div
           key={Math.floor(displayPrice)}
           initial={{ scale: 1.02, opacity: 0.8 }}
@@ -166,9 +166,9 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
           transition={{ duration: 0.4 }}
           className="font-sans text-5xl md:text-6xl font-bold text-foreground mt-1"
         >
-          ${formatPrice(displayPrice)}
+          <span className="text-red-600">${formatPrice(displayPrice)}</span>
           {isActive && (
-            <span className="font-sans text-xl text-red-500 animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
+            <span className="font-sans text-xl text-red-400 animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
           )}
         </motion.div>
         <ExpandableInfoBox explanation={PRISOMETER_INFO} />
@@ -176,10 +176,10 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
 
       {/* Box 2: Current Highest Bid */}
       <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current Highest Bid</p>
+        <p className="text-xs font-bold text-foreground/70 uppercase tracking-widest">Current Highest Bid</p>
         {item.highest_bid > 0 ? (
           <>
-            <p className="font-sans text-2xl md:text-3xl font-bold text-foreground mt-1">
+            <p className="font-sans text-2xl md:text-3xl font-bold text-primary mt-1">
               ${item.highest_bid.toLocaleString("en-US")}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">{item.bid_count} bid{item.bid_count !== 1 ? "s" : ""} placed</p>
