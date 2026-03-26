@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import HotspotProductGallery from "../components/product/HotspotProductGallery";
 import PriceConvergenceModule from "../components/product/PriceConvergenceModule";
-import BidSection from "../components/product/BidSection";
+import RealEstateBidSection from "../components/realestate/RealEstateBidSection";
 import ItemMessaging from "../components/product/ItemMessaging";
 
 // Fake listings mirror REFeaturedListings data so detail page works for demo
@@ -433,7 +433,7 @@ export default function RealEstateDetail() {
 
               {/* Bid section */}
               {(listing.status === "first_bids" || listing.status === "prisometer") && (
-                <BidSection item={listing} onMakeItMine={() => setIsPaused(true)} onCancel={() => setIsPaused(false)} />
+                <RealEstateBidSection item={listing} onMakeItMine={() => setIsPaused(true)} onCancel={() => setIsPaused(false)} />
               )}
 
               <Separator />
