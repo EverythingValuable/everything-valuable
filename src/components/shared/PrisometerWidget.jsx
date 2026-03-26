@@ -72,18 +72,39 @@ export default function PrisometerWidget({ item, compact = false }) {
 
   if (compact) {
     return (
-      <div className="flex items-center gap-2">
-        {isActive && (
-          <motion.div
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-2 h-2 rounded-full bg-red-500"
-          />
+      <div className="rounded-lg border border-border bg-card px-4 py-3">
+        <div className="flex items-center justify-between mb-1">
+          {isActive && (
+            <motion.div
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="flex items-center gap-1.5"
+            >
+              <div className="w-2 h-2 rounded-full bg-red-500" />
+              <span className="text-xs font-bold text-red-600 uppercase tracking-wider">PRI$OMETER™ Live</span>
+            </motion.div>
+          )}
+          {isPaused && (
+            <div className="flex items-center gap-1.5 text-amber-600">
+              <Pause className="w-3 h-3" />
+              <span className="text-xs font-bold uppercase tracking-wider">Paused</span>
+            </div>
+          )}
+          {item.status === "first_bids" && (
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">PRI$OMETER™ Start Price</span>
+          )}
+        </div>
+        <div className="flex items-baseline gap-1">
+          <span className={`font-sans text-3xl font-bold ${item.status === "first_bids" ? "text-muted-foreground/50" : "text-foreground"}`}>
+            ${formatPrice(displayPrice)}
+          </span>
+          {isActive && (
+            <span className="font-sans text-base text-red-500 animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
+          )}
+        </div>
+        {item.status === "first_bids" && (
+          <p className="text-xs text-muted-foreground italic mt-0.5">Activates after preview</p>
         )}
-        <span className="font-sans text-xl font-bold text-foreground">
-          ${formatPrice(displayPrice)}
-          {isActive && <span className="font-sans text-sm text-muted-foreground animate-price-tick">.{cents.toString().padStart(2, "0")}</span>}
-        </span>
       </div>
     );
   }

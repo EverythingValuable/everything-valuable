@@ -7,9 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
+import BidSection from "../product/BidSection";
 import PrisometerWidget from "./PrisometerWidget";
 import FirstBidsCountdown from "./FirstBidsCountdown";
-import BidSection from "../product/BidSection";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -32,6 +32,30 @@ function CollapsibleSection({ title, defaultOpen = true, children }) {
         <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && <div className="pb-4">{children}</div>}
+    </div>
+  );
+}
+
+function CompactPricePanel({ item }) {
+  return (
+    <div className="space-y-2">
+      {item.status === "first_bids" && item.first_bids_end && (
+        <FirstBidsCountdown endTime={item.first_bids_end} compact />
+      )}
+      <PrisometerWidget item={item} compact />
+      {item.highest_bid > 0 && (
+        <div className="rounded-lg border border-border bg-card px-4 py-3">
+          <p className="text-xs text-muted-foreground mb-1">
+            {item.status === "first_bids" ? "Highest Preview Bid" : "Current Highest Bid"}
+          </p>
+          <p className="font-sans text-2xl font-bold text-foreground">
+            ${item.highest_bid.toLocaleString("en-US")}
+          </p>
+          {item.bid_count > 0 && (
+            <p className="text-xs text-muted-foreground mt-0.5">{item.bid_count} bid{item.bid_count !== 1 ? "s" : ""} placed</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -180,12 +204,9 @@ export default function ItemPreviewModal({ item: initialItem, onClose }) {
                 )}
               </div>
 
-              {/* Countdown + Prisometer */}
-              {item.status === "first_bids" && item.first_bids_end && (
-                <FirstBidsCountdown endTime={item.first_bids_end} />
-              )}
-              {(item.status === "prisometer" || item.status === "first_bids") && (
-                <PrisometerWidget item={item} />
+              {/* Countdown + Prisometer — compact versions matching the full listing page layout */}
+              {(item.status === "first_bids" || item.status === "prisometer") && (
+                <CompactPricePanel item={item} />
               )}
 
               {/* Bid section */}
