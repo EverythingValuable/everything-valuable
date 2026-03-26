@@ -148,7 +148,8 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const confirmMutation = useMutation({
     mutationFn: async () => {
       const price = lockedPrice;
-      const serviceFee = 500; // Flat $500 service fee
+      const serviceFee = price * 0.10 + 30; // 10% + $30
+      const feeCredit = serviceFee * 0.50;
       const aboveReserve = price >= (item.reserve_price || 0);
 
       try {
@@ -166,13 +167,14 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
           seller_email: item.seller_email,
           item_price: price,
           service_fee: serviceFee,
+          fee_credit: feeCredit,
           purchase_method: "make_it_mine",
           status: aboveReserve ? "pending" : "pending",
         });
-      } catch (error) {
+        } catch (error) {
         console.warn("Could not create database records (may be demo data):", error.message);
-      }
-      return { aboveReserve, price, serviceFee };
+        }
+        return { aboveReserve, price, serviceFee, feeCredit };
     },
     onSuccess: ({ aboveReserve }) => {
       clearInterval(timerRef.current);
@@ -223,7 +225,8 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const minBid = currentHighestBid > 0 ? currentHighestBid + increment : startingBid;
 
   const price = lockedPrice || currentPrice;
-  const serviceFee = 500; // Flat $500 service fee
+  const serviceFee = price * 0.10 + 30; // 10% + $30
+  const feeCredit = serviceFee * 0.50;
   const aboveReserve = price >= (item.reserve_price || 0);
 
   const mins = Math.floor(timeLeft / 60);
@@ -310,16 +313,16 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                    <span>${parseFloat(bidAmount).toLocaleString("en-US")}.00</span>
                  </div>
                  <div className="flex justify-between">
-                   <span className="text-muted-foreground">Service Fee if you win</span>
-                   <span>$500.00</span>
+                   <span className="text-muted-foreground">Service Fee (10% + $30)</span>
+                   <span>${(parseFloat(bidAmount) * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                  </div>
-                 <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold">
-                   <span>If prisometer meets your high bid, you will be charged</span>
-                   <span>$500.00</span>
+                 <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold text-green-600">
+                   <span>50% Credit Applied on Final Invoice</span>
+                   <span>-${((parseFloat(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                  </div>
                  <div className="border-t border-border mt-2 pt-3 flex justify-between font-semibold text-xs text-muted-foreground">
-                   <span>Remaining due at closing</span>
-                   <span className="text-foreground">${parseFloat(bidAmount).toLocaleString("en-US")}.00</span>
+                   <span>If prisometer meets your high bid, you will be charged</span>
+                   <span className="text-foreground font-medium">${((parseFloat(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                  </div>
                </div>
 
@@ -373,8 +376,8 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
           </div>
 
           <div className="text-center space-y-1">
-            <p className="text-sm font-semibold">$500 Service Fee Required</p>
-            <p className="text-xs text-muted-foreground">The card you used to register with will be automatically charged the agreed upon $500</p>
+            <p className="text-sm font-semibold">Service Fee: {((price * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p className="text-xs text-muted-foreground">10% + $30 fee applied, 50% credited on final invoice</p>
           </div>
 
           <p className="text-xs text-muted-foreground text-center">Press "Confirm" to place your offer</p>
