@@ -112,7 +112,7 @@ export default function ItemPreviewModal({ item: initialItem, onClose }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 20 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="fixed inset-4 md:inset-8 lg:inset-12 z-50 bg-background rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[780px] md:max-h-[600px] z-50 bg-background rounded-2xl shadow-2xl overflow-hidden flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         {/* Header bar */}
