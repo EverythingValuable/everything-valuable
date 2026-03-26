@@ -24,16 +24,17 @@ export default function BidSection({ item }) {
   const [timeLeft, setTimeLeft] = useState(CONFIRM_SECONDS);
   const [showTiers, setShowTiers] = useState(false);
   const [livePriceTick, setLivePriceTick] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef(null);
   const priceTickRef = useRef(null);
   const queryClient = useQueryClient();
 
-  // Re-evaluate live price every 5 seconds so bid options stay current
+  // Re-evaluate live price every 5 seconds so bid options stay current (unless paused)
   useEffect(() => {
-    if (item.status !== "prisometer") return;
+    if (item.status !== "prisometer" || isPaused) return;
     priceTickRef.current = setInterval(() => setLivePriceTick(t => t + 1), 5000);
     return () => clearInterval(priceTickRef.current);
-  }, [item.status]);
+  }, [item.status, isPaused]);
   const { toast } = useToast();
 
   const { data: sellerProfile } = useQuery({
@@ -109,6 +110,7 @@ export default function BidSection({ item }) {
   const handleOpenConfirm = async () => {
     const price = getLivePrice();
     setLockedPrice(price);
+    setIsPaused(true);
     // Pause the prisometer and save the locked price
     const expires = new Date(Date.now() + CONFIRM_SECONDS * 1000).toISOString();
     try {
@@ -129,6 +131,7 @@ export default function BidSection({ item }) {
     setShowConfirm(false);
     setLockedPrice(null);
     setConfirmResult(null);
+    setIsPaused(false);
     try {
       await base44.entities.Item.update(item.id, {
         make_it_mine_active: false,
