@@ -95,6 +95,27 @@ export default function Portal() {
           </motion.div>
         </div>
       </div>
+
+      {/* Mission Statement */}
+      <div className="px-6 py-12 bg-secondary/5">
+        <div className="max-w-3xl mx-auto space-y-4 text-center">
+          <h2 className="font-serif text-2xl md:text-3xl font-semibold text-foreground">
+            Our Mission
+          </h2>
+          <p className="text-foreground leading-relaxed">
+            To create an exchange platform for the purchase and sale of tangible assets that makes the process intuitive, coherent, transparent, dynamic, fun, time efficient and far more cost efficient.
+          </p>
+          <p className="text-foreground leading-relaxed">
+            The processes for buying Real Estate evolved in a fragmented manner for each state and often independently evolved and vary from locality to locality within each state. The varied processes deployed are not cost effective, unnecessarily cumbersome, far from transparent and full of unknown potentials that can increase costs and delay closure.
+          </p>
+          <p className="text-foreground leading-relaxed">
+            The alternatives for selling valued items of personal property are even worse.
+          </p>
+          <p className="font-serif text-lg font-semibold text-primary mt-6">
+            Our mission: make it better
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
