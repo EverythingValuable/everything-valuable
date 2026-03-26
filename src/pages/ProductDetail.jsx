@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import { Heart, Share2, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -200,9 +201,16 @@ export default function ProductDetail() {
             <div className="mt-8">
               {item.description && (
                 <CollapsibleSection title="About This Lot" defaultOpen={true}>
-                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {item.description}
-                  </p>
+                  <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                    <ReactMarkdown
+                      components={{
+                        a: ({ node, ...props }) => <a {...props} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" />,
+                        p: ({ node, ...props }) => <p {...props} className="mb-3" />,
+                      }}
+                    >
+                      {item.description}
+                    </ReactMarkdown>
+                  </div>
                 </CollapsibleSection>
               )}
 
@@ -246,19 +254,46 @@ export default function ProductDetail() {
 
               {item.provenance && (
                 <CollapsibleSection title="Provenance" defaultOpen={false}>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.provenance}</p>
+                  <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                    <ReactMarkdown
+                      components={{
+                        a: ({ node, ...props }) => <a {...props} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" />,
+                        p: ({ node, ...props }) => <p {...props} className="mb-3" />,
+                      }}
+                    >
+                      {item.provenance}
+                    </ReactMarkdown>
+                  </div>
                 </CollapsibleSection>
               )}
 
               {item.condition_notes && (
                 <CollapsibleSection title="Condition Report" defaultOpen={false}>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.condition_notes}</p>
+                  <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                    <ReactMarkdown
+                      components={{
+                        a: ({ node, ...props }) => <a {...props} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" />,
+                        p: ({ node, ...props }) => <p {...props} className="mb-3" />,
+                      }}
+                    >
+                      {item.condition_notes}
+                    </ReactMarkdown>
+                  </div>
                 </CollapsibleSection>
               )}
 
               {item.shipping_notes && (
                 <CollapsibleSection title="Shipping" defaultOpen={false}>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.shipping_notes}</p>
+                  <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                    <ReactMarkdown
+                      components={{
+                        a: ({ node, ...props }) => <a {...props} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" />,
+                        p: ({ node, ...props }) => <p {...props} className="mb-3" />,
+                      }}
+                    >
+                      {item.shipping_notes}
+                    </ReactMarkdown>
+                  </div>
                 </CollapsibleSection>
               )}
             </div>
