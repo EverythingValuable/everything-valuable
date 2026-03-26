@@ -102,7 +102,7 @@ export default function ItemMessaging({ item, user }) {
     : !!otherEmail;
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden space-y-3">
       {/* Header toggle */}
       <button
         onClick={() => setOpen((o) => !o)}
