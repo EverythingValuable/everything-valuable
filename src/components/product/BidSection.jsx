@@ -16,7 +16,6 @@ const CONFIRM_SECONDS = 120;
 
 export default function BidSection({ item, onMakeItMine, onCancel }) {
   const [bidAmount, setBidAmount] = useState("");
-  const [customBid, setCustomBid] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [showBidConfirm, setShowBidConfirm] = useState(false);
   const [lockedPrice, setLockedPrice] = useState(null);
@@ -266,53 +265,54 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Place a Bid</span>
           </div>
           <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder={`Min: $${(currentHighestBid + 100).toLocaleString()}`}
-              value={customBid}
-              onChange={(e) => setCustomBid(e.target.value.replace(/\D/g, ""))}
-              className="flex-1 h-11 px-3 border border-input rounded-md bg-background text-foreground"
-            />
+            <Select value={bidAmount} onValueChange={(val) => setBidAmount(val)}>
+              <SelectTrigger className="flex-1 h-11">
+                <SelectValue placeholder={`Min: $${minBid.toLocaleString()}`} />
+              </SelectTrigger>
+              <SelectContent className="max-h-64">
+                {generateBidOptions().map((option) => (
+                  <SelectItem key={option} value={option.toString()}>
+                    ${option.toLocaleString("en-US")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button
               onClick={() => {
-                const amt = parseInt(customBid) || 0;
-                if (amt > 0 && amt % 100 === 0) {
-                  setBidAmount(amt.toString());
+                if (bidAmount) {
                   setShowBidConfirm(true);
-                } else {
-                  toast({ title: "Invalid bid", description: "Enter a multiple of $100", variant: "destructive" });
                 }
               }}
-              disabled={!customBid}
+              disabled={!bidAmount}
               className="h-11 px-6 bg-foreground text-background hover:bg-foreground/90"
             >
               Bid
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground">Bids must be multiples of $100</p>
+          <p className="text-xs text-muted-foreground">Choose from suggested amounts or enter a custom bid</p>
 
-          {customBid && parseInt(customBid) > 0 && (
+          {bidAmount && (
             <div className="rounded-lg border border-border bg-background/50 p-4 space-y-3 text-sm">
               <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-3">Fee Breakdown</p>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Item Price</span>
-                <span>${parseInt(customBid).toLocaleString("en-US")}.00</span>
+                <span>${parseInt(bidAmount).toLocaleString("en-US")}.00</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Service Fee (10% + $30)</span>
-                <span>${(parseInt(customBid) * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <span>${(parseInt(bidAmount) * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
               <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold text-xs">
                 <span>If prisometer meets your high bid, you will be charged</span>
-                <span>${(parseInt(customBid) * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <span>${(parseInt(bidAmount) * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
               <div className="flex justify-between text-green-600 font-medium">
                 <span>50% Credit Applied on Final Invoice</span>
-                <span>-${((parseInt(customBid) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <span>-${((parseInt(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
               <div className="border-t border-border mt-3 pt-3 flex justify-between font-semibold">
                 <span>Remaining due after upfront payment</span>
-                <span>${(parseInt(customBid) + (parseInt(customBid) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <span>${(parseInt(bidAmount) + (parseInt(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             </div>
           )}
@@ -360,7 +360,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                  >
                    {placeBidMutation.isPending ? "Confirming..." : "Confirm Bid"}
                  </Button>
-                 <Button variant="outline" onClick={() => { setShowBidConfirm(false); setCustomBid(""); }} className="h-12 px-5">
+                 <Button variant="outline" onClick={() => { setShowBidConfirm(false); setBidAmount(""); }} className="h-12 px-5">
                    Cancel
                  </Button>
                </div>
