@@ -111,12 +111,16 @@ export default function BidSection({ item }) {
     setLockedPrice(price);
     // Pause the prisometer and save the locked price
     const expires = new Date(Date.now() + CONFIRM_SECONDS * 1000).toISOString();
-    await base44.entities.Item.update(item.id, {
-      make_it_mine_active: true,
-      make_it_mine_expires: expires,
-      current_price: price,
-    });
-    queryClient.invalidateQueries({ queryKey: ["item", item.id] });
+    try {
+      await base44.entities.Item.update(item.id, {
+        make_it_mine_active: true,
+        make_it_mine_expires: expires,
+        current_price: price,
+      });
+      queryClient.invalidateQueries({ queryKey: ["item", item.id] });
+    } catch (error) {
+      console.warn("Could not update item state (may be demo data):", error.message);
+    }
     setShowConfirm(true);
   };
 
