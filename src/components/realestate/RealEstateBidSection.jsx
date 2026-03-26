@@ -237,6 +237,31 @@ export default function RealEstateBidSection({ item, onMakeItMine, onCancel }) {
               Bid
             </Button>
           </div>
+          
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              onClick={() => setCustomBid(String((currentHighestBid || 0) + 500))}
+              variant="outline"
+              className="h-9 px-4 text-xs font-semibold"
+            >
+              +$500
+            </Button>
+            <Button
+              onClick={() => setCustomBid(String((currentHighestBid || 0) + 1000))}
+              variant="outline"
+              className="h-9 px-4 text-xs font-semibold"
+            >
+              +$1000
+            </Button>
+            <Button
+              onClick={() => setCustomBid(String((currentHighestBid || 0) + 2000))}
+              variant="outline"
+              className="h-9 px-4 text-xs font-semibold"
+            >
+              +$2000
+            </Button>
+          </div>
+          
           <p className="text-xs text-muted-foreground">Bids must be multiples of $100</p>
         </div>
       )}
