@@ -18,7 +18,7 @@ export default function Portal() {
       </div>
 
       {/* Cards Section */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex items-center justify-center px-6 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
           {/* Real Property Card */}
           <motion.div
