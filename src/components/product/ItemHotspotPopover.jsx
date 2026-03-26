@@ -73,17 +73,6 @@ export default function ItemHotspotPopover({ hotspot, item, onClose, listingId }
           </button>
         </div>
 
-        {/* Image */}
-        {item.images && item.images.length > 0 && (
-          <div className="aspect-video bg-muted overflow-hidden">
-            <img
-              src={item.images[0]}
-              alt={item.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-
         {/* Content */}
         <div className="p-5 space-y-4">
           {/* Status badge */}
