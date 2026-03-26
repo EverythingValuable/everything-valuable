@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Heart, Share2, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import ProductGallery from "../components/product/ProductGallery";
 import PriceConvergenceModule from "../components/product/PriceConvergenceModule";
@@ -307,11 +308,13 @@ export default function ProductDetail() {
                 <BidSection item={item} />
               )}
 
+              <Separator />
+
               {/* Location */}
               {item.location && (
-                <div className="flex items-center gap-2 bg-secondary/40 rounded-lg px-4 py-3">
-                  <svg className="w-4 h-4 text-muted-foreground shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2C8.686 2 6 4.686 6 8c0 5.25 6 13 6 13s6-7.75 6-13c0-3.314-2.686-6-6-6z"/><circle cx="12" cy="8" r="2" strokeWidth={1.5}/></svg>
-                  <p className="text-sm text-foreground">{item.location}</p>
+                <div className="bg-secondary/40 rounded-lg p-4 space-y-2">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Location</p>
+                  <p className="text-sm font-medium text-foreground">{item.location}</p>
                 </div>
               )}
 
@@ -319,13 +322,13 @@ export default function ProductDetail() {
               <div className="flex gap-3">
                 <Button
                   variant="outline"
-                  className={`flex-1 gap-2 h-11 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`}
+                  className={`flex-1 gap-2 h-10 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`}
                   onClick={() => user ? saveMutation.mutate() : base44.auth.redirectToLogin()}
                   disabled={saveMutation.isPending}
                 >
                   <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} /> {isSaved ? "Saved" : "Save"}
                 </Button>
-                <Button variant="outline" className="flex-1 gap-2 h-11">
+                <Button variant="outline" className="flex-1 gap-2 h-10">
                   <Share2 className="w-4 h-4" /> Share
                 </Button>
               </div>
