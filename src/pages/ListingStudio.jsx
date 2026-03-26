@@ -45,11 +45,11 @@ export default function ListingStudio() {
     condition: "very_good", provenance: "",
     description: "", short_description: "", condition_notes: "",
     shipping_notes: "", marks: "",
-    first_bids_duration_hours: 72,
+    first_bids_duration_hours: 168,
     prisometer_start_price: "",
     reserve_price: "",
     below_reserve_percent: 10,
-    prisometer_duration_hours: 48,
+    prisometer_duration_hours: 168,
     make_it_mine_enabled: true,
     estimated_low: "", estimated_high: "",
   });
@@ -83,11 +83,11 @@ export default function ListingStudio() {
             condition_notes: item.condition_notes || "",
             shipping_notes: item.shipping_notes || "",
             marks: item.marks || "",
-            first_bids_duration_hours: item.first_bids_duration_hours || 72,
+            first_bids_duration_hours: item.first_bids_duration_hours || 168,
             prisometer_start_price: item.prisometer_start_price || "",
             reserve_price: item.reserve_price || "",
             below_reserve_percent: item.below_reserve_percent || 10,
-            prisometer_duration_hours: item.prisometer_duration_hours || 48,
+            prisometer_duration_hours: item.prisometer_duration_hours || 168,
             make_it_mine_enabled: item.make_it_mine_active !== false,
             estimated_low: item.estimated_low || "",
             estimated_high: item.estimated_high || "",
@@ -421,31 +421,28 @@ export default function ListingStudio() {
                 </div>
 
                 {/* 1stBid$ Duration */}
-                <Field label="1stBid$™ Preview Duration" hint="hours">
+                <Field label="1stBid$™ Preview Duration">
                   <div className="flex gap-2 flex-wrap">
-                    {[24, 48, 72, 96, 168].map(h => (
+                    {[168, 504, 720].map(h => (
                       <button key={h} onClick={() => set("first_bids_duration_hours", h)}
                         className={cn("px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                           form.first_bids_duration_hours === h ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-foreground/30"
                         )}>
-                        {h < 48 ? `${h}h` : `${h/24}d`}
+                        {h/24}d
                       </button>
                     ))}
-                    <Input type="number" placeholder="Custom hrs" className="w-28 h-9"
-                      value={![24,48,72,96,168].includes(form.first_bids_duration_hours) ? form.first_bids_duration_hours : ""}
-                      onChange={e => set("first_bids_duration_hours", +e.target.value)} />
                   </div>
                 </Field>
 
                 {/* PRI$OMETER Duration */}
-                <Field label="PRI$OMETER™ Live Duration" hint="hours">
+                <Field label="PRI$OMETER™ Live Duration">
                   <div className="flex gap-2 flex-wrap">
-                    {[12, 24, 48, 72].map(h => (
+                    {[168, 336, 504].map(h => (
                       <button key={h} onClick={() => set("prisometer_duration_hours", h)}
                         className={cn("px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                           form.prisometer_duration_hours === h ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-foreground/30"
                         )}>
-                        {h < 24 ? `${h}h` : `${h/24}d`}
+                        {h/24}d
                       </button>
                     ))}
                   </div>
