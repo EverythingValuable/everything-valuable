@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { X, Heart, Clock, TrendingDown } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, Heart, Clock, TrendingDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { formatDistanceToNow } from "date-fns";
 
 const statusConfig = {
   first_bids: { label: "1stBid$™ Preview", icon: Clock, color: "bg-primary/10 text-primary border-primary/20" },
@@ -10,8 +11,31 @@ const statusConfig = {
 
 export default function ItemHotspotPopover({ hotspot, item, onClose }) {
   const [isSaved, setIsSaved] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
 
   if (!item) return null;
+
+  // Calculate countdown
+  useEffect(() => {
+    if (!item.first_bids_end && !item.prisometer_duration_hours) return;
+
+    const updateTimer = () => {
+      let endTime;
+      if (item.status === "first_bids" && item.first_bids_end) {
+        endTime = new Date(item.first_bids_end);
+      } else if (item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours) {
+        endTime = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000);
+      }
+      
+      if (endTime) {
+        setTimeLeft(formatDistanceToNow(endTime, { addSuffix: true }));
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [item]);
 
   const status = statusConfig[item.status] || {};
   const StatusIcon = status.icon;
@@ -80,8 +104,8 @@ export default function ItemHotspotPopover({ hotspot, item, onClose }) {
             </p>
           )}
 
-          {/* Price info */}
-          <div className="pt-2 border-t border-border">
+          {/* Price & Countdown */}
+          <div className="pt-2 border-t border-border space-y-3">
             {item.status === "first_bids" && (
               <div className="text-sm">
                 <span className="text-muted-foreground">Preview Price:</span>
@@ -96,6 +120,14 @@ export default function ItemHotspotPopover({ hotspot, item, onClose }) {
                 <p className="font-price text-xl font-semibold text-foreground mt-1">
                   ${item.current_price?.toLocaleString()}
                 </p>
+              </div>
+            )}
+
+            {/* Countdown */}
+            {timeLeft && (
+              <div className="text-xs bg-primary/5 border border-primary/15 rounded p-2 flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span className="text-muted-foreground">Ends <span className="font-medium text-foreground">{timeLeft}</span></span>
               </div>
             )}
           </div>
@@ -115,8 +147,16 @@ export default function ItemHotspotPopover({ hotspot, item, onClose }) {
               {item.status === "first_bids" ? "Bid" : "Bid / Make Offer"}
             </Button>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+
+          {/* Hotspot Info */}
+          <div className="mt-4 p-3 bg-secondary/30 rounded-lg border border-border/50 flex gap-2">
+            <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              This item is featured on the property listing photos. Click on the hotspot to learn more about included items.
+            </p>
+          </div>
+          </div>
+          </div>
+          </div>
+          );
+          }

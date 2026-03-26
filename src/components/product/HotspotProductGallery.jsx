@@ -77,14 +77,14 @@ export default function HotspotProductGallery({
                   e.stopPropagation();
                   setSelectedHotspot(hotspot);
                 }}
-                className="absolute w-8 h-8 -translate-x-1/2 -translate-y-1/2 pointer-events-auto group/dot"
+                className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto group/dot animate-pulse"
                 style={{
                   left: `${hotspot.x_percent}%`,
                   top: `${hotspot.y_percent}%`,
                 }}
               >
-                <div className="w-full h-full rounded-full border-2 border-primary bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-all hover:scale-125">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
+                <div className="w-10 h-10 rounded-full border-2 border-primary bg-primary/15 flex items-center justify-center hover:bg-primary/25 transition-all hover:scale-150 shadow-lg">
+                  <div className="w-3 h-3 rounded-full bg-primary" />
                 </div>
               </button>
             ))}
