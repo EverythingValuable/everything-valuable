@@ -228,7 +228,7 @@ export default function RealEstateDetail() {
   ];
 
   const TRANSACTION_DOCS = [
-    { label: "Option Agreement" },
+    { label: "Option Agreement", url: "https://media.base44.com/files/public/69beac1c3231aaeb891946d5/1d6ffac94_OPTIONSimple2.pdf" },
     { label: "Election to Extend", note: "Sample Document — Not for site" },
     { label: "Election to Exercise Option", note: "Sample Document — Not for site" },
   ];
