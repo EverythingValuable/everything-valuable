@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const heroImages = [
-  "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/9e4f906c5_generated_image.png",
+  "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/769cb168d_generated_image.png",
   "https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/7a37e948-5db0-47e8-a8a7-d1e2c08fa418/081c4b5e3ad95adc50e40a0ca4965a8462872ccb195ffcc8bd5795ea499503f9.jpg?content-type=image%2Fjpeg",
   "https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/cb02dc8a-bf2a-46e0-adb7-4e9421da22a4/01197f831eb8f7198b5b61c0c20dec59347cf6733a6897550df64afe07c1e0aa.jpg?content-type=image%2Fjpeg",
   "https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6ad125cd-2c89-4fac-8c40-b832adc77759/ChatGPT+Image+Feb+5%2C+2026%2C+03_21_54+PM.png?content-type=image%2Fpng",
