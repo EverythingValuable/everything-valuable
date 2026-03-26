@@ -190,13 +190,6 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
         <ExpandableInfoBox explanation="If the PRI$OMETER™ price descends to meet the highest bid, the sale is concluded. If the price is at or above the reserve, it's an automatic sale. If below, the seller is notified and may choose to accept." />
       </div>
 
-      {/* Helper text */}
-      <p className="text-xs text-muted-foreground text-center bg-secondary/30 rounded-lg px-4 py-3 italic">
-        {item.highest_bid > 0
-          ? "If the PRI$OMETER reaches the highest bid above reserve, the sale completes."
-          : "Place a bid or use Make It Mine to purchase at the current price."}
-      </p>
-
     </div>
   );
 }
