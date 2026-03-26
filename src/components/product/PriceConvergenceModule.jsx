@@ -30,7 +30,7 @@ function ExpandableInfoBox({ label, explanation }) {
         <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <p className="mt-2 text-xs text-muted-foreground leading-relaxed bg-secondary/40 rounded-lg px-3 py-2">
+        <p className="mt-2 text-xs text-black leading-relaxed bg-secondary rounded-lg px-3 py-2">
           {explanation}
         </p>
       )}
