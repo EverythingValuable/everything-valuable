@@ -321,10 +321,6 @@ export default function BidSection({ item }) {
                 </div>
               </div>
 
-              <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
-                Your high bid will be placed when the prisometer starts. You will only be charged if the prisometer meets or exceeds your bid amount.
-              </p>
-
               <div className="text-center py-2">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your High Bid</p>
                 <p className="font-price text-3xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
