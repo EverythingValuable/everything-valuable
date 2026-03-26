@@ -7,8 +7,8 @@ import { MessageCircle, Send, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
 
-export default function ItemMessaging({ item, user, embedded = false }) {
-  const [open, setOpen] = useState(embedded ? true : false);
+export default function ItemMessaging({ item, user }) {
+  const [open, setOpen] = useState(false);
   const [body, setBody] = useState("");
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -81,69 +81,6 @@ export default function ItemMessaging({ item, user, embedded = false }) {
     }
   };
 
-  const canSend = isSeller
-    ? messages.some((m) => m.sender_email !== user.email)
-    : !!otherEmail;
-
-  // Embedded mode: flat content, no outer card or toggle header
-  if (embedded) {
-    if (!user) {
-      return (
-        <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Sign in to send a message about this item.</p>
-          <Button size="sm" className="w-full" onClick={() => base44.auth.redirectToLogin()}>Sign In</Button>
-        </div>
-      );
-    }
-    if (isSeller) return <p className="text-xs text-muted-foreground">This is your listing.</p>;
-    return (
-      <div className="space-y-3">
-        <div className="max-h-48 overflow-y-auto space-y-3">
-          {messages.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center py-2">
-              No messages yet. Ask the seller anything about this item.
-            </p>
-          ) : (
-            messages.map((m) => {
-              const isMe = m.sender_email === user.email;
-              return (
-                <div key={m.id} className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
-                  <div className={`max-w-[80%] rounded-xl px-3 py-2 text-sm ${isMe ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"}`}>
-                    {m.body}
-                  </div>
-                  <span className="text-[10px] text-muted-foreground mt-0.5">
-                    {isMe ? "You" : m.sender_name || m.sender_email} · {format(new Date(m.created_date), "MMM d, h:mm a")}
-                  </span>
-                </div>
-              );
-            })
-          )}
-          <div ref={bottomRef} />
-        </div>
-        {canSend && (
-          <div className="flex gap-2 items-end">
-            <Textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type a message…"
-              className="min-h-[60px] resize-none text-sm"
-            />
-            <Button
-              size="icon"
-              onClick={() => sendMutation.mutate()}
-              disabled={!body.trim() || sendMutation.isPending}
-              className="h-10 w-10 shrink-0"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Standalone mode (outside active phases)
   if (!user) {
     return (
       <div className="rounded-xl border border-border bg-card p-4">
@@ -157,17 +94,25 @@ export default function ItemMessaging({ item, user, embedded = false }) {
     );
   }
 
+  // Buyers can't message their own listing
   if (isSeller) return null;
+
+  const canSend = isSeller
+    ? messages.some((m) => m.sender_email !== user.email)
+    : !!otherEmail;
 
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
+      {/* Header toggle */}
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/40 transition-colors"
       >
         <div className="flex items-center gap-2">
           <MessageCircle className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium">Message Seller</span>
+          <span className="text-sm font-medium">
+            {isSeller ? "Messages" : "Message Seller"}
+          </span>
           {unreadCount > 0 && (
             <span className="bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
               {unreadCount}
@@ -179,6 +124,7 @@ export default function ItemMessaging({ item, user, embedded = false }) {
 
       {open && (
         <div className="border-t border-border">
+          {/* Message thread */}
           <div className="max-h-56 overflow-y-auto px-4 py-3 space-y-3">
             {messages.length === 0 ? (
               <p className="text-xs text-muted-foreground text-center py-4">
@@ -201,6 +147,8 @@ export default function ItemMessaging({ item, user, embedded = false }) {
             )}
             <div ref={bottomRef} />
           </div>
+
+          {/* Input */}
           {canSend && (
             <div className="border-t border-border px-4 py-3 flex gap-2 items-end">
               <Textarea

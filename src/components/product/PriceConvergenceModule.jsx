@@ -42,7 +42,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
   }, [item.first_bids_end]);
 
   return (
-    <div className="p-0 space-y-6">
+    <div className="rounded-xl border border-border bg-card p-6 space-y-6">
       {/* Header: Status + Countdown */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
 
 function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cents, formatPrice }) {
   return (
-    <div className="p-0 space-y-6">
+    <div className="rounded-xl border border-border bg-card p-6 space-y-6">
       {/* Header: Live Status */}
       <div>
         {isActive && (

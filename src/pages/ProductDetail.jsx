@@ -2,12 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Heart, Share2, ChevronRight, ChevronDown, Info } from "lucide-react";
+import { Heart, Share2, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ProductGallery from "../components/product/ProductGallery";
 import PriceConvergenceModule from "../components/product/PriceConvergenceModule";
 import BidSection from "../components/product/BidSection";
@@ -103,36 +102,6 @@ function PriceConvergenceModuleWrapper({ item }) {
   };
 
   return <PriceConvergenceModule item={item} isActive={isActive} isPaused={isPaused} pauseTimeLeft={pauseTimeLeft} displayPrice={displayPrice} cents={cents} formatPrice={formatPrice} />;
-}
-
-function BidBoxSection({ label, tooltip, defaultOpen = true, children }) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div>
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-muted/30 transition-colors"
-      >
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span onClick={e => e.stopPropagation()}>
-                  <Info className="w-3.5 h-3.5 text-muted-foreground/60 hover:text-muted-foreground cursor-help" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs text-xs leading-relaxed" side="left">
-                {tooltip}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
-      </button>
-      {open && <div className="px-5 pb-5">{children}</div>}
-    </div>
-  );
 }
 
 export default function ProductDetail() {
@@ -297,21 +266,22 @@ export default function ProductDetail() {
 
           {/* RIGHT — Sticky Bid Panel */}
           <div className="lg:col-span-2">
-            <div className="lg:sticky lg:top-6 space-y-4">
+            <div className="lg:sticky lg:top-6 space-y-5">
+              {/* Status + Category */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="outline" className="text-xs">
+                  {categoryLabels[item.category] || item.category}
+                </Badge>
+                {item.status === "first_bids" && (
+                  <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>
+                )}
+                {item.status === "prisometer" && (
+                  <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
+                )}
+              </div>
 
-              {/* Title + Seller */}
+              {/* Title */}
               <div>
-                <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <Badge variant="outline" className="text-xs">
-                    {categoryLabels[item.category] || item.category}
-                  </Badge>
-                  {item.status === "first_bids" && (
-                    <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>
-                  )}
-                  {item.status === "prisometer" && (
-                    <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
-                  )}
-                </div>
                 <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground">
                   {item.title}
                 </h1>
@@ -328,65 +298,27 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              {/* Unified Bidding Box */}
-              {(item.status === "first_bids" || item.status === "prisometer") && (
-                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-
-                  {/* Section: Pricing Engine */}
-                  <BidBoxSection
-                    label={item.status === "prisometer" ? "Live Pricing" : "Pricing Preview"}
-                    tooltip={item.status === "prisometer"
-                      ? "The PRI$OMETER™ is our live declining-price engine. The price starts high and descends over time until a bid or purchase is made."
-                      : "The 1stBid$™ preview phase lets you place early bids before live pricing begins. The start price shown is where the PRI$OMETER™ will open."}
-                    defaultOpen={true}
-                  >
-                    <PriceConvergenceModuleWrapper item={item} />
-                  </BidBoxSection>
-
-                  <div className="border-t border-border/60" />
-
-                  {/* Section: Place a Bid / Make It Mine */}
-                  <BidBoxSection
-                    label="Place a Bid"
-                    tooltip="Choose a bid amount from the dropdown. Your bid is held and only charged if the PRI$OMETER™ price meets or falls to your bid level. You can also use Make It Mine to buy instantly at the current live price."
-                    defaultOpen={true}
-                  >
-                    <BidSection item={item} />
-                  </BidBoxSection>
-
-                  {/* Section: Location */}
-                  {item.location && (
-                    <>
-                      <div className="border-t border-border/60" />
-                      <BidBoxSection
-                        label="Item Location"
-                        tooltip="Where this item is currently located. Shipping and pickup arrangements can be discussed with the seller."
-                        defaultOpen={false}
-                      >
-                        <p className="text-sm font-medium text-foreground">{item.location}</p>
-                      </BidBoxSection>
-                    </>
-                  )}
-
-                  {/* Section: Ask a Question */}
-                  <div className="border-t border-border/60" />
-                  <BidBoxSection
-                    label="Ask a Question"
-                    tooltip="Send a message directly to the seller about this item. Great for asking about condition, shipping, or provenance."
-                    defaultOpen={false}
-                  >
-                    <ItemMessaging item={item} user={user} embedded={true} />
-                  </BidBoxSection>
-
-                </div>
+              {/* Price Convergence Module */}
+              {(item.status === "first_bids" || item.status === "prisometer") && item && (
+                <PriceConvergenceModuleWrapper item={item} />
               )}
 
-              {/* If sold or no active phase, show simpler layout */}
-              {item.status === "sold" && (
+              {/* Bidding */}
+              {(item.status === "first_bids" || item.status === "prisometer") && (
                 <BidSection item={item} />
               )}
 
-              {/* Save + Share actions */}
+              <Separator />
+
+              {/* Location */}
+              {item.location && (
+                <div className="bg-secondary/40 rounded-lg p-4 space-y-2">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Location</p>
+                  <p className="text-sm font-medium text-foreground">{item.location}</p>
+                </div>
+              )}
+
+              {/* Actions */}
               <div className="flex gap-3">
                 <Button
                   variant="outline"
@@ -401,11 +333,8 @@ export default function ProductDetail() {
                 </Button>
               </div>
 
-              {/* Messaging outside the box when not in active phase */}
-              {item.status !== "first_bids" && item.status !== "prisometer" && (
-                <ItemMessaging item={item} user={user} />
-              )}
-
+              {/* Messaging */}
+              <ItemMessaging item={item} user={user} />
             </div>
           </div>
 
