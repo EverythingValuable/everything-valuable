@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Search, Heart, User, Menu, X, ChevronDown, Bookmark, Trophy, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,10 +19,20 @@ const categories = [
 ];
 
 export default function Navbar() {
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
+
+  // Determine current section: real-property or personal-property
+  const isRealProperty = location.pathname.startsWith("/real-property");
+  const isPersonalProperty = location.pathname.startsWith("/personal-property") || 
+                             location.pathname.startsWith("/browse") ||
+                             location.pathname.startsWith("/item");
+
+  // Home link redirects to appropriate section home
+  const homeLink = isRealProperty ? "/real-property" : (isPersonalProperty ? "/personal-property" : "/");
 
   const { data: user } = useQuery({
     queryKey: ["me"],
@@ -75,48 +85,60 @@ export default function Navbar() {
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          <Link to="/" className="flex items-center gap-2">
+          <Link to={homeLink} className="flex items-center gap-2">
             <span className="font-serif text-xl md:text-2xl font-semibold tracking-tight text-foreground">
               Everything Valuable
             </span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <div className="relative" onMouseEnter={() => setCategoriesOpen(true)} onMouseLeave={() => setCategoriesOpen(false)}>
-              <button className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Categories <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-              <AnimatePresence>
-                {categoriesOpen && (
-                  <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 4 }} transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-xl py-2 z-50">
-                    {categories.map(cat => (
-                      <Link key={cat.path} to={cat.path}
-                        className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                        onClick={() => setCategoriesOpen(false)}>
-                        {cat.label}
-                      </Link>
-                    ))}
-                    <div className="border-t border-border mt-1 pt-1">
-                      <Link to="/browse" className="block px-4 py-2.5 text-sm font-medium text-primary hover:bg-muted transition-colors"
-                        onClick={() => setCategoriesOpen(false)}>
-                        View All
-                      </Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            <Link to="/browse" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Browse
+            {/* Real Property Link */}
+            <Link to="/real-property" className={`text-sm font-medium transition-colors ${isRealProperty ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+              Real Property
             </Link>
-            <Link to="/browse?status=prisometer" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-              Live Now
+
+            {/* Personal Property - Categories */}
+            {isPersonalProperty && (
+              <div className="relative" onMouseEnter={() => setCategoriesOpen(true)} onMouseLeave={() => setCategoriesOpen(false)}>
+                <button className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  Categories <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+                <AnimatePresence>
+                  {categoriesOpen && (
+                    <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }} transition={{ duration: 0.15 }}
+                      className="absolute top-full left-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-xl py-2 z-50">
+                      {categories.map(cat => (
+                        <Link key={cat.path} to={cat.path}
+                          className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          onClick={() => setCategoriesOpen(false)}>
+                          {cat.label}
+                        </Link>
+                      ))}
+                      <div className="border-t border-border mt-1 pt-1">
+                        <Link to="/browse" className="block px-4 py-2.5 text-sm font-medium text-primary hover:bg-muted transition-colors"
+                          onClick={() => setCategoriesOpen(false)}>
+                          View All
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            {/* Personal Property Link */}
+            <Link to="/personal-property" className={`text-sm font-medium transition-colors ${isPersonalProperty ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+              Personal Property
             </Link>
-            <Link to="/real-estate" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Real Estate
-            </Link>
+
+            {isPersonalProperty && (
+              <>
+                <Link to="/browse?status=prisometer" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                  Live Now
+                </Link>
+              </>
+            )}
           </nav>
         </div>
 
@@ -189,8 +211,9 @@ export default function Navbar() {
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }} className="md:hidden overflow-hidden border-t border-border">
             <nav className="px-6 py-4 space-y-1">
-              <Link to="/browse" className="block py-3 text-sm font-medium border-b border-border/50" onClick={() => setMobileOpen(false)}>Browse All</Link>
-              {categories.map(cat => (
+              <Link to="/real-property" className="block py-3 text-sm font-medium border-b border-border/50" onClick={() => setMobileOpen(false)}>Real Property</Link>
+              <Link to="/personal-property" className="block py-3 text-sm font-medium border-b border-border/50" onClick={() => setMobileOpen(false)}>Personal Property</Link>
+              {isPersonalProperty && categories.map(cat => (
                 <Link key={cat.path} to={cat.path} className="block py-2.5 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>
                   {cat.label}
                 </Link>

@@ -23,6 +23,7 @@ import SellerSettings from './pages/SellerSettings';
 import SellerPublicProfile from './pages/SellerPublicProfile';
 import RealEstateHome from './pages/RealEstateHome';
 import RealEstateDetail from './pages/RealEstateDetail';
+import Portal from './pages/Portal';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -50,7 +51,8 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Portal />} />
+        <Route path="/personal-property" element={<Home />} />
         <Route path="/browse" element={<Browse />} />
         <Route path="/item/:id" element={<ProductDetail />} />
         <Route path="/seller" element={<SellerDashboard />} />
@@ -63,8 +65,8 @@ const AuthenticatedApp = () => {
         <Route path="/seller/studio" element={<ListingStudio />} />
         <Route path="/seller/settings" element={<SellerSettings />} />
         <Route path="/seller/profile" element={<SellerPublicProfile />} />
-        <Route path="/real-estate" element={<RealEstateHome />} />
-        <Route path="/real-estate/listing/:id" element={<RealEstateDetail />} />
+        <Route path="/real-property" element={<RealEstateHome />} />
+        <Route path="/real-property/listing/:id" element={<RealEstateDetail />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

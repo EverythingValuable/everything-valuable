@@ -275,7 +275,7 @@ export default function RealEstateDetail() {
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
           <Link to="/" className="hover:text-foreground">Home</Link>
           <ChevronRight className="w-3 h-3" />
-          <Link to="/real-estate" className="hover:text-foreground">Real Estate</Link>
+          <Link to="/real-property" className="hover:text-foreground">Real Property</Link>
           <ChevronRight className="w-3 h-3" />
           <span className="text-foreground truncate max-w-[200px]">{listing.title}</span>
         </nav>

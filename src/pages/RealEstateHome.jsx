@@ -89,7 +89,7 @@ export default function RealEstateHome() {
                 Become a Seller <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/real-estate/browse">
+            <Link to="/real-property">
               <Button size="lg" variant="outline" className="gap-2 rounded-full h-12 px-8">
                 Browse Properties
               </Button>
