@@ -71,7 +71,7 @@ function REListingCard({ listing, index }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
-      <Link to={`/real-estate/listing/${listing.id}`} className="group block">
+      <Link to={`/real-property/listing/${listing.id}`} className="group block">
         <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
           <img
             src={listing.image}
@@ -131,7 +131,7 @@ export default function REFeaturedListings() {
             <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">Featured Live Sales</h2>
             <p className="text-muted-foreground mt-2 text-sm">Extraordinary properties with active bidding and live PRI$OMETER pricing</p>
           </div>
-          <Link to="/real-estate/browse">
+          <Link to="/real-property">
             <Button variant="ghost" className="gap-2 text-sm text-muted-foreground hover:text-foreground hidden md:flex">
               View All <ArrowRight className="w-4 h-4" />
             </Button>
@@ -145,7 +145,7 @@ export default function REFeaturedListings() {
         </div>
 
         <div className="mt-8 text-center md:hidden">
-          <Link to="/real-estate/browse">
+          <Link to="/real-property">
             <Button variant="outline" className="gap-2 rounded-full">
               View All <ArrowRight className="w-4 h-4" />
             </Button>
