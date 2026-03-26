@@ -8,7 +8,7 @@ export default function Portal() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <div className="pt-8 px-6 pb-8 text-center">
+      <div className="pt-8 px-6 pb-2 text-center">
         <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground tracking-wide mb-2">
           Everything Valuable
         </h1>
