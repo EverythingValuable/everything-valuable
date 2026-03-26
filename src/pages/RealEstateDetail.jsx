@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Heart, Share2, ChevronRight, ChevronDown, Bed, Bath, Square, MapPin, FileText, Shield, BookOpen } from "lucide-react";
 import DocumentDownloadModal from "../components/realestate/DocumentDownloadModal";
+import RealEstateAgentMessaging from "../components/realestate/RealEstateAgentMessaging";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -11,7 +12,6 @@ import { useToast } from "@/components/ui/use-toast";
 import HotspotProductGallery from "../components/product/HotspotProductGallery";
 import PriceConvergenceModule from "../components/product/PriceConvergenceModule";
 import RealEstateBidSection from "../components/realestate/RealEstateBidSection";
-import ItemMessaging from "../components/product/ItemMessaging";
 
 // Fake listings mirror REFeaturedListings data so detail page works for demo
 const FAKE_LISTINGS = {
@@ -435,6 +435,11 @@ export default function RealEstateDetail() {
               {(listing.status === "first_bids" || listing.status === "prisometer") && (
                 <RealEstateBidSection item={listing} onMakeItMine={() => setIsPaused(true)} onCancel={() => setIsPaused(false)} />
               )}
+
+              <Separator />
+
+              {/* Messaging */}
+              <RealEstateAgentMessaging listingId={listingId} sellerName={listing.seller_name} />
 
               <Separator />
 
