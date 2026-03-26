@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
-import ProductGallery from "../components/product/ProductGallery";
+import HotspotProductGallery from "../components/product/HotspotProductGallery";
 import PriceConvergenceModule from "../components/product/PriceConvergenceModule";
 import BidSection from "../components/product/BidSection";
 import ItemMessaging from "../components/product/ItemMessaging";
@@ -287,7 +287,11 @@ export default function RealEstateDetail() {
 
           {/* LEFT — Gallery + Details */}
           <div className="lg:col-span-3 space-y-0">
-            <ProductGallery images={listing.images || []} />
+            <HotspotProductGallery 
+              images={listing.images || []} 
+              listingId={listingId}
+              listingType="real_estate"
+            />
 
             <div className="mt-8">
               {listing.description && (

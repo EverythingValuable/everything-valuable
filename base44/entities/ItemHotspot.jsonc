@@ -1,0 +1,46 @@
+{
+  "name": "ItemHotspot",
+  "type": "object",
+  "properties": {
+    "listing_id": {
+      "type": "string",
+      "description": "ID of the real property or item listing containing the image"
+    },
+    "listing_type": {
+      "type": "string",
+      "enum": [
+        "real_estate",
+        "item"
+      ],
+      "description": "Type of listing this hotspot belongs to"
+    },
+    "image_index": {
+      "type": "number",
+      "description": "Index of the image in the listing's images array"
+    },
+    "linked_item_id": {
+      "type": "string",
+      "description": "ID of the Item entity this hotspot links to"
+    },
+    "x_percent": {
+      "type": "number",
+      "description": "X coordinate as percentage of image width (0-100)"
+    },
+    "y_percent": {
+      "type": "number",
+      "description": "Y coordinate as percentage of image height (0-100)"
+    },
+    "label": {
+      "type": "string",
+      "description": "Optional label for the hotspot"
+    }
+  },
+  "required": [
+    "listing_id",
+    "listing_type",
+    "image_index",
+    "linked_item_id",
+    "x_percent",
+    "y_percent"
+  ]
+}
