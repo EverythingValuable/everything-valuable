@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import HeroSection from "../components/home/HeroSection";
 import FeaturedItems from "../components/home/FeaturedItems";
 import CategoryCircles from "../components/home/CategoryCircles";
 import HowItWorksPreview from "../components/home/HowItWorksPreview";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Star, Award } from "lucide-react";
+import { ArrowRight, Shield, Star, Award, Search } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
   const { data: liveItems = [] } = useQuery({
     queryKey: ["items-live"],
     queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 8),
@@ -25,10 +28,41 @@ export default function Home() {
 
   const allFeatured = [...liveItems, ...previewItems].slice(0, 16);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/browse?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   return (
     <div>
       <HeroSection />
       <CategoryCircles />
+
+      {/* Search Bar */}
+      <section className="py-8 md:py-12 bg-background">
+        <div className="max-w-4xl mx-auto px-4 md:px-6">
+          <form onSubmit={handleSearch} className="relative">
+            <div className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 md:py-4 shadow-sm hover:border-primary/40 transition-colors focus-within:ring-1 focus-within:ring-primary">
+              <Search className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Search by title, artist, style..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm md:text-base"
+              />
+              <Button
+                type="submit"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 h-9 shrink-0 rounded-lg"
+              >
+                Search
+              </Button>
+            </div>
+          </form>
+        </div>
+      </section>
 
       {/* Featured items */}
       <FeaturedItems
