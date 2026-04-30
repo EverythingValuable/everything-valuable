@@ -198,7 +198,7 @@ export default function ProductDetail() {
             <ProductGallery images={item.images || []} />
 
             {/* Mobile-only: bid panel content appears here, right after gallery */}
-            <div className="lg:hidden mt-6 space-y-5 max-w-2xl mx-auto">
+            <div className="lg:hidden mt-6 space-y-5">
               {/* Status + Category */}
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="outline" className="text-xs">
