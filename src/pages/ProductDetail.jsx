@@ -212,7 +212,7 @@ export default function ProductDetail() {
                 )}
               </div>
               <div>
-                <h1 className="font-display text-2xl font-bold leading-tight text-foreground">
+                <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words">
                   {item.title}
                 </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
@@ -368,9 +368,9 @@ export default function ProductDetail() {
 
               {/* Title */}
               <div>
-                <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground">
-                  {item.title}
-                </h1>
+               <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground break-words">
+                 {item.title}
+               </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
                   <p className="text-sm text-muted-foreground mt-1.5">
                     Offered by{" "}
