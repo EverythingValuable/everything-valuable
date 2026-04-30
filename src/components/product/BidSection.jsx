@@ -19,7 +19,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const [bidAmount, setBidAmount] = useState("");
   const [customBid, setCustomBid] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showBidConfirm, setShowBidConfirm] = useState(false);
+  const [bidSuccess, setBidSuccess] = useState(false);
   const [lockedPrice, setLockedPrice] = useState(null);
   const [confirmResult, setConfirmResult] = useState(null); // null | 'above' | 'below'
   const [timeLeft, setTimeLeft] = useState(CONFIRM_SECONDS);
@@ -82,14 +82,12 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["item", item.id] });
       queryClient.invalidateQueries({ queryKey: ["bids", item.id] });
-      toast({ title: "Bid placed successfully", description: `Your bid of $${parseFloat(bidAmount).toLocaleString()} has been recorded.` });
+      setBidSuccess(true);
       setBidAmount("");
       setCustomBid("");
-      setShowBidConfirm(false);
     },
     onError: (err) => {
       toast({ title: "Bid failed", description: err.message, variant: "destructive" });
-      setShowBidConfirm(false);
     },
   });
 
@@ -249,7 +247,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   return (
     <div className="space-y-4 w-full min-w-0">
       {/* Make It Mine button */}
-      {canMakeItMine && !showConfirm && !showBidConfirm && (
+      {canMakeItMine && !showConfirm && !bidSuccess && (
         <Button
           onClick={handleOpenConfirm}
           className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-base font-semibold gap-2"
@@ -260,7 +258,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       )}
 
       {/* Place a Bid */}
-      {canBid && !showConfirm && !showBidConfirm && (
+      {canBid && !showConfirm && !bidSuccess && (
         <div className="rounded-xl border border-border bg-card p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Gavel className="w-4 h-4 text-primary" />
@@ -280,15 +278,11 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
               </SelectContent>
             </Select>
             <Button
-              onClick={() => {
-                if (bidAmount) {
-                  setShowBidConfirm(true);
-                }
-              }}
-              disabled={!bidAmount}
+              onClick={() => placeBidMutation.mutate()}
+              disabled={!bidAmount || placeBidMutation.isPending}
               className="h-11 px-6 bg-foreground text-background hover:bg-foreground/90"
             >
-              Bid
+              {placeBidMutation.isPending ? "Placing..." : "Bid"}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">Choose from suggested amounts or enter a custom bid</p>
@@ -309,7 +303,6 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                   if (amt > 0) {
                     setBidAmount(amt.toString());
                     setCustomBid("");
-                    setShowBidConfirm(true);
                   } else {
                     toast({ title: "Invalid bid", description: "Enter a valid amount", variant: "destructive" });
                   }
@@ -325,15 +318,14 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
           {bidAmount && (
             <FeeBreakdownDisplay 
               amount={parseInt(bidAmount)} 
-              onConfirmBid={() => setShowBidConfirm(true)}
-              showConfirmButton={true}
+              showConfirmButton={false}
             />
           )}
         </div>
       )}
 
           {/* Bid Increments */}
-      {canBid && !showConfirm && !showBidConfirm && sellerProfile?.bid_increment_tiers?.length > 0 && (
+      {canBid && !showConfirm && !bidSuccess && sellerProfile?.bid_increment_tiers?.length > 0 && (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <button
             onClick={() => setShowTiers(t => !t)}
@@ -369,38 +361,28 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
         </div>
       )}
 
-      {/* Bid Confirmation Modal */}
-           {showBidConfirm && (
-             <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
-               <div className="flex items-center gap-2">
-                 <Gavel className="w-5 h-5 text-primary" />
-                 <h3 className="font-serif text-lg font-semibold">Confirm Your Bid</h3>
-               </div>
-
-               <div className="text-center py-2">
-                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Your High Bid</p>
-                 <p className="font-price text-4xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US")}.00</p>
-               </div>
-
-               <FeeBreakdownDisplay amount={parseFloat(bidAmount)} showConfirmButton={false} />
-
-                 <div className="flex gap-3">
-                 <Button
-                   onClick={() => placeBidMutation.mutate()}
-                   disabled={placeBidMutation.isPending}
-                   className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-                 >
-                   {placeBidMutation.isPending ? "Confirming..." : "Confirm Bid"}
-                 </Button>
-                 <Button variant="outline" onClick={() => { setShowBidConfirm(false); setBidAmount(""); }} className="h-12 px-5">
-                   Cancel
-                 </Button>
-               </div>
-             </div>
-           )}
+      {/* Bid Success Screen */}
+      {bidSuccess && (
+        <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-8 space-y-5 text-center">
+          <CheckCircle2 className="w-12 h-12 text-primary mx-auto" />
+          <div className="space-y-2">
+            <h3 className="font-serif text-2xl font-semibold">You're the Highest Bidder!</h3>
+            <p className="text-sm text-muted-foreground">Your bid of ${parseFloat(bidAmount || item.highest_bid).toLocaleString("en-US")} has been confirmed</p>
+          </div>
+          <div className="bg-card/50 border border-border rounded-lg p-4 text-sm space-y-2">
+            <p className="text-muted-foreground">Check your email for confirmation and stay tuned for updates</p>
+          </div>
+          <Button
+            onClick={() => setBidSuccess(false)}
+            className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            Continue Browsing
+          </Button>
+        </div>
+      )}
 
       {/* Make It Mine result screen */}
-      {confirmResult && !showBidConfirm && (
+      {confirmResult && (
         <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-8 space-y-5 text-center">
           <CheckCircle2 className="w-12 h-12 text-primary mx-auto" />
           <div className="space-y-2">
@@ -415,7 +397,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       )}
 
       {/* Make It Mine confirmation panel */}
-      {showConfirm && !confirmResult && !showBidConfirm && (
+      {showConfirm && !confirmResult && (
         <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
           <div className="flex items-center justify-between">
             <div>
