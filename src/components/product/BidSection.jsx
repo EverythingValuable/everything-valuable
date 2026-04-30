@@ -255,7 +255,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   return (
     <div className="space-y-4 w-full min-w-0">
       {/* You're the highest bidder banner */}
-      {isHighestBidder && !bidSuccess && (
+      {isHighestBidder && currentHighestBid > 0 && (
         <div className="rounded-xl border border-primary/40 bg-primary/5 p-4 flex items-center gap-3">
           <Crown className="w-5 h-5 text-primary shrink-0" />
           <div>
