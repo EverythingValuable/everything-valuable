@@ -309,9 +309,9 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
             <Gavel className="w-4 h-4 text-primary" />
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Place a Bid</span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 min-w-0">
             <Select value={bidAmount} onValueChange={(val) => setBidAmount(val)}>
-              <SelectTrigger className="flex-1 h-11">
+              <SelectTrigger className="flex-1 h-11 min-w-0">
                 <SelectValue placeholder={`Min: $${minBid.toLocaleString()}`} />
               </SelectTrigger>
               <SelectContent className="max-h-64">
@@ -325,7 +325,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
             <Button
               onClick={() => placeBidMutation.mutate()}
               disabled={!bidAmount || placeBidMutation.isPending}
-              className="h-11 px-6 bg-foreground text-background hover:bg-foreground/90"
+              className="h-11 px-6 bg-foreground text-background hover:bg-foreground/90 shrink-0"
             >
               {placeBidMutation.isPending ? "Placing..." : "Bid"}
             </Button>
@@ -334,13 +334,13 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
 
           <div className="border-t border-border pt-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Or Enter Custom Bid</p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 min-w-0">
               <input
                 type="text"
                 placeholder="Enter custom amount"
                 value={customBid}
                 onChange={(e) => setCustomBid(e.target.value.replace(/\D/g, ""))}
-                className="flex-1 h-10 px-3 border border-input rounded-md bg-background text-foreground text-sm"
+                className="flex-1 h-10 px-3 border border-input rounded-md bg-background text-foreground text-sm min-w-0"
               />
               <Button
                 onClick={() => {
@@ -353,7 +353,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                   }
                 }}
                 disabled={!customBid}
-                className="h-10 px-4 bg-foreground text-background hover:bg-foreground/90 text-sm"
+                className="h-10 px-4 bg-foreground text-background hover:bg-foreground/90 text-sm shrink-0"
               >
                 Submit
               </Button>
