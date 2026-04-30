@@ -8,7 +8,7 @@ export default function ProductGallery({ images = [] }) {
 
   if (!images.length) {
     return (
-      <div className="aspect-[4/5] bg-muted rounded-xl flex items-center justify-center">
+      <div className="aspect-[4/5] max-h-[60vh] md:max-h-none bg-muted rounded-xl flex items-center justify-center">
         <span className="font-serif text-6xl text-muted-foreground/20">EV</span>
       </div>
     );
@@ -22,7 +22,7 @@ export default function ProductGallery({ images = [] }) {
     <>
       <div className="space-y-3">
         {/* Main image */}
-        <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted group">
+        <div className="relative aspect-[4/5] max-h-[60vh] md:max-h-none overflow-hidden rounded-xl bg-muted group">
           <AnimatePresence mode="wait">
             <motion.img
               key={activeIndex}
