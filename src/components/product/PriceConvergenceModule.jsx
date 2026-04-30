@@ -20,7 +20,7 @@ export default function PriceConvergenceModule({ item, isActive, isPaused, pause
 function ExpandableInfoBox({ label, explanation }) {
   const [open, setOpen] = useState(false);
   return (
-    <div>
+    <div className="w-full overflow-hidden">
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors mt-1"
@@ -30,7 +30,7 @@ function ExpandableInfoBox({ label, explanation }) {
         <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <p className="mt-2 text-xs text-black leading-relaxed bg-secondary rounded-lg px-3 py-2">
+        <p className="mt-2 text-xs text-black leading-relaxed bg-secondary rounded-lg px-3 py-2 break-words w-full">
           {explanation}
         </p>
       )}
@@ -63,7 +63,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
     <div className="space-y-1.5">
 
       {/* Box 1: 1stBid$ Preview Timer */}
-      <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
+      <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm w-full overflow-hidden">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-primary" />
@@ -82,7 +82,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
       </div>
 
       {/* Box 2: PRI$OMETER Start Price */}
-      <div className="rounded-xl border border-border bg-amber-50 px-5 py-4 opacity-50 shadow-sm">
+      <div className="rounded-xl border border-border bg-amber-50 px-5 py-4 opacity-50 shadow-sm w-full overflow-hidden">
         <p className="text-xs font-bold text-foreground/60 uppercase tracking-widest">PRI$OMETER™ Start Price</p>
         <motion.div
           key={Math.floor(displayPrice)}
@@ -98,7 +98,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
       </div>
 
       {/* Box 3: Highest Preview Bid */}
-      <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm">
+      <div className="rounded-xl border border-border bg-card px-5 py-4 shadow-sm w-full overflow-hidden">
         <p className="text-xs font-bold text-foreground/70 uppercase tracking-widest">Highest Preview Bid</p>
         {item.highest_bid > 0 ? (
           <>
