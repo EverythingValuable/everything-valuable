@@ -229,7 +229,8 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     };
 
     const increment = getTierIncrement(currentHighest);
-    let start = currentHighest > 0 ? currentHighest + increment : 100;
+    const startingBid = item.estimated_low ? item.estimated_low / 2 : 0;
+    let start = currentHighest > 0 ? currentHighest + increment : Math.max(startingBid, 100);
 
     // For prisometer phase, cap options at (or below) the live current price
     const livePrice = item.status === "prisometer" ? Math.floor(getLivePrice()) : Infinity;
