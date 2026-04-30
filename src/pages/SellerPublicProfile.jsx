@@ -40,12 +40,6 @@ export default function SellerPublicProfile() {
 
     if (sortBy === "newest") {
       result.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-    } else if (sortBy === "prisometer_soon") {
-      result.sort((a, b) => {
-        const aTime = a.prisometer_start ? new Date(a.prisometer_start).getTime() : Infinity;
-        const bTime = b.prisometer_start ? new Date(b.prisometer_start).getTime() : Infinity;
-        return aTime - bTime;
-      });
     } else if (sortBy === "preview_ending") {
       result.sort((a, b) => {
         const aTime = a.first_bids_end ? new Date(a.first_bids_end).getTime() : Infinity;
@@ -194,7 +188,6 @@ export default function SellerPublicProfile() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="prisometer_soon">Prisometer Coming Soon</SelectItem>
                 <SelectItem value="preview_ending">Preview Ending Soon</SelectItem>
               </SelectContent>
             </Select>
