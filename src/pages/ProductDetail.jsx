@@ -265,26 +265,27 @@ export default function ProductDetail() {
                 </CollapsibleSection>
               )}
 
+              {item.dimensions && (
+                <CollapsibleSection title="Dimensions" defaultOpen={true}>
+                  <div className="text-sm text-muted-foreground">{item.dimensions}</div>
+                </CollapsibleSection>
+              )}
+
+              {/* Condition section */}
+              {item.condition && (
+                <CollapsibleSection title="Condition" defaultOpen={false}>
+                  <div className="text-sm text-muted-foreground">{conditionLabels[item.condition] || item.condition}</div>
+                </CollapsibleSection>
+              )}
+
               {/* Details grid */}
-              {(item.condition || item.period || item.dimensions || item.materials || item.origin) && (
+              {(item.period || item.materials || item.origin) && (
                 <CollapsibleSection title="Details" defaultOpen={true}>
                   <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm w-full">
-                    {item.condition && (
-                      <div>
-                        <span className="text-foreground text-xs font-semibold block mb-0.5">Condition</span>
-                        <span className="text-muted-foreground">{conditionLabels[item.condition] || item.condition}</span>
-                      </div>
-                    )}
                     {item.period && (
                       <div>
                         <span className="text-foreground text-xs font-semibold block mb-0.5">Period</span>
                         <span className="text-muted-foreground">{item.period}</span>
-                      </div>
-                    )}
-                    {item.dimensions && (
-                      <div>
-                        <span className="text-foreground text-xs font-semibold block mb-0.5">Dimensions</span>
-                        <span className="text-muted-foreground">{item.dimensions}</span>
                       </div>
                     )}
                     {item.materials && (
