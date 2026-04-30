@@ -19,6 +19,7 @@ const navGroups = [
     label: "LISTINGS",
     items: [
       { label: "Upload New Item", icon: Upload, href: "/seller/studio", highlight: true },
+      { label: "Bulk Upload", icon: Upload, href: "/seller/bulk-upload" },
       { label: "All Listings", icon: Package, href: "/seller?view=listings" },
       { label: "Drafts", icon: FileText, href: "/seller?view=draft" },
       { label: "Live in 1stBid$™", icon: Gavel, href: "/seller?view=first_bids" },

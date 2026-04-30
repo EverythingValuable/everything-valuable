@@ -25,6 +25,7 @@ import RealEstateHome from './pages/RealEstateHome';
 import RealEstateDetail from './pages/RealEstateDetail';
 import Portal from './pages/Portal';
 import HotspotManager from './pages/HotspotManager';
+import BulkUpload from './pages/BulkUpload';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -69,6 +70,7 @@ const AuthenticatedApp = () => {
         <Route path="/real-property" element={<RealEstateHome />} />
         <Route path="/real-property/listing/:id" element={<RealEstateDetail />} />
         <Route path="/hotspot-manager" element={<HotspotManager />} />
+        <Route path="/seller/bulk-upload" element={<BulkUpload />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

@@ -1,0 +1,197 @@
+{
+  "name": "Item",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Item title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Editorial description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "fine_art",
+        "jewelry",
+        "watches",
+        "furniture",
+        "decorative_arts",
+        "design",
+        "antiques",
+        "collectibles",
+        "photography",
+        "sculpture",
+        "ceramics",
+        "textiles",
+        "books",
+        "wine",
+        "luxury_goods",
+        "other"
+      ]
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "excellent",
+        "very_good",
+        "good",
+        "fair",
+        "as_is"
+      ]
+    },
+    "provenance": {
+      "type": "string",
+      "description": "Provenance notes"
+    },
+    "condition_notes": {
+      "type": "string"
+    },
+    "internal_notes": {
+      "type": "string"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of image URLs"
+    },
+    "seller_email": {
+      "type": "string"
+    },
+    "seller_name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string",
+      "description": "Item location (e.g., Kingston NY 12401)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "first_bids",
+        "prisometer",
+        "sold",
+        "pending_review",
+        "unsold",
+        "declined"
+      ],
+      "default": "draft"
+    },
+    "lot_number": {
+      "type": "string",
+      "description": "Lot number used for bulk photo uploads (e.g. '1', '2'). Photos named 1_1.jpg, 1_2.jpg map to lot_number '1'."
+    },
+    "first_bids_duration_hours": {
+      "type": "number",
+      "description": "Duration of 1stBid$ phase in hours"
+    },
+    "first_bids_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "first_bids_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "prisometer_start_price": {
+      "type": "number",
+      "description": "PRI$OMETER visible starting price"
+    },
+    "reserve_price": {
+      "type": "number",
+      "description": "Hidden reserve price"
+    },
+    "below_reserve_percent": {
+      "type": "number",
+      "enum": [
+        10,
+        15,
+        20
+      ],
+      "description": "How far below reserve the PRI$OMETER may drop"
+    },
+    "prisometer_duration_hours": {
+      "type": "number",
+      "description": "Total PRI$OMETER phase duration"
+    },
+    "prisometer_activated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "current_price": {
+      "type": "number",
+      "description": "Current live PRI$OMETER price"
+    },
+    "highest_bid": {
+      "type": "number",
+      "default": 0
+    },
+    "highest_bidder_email": {
+      "type": "string"
+    },
+    "bid_count": {
+      "type": "number",
+      "default": 0
+    },
+    "watcher_count": {
+      "type": "number",
+      "default": 0
+    },
+    "sold_price": {
+      "type": "number"
+    },
+    "sold_to_email": {
+      "type": "string"
+    },
+    "sold_via": {
+      "type": "string",
+      "enum": [
+        "bid",
+        "make_it_mine",
+        "seller_accepted"
+      ]
+    },
+    "make_it_mine_active": {
+      "type": "boolean",
+      "default": false
+    },
+    "make_it_mine_buyer": {
+      "type": "string"
+    },
+    "make_it_mine_expires": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "estimated_low": {
+      "type": "number"
+    },
+    "estimated_high": {
+      "type": "number"
+    },
+    "dimensions": {
+      "type": "string"
+    },
+    "materials": {
+      "type": "string"
+    },
+    "period": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "string"
+    },
+    "shipping_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "prisometer_start_price"
+  ]
+}
