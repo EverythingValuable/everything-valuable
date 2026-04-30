@@ -208,6 +208,8 @@ export default function BulkUpload() {
     setCsvLoading(false);
   };
 
+  const [photoProgress, setPhotoProgress] = useState({ done: 0, total: 0 });
+
   // ── Photo handlers ──────────────────────────────────────────────────────────
   const handlePhotoFiles = (files) => {
     setPhotoResult(null);
@@ -231,18 +233,22 @@ export default function BulkUpload() {
     if (!photoFiles.length) return;
     setPhotoLoading(true);
     setPhotoResult(null);
+    setPhotoProgress({ done: 0, total: photoFiles.length });
 
-    // Upload each file and collect { filename, file_url }
+    // Upload each file sequentially so progress is meaningful
     const uploaded = [];
-    for (const pf of photoFiles) {
+    for (let i = 0; i < photoFiles.length; i++) {
+      const pf = photoFiles[i];
       const { file_url } = await base44.integrations.Core.UploadFile({ file: pf.file });
       uploaded.push({ filename: pf.filename, file_url });
+      setPhotoProgress({ done: i + 1, total: photoFiles.length });
     }
 
     const res = await base44.functions.invoke("bulkUploadPhotos", { photos: uploaded });
     setPhotoResult(res.data);
     setPhotoFiles([]);
     setPhotoLoading(false);
+    setPhotoProgress({ done: 0, total: 0 });
   };
 
   // Group photos by lot for display
@@ -387,6 +393,20 @@ export default function BulkUpload() {
                   {photoLoading ? "Uploading…" : "Upload Photos"}
                 </Button>
               </div>
+              {photoLoading && photoProgress.total > 0 && (
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Uploading photo {photoProgress.done} of {photoProgress.total}…</span>
+                    <span>{Math.round((photoProgress.done / photoProgress.total) * 100)}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-300"
+                      style={{ width: `${(photoProgress.done / photoProgress.total) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
 
               {Object.entries(photosByLot).map(([lot, photos]) => (
                 <div key={lot} className="rounded-xl border border-border bg-card p-4 space-y-3">
