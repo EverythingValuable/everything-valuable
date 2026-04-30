@@ -174,7 +174,7 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto overflow-x-hidden">
        {/* Breadcrumb */}
        <div className="w-full px-4 md:px-8 py-4">
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -190,8 +190,8 @@ export default function ProductDetail() {
         </nav>
       </div>
 
-      <div className="px-4 md:px-8 pb-20">
-        <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
+      <div className="w-full max-w-full px-4 md:px-8 pb-20 overflow-x-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 w-full max-w-full overflow-x-hidden">
 
           {/* LEFT — Gallery + Info Sections */}
           <div className="lg:col-span-3 space-y-0 w-full min-w-0">
@@ -211,8 +211,8 @@ export default function ProductDetail() {
                   <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
                 )}
               </div>
-              <div className="w-full min-w-0">
-                <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words w-full overflow-visible">
+              <div className="w-full max-w-full min-w-0">
+                <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words whitespace-normal w-full max-w-full overflow-hidden [overflow-wrap:anywhere]">
                   {item.title}
                 </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
@@ -251,7 +251,7 @@ export default function ProductDetail() {
             <div className="mt-8 w-full">
               {item.description && (
                 <CollapsibleSection title="About This Lot" defaultOpen={true}>
-                  <div className="text-sm text-foreground leading-relaxed prose prose-sm w-full overflow-visible">
+                  <div className="text-sm text-foreground leading-relaxed prose prose-sm w-full max-w-full overflow-hidden break-words [overflow-wrap:anywhere]">
                     <ReactMarkdown
                       skipHtml={false}
                       components={{
@@ -305,7 +305,7 @@ export default function ProductDetail() {
 
               {item.provenance && (
                <CollapsibleSection title="Provenance" defaultOpen={false}>
-                 <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm w-full overflow-visible">
+                 <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm w-full max-w-full overflow-hidden break-words [overflow-wrap:anywhere]">
                     <ReactMarkdown
                       components={{
                         a: ({ node, ...props }) => <a {...props} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" />,
@@ -320,7 +320,7 @@ export default function ProductDetail() {
 
               {item.condition_notes && (
                <CollapsibleSection title="Condition Report" defaultOpen={false}>
-                 <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm w-full overflow-visible">
+                 <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm w-full max-w-full overflow-hidden break-words [overflow-wrap:anywhere]">
                     <ReactMarkdown
                       components={{
                         a: ({ node, ...props }) => <a {...props} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" />,
@@ -335,7 +335,7 @@ export default function ProductDetail() {
 
               {item.shipping_notes && (
                <CollapsibleSection title="Shipping" defaultOpen={false}>
-                 <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm w-full overflow-visible">
+                 <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm w-full max-w-full overflow-hidden break-words [overflow-wrap:anywhere]">
                     <ReactMarkdown
                       components={{
                         a: ({ node, ...props }) => <a {...props} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" />,
@@ -367,8 +367,8 @@ export default function ProductDetail() {
               </div>
 
               {/* Title */}
-              <div className="w-full min-w-0">
-               <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground break-words w-full overflow-visible">
+              <div className="w-full max-w-full min-w-0">
+               <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground break-words whitespace-normal w-full max-w-full overflow-hidden [overflow-wrap:anywhere]">
                  {item.title}
                </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (

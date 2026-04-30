@@ -304,28 +304,30 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
 
       {/* Place a Bid */}
       {canBid && !showConfirm && !bidSuccess && (
-        <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full max-w-full min-w-0 overflow-hidden">
           <div className="flex items-center gap-2">
             <Gavel className="w-4 h-4 text-primary" />
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Place a Bid</span>
           </div>
-          <div className="flex gap-2 min-w-0">
-            <Select value={bidAmount} onValueChange={(val) => setBidAmount(val)}>
-              <SelectTrigger className="flex-1 h-11 min-w-0">
-                <SelectValue placeholder={`Min: $${minBid.toLocaleString()}`} />
-              </SelectTrigger>
-              <SelectContent className="max-h-64">
-                {generateBidOptions().map((option) => (
-                  <SelectItem key={option} value={option.toString()}>
-                    ${option.toLocaleString("en-US")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col sm:flex-row gap-2 w-full max-w-full min-w-0 overflow-hidden">
+            <div className="w-full min-w-0">
+              <Select value={bidAmount} onValueChange={(val) => setBidAmount(val)}>
+                <SelectTrigger className="w-full h-11 min-w-0">
+                  <SelectValue placeholder={`Min: $${minBid.toLocaleString()}`} />
+                </SelectTrigger>
+                <SelectContent className="max-h-64">
+                  {generateBidOptions().map((option) => (
+                    <SelectItem key={option} value={option.toString()}>
+                      ${option.toLocaleString("en-US")}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <Button
               onClick={() => placeBidMutation.mutate()}
               disabled={!bidAmount || placeBidMutation.isPending}
-              className="h-11 px-6 bg-foreground text-background hover:bg-foreground/90 shrink-0"
+              className="w-full sm:w-auto h-11 px-6 bg-foreground text-background hover:bg-foreground/90 shrink-0"
             >
               {placeBidMutation.isPending ? "Placing..." : "Bid"}
             </Button>
@@ -334,13 +336,13 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
 
           <div className="border-t border-border pt-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Or Enter Custom Bid</p>
-            <div className="flex gap-2 min-w-0">
+            <div className="flex flex-col sm:flex-row gap-2 w-full max-w-full min-w-0 overflow-hidden">
               <input
                 type="text"
                 placeholder="Enter custom amount"
                 value={customBid}
                 onChange={(e) => setCustomBid(e.target.value.replace(/\D/g, ""))}
-                className="flex-1 h-10 px-3 border border-input rounded-md bg-background text-foreground text-sm min-w-0"
+                className="w-full h-10 px-3 border border-input rounded-md bg-background text-foreground text-sm min-w-0"
               />
               <Button
                 onClick={() => {
@@ -353,7 +355,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                   }
                 }}
                 disabled={!customBid}
-                className="h-10 px-4 bg-foreground text-background hover:bg-foreground/90 text-sm shrink-0"
+                className="w-full sm:w-auto h-10 px-4 bg-foreground text-background hover:bg-foreground/90 text-sm shrink-0"
               >
                 Submit
               </Button>
