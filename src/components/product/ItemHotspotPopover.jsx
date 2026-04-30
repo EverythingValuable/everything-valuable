@@ -15,8 +15,6 @@ export default function ItemHotspotPopover({ hotspot, item, onClose, listingId }
   const [timeLeft, setTimeLeft] = useState("");
   const navigate = useNavigate();
 
-  if (!item) return null;
-
   // Calculate countdown
   useEffect(() => {
     if (!item.first_bids_end && !item.prisometer_duration_hours) return;
@@ -38,6 +36,8 @@ export default function ItemHotspotPopover({ hotspot, item, onClose, listingId }
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
   }, [item]);
+
+  if (!item) return null;
 
   const status = statusConfig[item.status] || {};
   const StatusIcon = status.icon;

@@ -178,7 +178,7 @@ export default function ItemCard({ item, index = 0 }) {
           {item.seller_name && (
             <p className="text-xs text-muted-foreground">{item.seller_name}</p>
           )}
-          <div className="pt-1">
+          <div className="pt-1 space-y-0.5">
             <span className="font-price text-lg font-semibold text-foreground">
               ${Math.floor(livePrice).toLocaleString("en-US")}
               {item.status === "prisometer" && !item.make_it_mine_active && (
@@ -187,6 +187,11 @@ export default function ItemCard({ item, index = 0 }) {
                 </span>
               )}
             </span>
+            {item.highest_bid > 0 && (
+              <p className="text-xs text-muted-foreground">
+                High bid: <span className="font-medium text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
+              </p>
+            )}
           </div>
           {item.status === "first_bids" && countdown && (
             <div className="flex items-center gap-1 text-xs text-primary font-medium mt-0.5">
