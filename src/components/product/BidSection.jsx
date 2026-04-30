@@ -304,7 +304,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
 
       {/* Place a Bid */}
       {canBid && !showConfirm && !bidSuccess && (
-        <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+        <div className="rounded-xl border border-border bg-card p-5 space-y-4 hidden md:block">
           <div className="flex items-center gap-2">
             <Gavel className="w-4 h-4 text-primary" />
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Place a Bid</span>
