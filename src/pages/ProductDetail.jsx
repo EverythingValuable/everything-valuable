@@ -251,7 +251,7 @@ export default function ProductDetail() {
             <div className="mt-8">
               {item.description && (
                 <CollapsibleSection title="About This Lot" defaultOpen={true}>
-                  <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                  <div className="text-sm text-foreground leading-relaxed prose prose-sm max-w-none">
                     <ReactMarkdown
                       skipHtml={false}
                       components={{
@@ -271,32 +271,32 @@ export default function ProductDetail() {
                   <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
                     {item.condition && (
                       <div>
-                        <span className="text-muted-foreground text-xs block mb-0.5">Condition</span>
-                        <span className="font-medium">{conditionLabels[item.condition] || item.condition}</span>
+                        <span className="text-foreground text-xs font-semibold block mb-0.5">Condition</span>
+                        <span className="text-muted-foreground">{conditionLabels[item.condition] || item.condition}</span>
                       </div>
                     )}
                     {item.period && (
                       <div>
-                        <span className="text-muted-foreground text-xs block mb-0.5">Period</span>
-                        <span className="font-medium">{item.period}</span>
+                        <span className="text-foreground text-xs font-semibold block mb-0.5">Period</span>
+                        <span className="text-muted-foreground">{item.period}</span>
                       </div>
                     )}
                     {item.dimensions && (
                       <div>
-                        <span className="text-muted-foreground text-xs block mb-0.5">Dimensions</span>
-                        <span className="font-medium">{item.dimensions}</span>
+                        <span className="text-foreground text-xs font-semibold block mb-0.5">Dimensions</span>
+                        <span className="text-muted-foreground">{item.dimensions}</span>
                       </div>
                     )}
                     {item.materials && (
                       <div>
-                        <span className="text-muted-foreground text-xs block mb-0.5">Materials</span>
-                        <span className="font-medium">{item.materials}</span>
+                        <span className="text-foreground text-xs font-semibold block mb-0.5">Materials</span>
+                        <span className="text-muted-foreground">{item.materials}</span>
                       </div>
                     )}
                     {item.origin && (
                       <div>
-                        <span className="text-muted-foreground text-xs block mb-0.5">Origin</span>
-                        <span className="font-medium">{item.origin}</span>
+                        <span className="text-foreground text-xs font-semibold block mb-0.5">Origin</span>
+                        <span className="text-muted-foreground">{item.origin}</span>
                       </div>
                     )}
                   </div>
