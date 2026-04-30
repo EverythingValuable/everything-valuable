@@ -36,7 +36,7 @@ const categories = [
   {
     key: "fashion_accessories",
     label: "Fashion",
-    image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80&fit=crop",
+    image: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/2955b40d6_90013264_Catalog_G4g1RR5nKs.jpg",
   },
   {
     key: "collectibles",
