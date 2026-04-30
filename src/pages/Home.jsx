@@ -71,6 +71,15 @@ export default function Home() {
         subtitle="Extraordinary objects with active bidding and live PRI$OMETER pricing"
       />
 
+      {/* View All Button */}
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-6 text-center">
+        <Link to="/browse">
+          <Button variant="outline" className="gap-2 rounded-full h-11 px-8">
+            View All <ArrowRight className="w-4 h-4" />
+          </Button>
+        </Link>
+      </div>
+
       {/* How it works */}
       <HowItWorksPreview />
 
