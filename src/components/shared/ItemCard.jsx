@@ -169,10 +169,19 @@ export default function ItemCard({ item, index = 0 }) {
             <Eye className="w-3.5 h-3.5" /> Preview
           </button>
 
-          {/* Bid count */}
-          {item.bid_count > 0 && (
-            <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
-              {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
+          {/* Bid count + High bid overlay */}
+          {(item.bid_count > 0 || item.highest_bid > 0) && (
+            <div className="absolute bottom-3 left-3 flex items-center gap-2">
+              {item.bid_count > 0 && (
+                <div className="px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
+                  {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
+                </div>
+              )}
+              {item.highest_bid > 0 && (
+                <div className="px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
+                  High bid ${item.highest_bid.toLocaleString("en-US")}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -185,20 +194,17 @@ export default function ItemCard({ item, index = 0 }) {
             <p className="text-xs text-muted-foreground">{sellerProfile?.display_name || item.seller_name}</p>
           )}
           <div className="pt-1 space-y-0.5">
-            <span className="font-price text-lg font-semibold text-foreground">
-              ${Math.floor(livePrice).toLocaleString("en-US")}
-              {item.status === "prisometer" && !item.make_it_mine_active && (
-                <span className="text-sm text-red-400 animate-price-tick">
-                  .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
-                </span>
-              )}
-            </span>
-            {item.highest_bid > 0 && (
-              <p className="text-xs text-muted-foreground">
-                High bid: <span className="font-medium text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
-              </p>
-            )}
-          </div>
+             <div className="text-xs text-muted-foreground">
+               Pri$ometer Start: <span className="font-price font-semibold text-foreground">
+                 ${Math.floor(livePrice).toLocaleString("en-US")}
+               </span>
+               {item.status === "prisometer" && !item.make_it_mine_active && (
+                 <span className="text-xs text-red-400 animate-price-tick">
+                   .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
+                 </span>
+               )}
+             </div>
+           </div>
           {item.status === "first_bids" && countdown && (
             <div className="flex items-center gap-1 text-xs text-primary font-medium mt-0.5">
               <Clock className="w-3 h-3" />
