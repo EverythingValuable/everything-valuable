@@ -15,14 +15,11 @@ const CSV_HEADERS = [
   "estimated_low","estimated_high","status"
 ];
 
-const CSV_EXAMPLE_ROWS = [
-  ["1","Antique Oak Sideboard","furniture","very_good","Beautiful Victorian sideboard","Private collection","Oak","180 x 90 x 45 cm","1880s","England","Kingston NY 12401","Minor scratches","Fragile — white glove required","4500","3500","10","168","168","3000","6000","draft"],
-  ["2","Diamond Solitaire Ring","jewelry","excellent","1.2ct round brilliant diamond","Purchased 2010 from Tiffany & Co","Platinum, Diamond","Ring size 6","2010","USA","Kingston NY 12401","","Ships insured only","8000","6000","10","168","168","6000","10000","draft"],
-];
+const CSV_EXAMPLE_ROWS = [];
 
 function downloadTemplate() {
-  const rows = [CSV_HEADERS, ...CSV_EXAMPLE_ROWS];
-  const csv = rows.map(r => r.map(v => `"${v}"`).join(",")).join("\n");
+  // Headers only — no example rows so accidental uploads don't create dummy items
+  const csv = CSV_HEADERS.map(h => `"${h}"`).join(",") + "\n";
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

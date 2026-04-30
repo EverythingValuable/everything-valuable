@@ -22,8 +22,17 @@ Deno.serve(async (req) => {
           const found = await base44.entities.Item.filter({ id: row.id });
           existingItem = found[0] || null;
         } else if (row.lot_number) {
+          // Find ALL items with this lot_number for this seller
           const found = await base44.entities.Item.filter({
             lot_number: String(row.lot_number),
+            seller_email: user.email
+          });
+          // If multiple exist (from previous bad uploads), use the first and ignore the rest
+          existingItem = found[0] || null;
+        } else if (row.title) {
+          // Fallback: match by exact title for this seller
+          const found = await base44.entities.Item.filter({
+            title: row.title,
             seller_email: user.email
           });
           existingItem = found[0] || null;
