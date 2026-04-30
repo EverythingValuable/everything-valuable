@@ -56,6 +56,34 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   });
 
   // Start countdown when confirm panel opens
+  // Subscribe to live bid updates
+  useEffect(() => {
+    if (!item?.id || !currentUser?.email) return;
+
+    const unsubscribe = base44.entities.Bid.subscribe((event) => {
+      if (event.data.item_id !== item.id) return;
+
+      queryClient.invalidateQueries({ queryKey: ["item", item.id] });
+      queryClient.invalidateQueries({ queryKey: ["bids", item.id] });
+
+      // Notify if current user just got outbid
+      if (event.type === "create" && event.data.bidder_email !== currentUser.email) {
+        const newBidAmount = event.data.amount;
+        const userHighestBid = userBids?.length > 0 ? Math.max(...userBids.map(b => b.amount)) : 0;
+
+        if (userHighestBid > 0 && newBidAmount > userHighestBid) {
+          toast({
+            title: "You've Been Outbid",
+            description: `New high bid: $${newBidAmount.toLocaleString("en-US")}. Place a new bid to stay in the game.`,
+            variant: "destructive",
+          });
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, [item?.id, currentUser?.email, userBids, queryClient, toast]);
+
   useEffect(() => {
     if (!showConfirm) return;
     setTimeLeft(CONFIRM_SECONDS);
