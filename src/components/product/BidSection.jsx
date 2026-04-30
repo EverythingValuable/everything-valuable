@@ -344,6 +344,10 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                 <span className="flex-wrap">Total Final Invoice</span>
                 <span className="shrink-0">${(parseInt(bidAmount) + (parseInt(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
+              <div className="flex justify-between gap-4 font-semibold min-w-0">
+                <span className="text-muted-foreground flex-wrap">Remaining due after upfront payment</span>
+                <span className="shrink-0">${(parseInt(bidAmount) + (parseInt(bidAmount) * 0.10 + 30) * 0.50 - (parseInt(bidAmount) * 0.10 + 30)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              </div>
             </div>
           )}
         </div>
@@ -421,7 +425,11 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                    <span className="flex-wrap">Total Final Invoice</span>
                    <span className="shrink-0">${(parseFloat(bidAmount) + (parseFloat(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                  </div>
-               </div>
+                 <div className="flex justify-between gap-4 font-semibold min-w-0">
+                   <span className="text-muted-foreground flex-wrap">Remaining due after upfront payment</span>
+                   <span className="shrink-0">${(parseFloat(bidAmount) + (parseFloat(bidAmount) * 0.10 + 30) * 0.50 - (parseFloat(bidAmount) * 0.10 + 30)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                 </div>
+                 </div>
 
                <div className="flex gap-3">
                  <Button
@@ -493,6 +501,10 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
             <div className="border-t border-border mt-3 pt-3 flex justify-between gap-4 font-semibold min-w-0">
               <span className="flex-wrap">Total Final Invoice</span>
               <span className="shrink-0">${(price + (price * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+            <div className="flex justify-between gap-4 font-semibold min-w-0">
+              <span className="text-muted-foreground flex-wrap">Remaining due after upfront payment</span>
+              <span className="shrink-0">${(price + (price * 0.10 + 30) * 0.50 - (price * 0.10 + 30)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
 
