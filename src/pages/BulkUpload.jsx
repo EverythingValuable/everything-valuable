@@ -235,13 +235,23 @@ export default function BulkUpload() {
     setPhotoResult(null);
     setPhotoProgress({ done: 0, total: photoFiles.length });
 
-    // Upload each file sequentially so progress is meaningful
+    // Upload in batches of 3 with a pause between batches to avoid rate limits
     const uploaded = [];
-    for (let i = 0; i < photoFiles.length; i++) {
-      const pf = photoFiles[i];
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: pf.file });
-      uploaded.push({ filename: pf.filename, file_url });
-      setPhotoProgress({ done: i + 1, total: photoFiles.length });
+    const BATCH_SIZE = 3;
+    const BATCH_DELAY_MS = 1000;
+
+    for (let i = 0; i < photoFiles.length; i += BATCH_SIZE) {
+      const batch = photoFiles.slice(i, i + BATCH_SIZE);
+      const results = await Promise.all(
+        batch.map(pf => base44.integrations.Core.UploadFile({ file: pf.file })
+          .then(({ file_url }) => ({ filename: pf.filename, file_url }))
+        )
+      );
+      uploaded.push(...results);
+      setPhotoProgress({ done: Math.min(i + BATCH_SIZE, photoFiles.length), total: photoFiles.length });
+      if (i + BATCH_SIZE < photoFiles.length) {
+        await new Promise(r => setTimeout(r, BATCH_DELAY_MS));
+      }
     }
 
     const res = await base44.functions.invoke("bulkUploadPhotos", { photos: uploaded });
