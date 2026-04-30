@@ -197,6 +197,56 @@ export default function ProductDetail() {
           <div className="lg:col-span-3 space-y-0">
             <ProductGallery images={item.images || []} />
 
+            {/* Mobile-only: bid panel content appears here, right after gallery */}
+            <div className="lg:hidden mt-6 space-y-5">
+              {/* Status + Category */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="outline" className="text-xs">
+                  {categoryLabels[item.category] || item.category}
+                </Badge>
+                {item.status === "first_bids" && (
+                  <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>
+                )}
+                {item.status === "prisometer" && (
+                  <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
+                )}
+              </div>
+              <div>
+                <h1 className="font-display text-2xl font-bold leading-tight text-foreground">
+                  {item.title}
+                </h1>
+                {(sellerProfile?.display_name || item.seller_name) && (
+                  <p className="text-sm text-muted-foreground mt-1.5">
+                    Offered by{" "}
+                    <Link to={`/seller/profile?seller=${item.seller_email}`} className="font-medium text-foreground hover:text-primary transition-colors">
+                      {sellerProfile?.display_name || item.seller_name}
+                    </Link>
+                  </p>
+                )}
+              </div>
+              {(item.status === "first_bids" || item.status === "prisometer") && item && (
+                <PriceConvergenceModuleWrapper item={item} />
+              )}
+              {(item.status === "first_bids" || item.status === "prisometer") && (
+                <BidSection item={item} />
+              )}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className={`flex-1 gap-2 h-10 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`}
+                  onClick={() => user ? saveMutation.mutate() : base44.auth.redirectToLogin()}
+                  disabled={saveMutation.isPending}
+                >
+                  <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} /> {isSaved ? "Saved" : "Save"}
+                </Button>
+                <Button variant="outline" className="flex-1 gap-2 h-10">
+                  <Share2 className="w-4 h-4" /> Share
+                </Button>
+              </div>
+              <ItemMessaging item={item} user={user} />
+              <Separator />
+            </div>
+
             {/* Collapsible Info Sections */}
             <div className="mt-8">
               {item.description && (
@@ -300,8 +350,8 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {/* RIGHT — Sticky Bid Panel */}
-          <div className="lg:col-span-2">
+          {/* RIGHT — Sticky Bid Panel (desktop only) */}
+          <div className="hidden lg:block lg:col-span-2">
             <div className="lg:sticky lg:top-6 space-y-5">
               {/* Status + Category */}
               <div className="flex items-center gap-2 flex-wrap">
