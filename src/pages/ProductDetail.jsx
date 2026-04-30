@@ -212,7 +212,7 @@ export default function ProductDetail() {
                 )}
               </div>
               <div>
-                <h1 className="font-display text-xl sm:text-2xl font-bold leading-snug text-foreground">
+                <h1 className="font-display text-2xl font-bold leading-tight text-foreground">
                   {item.title}
                 </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
