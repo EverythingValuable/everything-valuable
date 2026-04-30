@@ -47,7 +47,7 @@ const categories = [
 
 export default function CategoryCircles() {
   return (
-    <section className="pt-12 md:pt-16 pb-4 bg-background">
+    <section className="pt-12 md:pt-16 pb-0 bg-background">
       <div className="max-w-screen-xl mx-auto px-6 md:px-10">
 
         <div className="flex items-center justify-between mb-8">
