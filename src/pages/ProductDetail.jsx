@@ -194,7 +194,7 @@ export default function ProductDetail() {
         <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
 
           {/* LEFT — Gallery + Info Sections */}
-          <div className="lg:col-span-3 space-y-0 w-full">
+          <div className="lg:col-span-3 space-y-0 w-full min-w-0">
             <ProductGallery images={item.images || []} />
 
             {/* Mobile-only: bid panel content appears here, right after gallery */}
@@ -211,8 +211,8 @@ export default function ProductDetail() {
                   <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
                 )}
               </div>
-              <div className="w-full">
-                <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words w-full">
+              <div className="w-full min-w-0">
+                <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words w-full overflow-visible">
                   {item.title}
                 </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
@@ -367,8 +367,8 @@ export default function ProductDetail() {
               </div>
 
               {/* Title */}
-              <div className="w-full">
-               <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground break-words w-full">
+              <div className="w-full min-w-0">
+               <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground break-words w-full overflow-visible">
                  {item.title}
                </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
