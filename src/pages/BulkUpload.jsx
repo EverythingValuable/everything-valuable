@@ -29,23 +29,90 @@ function downloadTemplate() {
   URL.revokeObjectURL(url);
 }
 
-// ─── CSV Parser ───────────────────────────────────────────────────────────────
-function parseCSV(text) {
-  const lines = text.trim().split("\n");
-  const headers = lines[0].split(",").map(h => h.replace(/"/g, "").trim());
-  return lines.slice(1).map(line => {
-    const vals = [];
-    let cur = "", inQ = false;
-    for (const ch of line) {
-      if (ch === '"') { inQ = !inQ; continue; }
-      if (ch === "," && !inQ) { vals.push(cur.trim()); cur = ""; continue; }
-      cur += ch;
+// ─── CSV Parser (RFC-4180 compliant) ─────────────────────────────────────────
+function parseCSVTokens(text) {
+  // Tokenize the entire file character-by-character, respecting quoted fields
+  // that may contain commas, newlines, and escaped quotes ("")
+  const rows = [];
+  let row = [];
+  let field = "";
+  let inQuotes = false;
+  let i = 0;
+
+  while (i < text.length) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    if (inQuotes) {
+      if (ch === '"' && next === '"') {
+        // Escaped quote inside quoted field
+        field += '"';
+        i += 2;
+        continue;
+      } else if (ch === '"') {
+        // End of quoted field
+        inQuotes = false;
+        i++;
+        continue;
+      } else {
+        field += ch;
+        i++;
+        continue;
+      }
     }
-    vals.push(cur.trim());
-    const obj = {};
-    headers.forEach((h, i) => { obj[h] = vals[i] || ""; });
-    return obj;
-  }).filter(r => r.title || r.lot_number);
+
+    // Not in quotes
+    if (ch === '"') {
+      inQuotes = true;
+      i++;
+      continue;
+    }
+    if (ch === ',') {
+      row.push(field.trim());
+      field = "";
+      i++;
+      continue;
+    }
+    if (ch === '\r' && next === '\n') {
+      row.push(field.trim());
+      rows.push(row);
+      row = [];
+      field = "";
+      i += 2;
+      continue;
+    }
+    if (ch === '\n' || ch === '\r') {
+      row.push(field.trim());
+      rows.push(row);
+      row = [];
+      field = "";
+      i++;
+      continue;
+    }
+    field += ch;
+    i++;
+  }
+
+  // Push last field/row
+  if (field || row.length > 0) {
+    row.push(field.trim());
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+function parseCSV(text) {
+  const rows = parseCSVTokens(text.trim());
+  if (rows.length < 2) return [];
+  const headers = rows[0].map(h => h.replace(/"/g, "").trim());
+  return rows.slice(1)
+    .map(vals => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = vals[i] ?? ""; });
+      return obj;
+    })
+    .filter(r => r.title || r.lot_number);
 }
 
 // ─── DropZone ─────────────────────────────────────────────────────────────────
