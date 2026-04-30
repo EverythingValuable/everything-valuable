@@ -26,7 +26,7 @@ const categories = [
   {
     key: "decorative_art",
     label: "Decorative Art",
-    image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80&fit=crop",
+    image: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/b1b4cc42b_Screenshot2026-04-30at11135PM.jpg",
   },
   {
     key: "asian_antiques",
