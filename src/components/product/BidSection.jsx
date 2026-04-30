@@ -318,7 +318,8 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
           {bidAmount && (
             <FeeBreakdownDisplay 
               amount={parseInt(bidAmount)} 
-              showConfirmButton={false}
+              onConfirmBid={() => placeBidMutation.mutate()}
+              onCancel={() => { setBidAmount(""); setCustomBid(""); }}
             />
           )}
         </div>
