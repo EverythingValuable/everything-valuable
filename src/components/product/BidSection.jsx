@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Gavel, ShoppingBag, CheckCircle2, Clock, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Gavel, ShoppingBag, CheckCircle2, Clock, AlertCircle, ChevronDown, ChevronUp, Crown } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -37,6 +37,11 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     return () => clearInterval(priceTickRef.current);
   }, [item.status, isPaused]);
   const { toast } = useToast();
+
+  const { data: currentUser } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => base44.auth.me(),
+  });
 
   const { data: sellerProfile } = useQuery({
     queryKey: ["sellerProfile", item?.seller_email],
@@ -231,6 +236,8 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const mins = Math.floor(timeLeft / 60);
   const secs = timeLeft % 60;
   const timerColor = timeLeft <= 30 ? "text-red-500" : "text-primary";
+  
+  const isHighestBidder = currentUser && item.highest_bidder_email === currentUser.email;
 
   if (item.status === "sold") {
     return (
@@ -246,6 +253,17 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
 
   return (
     <div className="space-y-4 w-full min-w-0">
+      {/* You're the highest bidder banner */}
+      {isHighestBidder && !bidSuccess && (
+        <div className="rounded-xl border border-primary/40 bg-primary/5 p-4 flex items-center gap-3">
+          <Crown className="w-5 h-5 text-primary shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-foreground">You're the Highest Bidder</p>
+            <p className="text-xs text-muted-foreground">Your current bid: ${currentHighestBid.toLocaleString("en-US")}</p>
+          </div>
+        </div>
+      )}
+
       {/* Make It Mine button */}
       {canMakeItMine && !showConfirm && !bidSuccess && (
         <Button
