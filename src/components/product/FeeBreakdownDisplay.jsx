@@ -2,7 +2,7 @@ export default function FeeBreakdownDisplay({ amount }) {
   const serviceFee = amount * 0.10 + 30;
   const feeCredit = serviceFee * 0.50;
   const remainingBalance = amount + feeCredit - serviceFee;
-  const totalPaid = amount + serviceFee;
+  const totalPaid = serviceFee + remainingBalance;
 
   return (
     <div className="rounded-lg border border-border bg-background/50 p-4 space-y-4 text-sm w-full overflow-hidden">
