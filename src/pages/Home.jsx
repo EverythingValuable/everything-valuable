@@ -41,8 +41,8 @@ export default function Home() {
       <CategoryCircles />
 
       {/* Search Bar */}
-      <section className="py-8 md:py-12 bg-background">
-        <div className="max-w-screen-2xl mx-auto px-4 md:px-6">
+      <section className="py-4 md:py-6 bg-background">
+        <div className="max-w-3xl mx-auto px-4 md:px-6">
           <form onSubmit={handleSearch} className="relative">
             <div className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 md:py-4 shadow-sm hover:border-primary/40 transition-colors focus-within:ring-1 focus-within:ring-primary">
               <Search className="w-5 h-5 text-muted-foreground flex-shrink-0" />
