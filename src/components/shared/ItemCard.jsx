@@ -4,7 +4,7 @@ import { Heart, Clock, TrendingDown, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import ItemPreviewModal from "./ItemPreviewModal";
 
 const categoryLabels = {
@@ -85,6 +85,12 @@ export default function ItemCard({ item, index = 0 }) {
 
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
+
+  const { data: sellerProfile } = useQuery({
+    queryKey: ["seller-profile-card", item.seller_email],
+    queryFn: () => base44.entities.SellerProfile.filter({ user_email: item.seller_email }).then(r => r[0]),
+    enabled: !!item.seller_email,
+  });
   const [watchlistEntry, setWatchlistEntry] = useState(null);
 
   useEffect(() => {
@@ -175,8 +181,8 @@ export default function ItemCard({ item, index = 0 }) {
           <h3 className="font-serif text-lg font-medium leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2">
             {item.title}
           </h3>
-          {item.seller_name && (
-            <p className="text-xs text-muted-foreground">{item.seller_name}</p>
+          {(sellerProfile?.display_name || item.seller_name) && (
+            <p className="text-xs text-muted-foreground">{sellerProfile?.display_name || item.seller_name}</p>
           )}
           <div className="pt-1 space-y-0.5">
             <span className="font-price text-lg font-semibold text-foreground">
