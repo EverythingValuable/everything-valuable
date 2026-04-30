@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Gavel, ShoppingBag, CheckCircle2, Clock, AlertCircle, ChevronDown } from "lucide-react";
+import { Gavel, ShoppingBag, CheckCircle2, Clock, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -349,7 +349,44 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
         </div>
       )}
 
-          {/* Bid Confirmation Modal */}
+          {/* Bid Increments */}
+      {canBid && !showConfirm && !showBidConfirm && sellerProfile?.bid_increment_tiers?.length > 0 && (
+        <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <button
+            onClick={() => setShowTiers(t => !t)}
+            className="w-full flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+          >
+            <span>Bid Increment Schedule</span>
+            {showTiers ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+          {showTiers && (
+            <div className="border-t border-border px-5 py-3">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-muted-foreground">
+                    <th className="text-left py-1.5 font-medium">Price Range</th>
+                    <th className="text-right py-1.5 font-medium">Increment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sellerProfile.bid_increment_tiers.map((tier, i) => (
+                    <tr key={i} className="border-t border-border/50">
+                      <td className="py-1.5 text-foreground">
+                        ${tier.min.toLocaleString()} – {tier.max >= 999999999 ? "+" : `$${tier.max.toLocaleString()}`}
+                      </td>
+                      <td className="py-1.5 text-right font-medium text-foreground">
+                        ${tier.increment.toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Bid Confirmation Modal */}
            {showBidConfirm && (
              <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-6 space-y-5">
                <div className="flex items-center gap-2">
