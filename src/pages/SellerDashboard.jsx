@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import DashboardSidebar from "@/components/seller/DashboardSidebar";
 import ProfileEditor from "@/components/seller/ProfileEditor";
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Upload, TrendingUp, Package, CheckCircle2, Clock,
-  XCircle, DollarSign, Eye, ArrowRight, Plus, Tag
+  XCircle, DollarSign, Eye, ArrowRight, Plus, Tag, Trash2
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -33,6 +33,9 @@ const STATUS_STYLES = {
 export default function SellerDashboard() {
   const [searchParams] = useSearchParams();
   const view = searchParams.get("view") || "overview";
+  const [selected, setSelected] = useState(new Set());
+  const [deleting, setDeleting] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
     queryKey: ["me"],
@@ -62,7 +65,33 @@ export default function SellerDashboard() {
     revenue:   items.filter(i => i.status === "sold").reduce((s, i) => s + (i.sold_price || 0), 0),
   };
 
-  const filteredItems = view === "overview" || view === "listings"
+  const displayedItems = view === "overview" ? filteredItems_raw.slice(0, 8) : filteredItems_raw;
+  const filteredItems = filteredItems_raw;
+
+  const toggleSelect = (id) => setSelected(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+
+  const toggleAll = () => {
+    if (selected.size === displayedItems.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(displayedItems.map(i => i.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!window.confirm(`Delete ${selected.size} item${selected.size !== 1 ? "s" : ""}? This cannot be undone.`)) return;
+    setDeleting(true);
+    await Promise.all([...selected].map(id => base44.entities.Item.delete(id)));
+    setSelected(new Set());
+    setDeleting(false);
+    queryClient.invalidateQueries({ queryKey: ["seller-items"] });
+  };
+
+  const filteredItems_raw = view === "overview" || view === "listings"
     ? items
     : items.filter(i => {
         if (view === "first_bids") return i.status === "first_bids";
@@ -164,62 +193,97 @@ export default function SellerDashboard() {
               </div>
             )}
 
-            {filteredItems.length === 0 ? (
+            {displayedItems.length === 0 ? (
               <EmptyState view={view} />
             ) : (
-              <div className="rounded-xl border border-border overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-secondary/50">
-                    <tr>
-                      <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Item</th>
-                      <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Category</th>
-                      <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                      <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Price</th>
-                      <th className="px-4 py-3"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {(view === "overview" ? filteredItems.slice(0, 8) : filteredItems).map(item => (
-                      <tr key={item.id} className="hover:bg-secondary/20 transition-colors">
-                        <td className="px-5 py-4">
-                          <div className="flex items-center gap-3">
-                            {item.images?.[0]
-                              ? <img src={item.images[0]} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0 border border-border" />
-                              : <div className="w-10 h-10 rounded-lg bg-secondary shrink-0 flex items-center justify-center text-muted-foreground text-xs">No img</div>
-                            }
-                            <span className="font-medium line-clamp-1">{item.title}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 hidden md:table-cell text-muted-foreground capitalize">{item.category?.replace(/_/g," ")}</td>
-                        <td className="px-4 py-4">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_STYLES[item.status] || "bg-secondary"}`}>
-                            {STATUS_LABELS[item.status] || item.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 hidden lg:table-cell text-muted-foreground">
-                          {item.status === "sold"
-                            ? <span className="text-green-700 font-medium">${item.sold_price?.toLocaleString()}</span>
-                            : item.current_price
-                            ? `$${item.current_price.toLocaleString()}`
-                            : item.prisometer_start_price
-                            ? `$${item.prisometer_start_price.toLocaleString()}`
-                            : "—"
-                          }
-                        </td>
-                        <td className="px-4 py-4 text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Link to={`/seller/studio?edit=${item.id}`}>
-                              <Button variant="outline" size="sm" className="text-xs">Edit</Button>
-                            </Link>
-                            <Link to={`/item/${item.id}`}>
-                              <Button variant="ghost" size="sm" className="text-xs">View</Button>
-                            </Link>
-                          </div>
-                        </td>
+              <div className="space-y-2">
+                {/* Bulk action bar */}
+                {selected.size > 0 && (
+                  <div className="flex items-center gap-3 px-4 py-2.5 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <span className="text-sm font-medium text-destructive">{selected.size} item{selected.size !== 1 ? "s" : ""} selected</span>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="gap-1.5 ml-auto"
+                      onClick={handleBulkDelete}
+                      disabled={deleting}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      {deleting ? "Deleting…" : `Delete ${selected.size}`}
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>Cancel</Button>
+                  </div>
+                )}
+                <div className="rounded-xl border border-border overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-secondary/50">
+                      <tr>
+                        <th className="px-4 py-3 w-10">
+                          <input
+                            type="checkbox"
+                            className="rounded"
+                            checked={selected.size === displayedItems.length && displayedItems.length > 0}
+                            onChange={toggleAll}
+                          />
+                        </th>
+                        <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Item</th>
+                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">Category</th>
+                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                        <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">Price</th>
+                        <th className="px-4 py-3"></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {displayedItems.map(item => (
+                        <tr key={item.id} className={`hover:bg-secondary/20 transition-colors ${selected.has(item.id) ? "bg-destructive/5" : ""}`}>
+                          <td className="px-4 py-4">
+                            <input
+                              type="checkbox"
+                              className="rounded"
+                              checked={selected.has(item.id)}
+                              onChange={() => toggleSelect(item.id)}
+                            />
+                          </td>
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-3">
+                              {item.images?.[0]
+                                ? <img src={item.images[0]} alt="" className="w-10 h-10 rounded-lg object-cover shrink-0 border border-border" />
+                                : <div className="w-10 h-10 rounded-lg bg-secondary shrink-0 flex items-center justify-center text-muted-foreground text-xs">No img</div>
+                              }
+                              <span className="font-medium line-clamp-1">{item.title}</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 hidden md:table-cell text-muted-foreground capitalize">{item.category?.replace(/_/g," ")}</td>
+                          <td className="px-4 py-4">
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_STYLES[item.status] || "bg-secondary"}`}>
+                              {STATUS_LABELS[item.status] || item.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 hidden lg:table-cell text-muted-foreground">
+                            {item.status === "sold"
+                              ? <span className="text-green-700 font-medium">${item.sold_price?.toLocaleString()}</span>
+                              : item.current_price
+                              ? `$${item.current_price.toLocaleString()}`
+                              : item.prisometer_start_price
+                              ? `$${item.prisometer_start_price.toLocaleString()}`
+                              : "—"
+                            }
+                          </td>
+                          <td className="px-4 py-4 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Link to={`/seller/studio?edit=${item.id}`}>
+                                <Button variant="outline" size="sm" className="text-xs">Edit</Button>
+                              </Link>
+                              <Link to={`/item/${item.id}`}>
+                                <Button variant="ghost" size="sm" className="text-xs">View</Button>
+                              </Link>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>
