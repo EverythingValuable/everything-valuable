@@ -145,7 +145,7 @@ export default function ItemCard({ item, index = 0 }) {
           {/* Status badge */}
           {status.label && (
             <div className="absolute top-3 left-3">
-              <Badge variant="outline" className={`${status.color} text-xs font-medium backdrop-blur-sm bg-opacity-90`}>
+              <Badge variant="outline" className={`${status.color} text-xs font-medium shadow-sm`}>
                 {item.status === "prisometer" && <TrendingDown className="w-3 h-3 mr-1" />}
                 {item.status === "first_bids" && <Clock className="w-3 h-3 mr-1" />}
                 {status.label}
