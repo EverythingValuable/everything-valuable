@@ -31,7 +31,7 @@ const categories = [
   {
     key: "asian_antiques",
     label: "Asian Art",
-    image: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400&q=80&fit=crop",
+    image: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/989e3552b_Screenshot2026-04-30at10825PM.jpg",
   },
   {
     key: "fashion_accessories",
