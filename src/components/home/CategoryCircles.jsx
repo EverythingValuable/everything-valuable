@@ -11,7 +11,7 @@ const categories = [
   {
     key: "jewelry",
     label: "Jewelry",
-    image: "https://images.unsplash.com/photo-1573408301185-9519f94afef1?w=400&q=80&fit=crop",
+    image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80&fit=crop",
   },
   {
     key: "watches_clocks",
@@ -31,7 +31,7 @@ const categories = [
   {
     key: "asian_antiques",
     label: "Asian Art",
-    image: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80&fit=crop",
+    image: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400&q=80&fit=crop",
   },
   {
     key: "fashion_accessories",
@@ -41,7 +41,7 @@ const categories = [
   {
     key: "collectibles",
     label: "Collectibles",
-    image: "https://images.unsplash.com/photo-1610641818989-c2051b5e2cfd?w=400&q=80&fit=crop",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&fit=crop",
   },
 ];
 
