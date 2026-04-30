@@ -211,8 +211,8 @@ export default function ProductDetail() {
                   <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>
                 )}
               </div>
-              <div>
-                <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words">
+              <div className="w-full">
+                <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words w-full">
                   {item.title}
                 </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
@@ -367,8 +367,8 @@ export default function ProductDetail() {
               </div>
 
               {/* Title */}
-              <div>
-               <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground break-words">
+              <div className="w-full">
+               <h1 className="font-display text-2xl md:text-3xl font-bold leading-tight text-foreground break-words w-full">
                  {item.title}
                </h1>
                 {(sellerProfile?.display_name || item.seller_name) && (
