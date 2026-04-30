@@ -53,7 +53,7 @@ export default function HowItWorksPreview() {
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${step.accent} mb-6`}>
                 <step.icon className="w-5 h-5" />
               </div>
-              <h3 className="font-serif text-xl font-semibold mb-3 text-foreground">{step.title}</h3>
+              <h3 className="font-display text-sm font-bold uppercase tracking-wider mb-3 text-foreground">{step.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
             </motion.div>
           ))}
