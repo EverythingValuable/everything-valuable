@@ -52,10 +52,10 @@ export default function CategoryCircles() {
 
         <div className="flex items-center justify-between mb-8">
           <div>
-            <p className="text-[10px] tracking-[0.22em] uppercase font-display font-semibold text-primary mb-1">
+            <p className="text-xs tracking-[0.22em] uppercase font-display font-semibold text-primary mb-2">
               Browse by Category
             </p>
-            <h2 className="font-serif text-2xl md:text-3xl font-semibold text-foreground leading-tight">
+            <h2 className="font-serif text-3xl md:text-5xl font-semibold text-foreground leading-tight">
               What are you looking for?
             </h2>
           </div>
