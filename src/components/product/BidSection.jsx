@@ -332,17 +332,17 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                 <span className="text-muted-foreground">Service Fee (10% + $30)</span>
                 <span>${(parseInt(bidAmount) * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
-              <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold text-xs">
-                <span>If prisometer meets your high bid, you will be charged</span>
-                <span>${(parseInt(bidAmount) * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <div className="border-t border-border my-2 pt-3 flex justify-between gap-4 font-semibold text-xs">
+                <span className="text-muted-foreground">If PRI$OMETER meets your bid, you'll be charged</span>
+                <span className="shrink-0">${(parseInt(bidAmount) * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
               <div className="flex justify-between text-green-600 font-medium">
                 <span>50% Credit Applied on Final Invoice</span>
                 <span>-${((parseInt(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
-              <div className="border-t border-border mt-3 pt-3 flex justify-between font-semibold">
+              <div className="border-t border-border mt-3 pt-3 flex justify-between gap-4 font-semibold">
                 <span>Remaining due after upfront payment</span>
-                <span>${(parseInt(bidAmount) + (parseInt(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <span className="shrink-0">${(parseInt(bidAmount) + (parseInt(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             </div>
           )}
@@ -409,7 +409,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                    <span className="text-muted-foreground">Service Fee (10% + $30)</span>
                    <span>${(parseFloat(bidAmount) * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                  </div>
-                 <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold text-green-600">
+                 <div className="border-t border-border my-2 pt-3 flex justify-between gap-4 font-semibold text-green-600">
                    <span>50% Credit Applied on Final Invoice</span>
                    <span>-${((parseFloat(bidAmount) * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                  </div>
@@ -478,17 +478,17 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
               <span className="text-muted-foreground">Service Fee (10% + $30)</span>
               <span>${(price * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
-            <div className="border-t border-border my-2 pt-3 flex justify-between font-semibold text-xs">
-              <span>If prisometer meets your high bid, you will be charged</span>
-              <span>${(price * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            <div className="border-t border-border my-2 pt-3 flex justify-between gap-4 font-semibold text-xs">
+              <span className="text-muted-foreground">If PRI$OMETER meets your bid, you'll be charged</span>
+              <span className="shrink-0">${(price * 0.10 + 30).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
             <div className="flex justify-between text-green-600 font-medium">
               <span>50% Credit Applied on Final Invoice</span>
               <span>-${((price * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
-            <div className="border-t border-border mt-3 pt-3 flex justify-between font-semibold">
+            <div className="border-t border-border mt-3 pt-3 flex justify-between gap-4 font-semibold">
               <span>Remaining due after upfront payment</span>
-              <span>${(price + (price * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <span className="shrink-0">${(price + (price * 0.10 + 30) * 0.50).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
 
