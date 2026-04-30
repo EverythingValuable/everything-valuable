@@ -169,19 +169,17 @@ export default function ItemCard({ item, index = 0 }) {
             <Eye className="w-3.5 h-3.5" /> Preview
           </button>
 
-          {/* Bid count + High bid overlay */}
-          {(item.bid_count > 0 || item.highest_bid > 0) && (
-            <div className="absolute bottom-3 left-3 flex items-center gap-2">
-              {item.bid_count > 0 && (
-                <div className="px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
-                  {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
-                </div>
-              )}
-              {item.highest_bid > 0 && (
-                <div className="px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
-                  High bid ${item.highest_bid.toLocaleString("en-US")}
-                </div>
-              )}
+          {/* Bid count */}
+          {item.bid_count > 0 && (
+            <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
+              {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
+            </div>
+          )}
+
+          {/* Current High Bid */}
+          {item.highest_bid > 0 && (
+            <div className="absolute top-3 right-12 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
+              Current High: ${item.highest_bid.toLocaleString("en-US")}
             </div>
           )}
         </div>
