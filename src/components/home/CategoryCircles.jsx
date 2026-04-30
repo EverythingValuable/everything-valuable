@@ -41,7 +41,7 @@ const categories = [
   {
     key: "collectibles",
     label: "Collectibles",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80&fit=crop",
+    image: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/2e269e108_Screenshot2026-04-30at11320PM.jpg",
   },
 ];
 
