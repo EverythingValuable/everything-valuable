@@ -65,8 +65,15 @@ export default function SellerDashboard() {
     revenue:   items.filter(i => i.status === "sold").reduce((s, i) => s + (i.sold_price || 0), 0),
   };
 
+  const filteredItems_raw = view === "overview" || view === "listings"
+    ? items
+    : items.filter(i => {
+        if (view === "first_bids") return i.status === "first_bids";
+        if (view === "prisometer") return i.status === "prisometer";
+        return i.status === view;
+      });
+
   const displayedItems = view === "overview" ? filteredItems_raw.slice(0, 8) : filteredItems_raw;
-  const filteredItems = filteredItems_raw;
 
   const toggleSelect = (id) => setSelected(prev => {
     const next = new Set(prev);
@@ -90,14 +97,6 @@ export default function SellerDashboard() {
     setDeleting(false);
     queryClient.invalidateQueries({ queryKey: ["seller-items"] });
   };
-
-  const filteredItems_raw = view === "overview" || view === "listings"
-    ? items
-    : items.filter(i => {
-        if (view === "first_bids") return i.status === "first_bids";
-        if (view === "prisometer") return i.status === "prisometer";
-        return i.status === view;
-      });
 
   return (
     <div className="flex min-h-screen bg-background">
