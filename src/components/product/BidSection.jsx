@@ -348,6 +348,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                 <span className="text-muted-foreground flex-wrap">Remaining due after upfront payment</span>
                 <span className="shrink-0">${(parseInt(bidAmount) + (parseInt(bidAmount) * 0.10 + 30) * 0.50 - (parseInt(bidAmount) * 0.10 + 30)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
+              <p className="text-xs text-muted-foreground italic mt-2">Does not include sales tax, shipping, or other fees. Invoice will be sent by seller if successful.</p>
             </div>
           )}
         </div>
@@ -429,9 +430,10 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                    <span className="text-muted-foreground flex-wrap">Remaining due after upfront payment</span>
                    <span className="shrink-0">${(parseFloat(bidAmount) + (parseFloat(bidAmount) * 0.10 + 30) * 0.50 - (parseFloat(bidAmount) * 0.10 + 30)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                  </div>
+                 <p className="text-xs text-muted-foreground italic mt-2">Does not include sales tax, shipping, or other fees. Invoice will be sent by seller if successful.</p>
                  </div>
 
-               <div className="flex gap-3">
+                 <div className="flex gap-3">
                  <Button
                    onClick={() => placeBidMutation.mutate()}
                    disabled={placeBidMutation.isPending}
@@ -506,6 +508,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
               <span className="text-muted-foreground flex-wrap">Remaining due after upfront payment</span>
               <span className="shrink-0">${(price + (price * 0.10 + 30) * 0.50 - (price * 0.10 + 30)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
+            <p className="text-xs text-muted-foreground italic mt-2">Does not include sales tax, shipping, or other fees. Invoice will be sent by seller if successful.</p>
           </div>
 
           <p className="text-xs text-muted-foreground text-center">Press "Confirm" to place your offer</p>
