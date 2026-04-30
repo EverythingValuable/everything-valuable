@@ -42,13 +42,13 @@ export default function Home() {
 
       {/* Search Bar */}
       <section className="py-8 md:py-12 bg-background">
-        <div className="max-w-4xl mx-auto px-4 md:px-6">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-6">
           <form onSubmit={handleSearch} className="relative">
             <div className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 md:py-4 shadow-sm hover:border-primary/40 transition-colors focus-within:ring-1 focus-within:ring-primary">
               <Search className="w-5 h-5 text-muted-foreground flex-shrink-0" />
               <input
                 type="text"
-                placeholder="Search by title, artist, style..."
+                placeholder="Search Everything Valuable"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm md:text-base"
