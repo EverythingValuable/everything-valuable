@@ -32,7 +32,7 @@ export default function ProductGallery({ images = [] }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="w-full h-full object-cover cursor-zoom-in"
+              className="w-full h-full object-contain cursor-zoom-in"
               onClick={() => setFullscreen(true)}
             />
           </AnimatePresence>
