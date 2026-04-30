@@ -174,9 +174,9 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="overflow-x-hidden">
-      {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-4">
+    <div>
+     {/* Breadcrumb */}
+     <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 overflow-hidden">
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
           <Link to="/personal-property" className="hover:text-foreground">Home</Link>
           <ChevronRight className="w-3 h-3" />
@@ -190,15 +190,15 @@ export default function ProductDetail() {
         </nav>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-20">
-        <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pb-20 overflow-visible">
+       <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 overflow-visible">
 
           {/* LEFT — Gallery + Info Sections */}
-          <div className="lg:col-span-3 space-y-0">
+          <div className="lg:col-span-3 space-y-0 overflow-visible">
             <ProductGallery images={item.images || []} />
 
             {/* Mobile-only: bid panel content appears here, right after gallery */}
-            <div className="lg:hidden mt-6 space-y-5">
+            <div className="lg:hidden mt-6 space-y-5 overflow-visible">
               {/* Status + Category */}
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="outline" className="text-xs">
