@@ -1,4 +1,4 @@
-export default function FeeBreakdownDisplay({ amount }) {
+export default function FeeBreakdownDisplay({ amount, onConfirmBid, showConfirmButton = false }) {
   const serviceFee = amount * 0.10 + 30;
   const feeCredit = serviceFee * 0.50;
   const remainingBalance = amount + feeCredit - serviceFee;
@@ -66,6 +66,18 @@ export default function FeeBreakdownDisplay({ amount }) {
       </div>
 
       <p className="text-xs text-muted-foreground italic">Does not include sales tax, shipping, or other fees. Invoice will be sent by seller if successful.</p>
+      
+      {showConfirmButton && (
+        <div className="border-t border-border pt-4 space-y-3">
+          <p className="text-xs text-muted-foreground">Your credit card on file will be charged automatically if successful for service fee only.</p>
+          <button
+            onClick={onConfirmBid}
+            className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-md transition-colors"
+          >
+            Confirm Bid
+          </button>
+        </div>
+      )}
     </div>
   );
 }

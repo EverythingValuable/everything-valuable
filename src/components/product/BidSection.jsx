@@ -322,7 +322,13 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
             </div>
           </div>
 
-          {bidAmount && <FeeBreakdownDisplay amount={parseInt(bidAmount)} />}
+          {bidAmount && (
+            <FeeBreakdownDisplay 
+              amount={parseInt(bidAmount)} 
+              onConfirmBid={() => setShowBidConfirm(true)}
+              showConfirmButton={true}
+            />
+          )}
         </div>
       )}
 
@@ -376,7 +382,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
                  <p className="font-price text-4xl font-semibold">${parseFloat(bidAmount).toLocaleString("en-US")}.00</p>
                </div>
 
-               <FeeBreakdownDisplay amount={parseFloat(bidAmount)} />
+               <FeeBreakdownDisplay amount={parseFloat(bidAmount)} showConfirmButton={false} />
 
                  <div className="flex gap-3">
                  <Button
@@ -427,7 +433,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
             <p className="text-red-600 font-medium mt-2">Please review the bid amount and ensure you are ready to proceed.</p>
           </div>
 
-          <FeeBreakdownDisplay amount={price} />
+          <FeeBreakdownDisplay amount={price} showConfirmButton={false} />
 
           <p className="text-xs text-muted-foreground text-center">Press "Confirm" to place your offer</p>
 
