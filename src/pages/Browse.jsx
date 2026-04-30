@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search, X, ChevronRight, ChevronDown, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MAIN_CATEGORIES, SUBCATEGORIES, CATEGORY_LABELS } from "@/lib/categoryConfig";
+import { MAIN_CATEGORIES, SUBCATEGORIES, CATEGORY_LABELS, PERIODS, CATEGORIES_WITH_PERIODS } from "@/lib/categoryConfig";
 
 const statusLabels = {
   first_bids: "1stBid$ Active",
@@ -19,6 +19,7 @@ export default function Browse() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(params.get("category") || "all");
   const [subcategory, setSubcategory] = useState(params.get("subcategory") || "");
+  const [period, setPeriod] = useState("");
   const [statusFilter, setStatusFilter] = useState(params.get("status") || "all");
   const [sort, setSort] = useState("-created_date");
   const [expandedCategory, setExpandedCategory] = useState(params.get("category") || null);
@@ -38,6 +39,7 @@ export default function Browse() {
     let result = [...items];
     if (category !== "all") result = result.filter(i => i.category === category);
     if (subcategory) result = result.filter(i => i.subcategory === subcategory);
+    if (period) result = result.filter(i => i.period === period);
     if (statusFilter !== "all") result = result.filter(i => i.status === statusFilter);
     if (search) {
       const q = search.toLowerCase();
@@ -53,7 +55,7 @@ export default function Browse() {
     else if (sort === "price_desc") result.sort((a, b) => (b.prisometer_start_price || 0) - (a.prisometer_start_price || 0));
     else if (sort === "bids") result.sort((a, b) => (b.bid_count || 0) - (a.bid_count || 0));
     return result;
-  }, [items, category, subcategory, statusFilter, search, sort]);
+  }, [items, category, subcategory, period, statusFilter, search, sort]);
 
   // Count items per category for sidebar badges
   const countByCategory = useMemo(() => {
@@ -76,15 +78,17 @@ export default function Browse() {
     if (catValue === "all") {
       setCategory("all");
       setSubcategory("");
+      setPeriod("");
       setExpandedCategory(null);
     } else if (expandedCategory === catValue && category === catValue) {
-      // Clicking same active category collapses it
       setCategory("all");
       setSubcategory("");
+      setPeriod("");
       setExpandedCategory(null);
     } else {
       setCategory(catValue);
       setSubcategory("");
+      setPeriod("");
       setExpandedCategory(catValue);
     }
   };
@@ -96,6 +100,7 @@ export default function Browse() {
   const clearAll = () => {
     setCategory("all");
     setSubcategory("");
+    setPeriod("");
     setStatusFilter("all");
     setSearch("");
     setExpandedCategory(null);
@@ -167,6 +172,24 @@ export default function Browse() {
                     </button>
                   );
                 })}
+              </div>
+            )}
+
+            {/* Period filter — shown when this category supports periods and is expanded */}
+            {isExpanded && CATEGORIES_WITH_PERIODS.includes(value) && (
+              <div className="ml-5 mt-2 mb-2 border-l border-border pl-3">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5 px-2">Time Period</p>
+                {PERIODS.map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setPeriod(prev => prev === p ? "" : p)}
+                    className={`w-full text-left py-1.5 px-2 rounded text-xs transition-colors ${
+                      period === p ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
               </div>
             )}
           </div>
@@ -245,12 +268,20 @@ export default function Browse() {
         </div>
 
         {/* Active filter chips */}
-        {(activeLabel || statusFilter !== "all") && (
-          <div className="flex items-center gap-2 mb-5">
+        {(activeLabel || period || statusFilter !== "all") && (
+          <div className="flex items-center gap-2 mb-5 flex-wrap">
             {activeLabel && (
               <Badge variant="secondary" className="gap-1 pr-1 text-xs">
                 {activeLabel}
-                <button className="ml-1 p-0.5 rounded-full hover:bg-muted-foreground/10" onClick={() => { setCategory("all"); setSubcategory(""); setExpandedCategory(null); }}>
+                <button className="ml-1 p-0.5 rounded-full hover:bg-muted-foreground/10" onClick={() => { setCategory("all"); setSubcategory(""); setPeriod(""); setExpandedCategory(null); }}>
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            )}
+            {period && (
+              <Badge variant="secondary" className="gap-1 pr-1 text-xs">
+                {period}
+                <button className="ml-1 p-0.5 rounded-full hover:bg-muted-foreground/10" onClick={() => setPeriod("")}>
                   <X className="w-3 h-3" />
                 </button>
               </Badge>
