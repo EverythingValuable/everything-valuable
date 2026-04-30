@@ -78,7 +78,7 @@ function PreviewState({ item, displayPrice, formatPrice }) {
             {countdown.hours.toString().padStart(2, "0")}h {countdown.minutes.toString().padStart(2, "0")}m {countdown.seconds.toString().padStart(2, "0")}s
           </div>
         </div>
-        <ExpandableInfoBox explanation="1stBid$™ is the preview bidding phase before live pricing begins. Place early bids to signal interest — the highest bid carries over when the PRI$OMETER™ opens." />
+        <ExpandableInfoBox explanation="1stBid$™ is the preview bidding phase before PRI$OMETER™ live pricing begins. Place your highest and best bid during preview. If the highest bid meets or exceeds the PRI$OMETER™ start price, the item sells when preview ends and PRI$OMETER™ does not activate. If not, the highest bid carries forward and live pricing begins." />
       </div>
 
       {/* Box 2: PRI$OMETER Start Price */}
