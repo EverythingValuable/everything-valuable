@@ -209,9 +209,8 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const generateBidOptions = () => {
     const options = [];
     const currentHighest = item.highest_bid || 0;
-    const sellerTiers = sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers;
-    const increment = getMinBidIncrement(currentHighest, sellerTiers);
-    let start = currentHighest > 0 ? currentHighest + increment : (startingBid || increment);
+    const increment = 100; // Bids must be multiples of $100
+    let start = currentHighest > 0 ? Math.ceil((currentHighest + 1) / 100) * 100 : Math.ceil(startingBid / 100) * 100;
 
     // For prisometer phase, cap options at (or below) the live current price
     const livePrice = item.status === "prisometer" ? Math.floor(getLivePrice()) : Infinity;
@@ -219,9 +218,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     let val = start;
     while (val <= livePrice && options.length < 200) {
       options.push(val);
-      const nextIncrement = getMinBidIncrement(val, sellerTiers);
-      if (!nextIncrement || nextIncrement <= 0) break; // guard against infinite loop
-      val = val + nextIncrement;
+      val += increment;
     }
     return options;
   };
