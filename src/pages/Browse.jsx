@@ -16,7 +16,7 @@ const statusLabels = {
 
 export default function Browse() {
   const params = new URLSearchParams(window.location.search);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(params.get("search") || "");
   const [category, setCategory] = useState(params.get("category") || "all");
   const [subcategory, setSubcategory] = useState(params.get("subcategory") || "");
   const [period, setPeriod] = useState("");
