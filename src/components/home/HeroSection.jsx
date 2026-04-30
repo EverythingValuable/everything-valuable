@@ -26,7 +26,7 @@ export default function HeroSection() {
       className="relative flex items-stretch overflow-hidden bg-[hsl(40,33%,97%)]"
       style={{ minHeight: "44vh", maxHeight: "520px" }}
     >
-      <div className="flex w-full flex-col lg:flex-row">
+      <div className="max-w-screen-xl mx-auto flex w-full flex-col lg:flex-row px-4 md:px-6">
 
         {/* Left — Text Panel */}
         <motion.div
