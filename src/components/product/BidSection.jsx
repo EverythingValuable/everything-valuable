@@ -76,9 +76,20 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     mutationFn: async () => {
       const amount = parseFloat(bidAmount);
 
-      if (!amount || amount % 100 !== 0) {
-        throw new Error("Bid must be a multiple of $100");
+      if (!amount) {
+        throw new Error("Enter a valid bid amount");
       }
+
+      // Validate against bid increment tiers
+      const sellerTiers = sellerProfile?.bid_increment_tiers || [];
+      const applicableTier = sellerTiers.find(t => amount >= t.min && amount <= t.max);
+      if (applicableTier) {
+        const remainder = (amount - applicableTier.min) % applicableTier.increment;
+        if (remainder !== 0) {
+          throw new Error(`Bid must follow the $${applicableTier.increment} increment for this price range`);
+        }
+      }
+
       const currentHighest = item.highest_bid || 0;
       if (amount <= currentHighest) {
         throw new Error(`Bid must be higher than current high bid of $${currentHighest.toLocaleString()}`);
