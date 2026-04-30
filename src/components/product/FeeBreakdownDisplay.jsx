@@ -15,7 +15,7 @@ export default function FeeBreakdownDisplay({ amount }) {
       </div>
 
       <div className="space-y-2">
-        <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Buyer Service Fee</p>
+         <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Service Fee</p>
         <div className="text-xs text-muted-foreground mb-2">10% of item price + $30</div>
         <div className="flex justify-between gap-2 min-w-0">
           <span></span>
