@@ -11,31 +11,26 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'rows array is required' }, { status: 400 });
     }
 
+    // Fetch all existing items for this seller up front (one query instead of N queries)
+    const existingItems = await base44.entities.Item.filter({ seller_email: user.email });
+    const byLot = {};
+    const byTitle = {};
+    for (const item of existingItems) {
+      if (item.lot_number) byLot[String(item.lot_number)] = item;
+      if (item.title) byTitle[item.title] = byTitle[item.title] || item;
+    }
+
     const results = { created: 0, updated: 0, errors: [] };
 
-    for (const row of rows) {
+    const processRow = async (row) => {
       try {
-        // Determine if this is an update (has id or lot_number matching existing item)
         let existingItem = null;
-
         if (row.id) {
-          const found = await base44.entities.Item.filter({ id: row.id });
-          existingItem = found[0] || null;
+          existingItem = existingItems.find(i => i.id === row.id) || null;
         } else if (row.lot_number) {
-          // Find ALL items with this lot_number for this seller
-          const found = await base44.entities.Item.filter({
-            lot_number: String(row.lot_number),
-            seller_email: user.email
-          });
-          // If multiple exist (from previous bad uploads), use the first and ignore the rest
-          existingItem = found[0] || null;
+          existingItem = byLot[String(row.lot_number)] || null;
         } else if (row.title) {
-          // Fallback: match by exact title for this seller
-          const found = await base44.entities.Item.filter({
-            title: row.title,
-            seller_email: user.email
-          });
-          existingItem = found[0] || null;
+          existingItem = byTitle[row.title] || null;
         }
 
         const payload = {
@@ -56,21 +51,20 @@ Deno.serve(async (req) => {
           below_reserve_percent: parseInt(row.below_reserve_percent) || 10,
           prisometer_duration_hours: parseInt(row.prisometer_duration_hours) || 168,
           first_bids_duration_hours: parseInt(row.first_bids_duration_hours) || 168,
-          estimated_low: row.estimated_low ? parseFloat(row.estimated_low) : undefined,
-          estimated_high: row.estimated_high ? parseFloat(row.estimated_high) : undefined,
           lot_number: row.lot_number ? String(row.lot_number) : undefined,
           status: row.status || 'draft',
         };
+
+        if (row.estimated_low) payload.estimated_low = parseFloat(row.estimated_low);
+        if (row.estimated_high) payload.estimated_high = parseFloat(row.estimated_high);
 
         // Remove undefined fields
         Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
 
         if (existingItem) {
-          // Update — don't overwrite images
           await base44.entities.Item.update(existingItem.id, payload);
           results.updated++;
         } else {
-          // Create new
           await base44.entities.Item.create({
             ...payload,
             seller_email: user.email,
@@ -82,7 +76,10 @@ Deno.serve(async (req) => {
       } catch (rowErr) {
         results.errors.push({ row: row.title || row.lot_number || '?', error: rowErr.message });
       }
-    }
+    };
+
+    // Process all rows in parallel
+    await Promise.all(rows.map(processRow));
 
     return Response.json(results);
   } catch (error) {
