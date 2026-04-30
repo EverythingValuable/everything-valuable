@@ -11,7 +11,7 @@ const categories = [
   {
     key: "jewelry",
     label: "Jewelry",
-    image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80&fit=crop",
+    image: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/b0f841fcb_Screenshot2026-04-30at10709PM.JPG",
   },
   {
     key: "watches_clocks",
