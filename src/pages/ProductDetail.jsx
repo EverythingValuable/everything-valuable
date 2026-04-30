@@ -174,7 +174,7 @@ export default function ProductDetail() {
   }
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto">
        {/* Breadcrumb */}
        <div className="w-full px-4 md:px-8 py-4">
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -190,7 +190,7 @@ export default function ProductDetail() {
         </nav>
       </div>
 
-      <div className="w-full px-4 md:px-8 pb-20">
+      <div className="px-4 md:px-8 pb-20">
         <div className="grid lg:grid-cols-5 gap-8 lg:gap-12">
 
           {/* LEFT — Gallery + Info Sections */}
