@@ -57,12 +57,13 @@ export default function ListingStudio() {
   useEffect(() => {
     const loadData = async () => {
       const user = await base44.auth.me();
-      const profiles = await base44.entities.SellerProfile.filter({ user_email: user.email });
+      const [profiles, item] = await Promise.all([
+        base44.entities.SellerProfile.filter({ user_email: user.email }),
+        editId ? base44.entities.Item.get(editId) : Promise.resolve(null),
+      ]);
       setSellerProfile(profiles[0] || null);
 
       if (editId) {
-        const items = await base44.entities.Item.filter({ id: editId });
-        const item = items[0];
         if (item) {
           setForm({
             images: item.images || [],
