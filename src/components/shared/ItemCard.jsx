@@ -163,7 +163,7 @@ export default function ItemCard({ item, index = 0 }) {
 
           {/* Preview button */}
           <button
-            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur-sm text-xs font-medium text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background shadow-sm"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur-sm text-xs font-medium text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background shadow-sm"
             onClick={e => { e.preventDefault(); e.stopPropagation(); setShowPreview(true); }}
           >
             <Eye className="w-3.5 h-3.5" /> Preview
@@ -171,17 +171,18 @@ export default function ItemCard({ item, index = 0 }) {
 
           {/* Bid count + High bid overlay */}
           {(item.bid_count > 0 || item.highest_bid > 0) && (
-            <div className="absolute bottom-3 left-3 flex items-center gap-2">
-              {item.bid_count > 0 && (
-                <div className="px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
-                  {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
-                </div>
-              )}
-              {item.highest_bid > 0 && (
-                <div className="px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
-                  High bid ${item.highest_bid.toLocaleString("en-US")}
-                </div>
-              )}
+            <div className="absolute bottom-2 left-2">
+              <div className="px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
+                {item.bid_count > 0 && (
+                  <>
+                    {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
+                    {item.highest_bid > 0 && " · "}
+                  </>
+                )}
+                {item.highest_bid > 0 && (
+                  <>High bid ${item.highest_bid.toLocaleString("en-US")}</>
+                )}
+              </div>
             </div>
           )}
         </div>
