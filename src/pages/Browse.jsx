@@ -5,16 +5,9 @@ import ItemCard from "../components/shared/ItemCard";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const categoryLabels = {
-  fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
-  decorative_arts: "Decorative Arts", design: "Design", antiques: "Antiques",
-  collectibles: "Collectibles", photography: "Photography", sculpture: "Sculpture",
-  ceramics: "Ceramics", textiles: "Textiles", books: "Books", wine: "Wine",
-  luxury_goods: "Luxury Goods", other: "Other",
-};
+import { CATEGORY_LABELS as categoryLabels, MAIN_CATEGORIES } from "@/lib/categoryConfig";
 
 const statusLabels = {
   first_bids: "1stBid$ Active",
@@ -90,8 +83,8 @@ export default function Browse() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {Object.entries(categoryLabels).map(([k, v]) => (
-                <SelectItem key={k} value={k}>{v}</SelectItem>
+              {MAIN_CATEGORIES.map(({ value, label }) => (
+                <SelectItem key={value} value={value}>{label}</SelectItem>
               ))}
             </SelectContent>
           </Select>

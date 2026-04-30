@@ -11,6 +11,8 @@ import {
   Info, Save, Calendar, Rocket, GripVertical
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import CategoryFields from "../components/listing/CategoryFields";
+import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
 
 const STEPS = [
   { id: 1, label: "Media",       icon: Camera },
@@ -18,12 +20,6 @@ const STEPS = [
   { id: 3, label: "Description", icon: AlignLeft },
   { id: 4, label: "Sales Setup", icon: TrendingDown },
   { id: 5, label: "Review",      icon: CheckCircle2 },
-];
-
-const CATEGORIES = [
-  "fine_art","jewelry","watches","furniture","decorative_arts",
-  "design","antiques","collectibles","photography","sculpture",
-  "ceramics","textiles","books","wine","luxury_goods","other"
 ];
 
 const CONDITIONS = ["excellent","very_good","good","fair","as_is"];
@@ -41,7 +37,10 @@ export default function ListingStudio() {
   const [form, setForm] = useState({
     images: [],
     title: "", category: "", subcategory: "", maker: "",
-    period: "", materials: "", dimensions: "", origin: "", location: "",
+    period: "", style: "", technique: "", keywords: "",
+    materials: "", dimensions: "", origin: "", location: "",
+    model: "", movement_type: "", running_status: "",
+    metal_purity: "", stone_type: "", ring_size: "", length: "",
     condition: "very_good", provenance: "",
     description: "", short_description: "", condition_notes: "",
     shipping_notes: "", marks: "",
@@ -72,10 +71,20 @@ export default function ListingStudio() {
             subcategory: item.subcategory || "",
             maker: item.maker || "",
             period: item.period || "",
+            style: item.style || "",
+            technique: item.technique || "",
+            keywords: item.keywords || "",
             materials: item.materials || "",
             dimensions: item.dimensions || "",
             origin: item.origin || "",
             location: item.location || profiles[0]?.location || "",
+            model: item.model || "",
+            movement_type: item.movement_type || "",
+            running_status: item.running_status || "",
+            metal_purity: item.metal_purity || "",
+            stone_type: item.stone_type || "",
+            ring_size: item.ring_size || "",
+            length: item.length || "",
             condition: item.condition || "very_good",
             provenance: item.provenance || "",
             description: item.description || "",
@@ -127,11 +136,24 @@ export default function ListingStudio() {
     description: form.description,
     condition: form.condition,
     provenance: form.provenance,
+    subcategory: form.subcategory || undefined,
+    maker: form.maker || undefined,
+    style: form.style || undefined,
+    technique: form.technique || undefined,
+    keywords: form.keywords || undefined,
+    model: form.model || undefined,
+    movement_type: form.movement_type || undefined,
+    running_status: form.running_status || undefined,
+    metal_purity: form.metal_purity || undefined,
+    stone_type: form.stone_type || undefined,
+    ring_size: form.ring_size || undefined,
+    length: form.length || undefined,
     materials: form.materials,
     dimensions: form.dimensions,
     period: form.period,
     origin: form.origin,
     location: form.location,
+    marks: form.marks || undefined,
     condition_notes: form.condition_notes,
     shipping_notes: form.shipping_notes,
     prisometer_start_price: +form.prisometer_start_price || 0,
@@ -307,48 +329,34 @@ export default function ListingStudio() {
                 <Field label="Title" required>
                   <Input placeholder="e.g. Fernand Léger — Composition with Figures, 1928" value={form.title} onChange={e => set("title", e.target.value)} />
                 </Field>
+
+                {/* Category selector */}
+                <Field label="Category" required>
+                  <select value={form.category} onChange={e => { set("category", e.target.value); set("subcategory", ""); set("style", ""); }}
+                    className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+                    <option value="">Select category…</option>
+                    {MAIN_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                  </select>
+                </Field>
+
+                {/* Conditional category-specific fields */}
+                {form.category && <CategoryFields form={form} set={set} />}
+
+                {/* Always-present fields */}
+                <Field label="Dimensions">
+                  <Input placeholder="e.g. 60 × 80 cm, H 12 in." value={form.dimensions} onChange={e => set("dimensions", e.target.value)} />
+                </Field>
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Category" required>
-                    <select value={form.category} onChange={e => set("category", e.target.value)}
-                      className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm capitalize">
-                      <option value="">Select category…</option>
-                      {CATEGORIES.map(c => <option key={c} value={c}>{c.replace(/_/g," ")}</option>)}
+                  <Field label="Condition">
+                    <select value={form.condition} onChange={e => set("condition", e.target.value)}
+                      className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+                      {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g," ")}</option>)}
                     </select>
                   </Field>
-                  <Field label="Subcategory">
-                    <Input placeholder="e.g. Oil on Canvas" value={form.subcategory} onChange={e => set("subcategory", e.target.value)} />
+                  <Field label="Location">
+                    <Input placeholder="e.g. Kingston NY 12401" value={form.location} onChange={e => set("location", e.target.value)} />
                   </Field>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Field label="Artist / Maker">
-                    <Input placeholder="e.g. Fernand Léger" value={form.maker} onChange={e => set("maker", e.target.value)} />
-                  </Field>
-                  <Field label="Date / Period">
-                    <Input placeholder="e.g. 1928 or circa 1920s" value={form.period} onChange={e => set("period", e.target.value)} />
-                  </Field>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Field label="Materials / Medium">
-                    <Input placeholder="e.g. Oil on canvas" value={form.materials} onChange={e => set("materials", e.target.value)} />
-                  </Field>
-                  <Field label="Dimensions">
-                    <Input placeholder="e.g. 60 × 80 cm" value={form.dimensions} onChange={e => set("dimensions", e.target.value)} />
-                  </Field>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                   <Field label="Origin / Country">
-                     <Input placeholder="e.g. France" value={form.origin} onChange={e => set("origin", e.target.value)} />
-                   </Field>
-                   <Field label="Condition">
-                     <select value={form.condition} onChange={e => set("condition", e.target.value)}
-                       className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm capitalize">
-                       {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g," ")}</option>)}
-                     </select>
-                   </Field>
-                 </div>
-                 <Field label="Location">
-                   <Input placeholder="e.g. Kingston NY 12401" value={form.location} onChange={e => set("location", e.target.value)} />
-                 </Field>
                 <Field label="Provenance Summary">
                   <Input placeholder="e.g. Private collection, Paris; acquired 1974" value={form.provenance} onChange={e => set("provenance", e.target.value)} />
                 </Field>

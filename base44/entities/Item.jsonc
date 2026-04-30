@@ -14,22 +14,31 @@
       "type": "string",
       "enum": [
         "fine_art",
+        "decorative_art",
         "jewelry",
-        "watches",
+        "asian_antiques",
+        "fashion_accessories",
+        "watches_clocks",
         "furniture",
-        "decorative_arts",
-        "design",
-        "antiques",
         "collectibles",
-        "photography",
-        "sculpture",
-        "ceramics",
-        "textiles",
-        "books",
-        "wine",
-        "luxury_goods",
         "other"
       ]
+    },
+    "subcategory": {
+      "type": "string",
+      "description": "Subcategory within the main category"
+    },
+    "style": {
+      "type": "string",
+      "description": "Style or movement (e.g. Art Deco, Impressionism)"
+    },
+    "technique": {
+      "type": "string",
+      "description": "Technique used (e.g. Oil on canvas, Etching)"
+    },
+    "keywords": {
+      "type": "string",
+      "description": "Comma-separated search keywords and tags"
     },
     "condition": {
       "type": "string",
@@ -183,6 +192,17 @@
       "type": "string"
     },
     "origin": {
+      "type": "string"
+    },
+    "maker": {
+      "type": "string",
+      "description": "Artist, designer, maker, or manufacturer"
+    },
+    "marks": {
+      "type": "string",
+      "description": "Signatures, marks, labels"
+    },
+    "short_description": {
       "type": "string"
     },
     "shipping_notes": {

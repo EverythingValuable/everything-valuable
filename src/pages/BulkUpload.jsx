@@ -8,10 +8,12 @@ import { cn } from "@/lib/utils";
 
 // ─── CSV Template ────────────────────────────────────────────────────────────
 const CSV_HEADERS = [
-  "lot_number","title","category","condition","description","provenance",
-  "materials","dimensions","period","origin","location","condition_notes",
-  "shipping_notes","prisometer_start_price","reserve_price",
-  "below_reserve_percent","prisometer_duration_hours","first_bids_duration_hours",
+  "lot_number","title","category","subcategory","condition",
+  "maker","style","technique","keywords",
+  "description","provenance","materials","dimensions","period","origin","location",
+  "marks","condition_notes","shipping_notes",
+  "prisometer_start_price","reserve_price","below_reserve_percent",
+  "prisometer_duration_hours","first_bids_duration_hours",
   "estimated_low","estimated_high","status"
 ];
 

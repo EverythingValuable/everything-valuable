@@ -55,6 +55,12 @@ Deno.serve(async (req) => {
           status: row.status || 'draft',
         };
 
+        if (row.subcategory) payload.subcategory = row.subcategory;
+        if (row.maker) payload.maker = row.maker;
+        if (row.style) payload.style = row.style;
+        if (row.technique) payload.technique = row.technique;
+        if (row.keywords) payload.keywords = row.keywords;
+        if (row.marks) payload.marks = row.marks;
         if (row.estimated_low) payload.estimated_low = parseFloat(row.estimated_low);
         if (row.estimated_high) payload.estimated_high = parseFloat(row.estimated_high);
 
