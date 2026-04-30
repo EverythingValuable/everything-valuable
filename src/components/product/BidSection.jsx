@@ -43,6 +43,12 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     queryFn: () => base44.auth.me(),
   });
 
+  const { data: userBids } = useQuery({
+    queryKey: ["userBids", item?.id, currentUser?.email],
+    queryFn: () => base44.entities.Bid.filter({ item_id: item?.id, bidder_email: currentUser?.email }),
+    enabled: !!item?.id && !!currentUser?.email,
+  });
+
   const { data: sellerProfile } = useQuery({
     queryKey: ["sellerProfile", item?.seller_email],
     queryFn: () => base44.entities.SellerProfile.filter({ user_email: item?.seller_email }).then(p => p[0]),
@@ -238,7 +244,10 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const secs = timeLeft % 60;
   const timerColor = timeLeft <= 30 ? "text-red-500" : "text-primary";
   
-  const isHighestBidder = currentUser && item.highest_bidder_email === currentUser.email;
+  const isHighestBidder = currentUser && (
+    item.highest_bidder_email === currentUser.email || 
+    (userBids && userBids.length > 0 && userBids.some(b => b.amount === item.highest_bid))
+  );
 
   if (item.status === "sold") {
     return (
