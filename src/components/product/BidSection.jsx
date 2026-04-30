@@ -209,8 +209,16 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const generateBidOptions = () => {
     const options = [];
     const currentHighest = item.highest_bid || 0;
-    const increment = 100; // Bids must be multiples of $100
-    let start = currentHighest > 0 ? Math.ceil((currentHighest + 1) / 100) * 100 : Math.ceil(startingBid / 100) * 100;
+    const sellerTiers = sellerProfile?.bid_increment_tiers || [];
+    
+    // Get the appropriate increment for the current highest bid
+    const getTierIncrement = (price) => {
+      const tier = sellerTiers.find(t => price >= t.min && price <= t.max);
+      return tier ? tier.increment : 50;
+    };
+
+    const increment = getTierIncrement(currentHighest);
+    let start = currentHighest > 0 ? currentHighest + increment : 100;
 
     // For prisometer phase, cap options at (or below) the live current price
     const livePrice = item.status === "prisometer" ? Math.floor(getLivePrice()) : Infinity;
@@ -218,7 +226,8 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     let val = start;
     while (val <= livePrice && options.length < 200) {
       options.push(val);
-      val += increment;
+      const nextIncrement = getTierIncrement(val);
+      val += nextIncrement;
     }
     return options;
   };
