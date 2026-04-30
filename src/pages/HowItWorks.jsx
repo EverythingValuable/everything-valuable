@@ -1,168 +1,305 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Clock, TrendingDown, ShoppingBag, CheckCircle, Gavel, DollarSign } from "lucide-react";
+import { ArrowRight, CheckCircle2, TrendingDown, ShoppingBag, FileText, Users, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
-const steps = [
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
+
+const stepData = [
   {
     num: "01",
-    icon: CheckCircle,
-    title: "Seller Lists the Item",
-    description: "A verified seller creates a detailed listing with photos, description, provenance, and condition information. They set a PRI$OMETER start price, a hidden reserve, and choose how long each phase will last.",
+    title: "Seller Creates the Listing",
+    description: "A verified seller lists an item with photographs, description, condition details, provenance when available, and seller-specific terms. The seller sets a PRI$OMETER start price, hidden reserve, and sale timing.",
   },
   {
     num: "02",
-    icon: Clock,
     title: "1stBid$™ Preview Opens",
-    description: "The item enters a preview bidding phase — similar to a traditional auction preview, but fully digital. Buyers can inspect the listing, ask questions, and place competitive bids. A visible countdown timer shows when the preview ends.",
+    description: "The item enters a preview bidding period. Buyers can review the listing, ask questions when available, and place early bids before live pricing begins.",
   },
   {
     num: "03",
-    icon: Gavel,
-    title: "Buyers Place Preview Bids",
-    description: "During the 1stBid$ period, buyers compete with transparent bidding. The highest bid is always visible. This phase builds competitive market intelligence before the live sale activates.",
+    title: "Buyers Compete During Preview",
+    description: "Preview bids help reveal demand before the live phase. The highest preview bid is visible, allowing buyers to understand where the market is forming.",
   },
   {
     num: "04",
-    icon: TrendingDown,
-    title: "PRI$OMETER™ Activates",
-    description: "When 1stBid$ ends, our proprietary PRI$OMETER technology takes over. Starting at the seller's visible price, it descends in real time. The price moves closer to its true market value with every passing moment.",
+    title: "Preview Result Is Checked",
+    description: "When the preview countdown ends, the system checks the highest bid against the PRI$OMETER start price. If the high bid meets or exceeds the start price, the item may sell without entering the PRI$OMETER phase.",
   },
   {
     num: "05",
-    icon: ShoppingBag,
-    title: "Make It Mine™ or Continue Bidding",
-    description: "During the PRI$OMETER phase, buyers can place additional bids or use 'Make It Mine' to purchase instantly at the current price. Make It Mine pauses the PRI$OMETER for a 60-second confirmation window.",
+    title: "PRI$OMETER™ Activates If Needed",
+    description: "If the preview high bid is below the PRI$OMETER start price, the PRI$OMETER begins. The visible price descends in real time, moving closer to the strongest market bid.",
   },
   {
     num: "06",
-    icon: CheckCircle,
-    title: "Sale Completes",
-    description: "If the descending PRI$OMETER meets the highest bid at or above reserve, the item sells automatically. Below-reserve matches go to seller review. The seller can accept or decline. No sale occurs if the floor is reached without a match.",
+    title: "Buyers Can Bid or Make It Mine™",
+    description: "During the PRI$OMETER phase, buyers can continue placing bids or use Make It Mine™ to purchase immediately at the current displayed price.",
   },
   {
     num: "07",
-    icon: DollarSign,
-    title: "Sale & Fulfillment",
-    description: "When a transaction is initiated, the sale remains directly between buyer and seller. Everything Valuable provides tools to generate invoices and support the payment process. Shipping, payment, and fulfillment terms are set by each seller.",
+    title: "Sale Is Completed or Reviewed",
+    description: "If the PRI$OMETER price meets the highest qualifying bid at or above reserve, the item sells automatically. If the match is below reserve, the seller may review and decide whether to accept.",
+  },
+  {
+    num: "08",
+    title: "Invoice, Payment, and Fulfillment",
+    description: "Everything Valuable provides marketplace tools, invoicing support, and payment coordination. The sale remains directly between buyer and seller. Shipping, taxes, duties, pickup, and fulfillment terms are set by the seller.",
   },
 ];
 
+const phaseCards = [
+  {
+    icon: Zap,
+    title: "1stBid$™ Preview",
+    description: "A digital preview and early bidding phase where buyers compete before live pricing begins.",
+  },
+  {
+    icon: TrendingDown,
+    title: "PRI$OMETER™ Pricing",
+    description: "A live descending price designed to move toward the market instead of relying on a fixed asking price.",
+  },
+  {
+    icon: ShoppingBag,
+    title: "Make It Mine™",
+    description: "An instant-purchase action that lets a buyer claim the item at the current PRI$OMETER price.",
+  },
+];
 
+const buyerBenefits = [
+  "Place early bids during the 1stBid$™ preview.",
+  "Watch the PRI$OMETER price move in real time.",
+  "Use Make It Mine™ to claim an item instantly.",
+  "See clearer pricing without a traditional buyer's premium.",
+  "Review seller terms before committing.",
+];
+
+const sellerBenefits = [
+  "Set a start price, reserve, and sale duration.",
+  "Use preview bidding to measure early demand.",
+  "Let PRI$OMETER pricing move toward the market.",
+  "Review below-reserve outcomes when needed.",
+  "Sell through a more transparent marketplace structure.",
+];
 
 export default function HowItWorks() {
   return (
-    <div>
-      {/* Hero */}
-      <section className="py-20 md:py-28 text-center bg-muted/30 border-b border-border">
-        <div className="max-w-3xl mx-auto px-6">
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Our Innovation</span>
-          <h1 className="font-serif text-4xl md:text-6xl font-semibold mt-4 text-foreground leading-tight">
+    <div className="bg-background">
+      {/* ===== HERO ===== */}
+      <section className="py-20 md:py-32 border-b border-border/50">
+        <motion.div className="max-w-4xl mx-auto px-6 text-center" variants={containerVariants} initial="hidden" animate="visible">
+          <motion.h1 variants={itemVariants} className="font-serif text-4xl md:text-6xl font-semibold text-foreground leading-tight">
             How Everything Valuable Works
-          </h1>
-          <p className="text-muted-foreground mt-6 text-base md:text-lg leading-relaxed max-w-xl mx-auto">
-            A revolutionary two-phase selling system that finds the true market value of extraordinary objects — 
-            transparently, intelligently, and without buyer's premiums.
-          </p>
-        </div>
-      </section>
-
-      {/* Steps */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-4xl mx-auto px-6 space-y-0">
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.num}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="relative flex gap-6 md:gap-10 pb-12 last:pb-0"
-            >
-              {/* Timeline */}
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <step.icon className="w-5 h-5 text-primary" />
-                </div>
-                {i < steps.length - 1 && (
-                  <div className="w-px flex-1 bg-border mt-3" />
-                )}
-              </div>
-              {/* Content */}
-              <div className="pt-1 pb-8">
-                <span className="text-xs font-mono text-primary">Step {step.num}</span>
-                <h3 className="font-serif text-xl md:text-2xl font-semibold mt-1 text-foreground">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mt-2 max-w-lg">{step.description}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Fee explanation */}
-      <section className="py-16 md:py-24 bg-muted/30 border-t border-border">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl md:text-4xl font-semibold">Transparent Fee Structure</h2>
-            <p className="text-muted-foreground mt-3 text-sm max-w-lg mx-auto">
-              No buyer's premium. Just a clear, fair service fee with a built-in credit.
-            </p>
-          </div>
-
-          <div className="bg-card rounded-2xl border border-border p-8 md:p-12 max-w-2xl mx-auto">
-            <h3 className="font-serif text-xl font-semibold mb-6">Example: Make It Mine at $1,000</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between py-3 border-b border-border">
-                <span className="text-sm text-muted-foreground">Item Price</span>
-                <span className="font-medium">$1,000</span>
-              </div>
-              <div className="flex justify-between py-3 border-b border-border">
-                <span className="text-sm text-muted-foreground">Service Fee (10% + $30)</span>
-                <span className="font-medium">$130</span>
-              </div>
-              <div className="flex justify-between py-3 border-b border-border text-primary">
-                <span className="text-sm">Fee Credit (50% back)</span>
-                <span className="font-medium">-$65</span>
-              </div>
-              <div className="flex justify-between py-3 border-b border-border">
-                <span className="text-sm font-semibold">Final Invoice Total</span>
-                <span className="font-semibold">$1,065</span>
-              </div>
-              <div className="flex justify-between py-3 border-b border-border text-muted-foreground">
-                <span className="text-sm">Upfront Service Fee Already Paid</span>
-                <span className="font-medium">-$130</span>
-              </div>
-              <div className="flex justify-between py-3">
-                <span className="text-sm font-bold">Remaining Due</span>
-                <span className="font-sans text-xl font-bold">$935</span>
-              </div>
-              <p className="text-xs text-muted-foreground text-center pt-2">
-                Shipping, taxes, and duties not included
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-16 md:py-24 text-center">
-        <div className="max-w-xl mx-auto px-6">
-          <h2 className="font-serif text-3xl font-semibold">Ready to Begin?</h2>
-          <p className="text-muted-foreground mt-3 text-sm">
-            Join the marketplace that puts transparency, elegance, and true value first.
-          </p>
-          <div className="flex justify-center gap-4 mt-8">
+          </motion.h1>
+          <motion.p variants={itemVariants} className="text-lg md:text-xl text-muted-foreground mt-6 leading-relaxed max-w-2xl mx-auto">
+            A smarter way to discover market value for art, antiques, collectibles, design, jewelry, and other valuable objects.
+          </motion.p>
+          <motion.p variants={itemVariants} className="text-base text-muted-foreground mt-5 max-w-xl mx-auto leading-relaxed">
+            Everything Valuable combines preview bidding, live descending pricing, and instant-purchase technology to create a more transparent selling experience — without the confusion of traditional auction premiums.
+          </motion.p>
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
             <Link to="/browse">
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 rounded-full px-8 h-11">
-                Start Browsing <ArrowRight className="w-4 h-4" />
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 h-12 px-8 rounded-lg">
+                Browse Items <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/seller">
-              <Button variant="outline" className="rounded-full px-8 h-11">Sell With Us</Button>
+            <Link to="/sell">
+              <Button variant="outline" className="h-12 px-8 rounded-lg">
+                Sell With Us
+              </Button>
             </Link>
+          </motion.div>
+          <motion.p variants={itemVariants} className="text-xs text-muted-foreground mt-8 italic">
+            Preview. Bid. Watch the market move. Buy with confidence.
+          </motion.p>
+        </motion.div>
+      </section>
+
+      {/* ===== THE BIG IDEA ===== */}
+      <section className="py-24 md:py-32 border-b border-border/50">
+        <motion.div className="max-w-5xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <div className="text-center mb-14">
+            <motion.h2 variants={itemVariants} className="font-serif text-3xl md:text-4xl font-semibold text-foreground">
+              Two Phases. One Clear Market Signal.
+            </motion.h2>
+            <motion.div variants={itemVariants} className="mt-8 space-y-5 max-w-3xl mx-auto text-base text-muted-foreground leading-relaxed">
+              <p>
+                Every listing begins with a preview bidding period called <span className="font-semibold text-foreground">1stBid$™</span>. Buyers can place early bids, see the current high bid, and signal demand before live pricing begins. If bidding reaches or exceeds the PRI$OMETER™ start price before the preview ends, the item can sell without needing the PRI$OMETER phase.
+              </p>
+              <p>
+                If the highest preview bid is below the PRI$OMETER start price, the <span className="font-semibold text-foreground">PRI$OMETER activates</span>. The visible price begins descending in real time until a buyer chooses <span className="font-semibold text-foreground">Make It Mine™</span>, or until the descending price meets the highest qualifying bid.
+              </p>
+            </motion.div>
           </div>
-        </div>
+
+          {/* Three Phase Cards */}
+          <motion.div variants={containerVariants} className="grid md:grid-cols-3 gap-6 mt-12">
+            {phaseCards.map((card, i) => {
+              const Icon = card.icon;
+              return (
+                <motion.div key={i} variants={itemVariants} className="bg-card rounded-xl border border-border/50 p-8 hover:shadow-lg hover:border-border transition-all duration-300">
+                  <Icon className="w-10 h-10 text-primary mb-4" />
+                  <h3 className="font-serif text-xl font-semibold text-foreground mb-3">{card.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{card.description}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ===== HOW THE SALE FLOWS ===== */}
+      <section className="py-24 md:py-32 border-b border-border/50 bg-muted/20">
+        <motion.div className="max-w-5xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.div variants={itemVariants} className="text-center mb-16">
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">How the Sale Flows</h2>
+          </motion.div>
+
+          <motion.div variants={containerVariants} className="space-y-6">
+            {stepData.map((step, i) => (
+              <motion.div key={step.num} variants={itemVariants} className="flex gap-6 md:gap-8">
+                <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                  <span className="font-serif text-lg font-semibold text-primary">{step.num}</span>
+                </div>
+                <div className="flex-1 pt-1">
+                  <h3 className="font-serif text-lg md:text-xl font-semibold text-foreground mb-2">{step.title}</h3>
+                  <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{step.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ===== SIMPLE FEE STRUCTURE ===== */}
+      <section className="py-24 md:py-32 border-b border-border/50">
+        <motion.div className="max-w-4xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <div className="text-center mb-12">
+            <motion.h2 variants={itemVariants} className="font-serif text-3xl md:text-4xl font-semibold text-foreground">
+              Simple Fee Structure
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-base text-muted-foreground mt-4 max-w-2xl mx-auto leading-relaxed">
+              Everything Valuable does not use a traditional buyer's premium. Instead, buyers pay a clear service fee when they commit to a purchase. A portion of that fee is credited back on the final invoice.
+            </motion.p>
+          </div>
+
+          {/* Fee Example Card */}
+          <motion.div variants={itemVariants} className="bg-card rounded-xl border border-border/50 p-8 md:p-10 max-w-2xl mx-auto shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="font-serif text-xl font-semibold text-foreground mb-8">Example: Item Purchased at $1,000</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center py-3 border-b border-border/50">
+                <span className="text-sm text-muted-foreground">Item Price</span>
+                <span className="font-semibold text-foreground">$1,000</span>
+              </div>
+              <div className="flex justify-between items-center py-3 border-b border-border/50">
+                <span className="text-sm text-muted-foreground">Service Fee Paid Upfront</span>
+                <span className="font-semibold text-foreground">$130</span>
+              </div>
+              <div className="flex justify-between items-center py-3 border-b border-border/50 bg-primary/5 px-3 rounded">
+                <span className="text-sm text-foreground font-medium">Fee Credit Applied to Invoice</span>
+                <span className="font-semibold text-primary">-$65</span>
+              </div>
+              <div className="flex justify-between items-center py-3 border-b border-border/50">
+                <span className="text-sm text-foreground font-medium">Final Invoice Before Shipping/Taxes</span>
+                <span className="font-semibold text-foreground">$1,065</span>
+              </div>
+              <div className="flex justify-between items-center py-3 border-b border-border/50 text-muted-foreground">
+                <span className="text-sm">Amount Already Paid</span>
+                <span className="font-medium">-$130</span>
+              </div>
+              <div className="flex justify-between items-center py-4 bg-muted/30 px-3 rounded-lg">
+                <span className="text-sm font-semibold text-foreground">Remaining Balance Due</span>
+                <span className="font-serif text-lg font-semibold text-foreground">$935</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground text-center pt-6 border-t border-border/50 mt-6">
+              In this example, the buyer pays the service fee upfront when committing to the item. Half of that fee is credited back on the final invoice, reducing the remaining balance due.
+            </p>
+            <p className="text-xs text-muted-foreground text-center pt-4 italic">
+              Shipping, taxes, duties, storage, pickup, and seller-specific charges are not included in this example and may vary by listing.
+            </p>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ===== FOR BUYERS / FOR SELLERS ===== */}
+      <section className="py-24 md:py-32 border-b border-border/50 bg-muted/20">
+        <motion.div className="max-w-5xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.div variants={itemVariants} className="text-center mb-12">
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">What You'll Experience</h2>
+          </motion.div>
+
+          <motion.div variants={containerVariants} className="grid md:grid-cols-2 gap-8">
+            {/* For Buyers */}
+            <motion.div variants={itemVariants} className="bg-card rounded-xl border border-border/50 p-8 md:p-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="font-serif text-2xl font-semibold text-foreground">For Buyers</h3>
+              </div>
+              <ul className="space-y-3">
+                {buyerBenefits.map((benefit, i) => (
+                  <li key={i} className="flex gap-3 items-start">
+                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-1" />
+                    <span className="text-sm text-muted-foreground">{benefit}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* For Sellers */}
+            <motion.div variants={itemVariants} className="bg-card rounded-xl border border-border/50 p-8 md:p-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="font-serif text-2xl font-semibold text-foreground">For Sellers</h3>
+              </div>
+              <ul className="space-y-3">
+                {sellerBenefits.map((benefit, i) => (
+                  <li key={i} className="flex gap-3 items-start">
+                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0 mt-1" />
+                    <span className="text-sm text-muted-foreground">{benefit}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ===== FINAL CTA ===== */}
+      <section className="py-24 md:py-32">
+        <motion.div className="max-w-3xl mx-auto px-6 text-center" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.h2 variants={itemVariants} className="font-serif text-3xl md:text-4xl font-semibold text-foreground">
+            Discover Value in Motion
+          </motion.h2>
+          <motion.p variants={itemVariants} className="text-base text-muted-foreground mt-6 max-w-xl mx-auto leading-relaxed">
+            Everything Valuable is built for sellers who want stronger market feedback and buyers who want a clearer way to compete for exceptional objects.
+          </motion.p>
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
+            <Link to="/browse">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 h-12 px-8 rounded-lg">
+                Browse Items <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Link to="/sell">
+              <Button variant="outline" className="h-12 px-8 rounded-lg">
+                Start Selling
+              </Button>
+            </Link>
+          </motion.div>
+        </motion.div>
       </section>
     </div>
   );
