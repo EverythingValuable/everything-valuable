@@ -157,12 +157,26 @@ export default function Navbar() {
             </Button>
           </Link>
 
-          {/* Profile dropdown */}
+          {/* Sign in / Join — shown when not authenticated */}
+          {!user && (
+            <button
+              onClick={() => base44.auth.redirectToLogin(window.location.href)}
+              className="hidden md:inline-flex h-8 px-4 rounded-full bg-foreground text-background text-xs font-semibold hover:bg-foreground/80 transition-colors"
+            >
+              Sign In / Join
+            </button>
+          )}
+
+          {/* Profile dropdown — only shown when authenticated */}
           <div className="relative" ref={profileRef}>
-            <button onClick={() => setProfileOpen(p => !p)}
+            {user && <button onClick={() => setProfileOpen(p => !p)}
               className="p-2 rounded-full hover:bg-muted transition-colors flex items-center gap-1">
               <User className="w-4 h-4 text-muted-foreground" />
-            </button>
+            </button>}
+            {!user && <button onClick={() => setProfileOpen(p => !p)}
+              className="p-2 rounded-full hover:bg-muted transition-colors md:hidden">
+              <User className="w-4 h-4 text-muted-foreground" />
+            </button>}
 
             <AnimatePresence>
               {profileOpen && (
@@ -170,34 +184,48 @@ export default function Navbar() {
                   exit={{ opacity: 0, y: 4 }} transition={{ duration: 0.15 }}
                   className="absolute top-full right-0 mt-2 w-52 bg-card border border-border rounded-xl shadow-xl py-2 z-50">
 
-                  {user && (
-                    <div className="px-4 py-3 border-b border-border">
-                      <p className="text-sm font-medium truncate">{user.full_name || "My Account"}</p>
-                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  {user ? (
+                    <>
+                      <div className="px-4 py-3 border-b border-border">
+                        <p className="text-sm font-medium truncate">{user.full_name || "My Account"}</p>
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      </div>
+                      <div className="py-1">
+                        <DropLink to="/buyer?view=saves" icon={Bookmark} label="My Saves" onClick={() => setProfileOpen(false)} />
+                        <DropLink to="/buyer?view=won" icon={Trophy} label="Won Items" onClick={() => setProfileOpen(false)} />
+                        <DropLink to="/buyer?view=profile" icon={User} label="My Profile" onClick={() => setProfileOpen(false)} />
+                      </div>
+                      {isSeller && (
+                        <>
+                          <div className="border-t border-border my-1" />
+                          <div className="py-1">
+                            <DropLink to="/seller" icon={LayoutDashboard} label="Seller Dashboard" onClick={() => setProfileOpen(false)} highlight />
+                          </div>
+                        </>
+                      )}
+                      <div className="border-t border-border my-1" />
+                      <button onClick={() => { base44.auth.logout(); setProfileOpen(false); }}
+                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors">
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <div className="p-3 space-y-2">
+                      <button
+                        onClick={() => { base44.auth.redirectToLogin(window.location.href); setProfileOpen(false); }}
+                        className="w-full h-9 bg-foreground text-background rounded-lg text-sm font-semibold hover:bg-foreground/80 transition-colors"
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        onClick={() => { base44.auth.redirectToLogin(window.location.href); setProfileOpen(false); }}
+                        className="w-full h-9 border border-border text-foreground rounded-lg text-sm font-semibold hover:bg-muted transition-colors"
+                      >
+                        Create Account
+                      </button>
                     </div>
                   )}
-
-                  <div className="py-1">
-                    <DropLink to="/buyer?view=saves" icon={Bookmark} label="My Saves" onClick={() => setProfileOpen(false)} />
-                    <DropLink to="/buyer?view=won" icon={Trophy} label="Won Items" onClick={() => setProfileOpen(false)} />
-                    <DropLink to="/buyer?view=profile" icon={User} label="My Profile" onClick={() => setProfileOpen(false)} />
-                  </div>
-
-                  {isSeller && (
-                    <>
-                      <div className="border-t border-border my-1" />
-                      <div className="py-1">
-                        <DropLink to="/seller" icon={LayoutDashboard} label="Seller Dashboard" onClick={() => setProfileOpen(false)} highlight />
-                      </div>
-                    </>
-                  )}
-
-                  <div className="border-t border-border my-1" />
-                  <button onClick={() => { base44.auth.logout(); setProfileOpen(false); }}
-                    className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-muted-foreground hover:text-destructive hover:bg-muted transition-colors">
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
                 </motion.div>
               )}
             </AnimatePresence>

@@ -316,6 +316,40 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     (userBids && userBids.length > 0 && userBids.some(b => b.amount === item.highest_bid))
   );
 
+  // Not signed in — show branded sign-in gate instead of bidding UI
+  if (!currentUser && (item.status === "first_bids" || item.status === "prisometer")) {
+    return (
+      <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="px-6 py-8 text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+            <Gavel className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-serif text-lg font-semibold text-foreground">Sign in to place a bid</h3>
+            <p className="text-sm text-muted-foreground mt-1.5 max-w-xs mx-auto leading-relaxed">
+              Create a free account or sign in to participate in auctions, save items, and track your bids.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+            <button
+              onClick={() => base44.auth.redirectToLogin(window.location.href)}
+              className="flex-1 h-11 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold text-sm transition-colors"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => base44.auth.redirectToLogin(window.location.href)}
+              className="flex-1 h-11 bg-transparent border border-border text-foreground hover:bg-secondary rounded-xl font-semibold text-sm transition-colors"
+            >
+              Create Account
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground">Free to join · No obligation to bid</p>
+        </div>
+      </div>
+    );
+  }
+
   if (isOwnListing) {
     return (
       <div className="rounded-xl border border-border bg-secondary/30 p-5 flex items-start gap-3">
