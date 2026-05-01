@@ -50,7 +50,7 @@ export default function ListingStudio() {
     metal_purity: "", stone_type: "", ring_size: "", length: "",
     condition: "very_good", provenance: "",
     description: "", short_description: "", condition_notes: "",
-    shipping_notes: "", marks: "",
+    shipping_notes: "", marks: "", terms_and_conditions: "",
     first_bids_duration_hours: 168,
     prisometer_start_price: "",
     reserve_price: "",
@@ -101,6 +101,7 @@ export default function ListingStudio() {
             condition_notes: item.condition_notes || "",
             shipping_notes: item.shipping_notes || "",
             marks: item.marks || "",
+            terms_and_conditions: item.terms_and_conditions || "",
             first_bids_duration_hours: item.first_bids_duration_hours || 168,
             prisometer_start_price: item.prisometer_start_price || "",
             reserve_price: item.reserve_price || "",
@@ -165,6 +166,7 @@ export default function ListingStudio() {
     marks: form.marks || undefined,
     condition_notes: form.condition_notes,
     shipping_notes: form.shipping_notes,
+    terms_and_conditions: form.terms_and_conditions || undefined,
     prisometer_start_price: +form.prisometer_start_price || 0,
     reserve_price: +form.reserve_price || 0,
     below_reserve_percent: form.below_reserve_percent,
@@ -495,11 +497,15 @@ export default function ListingStudio() {
                   <Textarea placeholder="Full provenance history, exhibition history, literature references…" value={form.provenance} onChange={e => set("provenance", e.target.value)} className="h-24" />
                 </Field>
                 <Field label="Shipping Notes">
-                  <Textarea placeholder="Describe packaging, fragility, or special shipping requirements…" value={form.shipping_notes} onChange={e => set("shipping_notes", e.target.value)} className="h-20" />
-                </Field>
-              </div>
-            </StepShell>
-          )}
+                   <Textarea placeholder="Describe packaging, fragility, or special shipping requirements…" value={form.shipping_notes} onChange={e => set("shipping_notes", e.target.value)} className="h-20" />
+                 </Field>
+                 <Field label="Auction Terms & Conditions (optional)">
+                   <Textarea placeholder="e.g. Payment due within 7 days. All sales are final. Ships within 5 business days of cleared payment." value={form.terms_and_conditions} onChange={e => set("terms_and_conditions", e.target.value)} className="h-20" />
+                   <p className="text-xs text-muted-foreground mt-1">These will be shown to buyers and they must agree before placing bids.</p>
+                 </Field>
+                </div>
+                </StepShell>
+                )}
 
           {/* STEP 4: SALES SETUP */}
           {step === 4 && (
