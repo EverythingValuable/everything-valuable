@@ -3,63 +3,29 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Heart, Gavel, ShoppingBag, Settings, Package, AlertTriangle, CheckCircle2, Truck, Clock } from "lucide-react";
+import { Heart, Gavel, Settings, Package } from "lucide-react";
 import { Link } from "react-router-dom";
-import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
 import BuyerProfileForm from "@/components/buyer/BuyerProfileForm";
-
-const statusColors = {
-  active: "bg-green-50 text-green-700 border-green-200",
-  outbid: "bg-orange-50 text-orange-700 border-orange-200",
-  won: "bg-primary/10 text-primary border-primary/20",
-  lost: "bg-muted text-muted-foreground border-border",
-};
-
-function ItemRow({ itemId, children }) {
-  const { data: item } = useQuery({
-    queryKey: ["item-mini", itemId],
-    queryFn: () => base44.entities.Item.filter({ id: itemId }).then(r => r[0]),
-    enabled: !!itemId,
-    staleTime: 60000,
-  });
-
-  return (
-    <Link to={`/item/${itemId}`} className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:border-primary/30 hover:shadow-sm transition-all group">
-      <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted shrink-0">
-        {item?.images?.[0]
-          ? <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-          : <div className="w-full h-full bg-muted" />
-        }
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm text-foreground truncate">
-          {item?.title || `Item #${itemId?.slice(-8)}`}
-        </p>
-        {item?.category && (
-          <p className="text-xs text-muted-foreground capitalize mt-0.5">{item.category.replace("_", " ")}</p>
-        )}
-        {children}
-      </div>
-    </Link>
-  );
-}
+import ActiveBidRow from "@/components/buyer/ActiveBidRow";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
-  decorative_arts: "Decorative Arts", design: "Design", antiques: "Antiques",
+  decorative_art: "Decorative Art", design: "Design", antiques: "Antiques",
   collectibles: "Collectibles", photography: "Photography", sculpture: "Sculpture",
-  ceramics: "Ceramics", textiles: "Textiles", books: "Books", wine: "Wine",
-  luxury_goods: "Luxury Goods", other: "Other"
+  ceramics: "Ceramics", textiles: "Textiles", books: "Books", asian_antiques: "Asian Antiques",
+  fashion_accessories: "Fashion Accessories", watches_clocks: "Watches & Clocks", other: "Other"
 };
 
 const savedStatusConfig = {
   first_bids: { label: "1stBid$ Active", color: "bg-primary/10 text-primary border-primary/20" },
-  prisometer:  { label: "PRI$OMETER Live", color: "bg-red-50 text-red-600 border-red-200" },
+  prisometer:  { label: "PRI$OMETER™ Live", color: "bg-red-50 text-red-600 border-red-200" },
   sold:        { label: "Sold", color: "bg-muted text-muted-foreground border-border" },
 };
 
 function SavedItemCard({ itemId, watchlistId }) {
+  const [removing, setRemoving] = useState(false);
+
   const { data: item } = useQuery({
     queryKey: ["item-mini", itemId],
     queryFn: () => base44.entities.Item.filter({ id: itemId }).then(r => r[0]),
@@ -67,7 +33,6 @@ function SavedItemCard({ itemId, watchlistId }) {
     staleTime: 60000,
   });
 
-  const [removing, setRemoving] = useState(false);
   const { refetch: refetchWatchlist } = useQuery({ queryKey: ["buyer-watchlist"] });
 
   const handleRemove = async (e) => {
@@ -87,17 +52,12 @@ function SavedItemCard({ itemId, watchlistId }) {
     <Link to={`/item/${itemId}`} className="group block relative">
       <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
         {item?.images?.[0] ? (
-          <img
-            src={item.images[0]}
-            alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
+          <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
             <span className="font-serif text-4xl">EV</span>
           </div>
         )}
-
         {status && (
           <div className="absolute top-3 left-3">
             <Badge variant="outline" className={`${status.color} text-xs font-medium backdrop-blur-sm`}>
@@ -105,7 +65,6 @@ function SavedItemCard({ itemId, watchlistId }) {
             </Badge>
           </div>
         )}
-
         <button
           onClick={handleRemove}
           disabled={removing}
@@ -114,7 +73,6 @@ function SavedItemCard({ itemId, watchlistId }) {
           <Heart className="w-4 h-4 fill-red-500 text-red-500" />
         </button>
       </div>
-
       <div className="mt-3 space-y-1">
         <p className="text-xs text-muted-foreground uppercase tracking-wider">
           {categoryLabels[item?.category] || item?.category || ""}
@@ -125,90 +83,23 @@ function SavedItemCard({ itemId, watchlistId }) {
         {item?.seller_name && (
           <p className="text-xs text-muted-foreground">{item.seller_name}</p>
         )}
-        {displayPrice && (
-          <div className="pt-1">
-            <span className="font-sans text-base font-semibold text-foreground">
-              ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-            </span>
+        {/* Show highest bid if available, otherwise start price */}
+        {item && (
+          <div className="pt-1 space-y-0.5">
+            {item.highest_bid > 0 && (
+              <p className="text-xs text-muted-foreground">
+                High bid: <span className="font-semibold text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
+              </p>
+            )}
+            {displayPrice && (
+              <span className="font-sans text-base font-semibold text-foreground">
+                ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              </span>
+            )}
           </div>
         )}
       </div>
     </Link>
-  );
-}
-
-const invoiceStatusConfig = {
-  draft:     { label: "Invoice Pending",   icon: Clock,         color: "text-amber-600 bg-amber-50 border-amber-200" },
-  sent:      { label: "Payment Due",       icon: AlertTriangle, color: "text-red-600 bg-red-50 border-red-200" },
-  paid:      { label: "Payment Received",  icon: CheckCircle2,  color: "text-green-700 bg-green-50 border-green-200" },
-  shipped:   { label: "Shipped",           icon: Truck,         color: "text-blue-700 bg-blue-50 border-blue-200" },
-  delivered: { label: "Delivered",         icon: CheckCircle2,  color: "text-green-700 bg-green-50 border-green-200" },
-  disputed:  { label: "Disputed",          icon: AlertTriangle, color: "text-red-600 bg-red-50 border-red-200" },
-};
-
-function InvoiceCard({ inv }) {
-  const { data: item } = useQuery({
-    queryKey: ["item-mini", inv.item_id],
-    queryFn: () => base44.entities.Item.filter({ id: inv.item_id }).then(r => r[0]),
-    enabled: !!inv.item_id,
-    staleTime: 60000,
-  });
-
-  const cfg = invoiceStatusConfig[inv.status] || invoiceStatusConfig.draft;
-  const StatusIcon = cfg.icon;
-
-  return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
-      {/* Invoice header bar */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3 bg-muted/40 border-b border-border text-xs text-muted-foreground">
-        <span className="font-medium text-foreground">Invoice #{inv.id?.slice(-8).toUpperCase()}</span>
-        <span>{inv.created_date ? format(new Date(inv.created_date), "MMM d, yyyy") : ""}</span>
-        {inv.seller_email && <span className="font-medium text-foreground">{inv.seller_email}</span>}
-        <span className="ml-auto font-sans font-semibold text-sm text-foreground">
-          Total: ${Number(inv.total_amount ?? inv.item_price ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-        </span>
-      </div>
-
-      {/* Status banner */}
-      <div className={`flex items-center justify-between px-5 py-3 border-b border-border ${cfg.color}`}>
-        <div className="flex items-center gap-2">
-          <StatusIcon className="w-4 h-4 shrink-0" />
-          <span className="text-sm font-medium">{cfg.label}</span>
-          {inv.status === "sent" && (
-            <span className="text-xs ml-1">— Please arrange payment with the seller</span>
-          )}
-          {inv.status === "shipped" && inv.tracking_number && (
-            <span className="text-xs ml-1">· Tracking: {inv.tracking_number}</span>
-          )}
-        </div>
-        {inv.payment_instructions && (
-          <span className="text-xs underline cursor-pointer opacity-70 hover:opacity-100">Payment Info</span>
-        )}
-      </div>
-
-      {/* Item row */}
-      <Link to={`/item/${inv.item_id}`} className="flex items-center gap-4 px-5 py-4 hover:bg-muted/20 transition-colors group">
-        <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted shrink-0">
-          {item?.images?.[0]
-            ? <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-            : <div className="w-full h-full bg-muted" />}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-sm text-foreground line-clamp-1">
-            {inv.item_title || item?.title || `Item #${inv.item_id?.slice(-8)}`}
-          </p>
-          <p className="text-xs text-muted-foreground mt-0.5 capitalize">
-            {inv.purchase_method === "make_it_mine" ? "Make It Mine™" : inv.purchase_method === "bid" ? "Won via Bid" : "Purchase"}
-          </p>
-        </div>
-        <div className="text-right shrink-0">
-          <p className="font-sans font-semibold text-sm text-foreground">
-            ${Number(inv.item_price ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
-          </p>
-          <p className="text-xs text-muted-foreground mt-0.5">Hammer price</p>
-        </div>
-      </Link>
-    </div>
   );
 }
 
@@ -225,11 +116,11 @@ export default function BuyerDashboard() {
 
   const { data: rawBids = [] } = useQuery({
     queryKey: ["buyer-bids"],
-    queryFn: () => base44.entities.Bid.list("-created_date", 50),
+    queryFn: () => base44.entities.Bid.list("-created_date", 200),
     initialData: [],
   });
 
-  // Deduplicate: one entry per item, keeping the most recent bid
+  // One entry per item — most recent bid wins
   const bids = Object.values(
     rawBids.reduce((acc, bid) => {
       if (!acc[bid.item_id] || new Date(bid.created_date) > new Date(acc[bid.item_id].created_date)) {
@@ -239,27 +130,23 @@ export default function BuyerDashboard() {
     }, {})
   );
 
-  const { data: invoices = [] } = useQuery({
-    queryKey: ["buyer-invoices"],
-    queryFn: () => base44.entities.Invoice.list("-created_date", 50),
-    initialData: [],
-  });
+  const activeBids = bids.filter(b => b.status !== "lost");
+  const wonBids = rawBids.filter(b => b.status === "won");
 
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-8">
         <div className="mb-8">
           <h1 className="font-serif text-3xl font-semibold text-foreground">My Account</h1>
-          <p className="text-sm text-muted-foreground mt-1">Track your bids, purchases, and saved items</p>
+          <p className="text-sm text-muted-foreground mt-1">Track your bids and saved items</p>
         </div>
 
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           {[
             { label: "Saved Items", value: watchlist.length, icon: Heart },
-            { label: "Active Bids", value: rawBids.filter(b => b.status === "active").length, icon: Gavel },
-            { label: "Purchases", value: invoices.length, icon: ShoppingBag },
-            { label: "Won", value: rawBids.filter(b => b.status === "won").length, icon: Package },
+            { label: "Active Bids", value: activeBids.length, icon: Gavel },
+            { label: "Won", value: wonBids.length, icon: Package },
           ].map(s => (
             <Card key={s.label}>
               <CardContent className="p-5 flex items-start gap-3">
@@ -279,7 +166,6 @@ export default function BuyerDashboard() {
           <TabsList className="mb-6">
             <TabsTrigger value="watchlist" className="gap-1.5"><Heart className="w-3.5 h-3.5" /> Saved</TabsTrigger>
             <TabsTrigger value="bids" className="gap-1.5"><Gavel className="w-3.5 h-3.5" /> Bids</TabsTrigger>
-            <TabsTrigger value="purchases" className="gap-1.5"><ShoppingBag className="w-3.5 h-3.5" /> Purchases</TabsTrigger>
             <TabsTrigger value="settings" className="gap-1.5"><Settings className="w-3.5 h-3.5" /> Settings</TabsTrigger>
           </TabsList>
 
@@ -303,45 +189,17 @@ export default function BuyerDashboard() {
 
           {/* BIDS */}
           <TabsContent value="bids">
-            {bids.length === 0 ? (
+            {activeBids.length === 0 ? (
               <Card><CardContent className="p-12 text-center">
                 <Gavel className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="font-serif text-xl text-muted-foreground">No bids placed</p>
+                <p className="font-serif text-xl text-muted-foreground">No active bids</p>
                 <p className="text-sm text-muted-foreground mt-1">Start bidding on items in the marketplace</p>
               </CardContent></Card>
             ) : (
               <div className="space-y-3">
-                {bids.map(bid => (
-                  <ItemRow key={bid.id} itemId={bid.item_id}>
-                    <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-xs font-sans font-semibold text-foreground">
-                        ${bid.amount?.toLocaleString()}
-                      </span>
-                      <span className="text-xs text-muted-foreground">·</span>
-                      <span className="text-xs text-muted-foreground">
-                        {bid.phase === "first_bids" ? "1stBid$™" : "PRI$OMETER™"}
-                      </span>
-                      <Badge className={`text-[10px] px-2 py-0 border ml-auto ${statusColors[bid.status] || ""}`}>
-                        {bid.status === "active" ? "High Bidder" : bid.status}
-                      </Badge>
-                    </div>
-                  </ItemRow>
+                {activeBids.map(bid => (
+                  <ActiveBidRow key={bid.id} bid={bid} currentUser={user} />
                 ))}
-              </div>
-            )}
-          </TabsContent>
-
-          {/* PURCHASES / WON ITEMS */}
-          <TabsContent value="purchases">
-            {invoices.length === 0 ? (
-              <Card><CardContent className="p-12 text-center">
-                <ShoppingBag className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="font-serif text-xl text-muted-foreground">No purchases yet</p>
-                <p className="text-sm text-muted-foreground mt-1">Won items and invoices will appear here</p>
-              </CardContent></Card>
-            ) : (
-              <div className="space-y-4">
-                {invoices.map(inv => <InvoiceCard key={inv.id} inv={inv} />)}
               </div>
             )}
           </TabsContent>
