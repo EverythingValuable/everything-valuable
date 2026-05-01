@@ -18,7 +18,7 @@ import AddCardModal from "@/components/buyer/AddCardModal";
 
 const CONFIRM_SECONDS = 120;
 
-export default function BidSection({ item, onMakeItMine, onCancel }) {
+export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed = false }) {
   const [bidAmount, setBidAmount] = useState("");
   const [customBid, setCustomBid] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
@@ -433,6 +433,14 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
         </div>
       )}
 
+      {/* T&C required notice */}
+      {canBid && item.terms_and_conditions && !termsAgreed && (
+        <div className="rounded-xi border border-border bg-card p-4 sm:p-5 text-center space-y-3">
+          <p className="text-sm text-muted-foreground">You must agree to the terms & conditions to place a bid.</p>
+          <p className="text-xs text-muted-foreground">Scroll down to review and accept the auction terms.</p>
+        </div>
+      )}
+
       {/* Make It Mine button */}
       {canMakeItMine && !showConfirm && !bidSuccess && (
         <Button
@@ -445,7 +453,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       )}
 
       {/* Place a Bid */}
-      {canBid && !showConfirm && !bidSuccess && (
+      {canBid && !showConfirm && !bidSuccess && (!item.terms_and_conditions || termsAgreed) && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full max-w-full min-w-0 overflow-hidden">
           <div className="flex items-center gap-2">
             <Gavel className="w-4 h-4 text-primary" />
@@ -516,7 +524,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       )}
 
           {/* Bid Increments */}
-      {canBid && !showConfirm && !bidSuccess && sellerProfile?.bid_increment_tiers?.length > 0 && (
+      {canBid && !showConfirm && !bidSuccess && (!item.terms_and_conditions || termsAgreed) && sellerProfile?.bid_increment_tiers?.length > 0 && (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <button
             onClick={() => setShowTiers(t => !t)}

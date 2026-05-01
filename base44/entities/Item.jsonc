@@ -207,6 +207,10 @@
     },
     "shipping_notes": {
       "type": "string"
+    },
+    "terms_and_conditions": {
+      "type": "string",
+      "description": "Terms and conditions for this auction"
     }
   },
   "required": [
