@@ -66,6 +66,15 @@ export default function DashboardSidebar() {
   });
   const unreadCount = unreadMessages.length;
 
+  const { data: pendingInvoices = [] } = useQuery({
+    queryKey: ["pending-invoices", user?.email],
+    queryFn: () => base44.entities.Invoice.filter({ seller_email: user.email }),
+    select: d => d.filter(inv => ["draft", "pending"].includes(inv.status)),
+    enabled: !!user?.email,
+    refetchInterval: 60000,
+  });
+  const pendingInvoiceCount = pendingInvoices.length;
+
   const isActive = (item) => {
     if (item.exact) return location.pathname === "/seller" && !urlView;
     if (item.href.includes("?view=")) {
@@ -115,8 +124,13 @@ export default function DashboardSidebar() {
                     <Icon className={cn("w-3.5 h-3.5 shrink-0", item.highlight && "w-4 h-4")} />
                     <span className="flex-1 leading-none">{item.label}</span>
                     {item.href.includes("view=messages") && unreadCount > 0 && (
-                      <span className="bg-primary text-primary-foreground text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center shrink-0">
+                      <span className="bg-destructive text-white text-[9px] font-bold rounded-full min-w-[1rem] h-4 px-1 flex items-center justify-center shrink-0">
                         {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
+                    {item.href.includes("view=invoices") && pendingInvoiceCount > 0 && (
+                      <span className="bg-destructive text-white text-[9px] font-bold rounded-full min-w-[1rem] h-4 px-1 flex items-center justify-center shrink-0">
+                        {pendingInvoiceCount > 9 ? "9+" : pendingInvoiceCount}
                       </span>
                     )}
                   </Link>
