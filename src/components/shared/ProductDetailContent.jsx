@@ -312,7 +312,7 @@ export default function ProductDetailContent({ itemId }) {
               <DeliveryOptions item={item} />
               <ItemMessaging item={item} user={user} />
               {sellerProfile?.terms_and_conditions && (
-                <TermsAndConditions terms={sellerProfile.terms_and_conditions} />
+                <TermsAndConditions terms={sellerProfile.terms_and_conditions} defaultOpen={false} />
               )}
               </div>
               </div>
