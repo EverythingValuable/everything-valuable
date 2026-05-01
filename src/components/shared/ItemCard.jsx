@@ -126,11 +126,20 @@ export default function ItemCard({ item, index = 0 }) {
       <Link to={`/item/${item.id}`} className="group block">
         <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
           {item.images?.[0] ? (
-            <img
-              src={item.images[0]}
-              alt={item.title}
-              className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
-            />
+            <>
+              <img
+                src={item.images[0]}
+                alt={item.title}
+                className={`w-full h-full object-contain transition-opacity duration-500 ${item.images[1] ? "group-hover:opacity-0" : "group-hover:scale-105 transition-transform duration-700"}`}
+              />
+              {item.images[1] && (
+                <img
+                  src={item.images[1]}
+                  alt={item.title}
+                  className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                />
+              )}
+            </>
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
               <span className="font-serif text-4xl">EV</span>
