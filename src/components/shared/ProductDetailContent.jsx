@@ -122,6 +122,15 @@ export default function ProductDetailContent({ itemId }) {
     }
   }, [existingAgreement]);
 
+  // Debug: Log T&C data
+  useEffect(() => {
+    if (item?.terms_and_conditions) {
+      console.log("✅ Item has T&C:", item.terms_and_conditions.substring(0, 100));
+    } else {
+      console.log("❌ No T&C on item");
+    }
+  }, [item]);
+
   const { data: item, isLoading } = useQuery({
     queryKey: ["item", itemId],
     queryFn: () => base44.entities.Item.filter({ id: itemId }).then(items => items[0]),
