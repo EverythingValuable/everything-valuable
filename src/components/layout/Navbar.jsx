@@ -86,9 +86,7 @@ export default function Navbar() {
           </button>
 
           <Link to={homeLink} className="flex items-center gap-2">
-            <span className="font-serif text-xl md:text-2xl font-semibold tracking-tight text-foreground">
-              Everything Valuable
-            </span>
+            <img src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/2f344f09d_5a2936050f1c6c03c022e4f356b3a3db57e9a93ef2e7087845606dadbaae2c9acopy.png" alt="Everything Valuable Logo" className="h-8 md:h-10 w-auto" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
