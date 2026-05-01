@@ -341,13 +341,30 @@ export default function ProductDetailContent({ itemId }) {
               </div>
               <DeliveryOptions item={item} />
               <ItemMessaging item={item} user={user} />
-            </div>
-          </div>
-        </div>
+              </div>
+              </div>
+              </div>
 
-        <div className="px-0">
-          <SimilarLots item={item} />
-        </div>
+              {/* Terms & Conditions Section (both mobile and desktop) */}
+              {item.terms_and_conditions && (
+              <div className="border-t border-border pt-8 mt-8">
+              <TermsAndConditions
+              terms={item.terms_and_conditions}
+              onAgree={(agreed) => {
+                if (agreed && user) {
+                  base44.entities.TermsAgreement.create({ item_id: itemId, user_email: user.email });
+                  setTermsAgreed(true);
+                } else {
+                  setTermsAgreed(false);
+                }
+              }}
+              />
+              </div>
+              )}
+
+              <div className="px-0">
+              <SimilarLots item={item} />
+              </div>
       </div>
     </div>
   );
