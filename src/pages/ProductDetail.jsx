@@ -176,7 +176,7 @@ export default function ProductDetail() {
   return (
     <div className="w-full max-w-7xl mx-auto overflow-x-hidden">
        {/* Breadcrumb */}
-       <div className="w-full px-4 md:px-8 py-4">
+       <div className="w-full px-4 md:px-4 py-3">
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
           <Link to="/personal-property" className="hover:text-foreground">Home</Link>
           <ChevronRight className="w-3 h-3" />
@@ -190,8 +190,8 @@ export default function ProductDetail() {
         </nav>
       </div>
 
-      <div className="w-full max-w-full px-4 md:px-8 pb-20 overflow-x-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 w-full max-w-full overflow-x-hidden">
+      <div className="w-full max-w-full px-4 md:px-4 pb-12 overflow-x-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 w-full max-w-full overflow-x-hidden">
 
           {/* LEFT — Gallery + Info Sections */}
           <div className="lg:col-span-3 space-y-0 w-full min-w-0">
