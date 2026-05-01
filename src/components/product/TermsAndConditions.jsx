@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 
-export default function TermsAndConditions({ terms, isExpanded = true, onAgree = null }) {
+export default function TermsAndConditions({ terms, isExpanded = false, onAgree = null }) {
   const [expanded, setExpanded] = useState(isExpanded);
 
   if (!terms) return null;
