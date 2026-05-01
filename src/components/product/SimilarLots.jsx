@@ -39,7 +39,7 @@ function SimilarLotCard({ item }) {
         </p>
         {item.prisometer_start_price && (
           <p className="text-xs text-muted-foreground">
-            Starting at ${item.prisometer_start_price.toLocaleString("en-US")}
+            PRI$OMETER™ starts at ${item.prisometer_start_price.toLocaleString("en-US")}
           </p>
         )}
       </div>
