@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
 import { Heart, Clock, TrendingDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import ProductDrawer from "./ProductDrawer";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -81,6 +81,7 @@ export default function ItemCard({ item, index = 0 }) {
   const status = statusConfig[item.status] || {};
   const livePrice = useLivePrice(item);
   const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
@@ -118,12 +119,14 @@ export default function ItemCard({ item, index = 0 }) {
   };
 
   return (
+    <>
+      {drawerOpen && <ProductDrawer itemId={item.id} onClose={() => setDrawerOpen(false)} />}
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
-      <Link to={`/item/${item.id}`} className="group block">
+      <div onClick={() => setDrawerOpen(true)} className="group block cursor-pointer">
         <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
           {item.images?.[0] ? (
             <>
@@ -211,7 +214,8 @@ export default function ItemCard({ item, index = 0 }) {
           )}
 
         </div>
-      </Link>
+      </div>
     </motion.div>
+    </>
   );
 }
