@@ -478,14 +478,20 @@ export default function InvoiceBuilder({ user }) {
               {/* Total */}
               <div className="border-t border-border pt-3 mt-2 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-sm">Final Invoice Total</span>
-                  <span className="font-sans text-xl font-semibold text-primary">
+                  <span className="font-semibold text-sm">Total Due</span>
+                  <span className="font-sans text-xl font-semibold text-foreground">
                     ${liveTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Remaining due after upfront service fee payment</span>
-                  <span className="font-medium text-foreground">
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>Amount Paid at Auction Close</span>
+                  <span className="text-muted-foreground">
+                    −${liveServiceFee.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between bg-secondary/40 rounded-lg px-3 py-2">
+                  <span className="font-bold text-sm">Balance Due</span>
+                  <span className="font-sans text-xl font-bold text-primary">
                     ${Math.max(0, liveTotal - liveServiceFee).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>

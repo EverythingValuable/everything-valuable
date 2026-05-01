@@ -165,14 +165,37 @@ Deno.serve(async (req) => {
     doc.line(margin, y, pageW - margin, y);
     y += 14;
 
-    // Total
-    ensureSpace(20);
+    // Total Due
+    ensureSpace(60);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
     doc.setTextColor(60, 45, 30);
     doc.text('TOTAL DUE', pageW - 200, y);
     doc.text(`$${Number(invoice.total_amount ?? invoice.item_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y, { align: 'right' });
-    y += 30;
+    y += 20;
+
+    // Amount already paid (service fee collected at conclusion)
+    if (invoice.service_fee > 0) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(100, 90, 80);
+      doc.text('Amount Paid at Auction Close', pageW - 200, y);
+      doc.text(`-$${Number(invoice.service_fee).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y, { align: 'right' });
+      y += 16;
+
+      // Balance due highlight box
+      const balanceDue = Number(invoice.total_amount ?? invoice.item_price) - Number(invoice.service_fee);
+      doc.setFillColor(245, 240, 235);
+      doc.rect(pageW - 250, y - 4, 250 - margin + margin, 22, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(13);
+      doc.setTextColor(60, 45, 30);
+      doc.text('BALANCE DUE', pageW - 200, y + 11);
+      doc.text(`$${Math.max(0, balanceDue).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y + 11, { align: 'right' });
+      y += 30;
+    } else {
+      y += 14;
+    }
 
     // --- PAYMENT INSTRUCTIONS ---
     if (invoice.payment_instructions) {
