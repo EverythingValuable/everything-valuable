@@ -118,6 +118,15 @@ function PreviewState({ item, displayPrice, formatPrice }) {
 }
 
 function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cents, formatPrice }) {
+  // Only show paused state if there's a valid, non-expired Make It Mine lock
+  const nowMs = Date.now();
+  const makeItMineExpiresMs = item.make_it_mine_expires
+    ? new Date(item.make_it_mine_expires).getTime()
+    : 0;
+  const hasValidMakeItMineLock =
+    item.make_it_mine_active === true &&
+    makeItMineExpiresMs > nowMs;
+
   return (
     <div className="space-y-1.5">
 
@@ -134,7 +143,7 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
               <span className="text-xs font-bold text-red-600 uppercase tracking-wider">PRI$OMETER™ Live</span>
             </motion.div>
           )}
-          {isPaused && (
+          {hasValidMakeItMineLock && (
             <div className="flex items-center gap-1.5 text-amber-600">
               <Pause className="w-3.5 h-3.5" />
               <span className="text-xs font-bold uppercase tracking-wider">PRI$OMETER™ Paused</span>
@@ -142,20 +151,20 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
           )}
         </div>
 
-        {isPaused && (
+        {hasValidMakeItMineLock && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 space-y-2 mb-3"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-amber-700">Transaction in Progress</span>
+              <span className="text-xs font-semibold text-amber-700">PRI$OMETER Reserved Temporarily</span>
               <span className="font-mono text-sm font-bold text-amber-700">
                 {Math.floor(pauseTimeLeft / 60)}:{(pauseTimeLeft % 60).toString().padStart(2, "0")}
               </span>
             </div>
             <p className="text-xs text-amber-600 leading-relaxed">
-              A buyer is completing a Make It Mine purchase. The PRI$OMETER will resume if the transaction is cancelled or expires.
+              A buyer has started a Make It Mine purchase. If they do not complete checkout before the timer expires, live pricing resumes automatically.
             </p>
           </motion.div>
         )}

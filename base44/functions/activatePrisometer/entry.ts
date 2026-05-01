@@ -11,7 +11,13 @@ Deno.serve(async (req) => {
     // First, clear expired Make It Mine locks on prisometer items
     const prisometerItems = await base44.asServiceRole.entities.Item.filter({ status: 'prisometer' });
     for (const item of prisometerItems) {
-      if (item.make_it_mine_active && item.make_it_mine_expires && new Date(item.make_it_mine_expires) <= now) {
+      const expiresMs = item.make_it_mine_expires
+        ? new Date(item.make_it_mine_expires).getTime()
+        : 0;
+      const lockIsInvalidOrExpired =
+        item.make_it_mine_active === true &&
+        (!expiresMs || Number.isNaN(expiresMs) || expiresMs <= Date.now());
+      if (lockIsInvalidOrExpired) {
         await base44.asServiceRole.entities.Item.update(item.id, {
           make_it_mine_active: false,
           make_it_mine_expires: null,
@@ -22,7 +28,12 @@ Deno.serve(async (req) => {
     // Find all items in first_bids phase where first_bids_end has passed
     const items = await base44.asServiceRole.entities.Item.filter({ status: 'first_bids' });
 
-    const toActivate = items.filter(item => item.first_bids_end && item.first_bids_end <= now);
+    const toActivate = items.filter(item => {
+      const endMs = item.first_bids_end
+        ? new Date(item.first_bids_end).getTime()
+        : 0;
+      return endMs && !Number.isNaN(endMs) && endMs <= Date.now();
+    });
 
     let activated = 0;
     let sold = 0;
