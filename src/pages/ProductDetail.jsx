@@ -12,6 +12,7 @@ import ProductGallery from "../components/product/ProductGallery";
 import PriceConvergenceModule from "../components/product/PriceConvergenceModule";
 import BidSection from "../components/product/BidSection";
 import ItemMessaging from "../components/product/ItemMessaging";
+import DeliveryOptions from "../components/product/DeliveryOptions";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -243,6 +244,7 @@ export default function ProductDetail() {
                   <Share2 className="w-4 h-4" /> Share
                 </Button>
               </div>
+              <DeliveryOptions item={item} />
               <ItemMessaging item={item} user={user} />
               <Separator />
             </div>
@@ -419,6 +421,9 @@ export default function ProductDetail() {
                   <Share2 className="w-4 h-4" /> Share
                 </Button>
               </div>
+
+              {/* Delivery Options */}
+              <DeliveryOptions item={item} />
 
               {/* Messaging */}
               <ItemMessaging item={item} user={user} />
