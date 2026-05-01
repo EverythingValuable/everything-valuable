@@ -68,7 +68,7 @@ export default function Home() {
       <FeaturedItems
         items={allFeatured}
         title="Featured Live Sales"
-        subtitle="Extraordinary objects with active bidding and live PRI$OMETER pricing"
+        subtitle=""
       />
 
       {/* View All Button */}
