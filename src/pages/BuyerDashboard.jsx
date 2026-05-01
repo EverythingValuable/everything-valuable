@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Gavel, Settings, Package } from "lucide-react";
+import { Heart, Gavel, Settings, Package, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import BuyerProfileForm from "@/components/buyer/BuyerProfileForm";
@@ -166,6 +166,7 @@ export default function BuyerDashboard() {
           <TabsList className="mb-6">
             <TabsTrigger value="watchlist" className="gap-1.5"><Heart className="w-3.5 h-3.5" /> Saved</TabsTrigger>
             <TabsTrigger value="bids" className="gap-1.5"><Gavel className="w-3.5 h-3.5" /> Bids</TabsTrigger>
+            <TabsTrigger value="purchases" className="gap-1.5"><ShoppingBag className="w-3.5 h-3.5" /> Purchases</TabsTrigger>
             <TabsTrigger value="settings" className="gap-1.5"><Settings className="w-3.5 h-3.5" /> Settings</TabsTrigger>
           </TabsList>
 
@@ -202,6 +203,15 @@ export default function BuyerDashboard() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* PURCHASES */}
+          <TabsContent value="purchases">
+            <Card><CardContent className="p-12 text-center">
+              <ShoppingBag className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+              <p className="font-serif text-xl text-muted-foreground">No purchases yet</p>
+              <p className="text-sm text-muted-foreground mt-1">Won items and invoices will appear here</p>
+            </CardContent></Card>
           </TabsContent>
 
           {/* SETTINGS */}
