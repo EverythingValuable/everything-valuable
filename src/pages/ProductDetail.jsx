@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -108,8 +109,7 @@ function PriceConvergenceModuleWrapper({ item }) {
 }
 
 export default function ProductDetail() {
-  const pathParts = window.location.pathname.split("/");
-  const itemId = pathParts[pathParts.length - 1];
+  const { id: itemId } = useParams();
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
