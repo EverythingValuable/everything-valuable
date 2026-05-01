@@ -651,22 +651,14 @@ export default function InvoiceBuilder({ user }) {
                       >
                         <X className="w-3.5 h-3.5" />
                       </Button>
-                      {inv.pdf_url ? (
-                        <a href={inv.pdf_url} target="_blank" rel="noopener noreferrer">
-                          <Button variant="outline" size="sm" className="text-xs gap-1">
-                            <Download className="w-3 h-3" /> PDF
-                          </Button>
-                        </a>
-                      ) : (
-                        <Button
-                          variant="outline" size="sm" className="text-xs gap-1"
-                          onClick={() => handleGeneratePdf(inv.id)}
-                          disabled={generatingPdf === inv.id}
-                        >
-                          {generatingPdf === inv.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <FileText className="w-3 h-3" />}
-                          Generate PDF
-                        </Button>
-                      )}
+                      <Button
+                        variant="outline" size="sm" className="text-xs gap-1"
+                        onClick={() => handleGeneratePdf(inv.id)}
+                        disabled={generatingPdf === inv.id}
+                      >
+                        {generatingPdf === inv.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <FileText className="w-3 h-3" />}
+                        {inv.pdf_url ? "Regenerate PDF" : "Generate PDF"}
+                      </Button>
                     </div>
                   </td>
                 </tr>
