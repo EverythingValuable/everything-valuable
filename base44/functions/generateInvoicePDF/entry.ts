@@ -165,13 +165,17 @@ Deno.serve(async (req) => {
     doc.line(margin, y, pageW - margin, y);
     y += 14;
 
+    // Summary totals — label on left of a right-hand block, amount flush right
+    const summaryLabelX = pageW - margin - 220;
+    const summaryAmtX = pageW - margin;
+
     // Final Invoice Total
     ensureSpace(70);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
     doc.setTextColor(60, 45, 30);
-    doc.text('Final Invoice Total', pageW - 200, y);
-    doc.text(`$${Number(invoice.total_amount ?? invoice.item_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y, { align: 'right' });
+    doc.text('Final Invoice Total', summaryLabelX, y);
+    doc.text(`$${Number(invoice.total_amount ?? invoice.item_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, summaryAmtX, y, { align: 'right' });
     y += 18;
 
     // Less amount already paid
@@ -179,20 +183,20 @@ Deno.serve(async (req) => {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9.5);
       doc.setTextColor(100, 90, 80);
-      doc.text('Less Amount Already Paid', pageW - 200, y);
-      doc.text(`-$${Number(invoice.service_fee).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y, { align: 'right' });
+      doc.text('Less Amount Already Paid', summaryLabelX, y);
+      doc.text(`-$${Number(invoice.service_fee).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, summaryAmtX, y, { align: 'right' });
       y += 16;
 
       // Balance Due Now highlight box
       const balanceDue = Number(invoice.total_amount ?? invoice.item_price) - Number(invoice.service_fee);
       doc.setFillColor(245, 240, 235);
-      doc.rect(pageW - 260, y - 4, 260 - margin + margin, 24, 'F');
+      doc.rect(summaryLabelX - 8, y - 5, summaryAmtX - summaryLabelX + 8 + margin, 26, 'F');
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(13);
+      doc.setFontSize(12);
       doc.setTextColor(60, 45, 30);
-      doc.text('BALANCE DUE NOW', pageW - 200, y + 12);
-      doc.text(`$${Math.max(0, balanceDue).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y + 12, { align: 'right' });
-      y += 32;
+      doc.text('BALANCE DUE NOW', summaryLabelX, y + 12);
+      doc.text(`$${Math.max(0, balanceDue).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, summaryAmtX, y + 12, { align: 'right' });
+      y += 34;
     } else {
       y += 14;
     }
