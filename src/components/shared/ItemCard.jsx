@@ -90,6 +90,7 @@ export default function ItemCard({ item, index = 0 }) {
     queryKey: ["seller-profile-card", item.seller_email],
     queryFn: () => base44.entities.SellerProfile.filter({ user_email: item.seller_email }).then(r => r[0]),
     enabled: !!item.seller_email,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
   const [watchlistEntry, setWatchlistEntry] = useState(null);
 
@@ -99,8 +100,11 @@ export default function ItemCard({ item, index = 0 }) {
 
   useEffect(() => {
     if (!user?.email) return;
-    base44.entities.WatchlistItem.filter({ item_id: item.id, user_email: user.email })
-      .then(r => setWatchlistEntry(r[0] || null));
+    const timeout = setTimeout(() => {
+      base44.entities.WatchlistItem.filter({ item_id: item.id, user_email: user.email })
+        .then(r => setWatchlistEntry(r[0] || null));
+    }, 50);
+    return () => clearTimeout(timeout);
   }, [user?.email, item.id]);
 
   const isSaved = !!watchlistEntry;
