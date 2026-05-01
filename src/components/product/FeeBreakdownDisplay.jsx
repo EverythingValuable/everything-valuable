@@ -1,4 +1,4 @@
-export default function FeeBreakdownDisplay({ amount, onConfirmBid, onCancel, showConfirmButton = true }) {
+export default function FeeBreakdownDisplay({ amount, onConfirmBid, onCancel, showConfirmButton = true, isPending = false }) {
   const serviceFee = amount * 0.10 + 30;
   const feeCredit = serviceFee * 0.50;
   const remainingBalance = amount + feeCredit - serviceFee;
@@ -73,9 +73,10 @@ export default function FeeBreakdownDisplay({ amount, onConfirmBid, onCancel, sh
           <div className="flex gap-3">
             <button
               onClick={onConfirmBid}
-              className="flex-1 h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-md transition-colors"
+              disabled={isPending}
+              className="flex-1 h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-md transition-colors disabled:opacity-50"
             >
-              Confirm Bid
+              {isPending ? "Placing Bid..." : "Confirm Bid"}
             </button>
             <button
               onClick={onCancel}

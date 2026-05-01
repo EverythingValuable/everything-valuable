@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import FeeBreakdownDisplay from "./FeeBreakdownDisplay";
+import BidConfirmModal from "./BidConfirmModal";
 import { Link } from "react-router-dom";
 import {
   Select,
@@ -424,10 +425,11 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
           </div>
 
           {bidAmount && (
-            <FeeBreakdownDisplay 
-              amount={parseInt(bidAmount)} 
-              onConfirmBid={() => placeBidMutation.mutate()}
+            <BidConfirmModal
+              amount={parseInt(bidAmount)}
+              onConfirm={() => placeBidMutation.mutate()}
               onCancel={() => { setBidAmount(""); setCustomBid(""); }}
+              isPending={placeBidMutation.isPending}
             />
           )}
         </div>
