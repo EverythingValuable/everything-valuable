@@ -105,36 +105,21 @@ export default function ProductDetailContent({ itemId }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  // All hooks must be called unconditionally before any early returns
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
-
-  // Check if user has already agreed to T&C for this item
-  const { data: existingAgreement } = useQuery({
-    queryKey: ["terms-agreement", itemId, user?.email],
-    queryFn: () => base44.entities.TermsAgreement.filter({ item_id: itemId, user_email: user?.email }).then(r => r[0] || null),
-    enabled: !!itemId && !!user?.email,
-  });
-
-  useEffect(() => {
-    if (existingAgreement) {
-      setTermsAgreed(true);
-    }
-  }, [existingAgreement]);
-
-  // Debug: Log T&C data
-  useEffect(() => {
-    if (item?.terms_and_conditions) {
-      console.log("✅ Item has T&C:", item.terms_and_conditions.substring(0, 100));
-    } else {
-      console.log("❌ No T&C on item");
-    }
-  }, [item]);
 
   const { data: item, isLoading } = useQuery({
     queryKey: ["item", itemId],
     queryFn: () => base44.entities.Item.filter({ id: itemId }).then(items => items[0]),
     enabled: !!itemId,
+  });
+
+  const { data: existingAgreement } = useQuery({
+    queryKey: ["terms-agreement", itemId, user?.email],
+    queryFn: () => base44.entities.TermsAgreement.filter({ item_id: itemId, user_email: user?.email }).then(r => r[0] || null),
+    enabled: !!itemId && !!user?.email,
   });
 
   const { data: sellerProfile } = useQuery({
@@ -148,6 +133,12 @@ export default function ProductDetailContent({ itemId }) {
     queryFn: () => base44.entities.WatchlistItem.filter({ item_id: itemId, user_email: user.email }).then(r => r[0] || null),
     enabled: !!itemId && !!user?.email,
   });
+
+  useEffect(() => {
+    if (existingAgreement) {
+      setTermsAgreed(true);
+    }
+  }, [existingAgreement]);
 
   const isSaved = !!watchlistEntry;
 
