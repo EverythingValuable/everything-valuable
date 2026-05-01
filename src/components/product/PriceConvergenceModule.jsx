@@ -179,7 +179,7 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
         >
           <span className="text-emerald-700">${formatPrice(displayPrice)}</span>
           {isActive && (
-            <span className="font-sans text-xl text-emerald-500 animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
+            <span className="font-sans text-xl text-red-500 animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
           )}
         </motion.div>
         <ExpandableInfoBox explanation={PRISOMETER_INFO} />
