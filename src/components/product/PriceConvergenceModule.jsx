@@ -175,7 +175,7 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
           initial={{ scale: 1.02, opacity: 0.8 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="font-sans text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-1 break-all"
+          className="font-sans text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-1"
         >
           <span className="text-emerald-700">${formatPrice(displayPrice)}</span>
           {isActive && (
