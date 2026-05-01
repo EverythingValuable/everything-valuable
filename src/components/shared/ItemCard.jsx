@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Heart, Clock, TrendingDown, Eye } from "lucide-react";
+import { Heart, Clock, TrendingDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import ItemPreviewModal from "./ItemPreviewModal";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -104,8 +103,6 @@ export default function ItemCard({ item, index = 0 }) {
   }, [user?.email, item.id]);
 
   const isSaved = !!watchlistEntry;
-  const [showPreview, setShowPreview] = useState(false);
-
   const handleWatchlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -121,8 +118,6 @@ export default function ItemCard({ item, index = 0 }) {
   };
 
   return (
-    <>
-    {showPreview && <ItemPreviewModal item={item} onClose={() => setShowPreview(false)} />}
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -161,13 +156,6 @@ export default function ItemCard({ item, index = 0 }) {
             <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
           </button>
 
-          {/* Preview button */}
-          <button
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur-sm text-xs font-medium text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background shadow-sm"
-            onClick={e => { e.preventDefault(); e.stopPropagation(); setShowPreview(true); }}
-          >
-            <Eye className="w-3.5 h-3.5" /> Preview
-          </button>
 
           {/* Bid count + High bid overlay */}
           {(item.bid_count > 0 || item.highest_bid > 0) && (
@@ -216,6 +204,5 @@ export default function ItemCard({ item, index = 0 }) {
         </div>
       </Link>
     </motion.div>
-    </>
   );
 }
