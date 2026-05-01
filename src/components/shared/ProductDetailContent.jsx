@@ -313,19 +313,6 @@ export default function ProductDetailContent({ itemId }) {
               </div>
               {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
               {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} termsAgreed={termsAgreed} />}
-              {item.terms_and_conditions && (
-                <TermsAndConditions
-                  terms={item.terms_and_conditions}
-                  onAgree={(agreed) => {
-                    if (agreed && user) {
-                      base44.entities.TermsAgreement.create({ item_id: itemId, user_email: user.email });
-                      setTermsAgreed(true);
-                    } else {
-                      setTermsAgreed(false);
-                    }
-                  }}
-                />
-              )}
               <Separator />
               {item.location && (
                 <div className="bg-secondary/40 rounded-lg p-4 space-y-2">
@@ -341,26 +328,22 @@ export default function ProductDetailContent({ itemId }) {
               </div>
               <DeliveryOptions item={item} />
               <ItemMessaging item={item} user={user} />
-              </div>
-              </div>
-              </div>
-
-              {/* Terms & Conditions Section (both mobile and desktop) */}
               {item.terms_and_conditions && (
-              <div className="border-t border-border pt-8 mt-8 px-4 md:px-6">
-              <TermsAndConditions
-              terms={item.terms_and_conditions}
-              onAgree={(agreed) => {
-                if (agreed && user) {
-                  base44.entities.TermsAgreement.create({ item_id: itemId, user_email: user.email });
-                  setTermsAgreed(true);
-                } else {
-                  setTermsAgreed(false);
-                }
-              }}
-              />
-              </div>
+                <TermsAndConditions
+                  terms={item.terms_and_conditions}
+                  onAgree={(agreed) => {
+                    if (agreed && user) {
+                      base44.entities.TermsAgreement.create({ item_id: itemId, user_email: user.email });
+                      setTermsAgreed(true);
+                    } else {
+                      setTermsAgreed(false);
+                    }
+                  }}
+                />
               )}
+              </div>
+              </div>
+              </div>
 
               <div className="px-0">
               <SimilarLots item={item} />
