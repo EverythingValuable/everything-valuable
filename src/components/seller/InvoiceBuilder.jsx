@@ -417,7 +417,7 @@ export default function InvoiceBuilder({ user }) {
               {/* Service fee row */}
               <div className="flex items-center gap-3 bg-secondary/20 rounded-lg px-4 py-3">
                 <div className="flex-1 text-sm text-muted-foreground">
-                  Platform Service Fee
+                  Platform Service Fee Paid at Close
                   <span className="text-xs ml-1 text-muted-foreground/70">(10% + $30)</span>
                 </div>
                 <span className="text-xs text-muted-foreground w-20 text-center">Fee</span>
@@ -428,7 +428,7 @@ export default function InvoiceBuilder({ user }) {
 
               {/* Fee credit row */}
               <div className="flex items-center gap-3 px-4 py-2">
-                <div className="flex-1 text-sm text-muted-foreground">Fee Credit Applied</div>
+                <div className="flex-1 text-sm text-muted-foreground">Fee Credit Applied to Invoice</div>
                 <span className="text-xs text-muted-foreground w-20 text-center">Credit</span>
                 <div className="w-32 flex items-center gap-1">
                   <span className="text-sm text-muted-foreground">−$</span>
@@ -478,19 +478,19 @@ export default function InvoiceBuilder({ user }) {
               {/* Total */}
               <div className="border-t border-border pt-3 mt-2 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-sm">Total Due</span>
+                  <span className="font-semibold text-sm">Final Invoice Total</span>
                   <span className="font-sans text-xl font-semibold text-foreground">
                     ${liveTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Amount Paid at Auction Close</span>
-                  <span className="text-muted-foreground">
+                  <span>Less Amount Already Paid</span>
+                  <span>
                     −${liveServiceFee.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex items-center justify-between bg-secondary/40 rounded-lg px-3 py-2">
-                  <span className="font-bold text-sm">Balance Due</span>
+                  <span className="font-bold text-sm">Balance Due Now</span>
                   <span className="font-sans text-xl font-bold text-primary">
                     ${Math.max(0, liveTotal - liveServiceFee).toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>

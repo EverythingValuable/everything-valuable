@@ -146,12 +146,12 @@ Deno.serve(async (req) => {
 
     // Service fee
     if (invoice.service_fee > 0) {
-      drawRow('Platform Service Fee', 'Fee', invoice.service_fee);
+      drawRow('Platform Service Fee Paid at Close', 'Fee', invoice.service_fee);
     }
 
     // Fee credit
     if (invoice.fee_credit > 0) {
-      drawRow('Fee Credit Applied', 'Credit', invoice.fee_credit, true);
+      drawRow('Fee Credit Applied to Invoice', 'Credit', invoice.fee_credit, true);
     }
 
     // Additional line items
@@ -165,34 +165,34 @@ Deno.serve(async (req) => {
     doc.line(margin, y, pageW - margin, y);
     y += 14;
 
-    // Total Due
-    ensureSpace(60);
+    // Final Invoice Total
+    ensureSpace(70);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
+    doc.setFontSize(11);
     doc.setTextColor(60, 45, 30);
-    doc.text('TOTAL DUE', pageW - 200, y);
+    doc.text('Final Invoice Total', pageW - 200, y);
     doc.text(`$${Number(invoice.total_amount ?? invoice.item_price).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y, { align: 'right' });
-    y += 20;
+    y += 18;
 
-    // Amount already paid (service fee collected at conclusion)
+    // Less amount already paid
     if (invoice.service_fee > 0) {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9.5);
       doc.setTextColor(100, 90, 80);
-      doc.text('Amount Paid at Auction Close', pageW - 200, y);
+      doc.text('Less Amount Already Paid', pageW - 200, y);
       doc.text(`-$${Number(invoice.service_fee).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y, { align: 'right' });
       y += 16;
 
-      // Balance due highlight box
+      // Balance Due Now highlight box
       const balanceDue = Number(invoice.total_amount ?? invoice.item_price) - Number(invoice.service_fee);
       doc.setFillColor(245, 240, 235);
-      doc.rect(pageW - 250, y - 4, 250 - margin + margin, 22, 'F');
+      doc.rect(pageW - 260, y - 4, 260 - margin + margin, 24, 'F');
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(13);
       doc.setTextColor(60, 45, 30);
-      doc.text('BALANCE DUE', pageW - 200, y + 11);
-      doc.text(`$${Math.max(0, balanceDue).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y + 11, { align: 'right' });
-      y += 30;
+      doc.text('BALANCE DUE NOW', pageW - 200, y + 12);
+      doc.text(`$${Math.max(0, balanceDue).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, pageW - margin - 8, y + 12, { align: 'right' });
+      y += 32;
     } else {
       y += 14;
     }
