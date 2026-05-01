@@ -21,13 +21,11 @@ export default function ItemMessaging({ item, user }) {
     queryKey: ["messages", item.id, user?.email],
     queryFn: () =>
       base44.entities.Message.filter({ item_id: item.id }).then((msgs) =>
-        msgs
-          .filter(
-            (m) =>
-              m.sender_email === user.email ||
-              m.recipient_email === user.email
-          )
-          .sort((a, b) => new Date(a.created_date) - new Date(b.created_date))
+        isSeller
+          ? msgs.sort((a, b) => new Date(a.created_date) - new Date(b.created_date))
+          : msgs
+              .filter((m) => m.sender_email === user.email || m.recipient_email === user.email)
+              .sort((a, b) => new Date(a.created_date) - new Date(b.created_date))
       ),
     enabled: !!user?.email && open,
     refetchInterval: open ? 8000 : false,
@@ -94,8 +92,45 @@ export default function ItemMessaging({ item, user }) {
     );
   }
 
-  // Buyers can't message their own listing
-  if (isSeller) return null;
+  // Sellers see a read-only inbox for their listing
+  if (isSeller) {
+    return (
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <button
+          onClick={() => setOpen((o) => !o)}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/40 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <MessageCircle className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium">Buyer Messages</span>
+            {unreadCount > 0 && (
+              <span className="bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </div>
+          {open ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+        </button>
+        {open && (
+          <div className="border-t border-border px-4 py-3">
+            {messages.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">No buyer messages yet for this item.</p>
+            ) : (
+              <div className="space-y-3 max-h-56 overflow-y-auto">
+                {messages.map((m) => (
+                  <div key={m.id} className="flex flex-col items-start">
+                    <div className="max-w-[80%] rounded-xl px-3 py-2 text-sm bg-muted text-foreground">{m.body}</div>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">{m.sender_name || m.sender_email} · {format(new Date(m.created_date), "MMM d, h:mm a")}</span>
+                  </div>
+                ))}
+                <div ref={bottomRef} />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   const canSend = isSeller
     ? messages.some((m) => m.sender_email !== user.email)
