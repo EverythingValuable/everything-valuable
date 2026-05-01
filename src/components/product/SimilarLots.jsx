@@ -73,9 +73,11 @@ export default function SimilarLots({ item }) {
           View all <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
         {similarItems.map((similar) => (
-          <SimilarLotCard key={similar.id} item={similar} />
+          <div key={similar.id} className="shrink-0 w-52 sm:w-60">
+            <SimilarLotCard item={similar} />
+          </div>
         ))}
       </div>
     </div>
