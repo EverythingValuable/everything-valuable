@@ -328,9 +328,9 @@ export default function ProductDetailContent({ itemId }) {
               </div>
               <DeliveryOptions item={item} />
               <ItemMessaging item={item} user={user} />
-              {item.terms_and_conditions && (
+              {sellerProfile?.terms_and_conditions && (
                 <TermsAndConditions
-                  terms={item.terms_and_conditions}
+                  terms={sellerProfile.terms_and_conditions}
                   onAgree={(agreed) => {
                     if (agreed && user) {
                       base44.entities.TermsAgreement.create({ item_id: itemId, user_email: user.email });
