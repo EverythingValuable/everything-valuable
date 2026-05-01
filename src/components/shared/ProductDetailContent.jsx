@@ -347,7 +347,7 @@ export default function ProductDetailContent({ itemId }) {
 
               {/* Terms & Conditions Section (both mobile and desktop) */}
               {item.terms_and_conditions && (
-              <div className="border-t border-border pt-8 mt-8">
+              <div className="border-t border-border pt-8 mt-8 px-4 md:px-6">
               <TermsAndConditions
               terms={item.terms_and_conditions}
               onAgree={(agreed) => {
