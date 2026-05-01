@@ -201,7 +201,7 @@ export default function ProductDetailContent({ itemId }) {
               </div>
               {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
               {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} sellerProfile={sellerProfile} />}
-              <TermsAndConditions terms={sellerProfile?.terms_and_conditions || ""} isExpanded={false} />
+              {sellerProfile && <TermsAndConditions terms={sellerProfile?.terms_and_conditions || ""} isExpanded={false} />}
               <div className="flex gap-3">
                 <Button variant="outline" className={`flex-1 gap-2 h-10 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`} onClick={() => user ? saveMutation.mutate() : base44.auth.redirectToLogin()} disabled={saveMutation.isPending}>
                   <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} /> {isSaved ? "Saved" : "Save"}
