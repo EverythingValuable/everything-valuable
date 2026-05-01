@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Gavel, ShoppingBag, CheckCircle2, Clock, AlertCircle, ChevronDown, ChevronUp, Crown } from "lucide-react";
+import { Gavel, ShoppingBag, CheckCircle2, Clock, ChevronDown, ChevronUp, Crown, Store } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import FeeBreakdownDisplay from "./FeeBreakdownDisplay";
+import { Link } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -108,13 +109,16 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
         throw new Error("Enter a valid bid amount");
       }
 
-      // Validate against bid increment tiers
-      const sellerTiers = sellerProfile?.bid_increment_tiers || [];
-      const applicableTier = sellerTiers.find(t => amount >= t.min && amount <= t.max);
-      if (applicableTier) {
-        const remainder = (amount - applicableTier.min) % applicableTier.increment;
-        if (remainder !== 0) {
-          throw new Error(`Bid must follow the $${applicableTier.increment} increment for this price range`);
+      // Validate against bid increment tiers (remainder from tier.min must be 0)
+      const sellerTiersVal = sellerProfile?.bid_increment_tiers || [];
+      if (sellerTiersVal.length > 0) {
+        const applicableTier = sellerTiersVal.find(t => amount >= t.min && amount <= t.max);
+        if (applicableTier) {
+          const remainder = (amount - applicableTier.min) % applicableTier.increment;
+          if (remainder !== 0) {
+            const nextValid = amount + (applicableTier.increment - remainder);
+            throw new Error(`Bid must be a valid increment of $${applicableTier.increment}. Try $${nextValid.toLocaleString()}.`);
+          }
         }
       }
 
@@ -202,24 +206,29 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       const feeCredit = serviceFee * 0.50;
       const aboveReserve = price >= (item.reserve_price || 0);
 
+      const buyerEmail = currentUser?.email || "";
       try {
         await base44.entities.Item.update(item.id, {
           status: aboveReserve ? "sold" : "pending_review",
           sold_price: aboveReserve ? price : undefined,
+          sold_to_email: aboveReserve ? buyerEmail : undefined,
           sold_via: aboveReserve ? "make_it_mine" : undefined,
           make_it_mine_active: false,
           make_it_mine_expires: null,
-          make_it_mine_buyer: "buyer@current.user",
+          make_it_mine_buyer: buyerEmail,
         });
         await base44.entities.Invoice.create({
           item_id: item.id,
-          buyer_email: "buyer@current.user",
+          item_title: item.title,
+          buyer_email: buyerEmail,
+          buyer_name: currentUser?.full_name || "",
           seller_email: item.seller_email,
           item_price: price,
           service_fee: serviceFee,
           fee_credit: feeCredit,
           purchase_method: "make_it_mine",
-          status: aboveReserve ? "pending" : "pending",
+          total_amount: price + serviceFee - feeCredit,
+          status: "draft",
         });
         } catch (error) {
         console.warn("Could not create database records (may be demo data):", error.message);
@@ -249,16 +258,26 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     const options = [];
     const currentHighest = item.highest_bid || 0;
     const sellerTiers = sellerProfile?.bid_increment_tiers || [];
-    
-    // Get the appropriate increment for the current highest bid
+
     const getTierIncrement = (price) => {
       const tier = sellerTiers.find(t => price >= t.min && price <= t.max);
       return tier ? tier.increment : 50;
     };
 
+    // Snap a value up to the nearest valid multiple of the increment within its tier
+    const snapToValidBid = (rawVal) => {
+      const tier = sellerTiers.find(t => rawVal >= t.min && rawVal <= t.max);
+      if (!tier) return rawVal;
+      const offsetFromMin = rawVal - tier.min;
+      const remainder = offsetFromMin % tier.increment;
+      return remainder === 0 ? rawVal : rawVal + (tier.increment - remainder);
+    };
+
     const increment = getTierIncrement(currentHighest);
-    const startingBid = item.estimated_low ? item.estimated_low / 2 : 0;
-    let start = currentHighest > 0 ? currentHighest + increment : Math.max(startingBid, 100);
+    const rawStart = currentHighest > 0
+      ? currentHighest + increment
+      : Math.max(item.estimated_low ? item.estimated_low / 2 : 0, 100);
+    let start = snapToValidBid(rawStart);
 
     // For prisometer phase, cap options at (or below) the live current price
     const livePrice = item.status === "prisometer" ? Math.floor(getLivePrice()) : Infinity;
@@ -272,8 +291,9 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     return options;
   };
 
-  const canBid = item.status === "first_bids" || item.status === "prisometer";
-  const canMakeItMine = item.status === "prisometer" && !item.make_it_mine_active;
+  const isOwnListing = currentUser && item.seller_email && currentUser.email === item.seller_email;
+  const canBid = !isOwnListing && (item.status === "first_bids" || item.status === "prisometer");
+  const canMakeItMine = !isOwnListing && item.status === "prisometer" && !item.make_it_mine_active;
   const currentPrice = item.current_price || item.prisometer_start_price;
   const currentHighestBid = item.highest_bid || 0;
   const sellerTiers = sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers;
@@ -294,6 +314,18 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     item.highest_bidder_email === currentUser.email || 
     (userBids && userBids.length > 0 && userBids.some(b => b.amount === item.highest_bid))
   );
+
+  if (isOwnListing) {
+    return (
+      <div className="rounded-xl border border-border bg-secondary/30 p-5 flex items-start gap-3">
+        <Store className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+        <div>
+          <p className="font-semibold text-sm text-foreground">This is your listing</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Sellers cannot bid on or purchase their own items. Manage this listing from your <Link to="/seller" className="text-primary underline">Seller Dashboard</Link>.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (item.status === "sold") {
     return (
@@ -444,17 +476,26 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
           <CheckCircle2 className="w-12 h-12 text-primary mx-auto" />
           <div className="space-y-2">
             <h3 className="font-serif text-2xl font-semibold">You're the Highest Bidder!</h3>
-            <p className="text-sm text-muted-foreground">Your bid of ${parseFloat(bidAmount || item.highest_bid).toLocaleString("en-US")} has been confirmed</p>
+            <p className="text-sm text-muted-foreground">Your bid of <strong>${parseFloat(bidAmount || item.highest_bid).toLocaleString("en-US")}</strong> has been placed</p>
           </div>
-          <div className="bg-card/50 border border-border rounded-lg p-4 text-sm space-y-2">
-            <p className="text-muted-foreground">Check your email for confirmation and stay tuned for updates</p>
+          <div className="bg-card/50 border border-border rounded-lg p-4 text-sm space-y-2 text-left">
+            <p className="font-semibold text-foreground text-xs uppercase tracking-wider">What happens next</p>
+            <ul className="text-muted-foreground space-y-1 text-xs list-disc list-inside">
+              <li>If you remain the highest bidder when the auction ends, you win the item.</li>
+              <li>The seller will send you an invoice via My Account &gt; Purchases.</li>
+              <li>You'll be notified if you're outbid.</li>
+            </ul>
           </div>
-          <Button
-            onClick={() => setBidSuccess(false)}
-            className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            Continue Browsing
-          </Button>
+          <div className="flex gap-3">
+            <Link to="/buyer?tab=bids" className="flex-1">
+              <Button className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90">
+                View My Bids
+              </Button>
+            </Link>
+            <Button variant="outline" onClick={() => setBidSuccess(false)} className="h-11 px-5">
+              Continue
+            </Button>
+          </div>
         </div>
       )}
 
@@ -463,13 +504,37 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
         <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-8 space-y-5 text-center">
           <CheckCircle2 className="w-12 h-12 text-primary mx-auto" />
           <div className="space-y-2">
-            <h3 className="font-serif text-2xl font-semibold">Your Offer Has Been Placed!</h3>
-            <p className="text-sm text-muted-foreground">Please check your email for confirmation and next steps</p>
+            <h3 className="font-serif text-2xl font-semibold">
+              {confirmResult === "above" ? "Purchase Confirmed!" : "Offer Submitted for Review"}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {confirmResult === "above"
+                ? `Purchase price: $${(lockedPrice || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
+                : "The seller will review your offer and respond shortly."}
+            </p>
           </div>
-          <div className="bg-card/50 border border-border rounded-lg p-4 text-sm space-y-2">
-            <p className="text-muted-foreground">Details about your offer located in</p>
-            <p className="font-semibold text-foreground">"My Account"</p>
+          <div className="bg-card/50 border border-border rounded-lg p-4 text-sm space-y-2 text-left">
+            <p className="font-semibold text-foreground text-xs uppercase tracking-wider">Next steps</p>
+            <ul className="text-muted-foreground space-y-1 text-xs list-disc list-inside">
+              {confirmResult === "above" ? (
+                <>
+                  <li>An invoice has been created and is pending from the seller.</li>
+                  <li>View it in My Account &gt; Purchases.</li>
+                  <li>Payment instructions will be on the invoice.</li>
+                </>
+              ) : (
+                <>
+                  <li>Your offer is below the reserve — the seller will decide.</li>
+                  <li>Check My Account &gt; Purchases for updates.</li>
+                </>
+              )}
+            </ul>
           </div>
+          <Link to="/buyer?tab=purchases">
+            <Button className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90">
+              View My Purchases
+            </Button>
+          </Link>
         </div>
       )}
 

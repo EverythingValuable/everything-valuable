@@ -1,0 +1,115 @@
+{
+  "name": "Invoice",
+  "type": "object",
+  "properties": {
+    "item_id": {
+      "type": "string"
+    },
+    "buyer_email": {
+      "type": "string"
+    },
+    "seller_email": {
+      "type": "string"
+    },
+    "buyer_name": {
+      "type": "string"
+    },
+    "buyer_phone": {
+      "type": "string"
+    },
+    "buyer_address": {
+      "type": "string"
+    },
+    "item_title": {
+      "type": "string"
+    },
+    "item_price": {
+      "type": "number"
+    },
+    "service_fee": {
+      "type": "number",
+      "description": "Platform service fee amount"
+    },
+    "fee_credit": {
+      "type": "number",
+      "description": "Fee credit applied"
+    },
+    "additional_line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "tax",
+              "shipping",
+              "discount",
+              "fee",
+              "other"
+            ]
+          }
+        },
+        "required": [
+          "description",
+          "amount",
+          "type"
+        ]
+      }
+    },
+    "total_amount": {
+      "type": "number"
+    },
+    "purchase_method": {
+      "type": "string",
+      "enum": [
+        "bid",
+        "make_it_mine",
+        "seller_accepted",
+        "manual"
+      ]
+    },
+    "payment_instructions": {
+      "type": "string"
+    },
+    "terms_and_conditions": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending",
+        "sent",
+        "paid",
+        "shipped",
+        "delivered",
+        "disputed"
+      ],
+      "default": "draft"
+    },
+    "pdf_url": {
+      "type": "string"
+    },
+    "shipping_status": {
+      "type": "string"
+    },
+    "tracking_number": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "buyer_email",
+    "seller_email",
+    "item_price"
+  ]
+}

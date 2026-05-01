@@ -15,13 +15,16 @@ import { useToast } from "@/components/ui/use-toast";
 const LINE_TYPES = ["tax", "shipping", "discount", "fee", "other"];
 
 const STATUS_STYLES = {
-  draft: "bg-gray-100 text-gray-600",
-  sent: "bg-blue-100 text-blue-700",
-  paid: "bg-green-100 text-green-700",
-  shipped: "bg-purple-100 text-purple-700",
+  draft:     "bg-gray-100 text-gray-600",
+  pending:   "bg-yellow-100 text-yellow-700",
+  sent:      "bg-blue-100 text-blue-700",
+  paid:      "bg-green-100 text-green-700",
+  shipped:   "bg-purple-100 text-purple-700",
   delivered: "bg-emerald-100 text-emerald-700",
-  disputed: "bg-red-100 text-red-700",
+  disputed:  "bg-red-100 text-red-700",
 };
+
+const STATUS_OPTIONS = ["draft", "pending", "sent", "paid", "shipped", "delivered", "disputed"];
 
 // service_fee = (item_price * 0.10) + 30
 // credit_on_invoice = service_fee * 0.50
@@ -563,7 +566,7 @@ export default function InvoiceBuilder({ user }) {
                 onChange={e => set("status", e.target.value)}
                 className="h-8 rounded-md border border-input bg-transparent px-3 text-sm"
               >
-                {["draft", "sent", "paid", "shipped", "delivered", "disputed"].map(s => (
+                {STATUS_OPTIONS.map(s => (
                   <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                 ))}
               </select>
@@ -636,7 +639,7 @@ export default function InvoiceBuilder({ user }) {
                       onChange={e => statusMutation.mutate({ id: inv.id, status: e.target.value })}
                       className={`rounded-full text-xs font-medium px-2.5 py-1 border-0 cursor-pointer ${STATUS_STYLES[inv.status] || STATUS_STYLES.draft}`}
                     >
-                      {["draft", "sent", "paid", "shipped", "delivered", "disputed"].map(s => (
+                      {STATUS_OPTIONS.map(s => (
                         <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                       ))}
                     </select>
