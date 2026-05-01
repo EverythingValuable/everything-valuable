@@ -371,7 +371,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
               A payment method on file is required before you can place bids. Your card won't be charged unless you win.
             </p>
           </div>
-          <Link to="/buyer?view=profile" className="block">
+          <Link to="/buyer?tab=settings" className="block">
             <button className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold text-sm transition-colors">
               Add Payment Method
             </button>

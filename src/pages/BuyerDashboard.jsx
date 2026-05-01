@@ -205,14 +205,16 @@ export default function BuyerDashboard() {
   const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
 
   const { data: watchlist = [] } = useQuery({
-    queryKey: ["buyer-watchlist"],
-    queryFn: () => base44.entities.WatchlistItem.list("-created_date", 50),
+    queryKey: ["buyer-watchlist", user?.email],
+    queryFn: () => base44.entities.WatchlistItem.filter({ user_email: user?.email }, "-created_date", 50),
+    enabled: !!user?.email,
     initialData: [],
   });
 
   const { data: rawBids = [] } = useQuery({
-    queryKey: ["buyer-bids"],
-    queryFn: () => base44.entities.Bid.list("-created_date", 200),
+    queryKey: ["buyer-bids", user?.email],
+    queryFn: () => base44.entities.Bid.filter({ bidder_email: user?.email }, "-created_date", 200),
+    enabled: !!user?.email,
     initialData: [],
   });
 
