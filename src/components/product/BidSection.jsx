@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Gavel, ShoppingBag, CheckCircle2, Clock, ChevronDown, ChevronUp, Crown, Store, CreditCard } from "lucide-react";
+import TermsModal from "./TermsModal";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -18,7 +19,7 @@ import AddCardModal from "@/components/buyer/AddCardModal";
 
 const CONFIRM_SECONDS = 120;
 
-export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed = false }) {
+export default function BidSection({ item, onMakeItMine, onCancel, sellerProfile }) {
   const [bidAmount, setBidAmount] = useState("");
   const [customBid, setCustomBid] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
@@ -30,6 +31,7 @@ export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed =
   const [showAddCard, setShowAddCard] = useState(false);
   const [livePriceTick, setLivePriceTick] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const timerRef = useRef(null);
   const priceTickRef = useRef(null);
   const queryClient = useQueryClient();
@@ -51,12 +53,6 @@ export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed =
     queryKey: ["userBids", item?.id, currentUser?.email],
     queryFn: () => base44.entities.Bid.filter({ item_id: item?.id, bidder_email: currentUser?.email }),
     enabled: !!item?.id && !!currentUser?.email,
-  });
-
-  const { data: sellerProfile } = useQuery({
-    queryKey: ["sellerProfile", item?.seller_email],
-    queryFn: () => base44.entities.SellerProfile.filter({ user_email: item?.seller_email }).then(p => p[0]),
-    enabled: !!item?.seller_email,
   });
 
   const { data: buyerProfile } = useQuery({
@@ -421,8 +417,10 @@ export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed =
   }
 
   return (
-    <div className="space-y-4 w-full min-w-0">
-      {/* You're the highest bidder banner */}
+    <>
+      <TermsModal terms={sellerProfile?.terms_and_conditions || ""} open={showTermsModal} onOpenChange={setShowTermsModal} />
+      <div className="space-y-4 w-full min-w-0">
+        {/* You're the highest bidder banner */}
       {isHighestBidder && currentHighestBid > 0 && (
         <div className="rounded-xl border border-green-200 bg-green-50 p-4 flex items-center gap-3">
           <Crown className="w-5 h-5 text-green-600 shrink-0" />
@@ -433,13 +431,7 @@ export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed =
         </div>
       )}
 
-      {/* T&C required notice */}
-      {canBid && sellerProfile?.terms_and_conditions && !termsAgreed && (
-        <div className="rounded-xi border border-border bg-card p-4 sm:p-5 text-center space-y-3">
-          <p className="text-sm text-muted-foreground">You must agree to the terms & conditions to place a bid.</p>
-          <p className="text-xs text-muted-foreground">Scroll down to review and accept the auction terms.</p>
-        </div>
-      )}
+
 
       {/* Make It Mine button */}
       {canMakeItMine && !showConfirm && !bidSuccess && (
@@ -453,7 +445,7 @@ export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed =
       )}
 
       {/* Place a Bid */}
-      {canBid && !showConfirm && !bidSuccess && (!sellerProfile?.terms_and_conditions || termsAgreed) && (
+      {canBid && !showConfirm && !bidSuccess && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full max-w-full min-w-0 overflow-hidden">
           <div className="flex items-center gap-2">
             <Gavel className="w-4 h-4 text-primary" />
@@ -524,7 +516,7 @@ export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed =
       )}
 
           {/* Bid Increments */}
-      {canBid && !showConfirm && !bidSuccess && (!sellerProfile?.terms_and_conditions || termsAgreed) && sellerProfile?.bid_increment_tiers?.length > 0 && (
+      {canBid && !showConfirm && !bidSuccess && sellerProfile?.bid_increment_tiers?.length > 0 && (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <button
             onClick={() => setShowTiers(t => !t)}
@@ -649,6 +641,12 @@ export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed =
 
           <FeeBreakdownDisplay amount={price} showConfirmButton={false} />
 
+          {sellerProfile?.terms_and_conditions && (
+            <div className="bg-card/50 border border-border rounded-lg p-4 text-xs text-muted-foreground space-y-2">
+              <p>By confirming your purchase, you are agreeing to the <button onClick={() => setShowTermsModal(true)} className="text-primary hover:underline font-medium">terms and conditions</button> listed below.</p>
+            </div>
+          )}
+
           <p className="text-xs text-muted-foreground text-center">Press "Confirm" to place your offer</p>
 
           <div className="flex gap-3">
@@ -666,5 +664,6 @@ export default function BidSection({ item, onMakeItMine, onCancel, termsAgreed =
         </div>
       )}
     </div>
+    </>
   );
 }
