@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Gavel, ShoppingBag, CheckCircle2, Clock, ChevronDown, ChevronUp, Crown, Store } from "lucide-react";
+import { Gavel, ShoppingBag, CheckCircle2, Clock, ChevronDown, ChevronUp, Crown, Store, CreditCard } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -55,6 +55,12 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     queryKey: ["sellerProfile", item?.seller_email],
     queryFn: () => base44.entities.SellerProfile.filter({ user_email: item?.seller_email }).then(p => p[0]),
     enabled: !!item?.seller_email,
+  });
+
+  const { data: buyerProfile } = useQuery({
+    queryKey: ["buyer-profile-bid", currentUser?.email],
+    queryFn: () => base44.entities.BuyerProfile.filter({ user_email: currentUser?.email }).then(r => r[0]),
+    enabled: !!currentUser?.email,
   });
 
   // Start countdown when confirm panel opens
@@ -327,7 +333,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
           <div>
             <h3 className="font-serif text-lg font-semibold text-foreground">Sign in to place a bid</h3>
             <p className="text-sm text-muted-foreground mt-1.5 max-w-xs mx-auto leading-relaxed">
-              Create a free account or sign in to participate in auctions, save items, and track your bids.
+              Create a free account or sign in. A payment method on file is required to bid.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
@@ -344,7 +350,33 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
               Create Account
             </button>
           </div>
-          <p className="text-xs text-muted-foreground">Free to join · No obligation to bid</p>
+          <p className="text-xs text-muted-foreground">Free to join · Card required to bid</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Signed in but no card on file — require payment method before bidding
+  const hasPaymentMethod = !!buyerProfile?.payment_method_label;
+  if (currentUser && !hasPaymentMethod && (item.status === "first_bids" || item.status === "prisometer")) {
+    return (
+      <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="px-6 py-8 text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+            <CreditCard className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-serif text-lg font-semibold text-foreground">Add a card to bid</h3>
+            <p className="text-sm text-muted-foreground mt-1.5 max-w-xs mx-auto leading-relaxed">
+              A payment method on file is required before you can place bids. Your card won't be charged unless you win.
+            </p>
+          </div>
+          <Link to="/buyer?view=profile" className="block">
+            <button className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold text-sm transition-colors">
+              Add Payment Method
+            </button>
+          </Link>
+          <p className="text-xs text-muted-foreground">Your card is not charged until a sale is confirmed</p>
         </div>
       </div>
     );
