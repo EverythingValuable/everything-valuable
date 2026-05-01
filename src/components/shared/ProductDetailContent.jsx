@@ -101,7 +101,6 @@ function PriceConvergenceModuleWrapper({ item }) {
 
 export default function ProductDetailContent({ itemId }) {
   const [user, setUser] = useState(null);
-  const [termsAgreed, setTermsAgreed] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -134,11 +133,7 @@ export default function ProductDetailContent({ itemId }) {
     enabled: !!itemId && !!user?.email,
   });
 
-  useEffect(() => {
-    if (existingAgreement) {
-      setTermsAgreed(true);
-    }
-  }, [existingAgreement]);
+
 
   const isSaved = !!watchlistEntry;
 
@@ -213,20 +208,8 @@ export default function ProductDetailContent({ itemId }) {
                 )}
               </div>
               {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
-              {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} termsAgreed={termsAgreed} />}
-              {item.terms_and_conditions && (
-                <TermsAndConditions
-                  terms={item.terms_and_conditions}
-                  onAgree={(agreed) => {
-                    if (agreed && user) {
-                      base44.entities.TermsAgreement.create({ item_id: itemId, user_email: user.email });
-                      setTermsAgreed(true);
-                    } else {
-                      setTermsAgreed(false);
-                    }
-                  }}
-                />
-              )}
+              {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
+
               <div className="flex gap-3">
                 <Button variant="outline" className={`flex-1 gap-2 h-10 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`} onClick={() => user ? saveMutation.mutate() : base44.auth.redirectToLogin()} disabled={saveMutation.isPending}>
                   <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} /> {isSaved ? "Saved" : "Save"}
@@ -312,7 +295,7 @@ export default function ProductDetailContent({ itemId }) {
                 )}
               </div>
               {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
-              {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} termsAgreed={termsAgreed} />}
+              {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
               <Separator />
               {item.location && (
                 <div className="bg-secondary/40 rounded-lg p-4 space-y-2">
@@ -329,17 +312,7 @@ export default function ProductDetailContent({ itemId }) {
               <DeliveryOptions item={item} />
               <ItemMessaging item={item} user={user} />
               {sellerProfile?.terms_and_conditions && (
-                <TermsAndConditions
-                  terms={sellerProfile.terms_and_conditions}
-                  onAgree={(agreed) => {
-                    if (agreed && user) {
-                      base44.entities.TermsAgreement.create({ item_id: itemId, user_email: user.email });
-                      setTermsAgreed(true);
-                    } else {
-                      setTermsAgreed(false);
-                    }
-                  }}
-                />
+                <TermsAndConditions terms={sellerProfile.terms_and_conditions} />
               )}
               </div>
               </div>
