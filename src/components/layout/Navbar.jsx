@@ -161,7 +161,7 @@ export default function Navbar() {
           {!user && (
             <button
               onClick={() => base44.auth.redirectToLogin(window.location.href)}
-              className="hidden md:inline-flex h-8 px-4 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
+              className="hidden md:inline-flex items-center justify-center h-8 px-4 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
             >
               Sign In / Join
             </button>
