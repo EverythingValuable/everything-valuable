@@ -1,21 +1,13 @@
 import React, { useState } from "react";
-import { Truck, MapPin, ChevronDown, ChevronUp, Info, ArrowRight } from "lucide-react";
+import { Truck, MapPin, Info, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const DEMO_ADDRESS = "50 Broadway, 12401, Kingston, United States";
-
-const CARRIERS = [
-  { id: "auction_house", label: "Auction house carriers" },
-  { id: "white_glove", label: "White glove delivery" },
-  { id: "local_pickup", label: "Local pickup" },
-];
 
 export default function DeliveryOptions({ item }) {
   const [address, setAddress] = useState(DEMO_ADDRESS);
   const [editingAddress, setEditingAddress] = useState(false);
   const [draftAddress, setDraftAddress] = useState(DEMO_ADDRESS);
-  const [carrierOpen, setCarrierOpen] = useState(false);
-  const [selectedCarrier, setSelectedCarrier] = useState(CARRIERS[0]);
 
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
@@ -66,30 +58,6 @@ export default function DeliveryOptions({ item }) {
         ) : (
           <p className="text-xs text-muted-foreground">Shipping fees will be calculated by the seller after purchase.</p>
         )}
-
-        {/* Carrier selector */}
-        <div className="relative">
-          <button
-            onClick={() => setCarrierOpen(o => !o)}
-            className="w-full flex items-center justify-between border border-border rounded-lg px-4 py-3 text-sm bg-background hover:bg-muted/30 transition-colors"
-          >
-            <span>{selectedCarrier.label}</span>
-            {carrierOpen ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
-          </button>
-          {carrierOpen && (
-            <div className="absolute z-10 top-full left-0 right-0 mt-1 border border-border rounded-lg bg-popover shadow-lg overflow-hidden">
-              {CARRIERS.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => { setSelectedCarrier(c); setCarrierOpen(false); }}
-                  className={`w-full text-left px-4 py-2.5 text-sm hover:bg-muted/40 transition-colors ${selectedCarrier.id === c.id ? "font-medium text-primary" : "text-foreground"}`}
-                >
-                  {c.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
 
         {/* ThePackengers demo row */}
         <div className="flex items-center justify-between border border-border rounded-lg px-4 py-3 bg-background">
