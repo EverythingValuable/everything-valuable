@@ -270,9 +270,13 @@ export default function SellerDashboard() {
                           </td>
                           <td className="px-4 py-4 text-right">
                             <div className="flex items-center justify-end gap-1">
-                              <Link to={`/seller/studio?edit=${item.id}`}>
-                                <Button variant="outline" size="sm" className="text-xs">Edit</Button>
-                              </Link>
+                              {item.status !== "sold" && item.status !== "unsold" && (
+                                <Link to={`/seller/studio?edit=${item.id}`}>
+                                  <Button variant="outline" size="sm" className="text-xs">
+                                    {["first_bids","prisometer","pending_review"].includes(item.status) ? "Edit / Cancel" : "Edit"}
+                                  </Button>
+                                </Link>
+                              )}
                               <Link to={`/item/${item.id}`}>
                                 <Button variant="ghost" size="sm" className="text-xs">View</Button>
                               </Link>

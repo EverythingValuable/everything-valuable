@@ -8,11 +8,13 @@ import { cn } from "@/lib/utils";
 import {
   Camera, FileText, AlignLeft, TrendingDown, CheckCircle2,
   ChevronLeft, ChevronRight, Upload, X,
-  Info, Save, Calendar, Rocket, GripVertical
+  Info, Save, Calendar, Rocket, GripVertical, Lock, AlertTriangle, XCircle
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryFields from "../components/listing/CategoryFields";
 import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
+
+const LIVE_STATUSES = ["first_bids", "prisometer", "pending_review"];
 
 const STEPS = [
   { id: 1, label: "Media",       icon: Camera },
@@ -34,6 +36,11 @@ export default function ListingStudio() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(isEditMode);
   const [sellerProfile, setSellerProfile] = useState(null);
+  const [itemStatus, setItemStatus] = useState("draft");
+  const [cancelConfirm, setCancelConfirm] = useState(false);
+  const isLive = LIVE_STATUSES.includes(itemStatus);
+  // In live edit mode only steps 1 (photos), 3 (description), and 5 (review) are accessible
+  const liveAllowedSteps = [1, 3, 5];
   const [form, setForm] = useState({
     images: [],
     title: "", category: "", subcategory: "", maker: "",
@@ -65,6 +72,7 @@ export default function ListingStudio() {
 
       if (editId) {
         if (item) {
+          setItemStatus(item.status || "draft");
           setForm({
             images: item.images || [],
             title: item.title || "",
@@ -168,14 +176,50 @@ export default function ListingStudio() {
     ...extraFields,
   });
 
+  const notifyWatchers = async (changeDescription) => {
+    // Find all watchers for this item and notify them via message
+    const watchers = await base44.entities.WatchlistItem.filter({ item_id: editId });
+    if (watchers.length === 0) return;
+    const currentUser = await base44.auth.me();
+    await Promise.all(watchers.map(w =>
+      base44.integrations.Core.SendEmail({
+        to: w.user_email,
+        subject: `Listing Updated: ${form.title}`,
+        body: `A listing you're watching has been updated.\n\nItem: ${form.title}\nChange: ${changeDescription}\n\nView the listing to see the latest details.`,
+      })
+    ));
+  };
+
   const saveDraft = async () => {
     setSaving(true);
     if (isEditMode) {
-      await base44.entities.Item.update(editId, buildPayload());
+      if (isLive) {
+        // Only allow saving description/condition/photos/notes
+        const restrictedPayload = {
+          images: form.images,
+          description: form.description,
+          short_description: form.short_description,
+          condition: form.condition,
+          condition_notes: form.condition_notes,
+          shipping_notes: form.shipping_notes,
+        };
+        await base44.entities.Item.update(editId, restrictedPayload);
+        await notifyWatchers("Description, condition, or photos were updated by the seller.");
+      } else {
+        await base44.entities.Item.update(editId, buildPayload());
+      }
     } else {
       const user = await base44.auth.me();
       await base44.entities.Item.create(buildPayload({ seller_email: user.email, seller_name: user.full_name, status: "draft" }));
     }
+    setSaving(false);
+    navigate("/seller");
+  };
+
+  const cancelSale = async () => {
+    setSaving(true);
+    await base44.entities.Item.update(editId, { status: "unsold" });
+    await notifyWatchers("This listing has been cancelled by the seller.");
     setSaving(false);
     navigate("/seller");
   };
@@ -217,15 +261,57 @@ export default function ListingStudio() {
           <ChevronLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
-          <p className="font-serif text-sm font-semibold">{isEditMode ? "Edit Listing" : "Listing Studio"}</p>
+          <p className="font-serif text-sm font-semibold flex items-center gap-2">
+            {isEditMode ? (isLive ? "Edit Live Listing" : "Edit Listing") : "Listing Studio"}
+            {isLive && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium flex items-center gap-1"><Lock className="w-2.5 h-2.5" /> Limited Editing</span>}
+          </p>
           <p className="text-[11px] text-muted-foreground">
             {form.title || "Untitled listing"} · Step {step} of {STEPS.length}
           </p>
         </div>
+        {isLive && isEditMode && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCancelConfirm(true)}
+            className="gap-1.5 text-xs text-destructive border-destructive/30 hover:bg-destructive/10"
+          >
+            <XCircle className="w-3.5 h-3.5" /> Cancel Sale
+          </Button>
+        )}
         <Button variant="outline" size="sm" onClick={saveDraft} disabled={saving} className="gap-1.5 text-xs">
           <Save className="w-3.5 h-3.5" /> {isEditMode ? "Save Changes" : "Save Draft"}
         </Button>
       </header>
+
+      {/* Cancel Sale Confirmation */}
+      {cancelConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setCancelConfirm(false)}>
+          <div className="bg-card rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 space-y-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-sm">Cancel this listing?</h3>
+                <p className="text-xs text-muted-foreground mt-1">This will end the sale immediately. All watchers and bidders will be notified. This action cannot be undone.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Button variant="destructive" size="sm" className="flex-1" onClick={cancelSale} disabled={saving}>
+                {saving ? "Cancelling…" : "Yes, Cancel Sale"}
+              </Button>
+              <Button variant="outline" size="sm" className="flex-1" onClick={() => setCancelConfirm(false)}>Keep Listing</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Live edit restriction banner */}
+      {isLive && isEditMode && (
+        <div className="bg-amber-50 border-b border-amber-200 px-6 py-2.5 flex items-center gap-2 text-xs text-amber-800">
+          <Lock className="w-3.5 h-3.5 shrink-0" />
+          <span><strong>Limited editing:</strong> Pricing and duration cannot be changed once a listing is live. You may update photos, description, and condition only.</span>
+        </div>
+      )}
 
       {/* Progress */}
       <div className="h-0.5 bg-secondary">
@@ -238,15 +324,19 @@ export default function ListingStudio() {
           const Icon = s.icon;
           const done = step > s.id;
           const active = step === s.id;
+          const locked = isLive && !liveAllowedSteps.includes(s.id);
           return (
-            <button key={s.id} onClick={() => setStep(s.id)}
+            <button key={s.id}
+              onClick={() => !locked && setStep(s.id)}
+              disabled={locked}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all",
                 active && "bg-primary text-primary-foreground",
-                done && "bg-secondary text-foreground",
-                !active && !done && "text-muted-foreground hover:bg-secondary/60"
+                done && !locked && "bg-secondary text-foreground",
+                locked && "opacity-40 cursor-not-allowed",
+                !active && !done && !locked && "text-muted-foreground hover:bg-secondary/60"
               )}>
-              {done ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Icon className="w-3.5 h-3.5" />}
+              {locked ? <Lock className="w-3.5 h-3.5" /> : done ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Icon className="w-3.5 h-3.5" />}
               {s.label}
             </button>
           );
@@ -325,10 +415,16 @@ export default function ListingStudio() {
 
           {/* STEP 2: DETAILS */}
           {step === 2 && (
-            <StepShell title="Item Details" subtitle="Accurate details help buyers discover and trust your listing.">
+            <StepShell title="Item Details" subtitle={isLive ? "This listing is live. Details cannot be edited." : "Accurate details help buyers discover and trust your listing."}>
+              {isLive && (
+                <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 flex items-center gap-2 text-xs text-amber-800">
+                  <Lock className="w-4 h-4 shrink-0" />
+                  Item details are locked once a listing goes live to ensure buyer trust.
+                </div>
+              )}
               <div className="space-y-4">
                 <Field label="Title" required>
-                  <Input placeholder="e.g. Fernand Léger — Composition with Figures, 1928" value={form.title} onChange={e => set("title", e.target.value)} />
+                  <Input placeholder="e.g. Fernand Léger — Composition with Figures, 1928" value={form.title} onChange={e => set("title", e.target.value)} disabled={isLive} />
                 </Field>
 
                 {/* Category selector */}
@@ -407,8 +503,14 @@ export default function ListingStudio() {
 
           {/* STEP 4: SALES SETUP */}
           {step === 4 && (
-            <StepShell title="Sales Setup" subtitle="Configure how your item sells through the PRI$OMETER™ engine.">
-              <div className="space-y-6">
+            <StepShell title="Sales Setup" subtitle={isLive ? "Pricing and duration cannot be changed while a listing is live." : "Configure how your item sells through the PRI$OMETER™ engine."}>
+              {isLive && (
+                <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-4 flex items-start gap-3 text-sm text-amber-800">
+                  <Lock className="w-4 h-4 shrink-0 mt-0.5" />
+                  <p>Sales setup is locked while this listing is active. Pricing and duration protect buyers and bidders who are already engaged.</p>
+                </div>
+              )}
+              <div className={cn("space-y-6", isLive && "pointer-events-none opacity-50")}>
 
                 {/* How it works callout */}
                 <div className="rounded-xl bg-primary/5 border border-primary/20 px-5 py-4 space-y-2">
@@ -569,17 +671,32 @@ export default function ListingStudio() {
                 </div>
 
                 {/* Publish actions */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                  <Button variant="outline" onClick={saveDraft} disabled={saving} className="gap-2 h-12">
-                    <Save className="w-4 h-4" /> Save Draft
-                  </Button>
-                  <Button variant="outline" disabled className="gap-2 h-12 opacity-60">
-                    <Calendar className="w-4 h-4" /> Schedule
-                  </Button>
-                  <Button onClick={publishNow} disabled={saving || !form.title || !form.prisometer_start_price} className="gap-2 h-12 bg-primary">
-                    <Rocket className="w-4 h-4" /> {saving ? "Publishing…" : "Publish Now"}
-                  </Button>
-                </div>
+                {isLive ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <Button onClick={saveDraft} disabled={saving} className="gap-2 h-12 bg-primary">
+                      <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Changes"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setCancelConfirm(true)}
+                      className="gap-2 h-12 text-destructive border-destructive/30 hover:bg-destructive/10"
+                    >
+                      <XCircle className="w-4 h-4" /> Cancel Sale
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                    <Button variant="outline" onClick={saveDraft} disabled={saving} className="gap-2 h-12">
+                      <Save className="w-4 h-4" /> Save Draft
+                    </Button>
+                    <Button variant="outline" disabled className="gap-2 h-12 opacity-60">
+                      <Calendar className="w-4 h-4" /> Schedule
+                    </Button>
+                    <Button onClick={publishNow} disabled={saving || !form.title || !form.prisometer_start_price} className="gap-2 h-12 bg-primary">
+                      <Rocket className="w-4 h-4" /> {saving ? "Publishing…" : "Publish Now"}
+                    </Button>
+                  </div>
+                )}
               </div>
             </StepShell>
           )}
@@ -587,11 +704,25 @@ export default function ListingStudio() {
           {/* Navigation */}
           <div className="flex justify-between mt-8">
             {step > 1
-              ? <Button variant="outline" onClick={() => setStep(s => s - 1)} className="gap-2"><ChevronLeft className="w-4 h-4" /> Back</Button>
+              ? <Button variant="outline" onClick={() => {
+                  if (isLive) {
+                    const prev = liveAllowedSteps.filter(s => s < step);
+                    if (prev.length > 0) setStep(prev[prev.length - 1]);
+                  } else {
+                    setStep(s => s - 1);
+                  }
+                }} className="gap-2"><ChevronLeft className="w-4 h-4" /> Back</Button>
               : <Button variant="outline" onClick={() => navigate("/seller")} className="gap-2"><ChevronLeft className="w-4 h-4" /> Dashboard</Button>
             }
             {step < 5 && (
-              <Button onClick={() => setStep(s => s + 1)} className="gap-2">
+              <Button onClick={() => {
+                if (isLive) {
+                  const next = liveAllowedSteps.filter(s => s > step);
+                  if (next.length > 0) setStep(next[0]);
+                } else {
+                  setStep(s => s + 1);
+                }
+              }} className="gap-2">
                 Continue <ChevronRight className="w-4 h-4" />
               </Button>
             )}
