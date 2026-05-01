@@ -13,6 +13,7 @@ import PriceConvergenceModule from "../components/product/PriceConvergenceModule
 import BidSection from "../components/product/BidSection";
 import ItemMessaging from "../components/product/ItemMessaging";
 import DeliveryOptions from "../components/product/DeliveryOptions";
+import SimilarLots from "../components/product/SimilarLots";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -430,6 +431,11 @@ export default function ProductDetail() {
             </div>
           </div>
 
+        </div>
+
+        {/* Similar Lots */}
+        <div className="px-0">
+          <SimilarLots item={item} />
         </div>
       </div>
     </div>
