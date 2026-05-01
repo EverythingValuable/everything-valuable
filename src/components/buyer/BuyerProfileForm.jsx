@@ -14,19 +14,20 @@ export default function BuyerProfileForm({ user: userProp }) {
   const { data: user } = useQuery({
     queryKey: ["me"],
     queryFn: () => base44.auth.me(),
-    initialData: userProp || undefined,
     staleTime: 60000,
   });
 
-  const { data: profile } = useQuery({
-    queryKey: ["buyer-profile", user?.email],
-    queryFn: () => base44.entities.BuyerProfile.filter({ user_email: user?.email }),
+  const resolvedEmail = user?.email || userProp?.email;
+
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ["buyer-profile", resolvedEmail],
+    queryFn: () => base44.entities.BuyerProfile.filter({ user_email: resolvedEmail }),
     select: d => d[0],
-    enabled: !!user?.email,
+    enabled: !!resolvedEmail,
   });
 
   useEffect(() => {
-    if (profile !== undefined) {
+    if (!profileLoading) {
       setForm(profile ? {
         full_name: profile.full_name || "",
         phone: profile.phone || "",
@@ -39,7 +40,7 @@ export default function BuyerProfileForm({ user: userProp }) {
         payment_method_label: profile.payment_method_label || "",
         payment_method_type: profile.payment_method_type || "card",
       } : {
-        full_name: user?.full_name || "",
+        full_name: user?.full_name || userProp?.full_name || "",
         phone: "",
         address_line1: "",
         address_line2: "",
@@ -60,7 +61,7 @@ export default function BuyerProfileForm({ user: userProp }) {
       if (profile?.id) {
         return base44.entities.BuyerProfile.update(profile.id, payload);
       }
-      return base44.entities.BuyerProfile.create(payload);
+      return base44.entities.BuyerProfile.create({ ...payload, user_email: resolvedEmail });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["buyer-profile", user?.email] });

@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import AddCardModal from "@/components/buyer/AddCardModal";
 
 const CONFIRM_SECONDS = 120;
 
@@ -26,6 +27,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const [confirmResult, setConfirmResult] = useState(null); // null | 'above' | 'below'
   const [timeLeft, setTimeLeft] = useState(CONFIRM_SECONDS);
   const [showTiers, setShowTiers] = useState(false);
+  const [showAddCard, setShowAddCard] = useState(false);
   const [livePriceTick, setLivePriceTick] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef(null);
@@ -360,25 +362,37 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const hasPaymentMethod = !!buyerProfile?.payment_method_label;
   if (currentUser && !hasPaymentMethod && (item.status === "first_bids" || item.status === "prisometer")) {
     return (
-      <div className="rounded-2xl border border-border bg-card overflow-hidden">
-        <div className="px-6 py-8 text-center space-y-4">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-            <CreditCard className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h3 className="font-serif text-lg font-semibold text-foreground">Add a card to bid</h3>
-            <p className="text-sm text-muted-foreground mt-1.5 max-w-xs mx-auto leading-relaxed">
-              A payment method on file is required before you can place bids. Your card won't be charged unless you win.
-            </p>
-          </div>
-          <Link to="/buyer?tab=settings" className="block">
-            <button className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold text-sm transition-colors">
+      <>
+        {showAddCard && (
+          <AddCardModal
+            onClose={() => setShowAddCard(false)}
+            onSuccess={() => {
+              setShowAddCard(false);
+              queryClient.invalidateQueries({ queryKey: ["buyer-profile-bid", currentUser?.email] });
+            }}
+          />
+        )}
+        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+          <div className="px-6 py-8 text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <CreditCard className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-serif text-lg font-semibold text-foreground">Add a card to bid</h3>
+              <p className="text-sm text-muted-foreground mt-1.5 max-w-xs mx-auto leading-relaxed">
+                A payment method on file is required before you can place bids. Your card won't be charged unless you win.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddCard(true)}
+              className="w-full h-11 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold text-sm transition-colors"
+            >
               Add Payment Method
             </button>
-          </Link>
-          <p className="text-xs text-muted-foreground">Your card is not charged until a sale is confirmed</p>
+            <p className="text-xs text-muted-foreground">Your card is not charged until a sale is confirmed</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
