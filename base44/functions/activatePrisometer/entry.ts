@@ -5,7 +5,19 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
 
     // Use service role to find and update items
-    const now = new Date().toISOString();
+    const now = new Date();
+    const nowISO = now.toISOString();
+
+    // First, clear expired Make It Mine locks on prisometer items
+    const prisometerItems = await base44.asServiceRole.entities.Item.filter({ status: 'prisometer' });
+    for (const item of prisometerItems) {
+      if (item.make_it_mine_active && item.make_it_mine_expires && new Date(item.make_it_mine_expires) <= now) {
+        await base44.asServiceRole.entities.Item.update(item.id, {
+          make_it_mine_active: false,
+          make_it_mine_expires: null,
+        });
+      }
+    }
 
     // Find all items in first_bids phase where first_bids_end has passed
     const items = await base44.asServiceRole.entities.Item.filter({ status: 'first_bids' });
@@ -31,11 +43,13 @@ Deno.serve(async (req) => {
         sold++;
       } else {
         // Otherwise activate prisometer
-        const prisometerStart = new Date().toISOString();
+        const prisometerStart = nowISO;
         await base44.asServiceRole.entities.Item.update(item.id, {
           status: 'prisometer',
           prisometer_activated_at: prisometerStart,
           current_price: item.prisometer_start_price,
+          make_it_mine_active: false,
+          make_it_mine_expires: null,
         });
         activated++;
       }
