@@ -101,8 +101,8 @@ export default function InventoryTable({ items, view, limit }) {
               <th className="px-5 py-3.5 w-10">
                 <input type="checkbox" className="rounded" checked={selected.size === displayed.length && displayed.length > 0} onChange={toggleAll} />
               </th>
-              <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase">Item</th>
-              <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden md:table-cell">Category</th>
+              <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase w-full">Item</th>
+              <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden md:table-cell whitespace-nowrap">Category</th>
               <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase">Status</th>
               <th className="text-right px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden lg:table-cell">Price / Reserve</th>
               <th className="text-right px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden xl:table-cell">Bids</th>
@@ -124,15 +124,16 @@ export default function InventoryTable({ items, view, limit }) {
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-4">
                       {item.images?.[0]
-                        ? <img src={item.images[0]} alt="" className="w-14 h-14 rounded-xl object-cover shrink-0 border border-border/50 shadow-sm" />
-                        : <div className="w-14 h-14 rounded-xl bg-secondary shrink-0 flex items-center justify-center text-muted-foreground/40 text-[10px]">No img</div>
+                        ? <img src={item.images[0]} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0 border border-border/50 shadow-sm" />
+                        : <div className="w-16 h-16 rounded-xl bg-secondary shrink-0 flex items-center justify-center text-muted-foreground/40 text-[10px]">No img</div>
                       }
-                      <div className="min-w-0">
-                        <p className="font-serif text-[15px] font-semibold text-foreground line-clamp-1 leading-snug">{item.title}</p>
-                        <div className="flex items-center gap-2 mt-1">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-serif text-[15px] font-semibold text-foreground line-clamp-2 leading-snug">{item.title}</p>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
                           {item.maker && <span className="text-[11px] text-muted-foreground/70">{item.maker}</span>}
                           {item.period && <span className="text-[11px] text-muted-foreground/40">· {item.period}</span>}
                           {item.lot_number && <span className="text-[10px] bg-secondary px-1.5 py-0.5 rounded text-muted-foreground">Lot {item.lot_number}</span>}
+                          {item.short_description && <span className="text-[11px] text-muted-foreground/60 line-clamp-1">{item.short_description}</span>}
                         </div>
                       </div>
                     </div>

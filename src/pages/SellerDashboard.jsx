@@ -113,7 +113,7 @@ export default function SellerDashboard() {
           </Link>
         </div>
 
-        <div className="p-8 space-y-10 max-w-[1400px]">
+        <div className="p-8 space-y-10">
 
           {/* Overview-only sections */}
           {view === "overview" && (
