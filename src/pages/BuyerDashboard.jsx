@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import BuyerProfileForm from "@/components/buyer/BuyerProfileForm";
 import ActiveBidRow from "@/components/buyer/ActiveBidRow";
+import RecommendedItems from "@/components/buyer/RecommendedItems";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -338,6 +339,9 @@ export default function BuyerDashboard() {
             <BuyerProfileForm user={user} />
           </TabsContent>
         </Tabs>
+
+        {/* Recommendations */}
+        <RecommendedItems watchlist={watchlist} bids={bids} userEmail={user?.email} />
       </div>
     </div>
   );
