@@ -41,8 +41,8 @@ export default function ListingStudio() {
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const isLive = LIVE_STATUSES.includes(itemStatus);
   const isUnsold = itemStatus === UNSOLD_STATUS;
-  // In live edit mode only steps 1 (photos), 3 (description), and 5 (review) are accessible
-  const liveAllowedSteps = [1, 3, 5];
+  // In live edit mode only steps 1 (photos), 2 (category only), 3 (description), and 5 (review) are accessible
+  const liveAllowedSteps = [1, 2, 3, 5];
   const [form, setForm] = useState({
     images: [],
     title: "", category: "", subcategory: "", maker: "",
@@ -198,9 +198,22 @@ export default function ListingStudio() {
     setSaving(true);
     if (isEditMode) {
       if (isLive) {
-        // Only allow saving description/condition/photos/notes
+        // Allow saving category/breadcrumb, description/condition/photos/notes when live
         const restrictedPayload = {
           images: form.images,
+          category: form.category,
+          subcategory: form.subcategory || undefined,
+          style: form.style || undefined,
+          maker: form.maker || undefined,
+          period: form.period || undefined,
+          technique: form.technique || undefined,
+          model: form.model || undefined,
+          movement_type: form.movement_type || undefined,
+          running_status: form.running_status || undefined,
+          metal_purity: form.metal_purity || undefined,
+          stone_type: form.stone_type || undefined,
+          ring_size: form.ring_size || undefined,
+          length: form.length || undefined,
           description: form.description,
           short_description: form.short_description,
           condition: form.condition,
@@ -208,7 +221,7 @@ export default function ListingStudio() {
           shipping_notes: form.shipping_notes,
         };
         await base44.entities.Item.update(editId, restrictedPayload);
-        await notifyWatchers("Description, condition, or photos were updated by the seller.");
+        await notifyWatchers("Category, description, photos, or condition was updated by the seller.");
       } else {
         await base44.entities.Item.update(editId, buildPayload());
       }
@@ -449,11 +462,14 @@ export default function ListingStudio() {
 
           {/* STEP 2: DETAILS */}
           {step === 2 && (
-            <StepShell title="Item Details" subtitle={isLive ? "This listing is live. Details cannot be edited." : "Accurate details help buyers discover and trust your listing."}>
+            <StepShell title="Item Details" subtitle={isLive ? "Update category and breadcrumb. Other details are locked." : "Accurate details help buyers discover and trust your listing."}>
               {isLive && (
                 <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 flex items-center gap-2 text-xs text-amber-800">
                   <Lock className="w-4 h-4 shrink-0" />
-                  Item details are locked once a listing goes live to ensure buyer trust.
+                  <div>
+                    <p className="font-medium">Most details are locked</p>
+                    <p className="mt-0.5">You can update category and related fields to improve discoverability. Title and other attributes remain fixed.</p>
+                  </div>
                 </div>
               )}
               <div className="space-y-4">
@@ -461,7 +477,7 @@ export default function ListingStudio() {
                   <Input placeholder="e.g. Fernand Léger — Composition with Figures, 1928" value={form.title} onChange={e => set("title", e.target.value)} disabled={isLive} />
                 </Field>
 
-                {/* Category selector */}
+                {/* Category selector — always editable */}
                 <Field label="Category" required>
                   <select value={form.category} onChange={e => { set("category", e.target.value); set("subcategory", ""); set("style", ""); }}
                     className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
@@ -470,38 +486,39 @@ export default function ListingStudio() {
                   </select>
                 </Field>
 
-                {/* Conditional category-specific fields */}
+                {/* Conditional category-specific fields — always editable */}
                 {form.category && <CategoryFields form={form} set={set} />}
 
-                {/* Always-present fields */}
+                {/* Always-present fields — locked when live */}
                 <Field label="Dimensions">
-                  <Input placeholder="e.g. 60 × 80 cm, H 12 in." value={form.dimensions} onChange={e => set("dimensions", e.target.value)} />
+                  <Input placeholder="e.g. 60 × 80 cm, H 12 in." value={form.dimensions} onChange={e => set("dimensions", e.target.value)} disabled={isLive} />
                 </Field>
                 <div className="grid grid-cols-2 gap-4">
                   <Field label="Condition">
                     <select value={form.condition} onChange={e => set("condition", e.target.value)}
-                      className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+                      disabled={isLive}
+                      className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                       {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g," ")}</option>)}
                     </select>
                   </Field>
                   <Field label="Location">
-                    <Input placeholder="e.g. Kingston NY 12401" value={form.location} onChange={e => set("location", e.target.value)} />
+                    <Input placeholder="e.g. Kingston NY 12401" value={form.location} onChange={e => set("location", e.target.value)} disabled={isLive} />
                   </Field>
                 </div>
                 <Field label="Provenance Summary">
-                  <Input placeholder="e.g. Private collection, Paris; acquired 1974" value={form.provenance} onChange={e => set("provenance", e.target.value)} />
+                  <Input placeholder="e.g. Private collection, Paris; acquired 1974" value={form.provenance} onChange={e => set("provenance", e.target.value)} disabled={isLive} />
                 </Field>
                 <div className="grid grid-cols-2 gap-4">
                   <Field label="Estimate Low (optional)">
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                      <Input type="number" className="pl-6" value={form.estimated_low} onChange={e => set("estimated_low", e.target.value)} />
+                      <Input type="number" className="pl-6" value={form.estimated_low} onChange={e => set("estimated_low", e.target.value)} disabled={isLive} />
                     </div>
                   </Field>
                   <Field label="Estimate High (optional)">
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                      <Input type="number" className="pl-6" value={form.estimated_high} onChange={e => set("estimated_high", e.target.value)} />
+                      <Input type="number" className="pl-6" value={form.estimated_high} onChange={e => set("estimated_high", e.target.value)} disabled={isLive} />
                     </div>
                   </Field>
                 </div>
