@@ -82,7 +82,10 @@ function PriceConvergenceModuleWrapper({ item }) {
       const updatePrice = () => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / durationMs, 1);
-        const currentPrice = Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
+        const calculatedPrice = startPrice - (startPrice - floorPrice) * progress;
+        // Never drop below the highest bid
+        const effectiveFloor = Math.max(floorPrice, item.highest_bid || 0);
+        const currentPrice = Math.max(calculatedPrice, effectiveFloor);
         setDisplayPrice(currentPrice);
         setCents(Math.floor((currentPrice % 1) * 100));
       };
