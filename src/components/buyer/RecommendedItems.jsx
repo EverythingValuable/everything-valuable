@@ -40,8 +40,9 @@ export default function RecommendedItems({ watchlist, bids, userEmail }) {
     .map(([cat]) => cat);
 
   // Fetch active items in those categories, excluding already engaged ones
+  // Use a stable key so results don't disappear on watchlist changes
   const { data: recommendedItems = [] } = useQuery({
-    queryKey: ["recommended-items", topCategories.join(","), allEngagedItemIds.join(",")],
+    queryKey: ["recommended-items", userEmail],
     placeholderData: (prev) => prev,
     queryFn: async () => {
       if (topCategories.length === 0) {
@@ -64,8 +65,8 @@ export default function RecommendedItems({ watchlist, bids, userEmail }) {
         .filter(i => !allEngagedItemIds.includes(i.id) && !seen.has(i.id) && seen.add(i.id))
         .slice(0, 6);
     },
-    enabled: true,
-    staleTime: 60000,
+    enabled: !!userEmail,
+    staleTime: 120000,
   });
 
   if (recommendedItems.length === 0) return null;
