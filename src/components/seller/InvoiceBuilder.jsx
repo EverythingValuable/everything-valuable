@@ -265,9 +265,11 @@ export default function InvoiceBuilder({ user }) {
     },
   });
 
-  const handleEdit = (inv) => {
+  const handleEdit = async (inv) => {
     setEditingId(inv.id);
-    setForm({
+
+    // Start with what's saved
+    const base = {
       item_id: inv.item_id || "",
       item_title: inv.item_title || "",
       buyer_email: inv.buyer_email || "",
@@ -283,7 +285,29 @@ export default function InvoiceBuilder({ user }) {
       notes: inv.notes || "",
       status: inv.status || "draft",
       purchase_method: inv.purchase_method || "manual",
-    });
+    };
+
+    // If buyer info is missing but we have an item, try to fetch from item + buyer profile
+    if (inv.item_id && (!inv.buyer_email || !inv.buyer_name)) {
+      const items = await base44.entities.Item.filter({ id: inv.item_id });
+      const item = items[0];
+      if (item) {
+        const buyerEmail = inv.buyer_email || item.sold_to_email || item.highest_bidder_email || "";
+        if (buyerEmail) {
+          const profiles = await base44.entities.BuyerProfile.filter({ user_email: buyerEmail });
+          const bp = profiles[0];
+          base.buyer_email = buyerEmail;
+          if (bp) {
+            base.buyer_name = inv.buyer_name || bp.full_name || "";
+            base.buyer_phone = inv.buyer_phone || bp.phone || "";
+            base.buyer_address = inv.buyer_address || [bp.address_line1, bp.address_line2, bp.city, bp.state, bp.zip, bp.country].filter(Boolean).join(", ");
+            setBuyerProfileWarning(!bp.profile_complete);
+          }
+        }
+      }
+    }
+
+    setForm(base);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
