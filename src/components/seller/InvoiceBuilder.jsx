@@ -48,6 +48,17 @@ function computeTotal(itemPrice, _unused, feeCredit, extras) {
   return { fee, total: base + fee - credit + extra };
 }
 
+const PAYMENT_METHODS = [
+  { value: "wire_transfer", label: "Wire Transfer" },
+  { value: "check", label: "Check" },
+  { value: "paypal", label: "PayPal" },
+  { value: "venmo", label: "Venmo" },
+  { value: "zelle", label: "Zelle" },
+  { value: "credit_card", label: "Credit Card" },
+  { value: "cash", label: "Cash" },
+  { value: "other", label: "Other" },
+];
+
 function defaultForm(profileDefaults = {}) {
   return {
     item_id: "",
@@ -65,6 +76,8 @@ function defaultForm(profileDefaults = {}) {
     notes: "",
     status: "draft",
     purchase_method: "manual",
+    payment_method: "",
+    payment_method_notes: "",
   };
 }
 
@@ -234,6 +247,8 @@ export default function InvoiceBuilder({ user }) {
         terms_and_conditions: form.terms_and_conditions,
         notes: form.notes,
         status: form.status,
+        payment_method: form.payment_method || undefined,
+        payment_method_notes: form.payment_method_notes || undefined,
       };
       if (editingId) return base44.entities.Invoice.update(editingId, payload);
       return base44.entities.Invoice.create(payload);
@@ -286,6 +301,8 @@ export default function InvoiceBuilder({ user }) {
       notes: inv.notes || profile?.notes || "",
       status: inv.status || "draft",
       purchase_method: inv.purchase_method || "manual",
+      payment_method: inv.payment_method || "",
+      payment_method_notes: inv.payment_method_notes || "",
     };
 
     // If buyer info is missing but we have an item, try to fetch from item + buyer profile
@@ -603,6 +620,31 @@ export default function InvoiceBuilder({ user }) {
             </button>
           )}
 
+          {/* Payment Received (only when status = paid) */}
+          {(form.status === "paid" || form.status === "shipped" || form.status === "delivered") && (
+            <Section title="Payment Received">
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Payment Method">
+                  <select
+                    value={form.payment_method}
+                    onChange={e => set("payment_method", e.target.value)}
+                    className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                  >
+                    <option value="">— Select method —</option>
+                    {PAYMENT_METHODS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Reference / Notes (optional)">
+                  <Input
+                    value={form.payment_method_notes}
+                    onChange={e => set("payment_method_notes", e.target.value)}
+                    placeholder="e.g. Check #1042, last 4 digits, transaction ID…"
+                  />
+                </Field>
+              </div>
+            </Section>
+          )}
+
           {/* Footer */}
           <div className="flex items-center justify-between pt-2 border-t border-border">
             <div className="flex items-center gap-3">
@@ -672,6 +714,12 @@ export default function InvoiceBuilder({ user }) {
                   <td className="px-5 py-4">
                     <p className="font-medium line-clamp-1">{inv.item_title || "—"}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">{inv.buyer_name ? `${inv.buyer_name} · ` : ""}{inv.buyer_email}</p>
+                    {inv.payment_method && (
+                      <p className="text-xs text-green-700 mt-0.5 font-medium">
+                        Paid via {PAYMENT_METHODS.find(m => m.value === inv.payment_method)?.label || inv.payment_method}
+                        {inv.payment_method_notes ? ` · ${inv.payment_method_notes}` : ""}
+                      </p>
+                    )}
                   </td>
                   <td className="px-4 py-4 hidden md:table-cell text-muted-foreground text-xs">
                     {format(new Date(inv.created_date), "MMM d, yyyy")}

@@ -229,11 +229,46 @@ Deno.serve(async (req) => {
     }
 
     const balanceDue = Math.max(0, Number(invoice.total_amount ?? invoice.item_price) - Number(invoice.service_fee ?? 0));
-    setFill(...C.dark); doc.rect(lblX - 12, y - 5, amtX - lblX + 12 + margin, 32, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); setTxt(...C.white);
-    doc.text('BALANCE DUE NOW', lblX, y + 14);
-    doc.setFontSize(12); doc.text(fmt(balanceDue), amtX, y + 14, { align: 'right' });
-    y += 46;
+    const isPaid = ['paid', 'shipped', 'delivered'].includes(invoice.status);
+
+    if (isPaid) {
+      // Green PAID IN FULL box
+      doc.setFillColor(34, 120, 70); doc.rect(lblX - 12, y - 5, amtX - lblX + 12 + margin, 32, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); setTxt(...C.white);
+      doc.text('PAID IN FULL', lblX, y + 14);
+      doc.setFontSize(12); doc.text(fmt(balanceDue), amtX, y + 14, { align: 'right' });
+      y += 46;
+
+      // Payment method block
+      const paymentMethodLabels = {
+        wire_transfer: 'Wire Transfer', check: 'Check', paypal: 'PayPal',
+        venmo: 'Venmo', zelle: 'Zelle', credit_card: 'Credit Card', cash: 'Cash', other: 'Other'
+      };
+      if (invoice.payment_method) {
+        ensureSpace(40);
+        const methodLabel = paymentMethodLabels[invoice.payment_method] || invoice.payment_method;
+        const paymentText = invoice.payment_method_notes
+          ? `${methodLabel} — ${invoice.payment_method_notes}`
+          : methodLabel;
+        const boxH = 36;
+        doc.setFillColor(236, 253, 245); setDraw(34, 120, 70); doc.setLineWidth(0.5);
+        doc.rect(margin, y, contentW, boxH, 'FD');
+        doc.setFillColor(34, 120, 70); doc.rect(margin, y, 4, boxH, 'F');
+        y += 12;
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.setTextColor(34, 120, 70);
+        doc.text('PAYMENT RECEIVED', margin + 14, y);
+        y += 13;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); setTxt(...C.dark);
+        doc.text(paymentText, margin + 14, y);
+        y += 18;
+      }
+    } else {
+      setFill(...C.dark); doc.rect(lblX - 12, y - 5, amtX - lblX + 12 + margin, 32, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); setTxt(...C.white);
+      doc.text('BALANCE DUE NOW', lblX, y + 14);
+      doc.setFontSize(12); doc.text(fmt(balanceDue), amtX, y + 14, { align: 'right' });
+      y += 46;
+    }
 
     // ─── PAYMENT INSTRUCTIONS ─────────────────────────────────────────────────
     if (invoice.payment_instructions) {

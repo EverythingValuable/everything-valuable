@@ -75,6 +75,24 @@
         "manual"
       ]
     },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "wire_transfer",
+        "check",
+        "paypal",
+        "venmo",
+        "zelle",
+        "credit_card",
+        "cash",
+        "other"
+      ],
+      "description": "How the buyer paid"
+    },
+    "payment_method_notes": {
+      "type": "string",
+      "description": "Additional payment details, e.g. last 4 digits, check number, transaction ID"
+    },
     "payment_instructions": {
       "type": "string"
     },
