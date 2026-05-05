@@ -160,13 +160,13 @@ export default function Portal() {
 
       <section className="border-b border-border/60 bg-background py-14 md:py-18">
         <motion.div
-          className="mx-auto grid max-w-7xl gap-8 px-5 lg:grid-cols-[0.85fr_1.15fr] lg:px-8"
+          className="mx-auto max-w-7xl px-5 lg:px-8"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
         >
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariants} className="mb-7">
             <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-primary">
               One platform, two asset paths
             </p>
@@ -174,7 +174,7 @@ export default function Portal() {
               Start with the kind of property. Keep the value process connected.
             </h2>
           </motion.div>
-          <motion.div variants={containerVariants} className="grid gap-6 md:grid-cols-3">
+          <motion.div variants={containerVariants} className="grid gap-4 lg:grid-cols-3">
             {proofPoints.map((point) => {
               const Icon = point.icon;
               return (
