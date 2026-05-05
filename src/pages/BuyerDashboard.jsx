@@ -36,6 +36,13 @@ function SavedItemCard({ itemId, watchlistId }) {
     staleTime: 60000,
   });
 
+  const { data: sellerProfile } = useQuery({
+    queryKey: ["seller-profile-card", item?.seller_email],
+    queryFn: () => base44.entities.SellerProfile.filter({ user_email: item.seller_email }).then(r => r[0]),
+    enabled: !!item?.seller_email,
+    staleTime: 300000,
+  });
+
   const { refetch: refetchWatchlist } = useQuery({ queryKey: ["buyer-watchlist"] });
 
   const handleRemove = async (e) => {
@@ -83,8 +90,8 @@ function SavedItemCard({ itemId, watchlistId }) {
         <h3 className="font-serif text-base font-medium leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2">
           {item?.title || "Loading…"}
         </h3>
-        {item?.seller_name && (
-          <p className="text-xs text-muted-foreground">{item.seller_name}</p>
+        {(sellerProfile?.display_name || item?.seller_name) && (
+          <p className="text-xs text-muted-foreground">{sellerProfile?.display_name || item?.seller_name}</p>
         )}
         {/* Show highest bid if available, otherwise start price */}
         {item && (
