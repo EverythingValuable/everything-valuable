@@ -14,6 +14,7 @@ export default function RecommendedItems({ watchlist, bids, userEmail }) {
   // Fetch engaged items to extract categories
   const { data: engagedItems = [] } = useQuery({
     queryKey: ["engaged-items", allEngagedItemIds.join(",")],
+    placeholderData: (prev) => prev,
     queryFn: async () => {
       if (allEngagedItemIds.length === 0) return [];
       // Fetch up to 10 engaged items
@@ -41,6 +42,7 @@ export default function RecommendedItems({ watchlist, bids, userEmail }) {
   // Fetch active items in those categories, excluding already engaged ones
   const { data: recommendedItems = [] } = useQuery({
     queryKey: ["recommended-items", topCategories.join(","), allEngagedItemIds.join(",")],
+    placeholderData: (prev) => prev,
     queryFn: async () => {
       if (topCategories.length === 0) {
         // Fallback: just show recent active items
