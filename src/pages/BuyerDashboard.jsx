@@ -187,18 +187,20 @@ function PurchaseRow({ invoice }) {
             </Button>
           </Link>
         )}
-        <Button
-          variant="outline" size="sm"
-          className="gap-1.5 text-xs"
-          onClick={handleDownloadPdf}
-          disabled={generatingPdf}
-        >
-          {generatingPdf ? (
-            <span className="text-xs">Generating…</span>
-          ) : (
-            <><Download className="w-3 h-3" /> {invoice.pdf_url ? "Download PDF" : "Get Invoice PDF"}</>
-          )}
-        </Button>
+        {(invoice.pdf_url || ["sent", "paid", "shipped", "delivered"].includes(invoice.status)) && (
+          <Button
+            variant="outline" size="sm"
+            className="gap-1.5 text-xs"
+            onClick={handleDownloadPdf}
+            disabled={generatingPdf}
+          >
+            {generatingPdf ? (
+              <span className="text-xs">Generating…</span>
+            ) : (
+              <><Download className="w-3 h-3" /> {invoice.pdf_url ? "Download PDF" : "Get Invoice PDF"}</>
+            )}
+          </Button>
+        )}
       </div>
     </div>
   );
