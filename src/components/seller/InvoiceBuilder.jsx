@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Plus, Trash2, FileText, Download, Loader2,
-  BookTemplate, Save, CheckCircle2, AlertTriangle, User, X
+  BookTemplate, Save, CheckCircle2, AlertTriangle, User, X, Send
 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
@@ -75,6 +75,7 @@ export default function InvoiceBuilder({ user }) {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [generatingPdf, setGeneratingPdf] = useState(null);
+  const [sendingEmail, setSendingEmail] = useState(null);
   const [form, setForm] = useState(defaultForm());
   const [savingTemplate, setSavingTemplate] = useState(false);
   const [templateName, setTemplateName] = useState("");
@@ -336,6 +337,19 @@ export default function InvoiceBuilder({ user }) {
       window.open(res.data.pdf_url, "_blank");
     } else {
       toast({ title: "PDF generation failed", variant: "destructive" });
+    }
+  };
+
+  const handleSendEmail = async (invoiceId, buyerEmail) => {
+    if (!confirm(`Send invoice to ${buyerEmail}?`)) return;
+    setSendingEmail(invoiceId);
+    const res = await base44.functions.invoke("sendInvoiceEmail", { invoiceId });
+    setSendingEmail(null);
+    if (res.data?.success) {
+      queryClient.invalidateQueries({ queryKey: ["seller-invoices", user?.email] });
+      toast({ title: "Invoice sent to buyer!" });
+    } else {
+      toast({ title: res.data?.error || "Failed to send email", variant: "destructive" });
     }
   };
 
@@ -694,6 +708,16 @@ export default function InvoiceBuilder({ user }) {
                         {generatingPdf === inv.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <FileText className="w-3 h-3" />}
                         {inv.pdf_url ? "Regenerate PDF" : "Generate PDF"}
                       </Button>
+                      {inv.pdf_url && inv.buyer_email && (
+                        <Button
+                          size="sm" className="text-xs gap-1"
+                          onClick={() => handleSendEmail(inv.id, inv.buyer_email)}
+                          disabled={sendingEmail === inv.id}
+                        >
+                          {sendingEmail === inv.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                          Send to Buyer
+                        </Button>
+                      )}
                     </div>
                   </td>
                 </tr>
