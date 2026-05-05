@@ -362,21 +362,23 @@ export default function InvoiceBuilder({ user }) {
           {/* Item Selection */}
           <Section title="Item">
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Select Listed Item">
-                <select
-                  value={form.item_id}
-                  onChange={e => handleItemSelect(e.target.value)}
-                  className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
-                >
-                  <option value="">— Manual entry —</option>
-                  {availableItems.length === 0 && (
-                    <option disabled value="">No sold items pending invoice</option>
-                  )}
-                  {availableItems.map(item => (
-                    <option key={item.id} value={item.id}>{item.title}</option>
-                  ))}
-                </select>
-              </Field>
+              {!editingId && (
+                <Field label="Select Listed Item">
+                  <select
+                    value={form.item_id}
+                    onChange={e => handleItemSelect(e.target.value)}
+                    className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                  >
+                    <option value="">— Manual entry —</option>
+                    {availableItems.length === 0 && (
+                      <option disabled value="">No sold items pending invoice</option>
+                    )}
+                    {availableItems.map(item => (
+                      <option key={item.id} value={item.id}>{item.title}</option>
+                    ))}
+                  </select>
+                </Field>
+              )}
               <Field label="Item Title">
                 <Input value={form.item_title} onChange={e => set("item_title", e.target.value)} placeholder="e.g. Vintage Oil Painting" />
               </Field>
