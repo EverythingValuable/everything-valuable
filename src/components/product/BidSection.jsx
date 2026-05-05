@@ -136,7 +136,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
         throw new Error(`Bid must be higher than current high bid of $${currentHighest.toLocaleString()}`);
       }
 
-      await base44.entities.Bid.create({ item_id: item.id, amount, phase: item.status });
+      await base44.entities.Bid.create({ item_id: item.id, amount, phase: item.status, bidder_email: currentUser?.email, bidder_name: currentUser?.full_name });
       await base44.entities.Item.update(item.id, {
         highest_bid: amount,
         highest_bidder_email: currentUser?.email,
