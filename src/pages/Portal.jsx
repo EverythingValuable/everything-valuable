@@ -24,7 +24,7 @@ export default function Portal() {
             {/* Left: Text + Buttons */}
             <motion.div variants={itemVariants} className="space-y-6">
               <div>
-                <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground leading-tight">
+                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
                   A Smarter Marketplace for Everything Valuable
                 </h1>
               </div>
@@ -75,7 +75,7 @@ export default function Portal() {
       <section className="py-24 md:py-32 border-b border-border/40">
         <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
           <motion.div variants={itemVariants} className="text-center mb-16">
-            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">Two Ways the Market Finds Value</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Two Ways the Market Finds Value</h2>
             <p className="text-muted-foreground mt-2">Our proprietary pricing engine replaces outdated auction models.</p>
           </motion.div>
 
@@ -86,7 +86,7 @@ export default function Portal() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                   <Zap className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-serif text-2xl font-semibold text-foreground">1stBid$™ Preview</h3>
+                <h3 className="font-display text-2xl font-bold text-foreground">1stBid$™ Preview</h3>
               </div>
               <p className="text-muted-foreground leading-relaxed">Place early bids before live pricing begins. Strong bids can win without the PRI$OMETER ever activating.</p>
             </motion.div>
@@ -97,7 +97,7 @@ export default function Portal() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                   <TrendingDown className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-serif text-2xl font-semibold text-foreground">PRI$OMETER™ Engine</h3>
+                <h3 className="font-display text-2xl font-bold text-foreground">PRI$OMETER™ Engine</h3>
               </div>
               <p className="text-muted-foreground leading-relaxed">If needed, the price moves dynamically in real time until buyer demand and seller expectations meet.</p>
             </motion.div>
@@ -109,7 +109,7 @@ export default function Portal() {
       <section className="py-24 md:py-32 border-b border-border/40 bg-muted/10">
         <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
           <motion.div variants={itemVariants} className="text-center mb-16">
-            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">Choose Your Portal</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Choose Your Portal</h2>
           </motion.div>
 
           <motion.div variants={containerVariants} className="grid md:grid-cols-2 gap-8">
@@ -126,7 +126,7 @@ export default function Portal() {
                   <Home className="w-5 h-5 text-primary" />
                   <span className="text-xs font-semibold text-primary uppercase tracking-wide">Real Property</span>
                 </div>
-                <h3 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-2">Residential, Estate & Investment</h3>
+                <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-2">Residential, Estate & Investment</h3>
                 <p className="text-white/80 text-sm mb-6">Explore premium real estate through transparent pricing.</p>
                 <Link to="/real-property">
                   <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-fit">
@@ -149,7 +149,7 @@ export default function Portal() {
                   <Gem className="w-5 h-5 text-primary" />
                   <span className="text-xs font-semibold text-primary uppercase tracking-wide">Personal Property</span>
                 </div>
-                <h3 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-2">Fine Art, Jewelry & Collections</h3>
+                <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-2">Fine Art, Jewelry & Collections</h3>
                 <p className="text-white/80 text-sm mb-6">Discover verified listings from trusted sellers worldwide.</p>
                 <Link to="/personal-property">
                   <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-fit">
@@ -166,7 +166,7 @@ export default function Portal() {
       <section className="py-24 md:py-32 border-b border-border/40">
         <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
           <motion.div variants={itemVariants} className="text-center mb-16">
-            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">Why Everything Valuable</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Why Everything Valuable</h2>
             <p className="text-muted-foreground text-lg mt-3 max-w-2xl mx-auto">Buying and selling valuable property should not feel opaque, outdated, or unnecessarily expensive.</p>
           </motion.div>
 
@@ -192,7 +192,7 @@ export default function Portal() {
               return (
                 <motion.div key={i} variants={itemVariants} className="rounded-xl bg-card border border-border/50 p-8 hover:shadow-md transition-shadow">
                   <Icon className="w-10 h-10 text-primary mb-4" />
-                  <h3 className="font-serif text-xl font-semibold text-foreground mb-3">{item.title}</h3>
+                  <h3 className="font-display text-xl font-bold text-foreground mb-3">{item.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">{item.description}</p>
                 </motion.div>
               );
