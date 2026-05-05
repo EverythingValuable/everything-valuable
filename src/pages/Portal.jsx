@@ -1,121 +1,214 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, Gem } from "lucide-react";
+import { Home, Gem, CheckCircle2, TrendingDown, Lock, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
 
 export default function Portal() {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* Header */}
-      <div className="pt-8 px-6 pb-2 text-center">
-        <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground tracking-wide mb-2">
-          Everything Valuable
-        </h1>
-        <p className="text-muted-foreground text-base">
-          Discover what's important to you
-        </p>
-      </div>
-
-      {/* Cards Section */}
-      <div className="flex items-center justify-center px-6 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
-          {/* Real Property Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col"
-          >
-            <div className="rounded-lg overflow-hidden bg-muted mb-4 shadow-md">
-              <img
-                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500&q=80"
-                alt="Real Property"
-                className="w-full aspect-[4/3] object-cover"
-              />
-            </div>
-            
-            {/* Icon Circle */}
-            <div className="flex justify-center mb-3">
-              <div className="w-14 h-14 rounded-full bg-secondary/20 flex items-center justify-center border border-secondary/30">
-                <Home className="w-7 h-7 text-secondary-foreground" />
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-background to-primary/2">
+      {/* ===== HERO SECTION ===== */}
+      <section className="relative py-20 md:py-28 border-b border-border/40">
+        <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" animate="visible">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Text + Buttons */}
+            <motion.div variants={itemVariants} className="space-y-6">
+              <div>
+                <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground leading-tight">
+                  A Smarter Marketplace for Everything Valuable
+                </h1>
               </div>
-            </div>
+              <motion.p variants={itemVariants} className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
+                Real property, personal property, and rare assets — sold through transparent pricing, verified sellers, and intelligent market technology.
+              </motion.p>
+              <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Link to="/personal-property">
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 h-12 px-8 rounded-lg text-base font-medium">
+                    Explore Collections
+                  </Button>
+                </Link>
+                <Link to="/real-property">
+                  <Button variant="outline" className="h-12 px-8 rounded-lg text-base font-medium">
+                    Explore Real Estate
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
 
-            <div className="bg-card rounded-lg border border-border p-5 text-center flex-1 flex flex-col">
-              <h3 className="font-serif text-lg font-semibold text-foreground mb-1">
-                Real Property
-              </h3>
-              <p className="text-xs text-muted-foreground mb-4 flex-1">
-                Explore premium real estate
-              </p>
-              <Link to="/real-property">
-                <Button variant="outline" className="w-full text-sm">
-                  Browse Properties
-                </Button>
-              </Link>
-            </div>
+            {/* Right: Large dramatic image */}
+            <motion.div variants={itemVariants} className="relative hidden lg:block">
+              <div className="rounded-2xl overflow-hidden shadow-2xl">
+                <img
+                  src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=85"
+                  alt="Premium Marketplace"
+                  className="w-full aspect-[3/4] object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ===== CATEGORY PILLS ===== */}
+      <motion.section className="py-8 border-b border-border/40 bg-card/30 backdrop-blur-sm" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+        <div className="max-w-6xl mx-auto px-6 flex flex-wrap justify-center gap-2">
+          {["Fine Art", "Jewelry", "Watches", "Design", "Antiques", "Estates", "Real Property", "Collectibles"].map((cat, i) => (
+            <motion.span key={i} variants={itemVariants} className="text-sm text-muted-foreground px-3 py-1 border-b border-border/50 hover:text-foreground transition-colors cursor-pointer">
+              {cat}
+            </motion.span>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* ===== TWO WAYS THE MARKET FINDS VALUE ===== */}
+      <section className="py-24 md:py-32 border-b border-border/40">
+        <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.div variants={itemVariants} className="text-center mb-16">
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">Two Ways the Market Finds Value</h2>
+            <p className="text-muted-foreground mt-2">Our proprietary pricing engine replaces outdated auction models.</p>
           </motion.div>
 
-          {/* Personal Property Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex flex-col"
-          >
-            <div className="rounded-lg overflow-hidden bg-muted mb-4 shadow-md">
+          <motion.div variants={containerVariants} className="grid md:grid-cols-2 gap-8">
+            {/* 1stBid$ */}
+            <motion.div variants={itemVariants} className="rounded-2xl border border-border/50 bg-card p-10 hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-serif text-2xl font-semibold text-foreground">1stBid$™ Preview</h3>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">Place early bids before live pricing begins. Strong bids can win without the PRI$OMETER ever activating.</p>
+            </motion.div>
+
+            {/* PRI$OMETER */}
+            <motion.div variants={itemVariants} className="rounded-2xl border border-border/50 bg-card p-10 hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <TrendingDown className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-serif text-2xl font-semibold text-foreground">PRI$OMETER™ Engine</h3>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">If needed, the price moves dynamically in real time until buyer demand and seller expectations meet.</p>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ===== PORTAL CARDS ===== */}
+      <section className="py-24 md:py-32 border-b border-border/40 bg-muted/10">
+        <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.div variants={itemVariants} className="text-center mb-16">
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">Choose Your Portal</h2>
+          </motion.div>
+
+          <motion.div variants={containerVariants} className="grid md:grid-cols-2 gap-8">
+            {/* Real Property Portal */}
+            <motion.div variants={itemVariants} className="group relative rounded-2xl overflow-hidden h-80 cursor-pointer">
+              <img
+                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=85"
+                alt="Real Property"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-8">
+                <div className="flex items-center gap-2 mb-3">
+                  <Home className="w-5 h-5 text-primary" />
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">Real Property</span>
+                </div>
+                <h3 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-2">Residential, Estate & Investment</h3>
+                <p className="text-white/80 text-sm mb-6">Explore premium real estate through transparent pricing.</p>
+                <Link to="/real-property">
+                  <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-fit">
+                    Explore Real Estate →
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Personal Property Portal */}
+            <motion.div variants={itemVariants} className="group relative rounded-2xl overflow-hidden h-80 cursor-pointer">
               <img
                 src="https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6266dc1b-6783-4359-ab40-562f1ab357a5/ChatGPT+Image+Jan+28%2C+2026%2C+11_09_41+AM+copy.jpg?content-type=image%2Fjpeg"
                 alt="Personal Property"
-                className="w-full aspect-[4/3] object-cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
-            </div>
-            
-            {/* Icon Circle */}
-            <div className="flex justify-center mb-3">
-              <div className="w-14 h-14 rounded-full bg-accent/20 flex items-center justify-center border border-accent/30">
-                <Gem className="w-7 h-7 text-accent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-8">
+                <div className="flex items-center gap-2 mb-3">
+                  <Gem className="w-5 h-5 text-primary" />
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">Personal Property</span>
+                </div>
+                <h3 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-2">Fine Art, Jewelry & Collections</h3>
+                <p className="text-white/80 text-sm mb-6">Discover verified listings from trusted sellers worldwide.</p>
+                <Link to="/personal-property">
+                  <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-fit">
+                    Explore Collections →
+                  </Button>
+                </Link>
               </div>
-            </div>
-
-            <div className="bg-card rounded-lg border border-border p-5 text-center flex-1 flex flex-col">
-              <h3 className="font-serif text-lg font-semibold text-foreground mb-1">
-                Personal Property
-              </h3>
-              <p className="text-xs text-muted-foreground mb-4 flex-1">
-                Discover fine art & collectibles
-              </p>
-              <Link to="/personal-property">
-                <Button variant="outline" className="w-full text-sm bg-accent/10 border-accent/20 text-foreground hover:bg-accent/20">
-                  Browse Collections
-                </Button>
-              </Link>
-            </div>
+            </motion.div>
           </motion.div>
-        </div>
-      </div>
+        </motion.div>
+      </section>
 
-      {/* Mission Statement */}
-      <div className="px-6 py-12 bg-secondary/5">
-        <div className="max-w-3xl mx-auto space-y-4 text-center">
-          <h2 className="font-serif text-2xl md:text-3xl font-semibold text-foreground">
-            Our Mission
-          </h2>
-          <p className="text-foreground leading-relaxed">
-            To create an exchange platform for the purchase and sale of tangible assets that makes the process intuitive, coherent, transparent, dynamic, fun, time efficient and far more cost efficient.
-          </p>
-          <p className="text-foreground leading-relaxed">
-            The processes for buying Real Estate evolved in a fragmented manner for each state and often independently evolved and vary from locality to locality within each state. The varied processes deployed are not cost effective, unnecessarily cumbersome, far from transparent and full of unknown potentials that can increase costs and delay closure.
-          </p>
-          <p className="text-foreground leading-relaxed">
-            The alternatives for selling valued items of personal property are even worse.
-          </p>
-          <p className="font-serif text-lg font-semibold text-primary mt-6">
-            Our mission: make it better
-          </p>
-        </div>
-      </div>
+      {/* ===== WHY EVERYTHING VALUABLE ===== */}
+      <section className="py-24 md:py-32 border-b border-border/40">
+        <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.div variants={itemVariants} className="text-center mb-16">
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">Why Everything Valuable</h2>
+            <p className="text-muted-foreground text-lg mt-3 max-w-2xl mx-auto">Buying and selling valuable property should not feel opaque, outdated, or unnecessarily expensive.</p>
+          </motion.div>
+
+          <motion.div variants={containerVariants} className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Lock,
+                title: "Transparent Fees",
+                description: "Clear pricing before you commit. No hidden charges. No buyer's premium."
+              },
+              {
+                icon: CheckCircle2,
+                title: "Verified Sellers",
+                description: "Listings supported by documentation, images, provenance, and defined terms."
+              },
+              {
+                icon: TrendingDown,
+                title: "Dynamic Market Pricing",
+                description: "1stBid$ and PRI$OMETER create urgency, competition, and real market discovery."
+              }
+            ].map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <motion.div key={i} variants={itemVariants} className="rounded-xl bg-card border border-border/50 p-8 hover:shadow-md transition-shadow">
+                  <Icon className="w-10 h-10 text-primary mb-4" />
+                  <h3 className="font-serif text-xl font-semibold text-foreground mb-3">{item.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* ===== MISSION STATEMENT (SIMPLIFIED) ===== */}
+      <section className="py-16 md:py-20 bg-card border-t border-border/40">
+        <motion.div className="max-w-4xl mx-auto px-6 text-center" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.p variants={itemVariants} className="text-lg text-muted-foreground leading-relaxed">
+            Everything Valuable is reimagining how valuable assets change hands — replacing fragmented, opaque, and costly processes with a single platform that is transparent, efficient, and designed for the 21st century.
+          </motion.p>
+        </motion.div>
+      </section>
     </div>
   );
 }
