@@ -3,14 +3,14 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Gavel, Settings, Package, ShoppingBag, FileText, Download, ExternalLink } from "lucide-react";
+import { Heart, Gavel, Zap, AlertCircle, Settings, Package, Trophy } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import BuyerProfileForm from "@/components/buyer/BuyerProfileForm";
 import ActiveBidRow from "@/components/buyer/ActiveBidRow";
 import RecommendedItems from "@/components/buyer/RecommendedItems";
+import PurchaseCard from "@/components/buyer/PurchaseCard";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -60,7 +60,7 @@ function SavedItemCard({ itemId, watchlistId }) {
 
   return (
     <Link to={`/item/${itemId}`} className="group block relative">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-muted">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted">
         {item?.images?.[0] ? (
           <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
@@ -69,40 +69,36 @@ function SavedItemCard({ itemId, watchlistId }) {
           </div>
         )}
         {status && (
-          <div className="absolute top-3 left-3">
-            <Badge variant="outline" className={`${status.color} text-xs font-medium backdrop-blur-sm`}>
-              {status.label}
-            </Badge>
+          <div className="absolute top-2.5 left-2.5">
+            <Badge variant="outline" className={`${status.color} text-xs font-medium backdrop-blur-sm`}>{status.label}</Badge>
           </div>
         )}
         <button
           onClick={handleRemove}
           disabled={removing}
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
         >
-          <Heart className="w-4 h-4 fill-red-500 text-red-500" />
+          <Heart className="w-3.5 h-3.5 fill-red-500 text-red-500" />
         </button>
       </div>
-      <div className="mt-3 space-y-1">
-        <p className="text-xs text-muted-foreground uppercase tracking-wider">
-          {categoryLabels[item?.category] || item?.category || ""}
-        </p>
-        <h3 className="font-serif text-base font-medium leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2">
+      <div className="mt-2.5 space-y-0.5">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{categoryLabels[item?.category] || item?.category || ""}</p>
+        <h3 className="font-serif text-sm font-medium leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2">
           {item?.title || "Loading…"}
         </h3>
         {(sellerProfile?.display_name || item?.seller_name) && (
-          <p className="text-xs text-muted-foreground">{sellerProfile?.display_name || item?.seller_name}</p>
+          <p className="text-[11px] text-muted-foreground">{sellerProfile?.display_name || item?.seller_name}</p>
         )}
-        {/* Show highest bid if available, otherwise start price */}
         {item && (
-          <div className="pt-1 space-y-0.5">
+          <div className="pt-1">
             {item.highest_bid > 0 && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 High bid: <span className="font-semibold text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
+                {item.bid_count > 0 && <span> · {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}</span>}
               </p>
             )}
             {displayPrice && (
-              <span className="font-sans text-base font-semibold text-foreground">
+              <span className="font-sans text-sm font-semibold text-foreground">
                 ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </span>
             )}
@@ -113,116 +109,44 @@ function SavedItemCard({ itemId, watchlistId }) {
   );
 }
 
-const INVOICE_STATUS_STYLES = {
-  draft:     { label: "Invoice Pending",  className: "bg-yellow-50 text-yellow-700 border-yellow-200" },
-  sent:      { label: "Invoice Sent",     className: "bg-blue-50 text-blue-700 border-blue-200" },
-  paid:      { label: "Paid",             className: "bg-green-50 text-green-700 border-green-200" },
-  shipped:   { label: "Shipped",          className: "bg-purple-50 text-purple-700 border-purple-200" },
-  delivered: { label: "Delivered",        className: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  disputed:  { label: "Disputed",         className: "bg-red-50 text-red-700 border-red-200" },
-};
-
-const NEXT_STEP = {
-  draft:     "Invoice is being prepared by the seller.",
-  sent:      "Review your invoice and arrange payment.",
-  paid:      "Awaiting shipment from the seller.",
-  shipped:   "Your item is on its way!",
-  delivered: "Enjoy your purchase!",
-  disputed:  "Contact the seller to resolve this dispute.",
-};
-
-function PurchaseRow({ invoice }) {
-  const [generatingPdf, setGeneratingPdf] = useState(false);
-  const status = INVOICE_STATUS_STYLES[invoice.status] || INVOICE_STATUS_STYLES.draft;
-  const nextStep = NEXT_STEP[invoice.status] || "";
-
-  const { data: sellerProfile } = useQuery({
-    queryKey: ["seller-profile-purchase", invoice.seller_email],
-    queryFn: () => base44.entities.SellerProfile.filter({ user_email: invoice.seller_email }).then(r => r[0]),
-    enabled: !!invoice.seller_email,
-    staleTime: 300000,
-  });
-
-  const handleDownloadPdf = async () => {
-    if (invoice.pdf_url) {
-      window.open(invoice.pdf_url, "_blank");
-      return;
-    }
-    setGeneratingPdf(true);
-    const res = await base44.functions.invoke("generateInvoicePDF", { invoiceId: invoice.id });
-    setGeneratingPdf(false);
-    if (res.data?.pdf_url) window.open(res.data.pdf_url, "_blank");
-  };
-
-  return (
-    <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <p className="font-serif text-base font-medium text-foreground line-clamp-2">{invoice.item_title || "Purchase"}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            From:{" "}
-            {sellerProfile?.display_name ? (
-              <Link
-                to={`/seller/profile?email=${encodeURIComponent(invoice.seller_email)}`}
-                className="text-primary hover:underline font-medium"
-              >
-                {sellerProfile.display_name}
-              </Link>
-            ) : (
-              "Everything Valuable"
-            )}
-            {invoice.created_date && ` · ${format(new Date(invoice.created_date), "MMM d, yyyy")}`}
-          </p>
-        </div>
-        <Badge variant="outline" className={`shrink-0 text-xs font-medium ${status.className}`}>
-          {status.label}
-        </Badge>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 text-sm">
-        <div>
-          <p className="text-xs text-muted-foreground">Purchase Price</p>
-          <p className="font-semibold">${Number(invoice.item_price || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
-        </div>
-        <div>
-          <p className="text-xs text-muted-foreground">Invoice Total *</p>
-          <p className="font-semibold text-primary">${Number(invoice.total_amount || invoice.item_price || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
-        </div>
-      </div>
-
-      {nextStep && (
-        <div className="bg-secondary/40 rounded-lg px-3 py-2 text-xs text-muted-foreground">
-          <span className="font-semibold text-foreground">Next: </span>{nextStep}
-        </div>
-      )}
-      <p className="text-xs text-muted-foreground italic">* Invoice total does not include applicable sales tax, shipping, or other fees as outlined in the Terms and Conditions of Sale.</p>
-
-      <div className="flex items-center gap-2 pt-1">
-        {invoice.item_id && (
-          <Link to={`/item/${invoice.item_id}`}>
-            <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-              <ExternalLink className="w-3 h-3" /> View Item
-            </Button>
-          </Link>
-        )}
-        {(invoice.pdf_url || ["sent", "paid", "shipped", "delivered"].includes(invoice.status)) && (
-          <Button
-            variant="outline" size="sm"
-            className="gap-1.5 text-xs"
-            onClick={handleDownloadPdf}
-            disabled={generatingPdf}
-          >
-            {generatingPdf ? (
-              <span className="text-xs">Generating…</span>
-            ) : (
-              <><Download className="w-3 h-3" /> {invoice.pdf_url ? "Download PDF" : "Get Invoice PDF"}</>
-            )}
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-}
+const STAT_CARDS = (watchlist, activeBids, leadingBids, needsActionCount) => [
+  {
+    label: "Watching",
+    value: watchlist.length,
+    icon: Heart,
+    tab: "watchlist",
+    accent: "text-rose-500",
+    bg: "bg-rose-50",
+    border: "border-rose-100",
+  },
+  {
+    label: "Active Bids",
+    value: activeBids.length,
+    icon: Gavel,
+    tab: "bids",
+    accent: "text-primary",
+    bg: "bg-primary/8",
+    border: "border-primary/15",
+  },
+  {
+    label: "Leading",
+    value: leadingBids,
+    icon: Trophy,
+    tab: "bids",
+    accent: "text-amber-600",
+    bg: "bg-amber-50",
+    border: "border-amber-100",
+  },
+  {
+    label: "Needs Action",
+    value: needsActionCount,
+    icon: AlertCircle,
+    tab: "purchases",
+    accent: needsActionCount > 0 ? "text-orange-600" : "text-muted-foreground",
+    bg: needsActionCount > 0 ? "bg-orange-50" : "bg-muted/50",
+    border: needsActionCount > 0 ? "border-orange-100" : "border-border",
+  },
+];
 
 export default function BuyerDashboard() {
   const location = useLocation();
@@ -264,60 +188,83 @@ export default function BuyerDashboard() {
   });
 
   const activeBids = bids.filter(b => b.status !== "lost");
-  const wonBids = rawBids.filter(b => b.status === "won");
+  const leadingBids = bids.filter(b => b.status === "active").length; // "active" = currently leading
+  const needsActionCount = purchases.filter(p => ["sent"].includes(p.status)).length;
+
+  const pendingPurchases = purchases.filter(p => !["paid", "shipped", "delivered"].includes(p.status));
+  const completedPurchases = purchases.filter(p => ["paid", "shipped", "delivered"].includes(p.status));
+
+  const statCards = STAT_CARDS(watchlist, activeBids, leadingBids, needsActionCount);
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-8">
+    <div className="min-h-screen bg-[hsl(40,20%,97%)]">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-10">
+
+        {/* Page Header */}
         <div className="mb-8">
-          <h1 className="font-serif text-3xl font-semibold text-foreground">My Account</h1>
-          <p className="text-sm text-muted-foreground mt-1">Track your bids and saved items</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-primary/70 mb-1">Collecting Dashboard</p>
+          <h1 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">
+            {user?.full_name ? `Welcome back, ${user.full_name.split(" ")[0]}.` : "Your Collecting Dashboard"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1.5">Track everything you're watching, bidding on, and collecting.</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: "Saved Items", value: watchlist.length, icon: Heart },
-            { label: "Active Bids", value: activeBids.length, icon: Gavel },
-            { label: "Won", value: wonBids.length, icon: Package },
-            { label: "Purchases", value: purchases.length, icon: ShoppingBag },
-          ].map(s => (
-            <Card key={s.label}>
-              <CardContent className="p-5 flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <s.icon className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
-                  <p className="font-sans text-2xl font-bold mt-0.5">{s.value}</p>
-                </div>
-              </CardContent>
-            </Card>
+        {/* Stat Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          {statCards.map(s => (
+            <button
+              key={s.label}
+              onClick={() => setTab(s.tab)}
+              className={`group text-left rounded-2xl border p-4 bg-card shadow-sm hover:shadow-md transition-all duration-200 ${s.border}`}
+            >
+              <div className={`w-9 h-9 rounded-xl ${s.bg} flex items-center justify-center mb-3`}>
+                <s.icon className={`w-4 h-4 ${s.accent}`} />
+              </div>
+              <p className={`font-sans text-2xl font-bold leading-none ${s.accent}`}>{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-1.5 font-medium">{s.label}</p>
+            </button>
           ))}
         </div>
 
+        {/* Tabs */}
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="watchlist" className="gap-1.5"><Heart className="w-3.5 h-3.5" /> Saved</TabsTrigger>
-            <TabsTrigger value="bids" className="gap-1.5"><Gavel className="w-3.5 h-3.5" /> Bids</TabsTrigger>
-            <TabsTrigger value="purchases" className="gap-1.5"><Package className="w-3.5 h-3.5" /> Won Items</TabsTrigger>
-            {purchases.some(p => ["paid", "shipped", "delivered"].includes(p.status)) && (
-              <TabsTrigger value="my-purchases" className="gap-1.5"><ShoppingBag className="w-3.5 h-3.5" /> My Purchases</TabsTrigger>
-            )}
-            <TabsTrigger value="settings" className="gap-1.5"><Settings className="w-3.5 h-3.5" /> Settings</TabsTrigger>
+          <TabsList className="mb-6 bg-transparent p-0 h-auto gap-1 flex-wrap">
+            {[
+              { value: "watchlist", icon: Heart, label: "Watching" },
+              { value: "bids",      icon: Gavel, label: "My Bids" },
+              { value: "purchases", icon: Package, label: "Purchases" },
+              { value: "settings",  icon: Settings, label: "My Profile" },
+            ].map(t => (
+              <TabsTrigger
+                key={t.value}
+                value={t.value}
+                className="gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all
+                  data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-primary/30
+                  data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=active]:font-semibold
+                  data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground"
+              >
+                <t.icon className="w-3.5 h-3.5" />
+                {t.label}
+                {t.value === "purchases" && needsActionCount > 0 && (
+                  <span className="ml-0.5 w-4 h-4 rounded-full bg-orange-500 text-white text-[9px] font-bold flex items-center justify-center">
+                    {needsActionCount}
+                  </span>
+                )}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          {/* SAVED */}
+          {/* WATCHING */}
           <TabsContent value="watchlist">
             {watchlist.length === 0 ? (
-              <Card><CardContent className="p-12 text-center">
-                <Heart className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="font-serif text-xl text-muted-foreground">No saved items</p>
-                <p className="text-sm text-muted-foreground mt-1 mb-4">Browse the marketplace and save items you love</p>
-                <Link to="/browse" className="text-sm text-primary font-medium">Browse →</Link>
+              <Card className="border-dashed"><CardContent className="p-14 text-center">
+                <Heart className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="font-serif text-xl text-muted-foreground">Nothing saved yet</p>
+                <p className="text-sm text-muted-foreground/70 mt-1 mb-4">Browse the marketplace and save items you're interested in.</p>
+                <Link to="/browse" className="text-sm text-primary font-medium hover:underline">Browse the marketplace →</Link>
               </CardContent></Card>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
                 {watchlist.map(w => (
                   <SavedItemCard key={w.id} itemId={w.item_id} watchlistId={w.id} />
                 ))}
@@ -328,10 +275,10 @@ export default function BuyerDashboard() {
           {/* BIDS */}
           <TabsContent value="bids">
             {activeBids.length === 0 ? (
-              <Card><CardContent className="p-12 text-center">
-                <Gavel className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+              <Card className="border-dashed"><CardContent className="p-14 text-center">
+                <Gavel className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
                 <p className="font-serif text-xl text-muted-foreground">No active bids</p>
-                <p className="text-sm text-muted-foreground mt-1">Start bidding on items in the marketplace</p>
+                <p className="text-sm text-muted-foreground/70 mt-1">Start bidding on items in the marketplace.</p>
               </CardContent></Card>
             ) : (
               <div className="space-y-3">
@@ -342,44 +289,55 @@ export default function BuyerDashboard() {
             )}
           </TabsContent>
 
-          {/* WON ITEMS */}
+          {/* PURCHASES */}
           <TabsContent value="purchases">
             {purchases.length === 0 ? (
-              <Card><CardContent className="p-12 text-center">
-                <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="font-serif text-xl text-muted-foreground">No won items yet</p>
-                <p className="text-sm text-muted-foreground mt-1">Items you win will appear here while awaiting invoice & payment</p>
-                <Link to="/browse" className="text-sm text-primary font-medium mt-3 inline-block">Browse Items →</Link>
+              <Card className="border-dashed"><CardContent className="p-14 text-center">
+                <Package className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="font-serif text-xl text-muted-foreground">No purchases yet</p>
+                <p className="text-sm text-muted-foreground/70 mt-1">Items you win or purchase will appear here.</p>
+                <Link to="/browse" className="text-sm text-primary font-medium mt-3 inline-block hover:underline">Browse Items →</Link>
               </CardContent></Card>
             ) : (
-              <div className="space-y-4">
-                {purchases.filter(p => !["paid", "shipped", "delivered"].includes(p.status)).map(inv => (
-                  <PurchaseRow key={inv.id} invoice={inv} />
-                ))}
-                {purchases.filter(p => !["paid", "shipped", "delivered"].includes(p.status)).length === 0 && (
-                  <Card><CardContent className="p-12 text-center">
-                    <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                    <p className="font-serif text-xl text-muted-foreground">All purchases complete</p>
-                    <p className="text-sm text-muted-foreground mt-1">Check My Purchases for your completed orders</p>
-                  </CardContent></Card>
+              <div className="space-y-5">
+                {/* Needs action first */}
+                {pendingPurchases.length > 0 && (
+                  <div>
+                    {needsActionCount > 0 && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <AlertCircle className="w-4 h-4 text-orange-500" />
+                        <p className="text-xs font-semibold text-orange-700 uppercase tracking-wide">Action Required</p>
+                      </div>
+                    )}
+                    <div className="space-y-4">
+                      {pendingPurchases.map(inv => <PurchaseCard key={inv.id} invoice={inv} />)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Completed purchases */}
+                {completedPurchases.length > 0 && (
+                  <div>
+                    {pendingPurchases.length > 0 && (
+                      <div className="flex items-center gap-3 my-5">
+                        <div className="h-px flex-1 bg-border" />
+                        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Completed Purchases</p>
+                        <div className="h-px flex-1 bg-border" />
+                      </div>
+                    )}
+                    <div className="space-y-4">
+                      {completedPurchases.map(inv => <PurchaseCard key={inv.id} invoice={inv} />)}
+                    </div>
+                  </div>
                 )}
               </div>
             )}
           </TabsContent>
 
-          {/* MY PURCHASES */}
-          <TabsContent value="my-purchases">
-            <div className="space-y-4">
-              {purchases.filter(p => ["paid", "shipped", "delivered"].includes(p.status)).map(inv => (
-                <PurchaseRow key={inv.id} invoice={inv} />
-              ))}
-            </div>
-          </TabsContent>
-
           {/* SETTINGS */}
           <TabsContent value="settings">
-            <div className="mb-4">
-              <h3 className="font-serif text-xl font-semibold">My Profile</h3>
+            <div className="mb-5">
+              <h3 className="font-serif text-2xl font-semibold">My Profile</h3>
               <p className="text-sm text-muted-foreground mt-1">Required to confirm purchases. Your info is auto-filled on invoices.</p>
             </div>
             <BuyerProfileForm user={user} />
