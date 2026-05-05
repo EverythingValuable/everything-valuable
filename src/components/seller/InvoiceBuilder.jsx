@@ -280,9 +280,9 @@ export default function InvoiceBuilder({ user }) {
       service_fee_pct: 10,
       fee_credit: inv.fee_credit ?? "",
       additional_line_items: inv.additional_line_items || [],
-      payment_instructions: inv.payment_instructions || "",
-      terms_and_conditions: inv.terms_and_conditions || "",
-      notes: inv.notes || "",
+      payment_instructions: inv.payment_instructions || profile?.payment_instructions || "",
+      terms_and_conditions: inv.terms_and_conditions || profile?.terms_and_conditions || "",
+      notes: inv.notes || profile?.notes || "",
       status: inv.status || "draft",
       purchase_method: inv.purchase_method || "manual",
     };
