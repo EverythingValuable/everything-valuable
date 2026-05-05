@@ -25,11 +25,11 @@ export default function Portal() {
             <motion.div variants={itemVariants} className="space-y-6">
               <div>
                 <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-                  A Smarter Marketplace for Everything Valuable
+                  A Smarter Marketplace for Fine Art, Objects & Everything Valuable
                 </h1>
               </div>
               <motion.p variants={itemVariants} className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                Real property, personal property, and rare assets — sold through transparent pricing, verified sellers, and intelligent market technology.
+                Discover and sell personal property through transparent pricing, verified sellers, and dynamic market technology — from fine art and jewelry to design, antiques, collectibles, and select real property.
               </motion.p>
               <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link to="/personal-property">
@@ -37,9 +37,9 @@ export default function Portal() {
                     Explore Collections
                   </Button>
                 </Link>
-                <Link to="/real-property">
+                <Link to="/how-it-works">
                   <Button variant="outline" className="h-12 px-8 rounded-lg text-base font-medium">
-                    Explore Real Estate
+                    How It Works
                   </Button>
                 </Link>
               </motion.div>
@@ -49,8 +49,8 @@ export default function Portal() {
             <motion.div variants={itemVariants} className="relative hidden lg:block">
               <div className="rounded-2xl overflow-hidden shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=85"
-                  alt="Premium Marketplace"
+                  src="https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6266dc1b-6783-4359-ab40-562f1ab357a5/ChatGPT+Image+Jan+28%2C+2026%2C+11_09_41+AM+copy.jpg?content-type=image%2Fjpeg"
+                  alt="Fine Art & Collectibles Marketplace"
                   className="w-full aspect-[3/4] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
@@ -63,7 +63,7 @@ export default function Portal() {
       {/* ===== CATEGORY PILLS ===== */}
       <motion.section className="py-8 border-b border-border/40 bg-card/30 backdrop-blur-sm" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
         <div className="max-w-6xl mx-auto px-6 flex flex-wrap justify-center gap-2">
-          {["Fine Art", "Jewelry", "Watches", "Design", "Antiques", "Estates", "Real Property", "Collectibles"].map((cat, i) => (
+          {["Fine Art", "Jewelry", "Watches", "Design", "Antiques", "Silver", "Decorative Arts", "Collectibles", "Real Property"].map((cat, i) => (
             <motion.span key={i} variants={itemVariants} className="text-sm text-muted-foreground px-3 py-1 border-b border-border/50 hover:text-foreground transition-colors cursor-pointer">
               {cat}
             </motion.span>
@@ -71,11 +71,68 @@ export default function Portal() {
         </div>
       </motion.section>
 
+      {/* ===== PORTAL CARDS ===== */}
+      <section className="py-24 md:py-32 border-b border-border/40 bg-muted/10">
+        <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+          <motion.div variants={itemVariants} className="text-center mb-16">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Browse by Asset Type</h2>
+          </motion.div>
+
+          <motion.div variants={containerVariants} className="grid md:grid-cols-3 gap-8 items-end">
+            {/* Personal Property Portal — Dominant */}
+            <motion.div variants={itemVariants} className="group relative rounded-2xl overflow-hidden h-96 md:col-span-2 cursor-pointer">
+              <img
+                src="https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6266dc1b-6783-4359-ab40-562f1ab357a5/ChatGPT+Image+Jan+28%2C+2026%2C+11_09_41+AM+copy.jpg?content-type=image%2Fjpeg"
+                alt="Fine Art & Collectibles"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <Gem className="w-5 h-5 text-primary" />
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">Personal Property</span>
+                </div>
+                <h3 className="font-display text-3xl md:text-4xl font-bold text-white mb-3">Fine Art, Jewelry, Design & Collections</h3>
+                <p className="text-white/80 text-base mb-8">Discover valuable listings from trusted sellers — including paintings, sculpture, watches, jewelry, antiques, decorative arts, and rare objects.</p>
+                <Link to="/personal-property">
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90 w-fit">
+                    Explore Collections →
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Real Property Portal — Secondary */}
+            <motion.div variants={itemVariants} className="group relative rounded-2xl overflow-hidden h-64 cursor-pointer">
+              <img
+                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=85"
+                alt="Real Property"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-8">
+                <div className="flex items-center gap-2 mb-2">
+                  <Home className="w-4 h-4 text-primary/60" />
+                  <span className="text-xs font-semibold text-primary/60 uppercase tracking-wide">Coming Soon</span>
+                </div>
+                <h3 className="font-display text-xl font-bold text-white mb-2">Select Real Property</h3>
+                <p className="text-white/70 text-sm mb-4">Explore estate, residential, and investment property as this category expands.</p>
+                <Link to="/real-property">
+                  <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-fit text-sm">
+                    Explore Real Estate
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      </section>
+
       {/* ===== TWO WAYS THE MARKET FINDS VALUE ===== */}
       <section className="py-24 md:py-32 border-b border-border/40">
         <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
           <motion.div variants={itemVariants} className="text-center mb-16">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Two Ways the Market Finds Value</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">How the Marketplace Works</h2>
             <p className="text-muted-foreground mt-2">Our proprietary pricing engine replaces outdated auction models.</p>
           </motion.div>
 
@@ -88,7 +145,7 @@ export default function Portal() {
                 </div>
                 <h3 className="font-display text-2xl font-bold text-foreground">1stBid$™ Preview</h3>
               </div>
-              <p className="text-muted-foreground leading-relaxed">Place early bids before live pricing begins. Strong bids can win without the PRI$OMETER ever activating.</p>
+              <p className="text-muted-foreground leading-relaxed">Buyers place early bids before live pricing begins. Strong preview bidding can establish the winning result before the PRI$OMETER ever activates.</p>
             </motion.div>
 
             {/* PRI$OMETER */}
@@ -97,66 +154,9 @@ export default function Portal() {
                 <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                   <TrendingDown className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-display text-2xl font-bold text-foreground">PRI$OMETER™ Engine</h3>
+                <h3 className="font-display text-2xl font-bold text-foreground">PRI$OMETER™ Dynamic Pricing</h3>
               </div>
-              <p className="text-muted-foreground leading-relaxed">If needed, the price moves dynamically in real time until buyer demand and seller expectations meet.</p>
-            </motion.div>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* ===== PORTAL CARDS ===== */}
-      <section className="py-24 md:py-32 border-b border-border/40 bg-muted/10">
-        <motion.div className="max-w-6xl mx-auto px-6" variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-          <motion.div variants={itemVariants} className="text-center mb-16">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Choose Your Portal</h2>
-          </motion.div>
-
-          <motion.div variants={containerVariants} className="grid md:grid-cols-2 gap-8">
-            {/* Real Property Portal */}
-            <motion.div variants={itemVariants} className="group relative rounded-2xl overflow-hidden h-80 cursor-pointer">
-              <img
-                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=85"
-                alt="Real Property"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              <div className="absolute inset-0 flex flex-col justify-end p-8">
-                <div className="flex items-center gap-2 mb-3">
-                  <Home className="w-5 h-5 text-primary" />
-                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">Real Property</span>
-                </div>
-                <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-2">Residential, Estate & Investment</h3>
-                <p className="text-white/80 text-sm mb-6">Explore premium real estate through transparent pricing.</p>
-                <Link to="/real-property">
-                  <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-fit">
-                    Explore Real Estate →
-                  </Button>
-                </Link>
-              </div>
-            </motion.div>
-
-            {/* Personal Property Portal */}
-            <motion.div variants={itemVariants} className="group relative rounded-2xl overflow-hidden h-80 cursor-pointer">
-              <img
-                src="https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6266dc1b-6783-4359-ab40-562f1ab357a5/ChatGPT+Image+Jan+28%2C+2026%2C+11_09_41+AM+copy.jpg?content-type=image%2Fjpeg"
-                alt="Personal Property"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              <div className="absolute inset-0 flex flex-col justify-end p-8">
-                <div className="flex items-center gap-2 mb-3">
-                  <Gem className="w-5 h-5 text-primary" />
-                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">Personal Property</span>
-                </div>
-                <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-2">Fine Art, Jewelry & Collections</h3>
-                <p className="text-white/80 text-sm mb-6">Discover verified listings from trusted sellers worldwide.</p>
-                <Link to="/personal-property">
-                  <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20 w-fit">
-                    Explore Collections →
-                  </Button>
-                </Link>
-              </div>
+              <p className="text-muted-foreground leading-relaxed">When needed, the price moves in real time until buyer demand and seller expectations meet.</p>
             </motion.div>
           </motion.div>
         </motion.div>
