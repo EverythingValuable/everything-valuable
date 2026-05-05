@@ -1,47 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Clock, Info, ChevronDown, Pause } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-function SlotDigit({ digit, className = "" }) {
-  return (
-    <span className={`inline-block overflow-hidden relative ${className}`} style={{ height: "1.2em", verticalAlign: "bottom" }}>
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.span
-          key={digit}
-          initial={{ y: "-100%", opacity: 0 }}
-          animate={{ y: "0%", opacity: 1 }}
-          exit={{ y: "100%", opacity: 0 }}
-          transition={{ duration: 0.18, ease: "easeInOut" }}
-          className="block"
-          style={{ lineHeight: "1.2em" }}
-        >
-          {digit}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  );
-}
-
-function SlotPrice({ value, className = "", centsValue = null, showCents = false }) {
-  const formatted = Math.floor(value).toLocaleString("en-US");
-  const digits = formatted.split("");
-  const centsStr = centsValue !== null ? centsValue.toString().padStart(2, "0") : "00";
-
-  return (
-    <span className={`inline-flex items-end ${className}`} style={{ lineHeight: "1.2em" }}>
-      <span>$</span>
-      {digits.map((d, i) => (
-        d === "," ? <span key={i}>,</span> : <SlotDigit key={i} digit={d} />
-      ))}
-      {showCents && (
-        <span className="font-sans text-xl text-red-500" style={{ lineHeight: "1.2em" }}>
-          .<SlotDigit digit={centsStr[0]} /><SlotDigit digit={centsStr[1]} />
-        </span>
-      )}
-    </span>
-  );
-}
 
 const PRISOMETER_INFO = "The PRI$OMETER™ is our live declining-price engine. The price starts high and drops continuously over time. You can place a bid at any moment — or use Make It Mine to buy instantly at the current price.";
 
@@ -124,9 +84,15 @@ function PreviewState({ item, displayPrice, formatPrice }) {
       {/* Box 2: PRI$OMETER Start Price */}
       <div className="rounded-xl border border-border bg-amber-50 px-5 py-4 opacity-50 shadow-sm w-full overflow-hidden">
         <p className="text-xs font-bold text-foreground/60 uppercase tracking-widest">PRI$OMETER™ Start Price</p>
-        <div className="font-sans text-3xl md:text-4xl font-bold text-foreground/40 mt-1">
-          <SlotPrice value={displayPrice} />
-        </div>
+        <motion.div
+          key={Math.floor(displayPrice)}
+          initial={{ scale: 1.02, opacity: 0.8 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="font-sans text-3xl md:text-4xl font-bold text-foreground/40 mt-1"
+        >
+          ${formatPrice(displayPrice)}
+        </motion.div>
         <p className="text-xs text-muted-foreground italic mt-0.5">Activates after preview</p>
         <ExpandableInfoBox explanation="This is the price at which the live PRI$OMETER™ will begin once the preview phase ends. From here, the price descends continuously until it's claimed or the session closes." />
       </div>
@@ -204,9 +170,18 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
         )}
 
         <p className="text-xs font-bold text-foreground/60 uppercase tracking-widest">Current PRI$OMETER™ Price</p>
-        <div className="font-sans text-4xl md:text-5xl lg:text-6xl font-bold text-emerald-700 mt-1">
-          <SlotPrice value={displayPrice} showCents={isActive} centsValue={cents} />
-        </div>
+        <motion.div
+          key={Math.floor(displayPrice)}
+          initial={{ scale: 1.02, opacity: 0.8 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="font-sans text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-1"
+        >
+          <span className="text-emerald-700">${formatPrice(displayPrice)}</span>
+          {isActive && (
+            <span className="font-sans text-xl text-red-500 animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
+          )}
+        </motion.div>
         <ExpandableInfoBox explanation={PRISOMETER_INFO} />
       </div>
 
