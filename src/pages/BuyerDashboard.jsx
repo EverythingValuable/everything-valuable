@@ -168,7 +168,7 @@ function PurchaseRow({ invoice }) {
           <p className="font-semibold">${Number(invoice.item_price || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
         </div>
         <div>
-          <p className="text-xs text-muted-foreground">Invoice Total</p>
+          <p className="text-xs text-muted-foreground">Invoice Total *</p>
           <p className="font-semibold text-primary">${Number(invoice.total_amount || invoice.item_price || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
         </div>
       </div>
@@ -178,6 +178,7 @@ function PurchaseRow({ invoice }) {
           <span className="font-semibold text-foreground">Next: </span>{nextStep}
         </div>
       )}
+      <p className="text-xs text-muted-foreground italic">* Invoice total does not include applicable sales tax, shipping, or other fees as outlined in the Terms and Conditions of Sale.</p>
 
       <div className="flex items-center gap-2 pt-1">
         {invoice.item_id && (
