@@ -250,7 +250,10 @@ export default function InvoiceBuilder({ user }) {
         payment_method: form.payment_method || undefined,
         payment_method_notes: form.payment_method_notes || undefined,
       };
-      if (editingId) return base44.entities.Invoice.update(editingId, payload);
+      if (editingId) {
+        // Preserve existing pdf_url — don't wipe it on every save
+        return base44.entities.Invoice.update(editingId, payload);
+      }
       return base44.entities.Invoice.create(payload);
     },
     onSuccess: () => {
@@ -358,7 +361,6 @@ export default function InvoiceBuilder({ user }) {
   };
 
   const handleSendEmail = async (invoiceId, buyerEmail) => {
-    if (!confirm(`Send invoice to ${buyerEmail}?`)) return;
     setSendingEmail(invoiceId);
     const res = await base44.functions.invoke("sendInvoiceEmail", { invoiceId });
     setSendingEmail(null);
