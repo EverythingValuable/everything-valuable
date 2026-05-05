@@ -153,7 +153,7 @@ function PurchaseRow({ invoice }) {
         <div className="flex-1 min-w-0">
           <p className="font-serif text-base font-medium text-foreground line-clamp-2">{invoice.item_title || "Purchase"}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {invoice.seller_email && `From: ${invoice.seller_email}`}
+            From: Everything Valuable
             {invoice.created_date && ` · ${format(new Date(invoice.created_date), "MMM d, yyyy")}`}
           </p>
         </div>
