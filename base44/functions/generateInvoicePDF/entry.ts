@@ -198,12 +198,7 @@ Deno.serve(async (req) => {
 
     let rowAlt = false;
     drawRow(invoice.item_title || 'Item', 'Item', invoice.item_price, false, rowAlt); rowAlt = !rowAlt;
-    if (invoice.service_fee > 0) {
-      const feeBase = Number(invoice.item_price) || 0;
-      const feePct = Math.round((feeBase * 0.10) * 100) / 100;
-      const feeDesc = `Platform Service Fee  (10% × ${fmt(feeBase)} + $30.00 = ${fmt(feePct)} + $30.00)`;
-      drawRow(feeDesc, 'Fee', invoice.service_fee, false, rowAlt); rowAlt = !rowAlt;
-    }
+    if (invoice.service_fee > 0) { drawRow('Platform Service Fee Paid at Close', 'Fee', invoice.service_fee, false, rowAlt); rowAlt = !rowAlt; }
     if (invoice.fee_credit > 0)  { drawRow('Fee Credit Applied to Invoice', 'Credit', invoice.fee_credit, true, rowAlt);  rowAlt = !rowAlt; }
     for (const li of (invoice.additional_line_items || [])) {
       drawRow(li.description || '', li.type ? (li.type.charAt(0).toUpperCase() + li.type.slice(1)) : '', li.amount, li.type === 'discount', rowAlt);
@@ -228,13 +223,9 @@ Deno.serve(async (req) => {
 
     if (invoice.service_fee > 0) {
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); setTxt(...C.light);
-      doc.text('Less: Platform Service Fee (already paid at close)', lblX, y);
+      doc.text('Less Amount Already Paid (Service Fee)', lblX, y);
       doc.text(`-${fmt(invoice.service_fee)}`, amtX, y, { align: 'right' });
-      y += 13;
-      doc.setFontSize(7.5); setTxt(...C.light);
-      const feeBase = Number(invoice.item_price) || 0;
-      doc.text(`10% × ${fmt(feeBase)} + $30.00 = ${fmt(invoice.service_fee)}`, lblX + 8, y);
-      y += 14;
+      y += 18;
     }
 
     const balanceDue = Math.max(0, Number(invoice.total_amount ?? invoice.item_price) - Number(invoice.service_fee ?? 0));
