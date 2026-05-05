@@ -14,7 +14,23 @@ Deno.serve(async (req) => {
       if (item.make_it_mine_active) continue;
 
       const highestBid = item.highest_bid || 0;
-      if (highestBid <= 0) continue;
+
+      // No bids and timer expired — mark as unsold
+      if (highestBid <= 0) {
+        const elapsed = Date.now() - new Date(item.prisometer_activated_at).getTime();
+        const durationMs = (item.prisometer_duration_hours || 0) * 3600000;
+        if (durationMs > 0 && elapsed >= durationMs) {
+          await base44.asServiceRole.entities.Item.update(item.id, { status: 'unsold' });
+          if (item.seller_email) {
+            await base44.asServiceRole.integrations.Core.SendEmail({
+              to: item.seller_email,
+              subject: `Item unsold: ${item.title}`,
+              body: `Your item "${item.title}" completed its PRI$OMETER™ phase with no bids and has been marked as unsold.\n\nYou can reoffer it for sale at any time from your Seller Dashboard.`,
+            });
+          }
+        }
+        continue;
+      }
 
       // Calculate current live price
       if (!item.prisometer_activated_at || !item.prisometer_duration_hours || !item.prisometer_start_price) continue;
