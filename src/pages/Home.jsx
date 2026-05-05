@@ -5,6 +5,7 @@ import HeroSection from "../components/home/HeroSection";
 import FeaturedItems from "../components/home/FeaturedItems";
 import CategoryCircles from "../components/home/CategoryCircles";
 import HowItWorksPreview from "../components/home/HowItWorksPreview";
+import RecentlyViewed from "../components/home/RecentlyViewed";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Star, Award, Search } from "lucide-react";
@@ -39,6 +40,7 @@ export default function Home() {
     <div>
       <HeroSection />
       <CategoryCircles />
+      <RecentlyViewed />
 
       {/* Search Bar */}
       <section className="py-2 md:py-3 bg-background">

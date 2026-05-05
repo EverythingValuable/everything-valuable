@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +13,17 @@ export default function ProductDetail() {
     queryFn: () => base44.entities.Item.filter({ id: itemId }).then(items => items[0]),
     enabled: !!itemId,
   });
+
+  // Track recently viewed
+  useEffect(() => {
+    if (itemId) {
+      const stored = localStorage.getItem("recentlyViewed");
+      const arr = stored ? JSON.parse(stored) : [];
+      const filtered = arr.filter(id => id !== itemId);
+      const updated = [itemId, ...filtered].slice(0, 50);
+      localStorage.setItem("recentlyViewed", JSON.stringify(updated));
+    }
+  }, [itemId]);
 
   const categoryLabels = {
     fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
