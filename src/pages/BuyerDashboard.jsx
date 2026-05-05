@@ -282,7 +282,10 @@ export default function BuyerDashboard() {
           <TabsList className="mb-6">
             <TabsTrigger value="watchlist" className="gap-1.5"><Heart className="w-3.5 h-3.5" /> Saved</TabsTrigger>
             <TabsTrigger value="bids" className="gap-1.5"><Gavel className="w-3.5 h-3.5" /> Bids</TabsTrigger>
-            <TabsTrigger value="purchases" className="gap-1.5"><ShoppingBag className="w-3.5 h-3.5" /> Purchases</TabsTrigger>
+            <TabsTrigger value="purchases" className="gap-1.5"><Package className="w-3.5 h-3.5" /> Won Items</TabsTrigger>
+            {purchases.some(p => ["paid", "shipped", "delivered"].includes(p.status)) && (
+              <TabsTrigger value="my-purchases" className="gap-1.5"><ShoppingBag className="w-3.5 h-3.5" /> My Purchases</TabsTrigger>
+            )}
             <TabsTrigger value="settings" className="gap-1.5"><Settings className="w-3.5 h-3.5" /> Settings</TabsTrigger>
           </TabsList>
 
@@ -321,22 +324,38 @@ export default function BuyerDashboard() {
             )}
           </TabsContent>
 
-          {/* PURCHASES */}
+          {/* WON ITEMS */}
           <TabsContent value="purchases">
             {purchases.length === 0 ? (
               <Card><CardContent className="p-12 text-center">
-                <ShoppingBag className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                <p className="font-serif text-xl text-muted-foreground">No purchases yet</p>
-                <p className="text-sm text-muted-foreground mt-1">Won items and Make It Mine purchases will appear here</p>
+                <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                <p className="font-serif text-xl text-muted-foreground">No won items yet</p>
+                <p className="text-sm text-muted-foreground mt-1">Items you win will appear here while awaiting invoice & payment</p>
                 <Link to="/browse" className="text-sm text-primary font-medium mt-3 inline-block">Browse Items →</Link>
               </CardContent></Card>
             ) : (
               <div className="space-y-4">
-                {purchases.map(inv => (
+                {purchases.filter(p => !["paid", "shipped", "delivered"].includes(p.status)).map(inv => (
                   <PurchaseRow key={inv.id} invoice={inv} />
                 ))}
+                {purchases.filter(p => !["paid", "shipped", "delivered"].includes(p.status)).length === 0 && (
+                  <Card><CardContent className="p-12 text-center">
+                    <Package className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                    <p className="font-serif text-xl text-muted-foreground">All purchases complete</p>
+                    <p className="text-sm text-muted-foreground mt-1">Check My Purchases for your completed orders</p>
+                  </CardContent></Card>
+                )}
               </div>
             )}
+          </TabsContent>
+
+          {/* MY PURCHASES */}
+          <TabsContent value="my-purchases">
+            <div className="space-y-4">
+              {purchases.filter(p => ["paid", "shipped", "delivered"].includes(p.status)).map(inv => (
+                <PurchaseRow key={inv.id} invoice={inv} />
+              ))}
+            </div>
           </TabsContent>
 
           {/* SETTINGS */}
