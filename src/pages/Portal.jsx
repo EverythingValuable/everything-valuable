@@ -174,14 +174,16 @@ export default function Portal() {
               Start with the kind of property. Keep the value process connected.
             </h2>
           </motion.div>
-          <motion.div variants={containerVariants} className="grid gap-3 md:grid-cols-3">
+          <motion.div variants={containerVariants} className="grid gap-6 md:grid-cols-3">
             {proofPoints.map((point) => {
               const Icon = point.icon;
               return (
-                <motion.div key={point.title} variants={itemVariants} className="rounded-lg border border-border bg-card p-5 shadow-sm">
-                  <Icon className="h-6 w-6 text-primary" />
-                  <h3 className="mt-4 font-display text-base font-extrabold">{point.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{point.description}</p>
+                <motion.div key={point.title} variants={itemVariants} className="flex gap-3 rounded-lg border border-border bg-white p-6 shadow-sm">
+                  <Icon className="h-6 w-6 shrink-0 text-primary" />
+                  <div>
+                    <h3 className="font-display text-base font-extrabold">{point.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{point.description}</p>
+                  </div>
                 </motion.div>
               );
             })}
