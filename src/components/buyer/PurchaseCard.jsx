@@ -21,7 +21,7 @@ const NEXT_STEP = {
   draft:     "Your invoice is being prepared by the seller.",
   pending:   "Your invoice is being prepared by the seller.",
   sent:      "Review your invoice and arrange payment with the seller.",
-  paid:      "Invoice paid. Awaiting shipment, pickup, or release coordination from the seller according to their terms.",
+  paid:      "Invoice paid. Awaiting shipment, pickup, or release coordination from the seller according to seller-defined terms.",
   shipped:   "Your item is on its way. Contact the seller for tracking details.",
   delivered: "Purchase complete. Enjoy your piece.",
   disputed:  "There is an open dispute on this purchase. Contact the seller to resolve.",
@@ -49,19 +49,19 @@ function StatusTimeline({ status }) {
         return (
           <React.Fragment key={step.key}>
             <div className="flex flex-col items-center gap-1 min-w-0">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                done ? "bg-emerald-600 text-white" : "bg-muted border border-border text-muted-foreground"
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                done ? "bg-[#2d5a3d] text-white" : "bg-muted border border-border text-muted-foreground"
               }`}>
-                {done ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Circle className="w-3 h-3" />}
+                {done ? <CheckCircle2 className="w-3 h-3" /> : <Circle className="w-2.5 h-2.5" />}
               </div>
               <span className={`text-center leading-tight whitespace-nowrap text-[10px] font-medium ${
-                done ? "text-emerald-700" : "text-muted-foreground"
-              } ${active && !done ? "text-primary" : ""}`}>
+                done ? "text-[#2d5a3d]" : "text-muted-foreground"
+              }`}>
                 {step.label}
               </span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`h-px flex-1 mb-4 mx-1 ${currentIdx > stepIdx ? "bg-emerald-400" : "bg-border"}`} />
+              <div className={`h-px flex-1 mb-[22px] mx-1 ${currentIdx > stepIdx ? "bg-[#2d5a3d]/50" : "bg-border"}`} />
             )}
           </React.Fragment>
         );
@@ -101,12 +101,12 @@ export default function PurchaseCard({ invoice }) {
   const sellerName = sellerProfile?.display_name || invoice.seller_email;
 
   return (
-    <div className={`rounded-2xl border bg-card overflow-hidden shadow-sm ${isPaid ? "border-emerald-200" : "border-border"}`}>
+    <div className={`rounded-2xl border bg-card overflow-hidden shadow-sm ${isPaid ? "border-[#c8dccf]" : "border-border"}`}>
       {/* Header strip */}
       {isPaid && (
-        <div className="bg-emerald-600 px-5 py-2 flex items-center justify-between">
-          <span className="text-xs font-semibold text-white tracking-wide uppercase">Purchase Confirmed</span>
-          <span className="text-xs text-emerald-100">{invoice.created_date ? format(new Date(invoice.created_date), "MMMM d, yyyy") : ""}</span>
+        <div className="bg-[#2d5a3d] px-5 py-1.5 flex items-center justify-between">
+          <span className="text-[11px] font-semibold text-white/90 tracking-widest uppercase">Purchase Confirmed</span>
+          <span className="text-[11px] text-white/60">{invoice.created_date ? format(new Date(invoice.created_date), "MMMM d, yyyy") : ""}</span>
         </div>
       )}
 
@@ -169,9 +169,9 @@ export default function PurchaseCard({ invoice }) {
                 <>
                   <div className="w-px h-8 bg-border" />
                   <div>
-                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider">Paid Via</p>
-                    <p className="font-sans font-semibold text-emerald-700 capitalize text-sm">
-                      {invoice.payment_method.replace("_", " ")}
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider">Payment Method</p>
+                    <p className="font-sans font-semibold text-[#2d5a3d] capitalize text-sm">
+                      {invoice.payment_method.replace(/_/g, " ")}
                     </p>
                   </div>
                 </>
@@ -187,15 +187,15 @@ export default function PurchaseCard({ invoice }) {
         {nextStep && (
           <div className={`mt-4 rounded-xl px-4 py-3 flex items-start gap-2.5 ${
             isPaid
-              ? "bg-emerald-50 border border-emerald-100"
+              ? "bg-[#f0f5f1] border border-[#c8dccf]"
               : "bg-secondary/40 border border-border"
           }`}>
-            <Clock className={`w-4 h-4 mt-0.5 shrink-0 ${isPaid ? "text-emerald-600" : "text-muted-foreground"}`} />
+            <Clock className={`w-4 h-4 mt-0.5 shrink-0 ${isPaid ? "text-[#2d5a3d]" : "text-muted-foreground"}`} />
             <div>
-              <p className={`text-xs font-semibold mb-0.5 ${isPaid ? "text-emerald-800" : "text-foreground"}`}>
-                {isPaid ? "What Happens Next" : "Next Step"}
+              <p className={`text-xs font-semibold mb-0.5 ${isPaid ? "text-[#2d5a3d]" : "text-foreground"}`}>
+                {isPaid ? "Fulfillment Status" : "Next Step"}
               </p>
-              <p className={`text-xs leading-relaxed ${isPaid ? "text-emerald-700" : "text-muted-foreground"}`}>
+              <p className={`text-xs leading-relaxed ${isPaid ? "text-[#3a7050]" : "text-muted-foreground"}`}>
                 {nextStep}
               </p>
             </div>

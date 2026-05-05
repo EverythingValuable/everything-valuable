@@ -198,7 +198,7 @@ export default function BuyerDashboard() {
 
   return (
     <div className="min-h-screen bg-[hsl(40,20%,97%)]">
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-10">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-10">
 
         {/* Page Header */}
         <div className="mb-8">
@@ -217,11 +217,13 @@ export default function BuyerDashboard() {
               onClick={() => setTab(s.tab)}
               className={`group text-left rounded-2xl border p-4 bg-card shadow-sm hover:shadow-md transition-all duration-200 ${s.border}`}
             >
-              <div className={`w-9 h-9 rounded-xl ${s.bg} flex items-center justify-center mb-3`}>
-                <s.icon className={`w-4 h-4 ${s.accent}`} />
+              <div className="flex items-center justify-between mb-2">
+                <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center`}>
+                  <s.icon className={`w-3.5 h-3.5 ${s.accent}`} />
+                </div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{s.label}</p>
               </div>
-              <p className={`font-sans text-2xl font-bold leading-none ${s.accent}`}>{s.value}</p>
-              <p className="text-xs text-muted-foreground mt-1.5 font-medium">{s.label}</p>
+              <p className={`font-sans text-3xl font-bold leading-none mt-1 ${s.accent}`}>{s.value}</p>
             </button>
           ))}
         </div>
@@ -231,9 +233,9 @@ export default function BuyerDashboard() {
           <TabsList className="mb-6 bg-transparent p-0 h-auto gap-1 flex-wrap">
             {[
               { value: "watchlist", icon: Heart, label: "Watching" },
-              { value: "bids",      icon: Gavel, label: "My Bids" },
+              { value: "bids",      icon: Gavel, label: "Bids" },
               { value: "purchases", icon: Package, label: "Purchases" },
-              { value: "settings",  icon: Settings, label: "My Profile" },
+              { value: "settings",  icon: Settings, label: "Profile" },
             ].map(t => (
               <TabsTrigger
                 key={t.value}
@@ -299,37 +301,59 @@ export default function BuyerDashboard() {
                 <Link to="/browse" className="text-sm text-primary font-medium mt-3 inline-block hover:underline">Browse Items →</Link>
               </CardContent></Card>
             ) : (
-              <div className="space-y-5">
-                {/* Needs action first */}
-                {pendingPurchases.length > 0 && (
-                  <div>
-                    {needsActionCount > 0 && (
-                      <div className="flex items-center gap-2 mb-3">
-                        <AlertCircle className="w-4 h-4 text-orange-500" />
-                        <p className="text-xs font-semibold text-orange-700 uppercase tracking-wide">Action Required</p>
+              <div className="flex gap-8 items-start">
+                {/* Main column */}
+                <div className="flex-1 min-w-0 space-y-5">
+                  {pendingPurchases.length > 0 && (
+                    <div>
+                      {needsActionCount > 0 && (
+                        <div className="flex items-center gap-2 mb-3">
+                          <AlertCircle className="w-4 h-4 text-orange-500" />
+                          <p className="text-xs font-semibold text-orange-700 uppercase tracking-wide">Action Required</p>
+                        </div>
+                      )}
+                      <div className="space-y-4">
+                        {pendingPurchases.map(inv => <PurchaseCard key={inv.id} invoice={inv} />)}
                       </div>
-                    )}
-                    <div className="space-y-4">
-                      {pendingPurchases.map(inv => <PurchaseCard key={inv.id} invoice={inv} />)}
                     </div>
-                  </div>
-                )}
+                  )}
+                  {completedPurchases.length > 0 && (
+                    <div>
+                      {pendingPurchases.length > 0 && (
+                        <div className="flex items-center gap-3 my-5">
+                          <div className="h-px flex-1 bg-border" />
+                          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Completed Purchases</p>
+                          <div className="h-px flex-1 bg-border" />
+                        </div>
+                      )}
+                      <div className="space-y-4">
+                        {completedPurchases.map(inv => <PurchaseCard key={inv.id} invoice={inv} />)}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-                {/* Completed purchases */}
-                {completedPurchases.length > 0 && (
-                  <div>
-                    {pendingPurchases.length > 0 && (
-                      <div className="flex items-center gap-3 my-5">
-                        <div className="h-px flex-1 bg-border" />
-                        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Completed Purchases</p>
-                        <div className="h-px flex-1 bg-border" />
-                      </div>
-                    )}
-                    <div className="space-y-4">
-                      {completedPurchases.map(inv => <PurchaseCard key={inv.id} invoice={inv} />)}
-                    </div>
+                {/* Sidebar */}
+                <div className="hidden lg:block w-64 shrink-0 space-y-4">
+                  <div className="rounded-2xl border border-border bg-card p-5">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Need Assistance?</p>
+                    <p className="text-sm text-foreground font-serif leading-relaxed mb-3">
+                      Our team is here to help with any questions about your purchase, shipping, or payment.
+                    </p>
+                    <a href="mailto:support@everythingvaluable.com" className="text-xs text-primary font-medium hover:underline">
+                      Contact Support →
+                    </a>
                   </div>
-                )}
+                  <div className="rounded-2xl border border-border bg-card p-5">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Buyer Protection</p>
+                    <ul className="space-y-2 text-xs text-muted-foreground leading-relaxed">
+                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span> Seller-verified listings</li>
+                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span> Invoice documentation</li>
+                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span> Dispute resolution support</li>
+                      <li className="flex items-start gap-2"><span className="text-primary mt-0.5">✓</span> Provenance & condition notes</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             )}
           </TabsContent>

@@ -40,8 +40,8 @@ function RecommendedCard({ item }) {
 
   return (
     <Link to={`/item/${item.id}`} className="group block">
-      {/* Image */}
-      <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-muted">
+      {/* Image — fixed aspect ratio so all cards align */}
+      <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-muted">
         {item.images?.[0] ? (
           <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
@@ -50,21 +50,23 @@ function RecommendedCard({ item }) {
           </div>
         )}
         {/* Status badge */}
-        <div className="absolute top-2.5 left-2.5">
-          {isFirstBids && (
-            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[10px] font-semibold backdrop-blur-sm">
-              1stBid$ Active
-            </Badge>
-          )}
-          {isPrisometer && (
-            <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-[10px] font-semibold backdrop-blur-sm">
-              PRI$OMETER™ Live
-            </Badge>
-          )}
-        </div>
-        {/* Countdown pill */}
+        {(isFirstBids || isPrisometer) && (
+          <div className="absolute top-2.5 left-2.5 right-2.5">
+            {isFirstBids && (
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[10px] font-semibold backdrop-blur-sm">
+                1stBid$ Active
+              </Badge>
+            )}
+            {isPrisometer && (
+              <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-[10px] font-semibold backdrop-blur-sm">
+                PRI$OMETER™ Live
+              </Badge>
+            )}
+          </div>
+        )}
+        {/* Countdown pill — always bottom left */}
         {countdown && countdown !== "Ended" && (
-          <div className="absolute bottom-2.5 right-2.5 bg-background/85 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1">
+          <div className="absolute bottom-2.5 left-2.5 bg-background/85 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1">
             <Clock className="w-2.5 h-2.5 text-muted-foreground" />
             <span className="text-[10px] font-medium text-foreground">{countdown}</span>
           </div>
@@ -72,31 +74,31 @@ function RecommendedCard({ item }) {
       </div>
 
       {/* Info */}
-      <div className="mt-2.5 space-y-0.5">
+      <div className="mt-3 space-y-1">
         <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
           {categoryLabels[item.category] || item.category || ""}
         </p>
         <h3 className="font-serif text-sm font-medium leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2">
           {item.title}
         </h3>
-        <div className="flex items-center justify-between pt-1">
-          {displayPrice ? (
-            <span className="font-sans text-sm font-semibold text-foreground">
-              ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+        {displayPrice && (
+          <p className="font-sans text-sm font-bold text-foreground">
+            ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+          </p>
+        )}
+        <div className="flex items-center gap-3 pt-0.5">
+          {item.highest_bid > 0 && (
+            <span className="text-[11px] text-muted-foreground">
+              High: <span className="font-semibold text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
             </span>
-          ) : <span />}
+          )}
           {item.bid_count > 0 && (
-            <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+            <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground">
               <Gavel className="w-2.5 h-2.5" />
               {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
             </span>
           )}
         </div>
-        {item.highest_bid > 0 && (
-          <p className="text-[11px] text-muted-foreground">
-            High bid: <span className="font-semibold text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
-          </p>
-        )}
       </div>
     </Link>
   );
@@ -158,7 +160,7 @@ export default function RecommendedItems({ watchlist, bids, userEmail }) {
   if (recommendedItems.length === 0) return null;
 
   return (
-    <div className="mt-14 pt-8 border-t border-border">
+    <div className="mt-16 pt-10 border-t-2 border-border/60">
       <div className="flex items-end justify-between mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1">
