@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, Gavel, Zap, AlertCircle, Settings, Package, Trophy } from "lucide-react";
+import { Heart, Gavel, Zap, AlertCircle, Settings, Package, Trophy, Bell } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -11,6 +11,7 @@ import BuyerProfileForm from "@/components/buyer/BuyerProfileForm";
 import ActiveBidRow from "@/components/buyer/ActiveBidRow";
 import RecommendedItems from "@/components/buyer/RecommendedItems";
 import PurchaseCard from "@/components/buyer/PurchaseCard";
+import PriceAlertsTab from "@/components/buyer/PriceAlertsTab";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -233,6 +234,7 @@ export default function BuyerDashboard() {
           <TabsList className="mb-6 bg-transparent p-0 h-auto gap-1 flex-wrap">
             {[
               { value: "watchlist", icon: Heart, label: "Watching" },
+              { value: "alerts",    icon: Bell, label: "Price Alerts" },
               { value: "bids",      icon: Gavel, label: "Bids" },
               { value: "purchases", icon: Package, label: "Purchases" },
               { value: "settings",  icon: Settings, label: "Profile" },
@@ -272,6 +274,11 @@ export default function BuyerDashboard() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* PRICE ALERTS */}
+          <TabsContent value="alerts">
+            <PriceAlertsTab userEmail={user?.email} />
           </TabsContent>
 
           {/* BIDS */}

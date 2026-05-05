@@ -1,0 +1,58 @@
+{
+  "name": "PriceAlert",
+  "type": "object",
+  "properties": {
+    "item_id": {
+      "type": "string",
+      "description": "ID of the item being monitored"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who set the alert"
+    },
+    "target_price": {
+      "type": "number",
+      "description": "Target price the user wants to be notified at"
+    },
+    "item_title": {
+      "type": "string",
+      "description": "Item title for email reference"
+    },
+    "item_image_url": {
+      "type": "string",
+      "description": "Item image URL for email"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "triggered",
+        "cancelled"
+      ],
+      "default": "active",
+      "description": "Current status of the alert"
+    },
+    "triggered_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the alert was triggered"
+    },
+    "triggered_price": {
+      "type": "number",
+      "description": "Actual price when alert was triggered"
+    },
+    "trigger_reason": {
+      "type": "string",
+      "enum": [
+        "target_price_reached",
+        "first_bids_started"
+      ],
+      "description": "What triggered the notification"
+    }
+  },
+  "required": [
+    "item_id",
+    "user_email",
+    "target_price"
+  ]
+}

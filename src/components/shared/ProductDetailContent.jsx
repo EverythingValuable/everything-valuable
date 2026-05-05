@@ -15,6 +15,7 @@ import ItemMessaging from "@/components/product/ItemMessaging";
 import DeliveryOptions from "@/components/product/DeliveryOptions";
 import TermsAndConditions from "@/components/product/TermsAndConditions";
 import SimilarLots from "@/components/product/SimilarLots";
+import SetPriceAlertModal from "@/components/product/SetPriceAlertModal";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -104,6 +105,7 @@ function PriceConvergenceModuleWrapper({ item }) {
 
 export default function ProductDetailContent({ itemId }) {
   const [user, setUser] = useState(null);
+  const [priceAlertOpen, setPriceAlertOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -192,35 +194,38 @@ export default function ProductDetailContent({ itemId }) {
 
             {/* Mobile bid panel */}
             <div className="lg:hidden mt-6 space-y-5 w-full">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="outline" className="text-xs">{categoryLabels[item.category] || item.category}</Badge>
-                {item.status === "first_bids" && <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>}
-                {item.status === "prisometer" && <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>}
-              </div>
-              <div className="w-full max-w-full min-w-0">
-                <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words whitespace-normal w-full max-w-full overflow-hidden [overflow-wrap:anywhere]">
-                  {item.title}
-                </h1>
-                {(sellerProfile?.display_name || item.seller_name) && (
-                  <p className="text-sm text-muted-foreground mt-1.5">
-                    Offered by{" "}
-                    <Link to={`/seller/profile?seller=${item.seller_email}`} className="font-medium text-foreground hover:text-primary transition-colors">
-                      {sellerProfile?.display_name || item.seller_name}
-                    </Link>
-                  </p>
-                )}
-              </div>
-              {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
-              {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-xs">{categoryLabels[item.category] || item.category}</Badge>
+              {item.status === "first_bids" && <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>}
+              {item.status === "prisometer" && <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>}
+            </div>
+            <div className="w-full max-w-full min-w-0">
+              <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words whitespace-normal w-full max-w-full overflow-hidden [overflow-wrap:anywhere]">
+                {item.title}
+              </h1>
+              {(sellerProfile?.display_name || item.seller_name) && (
+                <p className="text-sm text-muted-foreground mt-1.5">
+                  Offered by{" "}
+                  <Link to={`/seller/profile?seller=${item.seller_email}`} className="font-medium text-foreground hover:text-primary transition-colors">
+                    {sellerProfile?.display_name || item.seller_name}
+                  </Link>
+                </p>
+              )}
+            </div>
+            {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
+            {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
 
-              <div className="flex gap-3">
-                <Button variant="outline" className={`flex-1 gap-2 h-10 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`} onClick={() => user ? saveMutation.mutate() : base44.auth.redirectToLogin()} disabled={saveMutation.isPending}>
-                  <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} /> {isSaved ? "Saved" : "Save"}
-                </Button>
-                <Button variant="outline" className="flex-1 gap-2 h-10"><Share2 className="w-4 h-4" /> Share</Button>
-              </div>
-              <DeliveryOptions item={item} />
-              <ItemMessaging item={item} user={user} />
+            <div className="flex gap-3">
+              <Button variant="outline" className={`flex-1 gap-2 h-10 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`} onClick={() => user ? saveMutation.mutate() : base44.auth.redirectToLogin()} disabled={saveMutation.isPending}>
+                <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500" : ""}`} /> {isSaved ? "Saved" : "Save"}
+              </Button>
+              <Button variant="outline" className="flex-1 gap-2 h-10"><Share2 className="w-4 h-4" /> Share</Button>
+            </div>
+            <Button onClick={() => user ? setPriceAlertOpen(true) : base44.auth.redirectToLogin()} variant="outline" className="w-full gap-2 h-10">
+              🔔 Price Alert
+            </Button>
+            <DeliveryOptions item={item} />
+            <ItemMessaging item={item} user={user} />
               <Separator />
             </div>
 
@@ -312,6 +317,9 @@ export default function ProductDetailContent({ itemId }) {
                 </Button>
                 <Button variant="outline" className="flex-1 gap-2 h-10"><Share2 className="w-4 h-4" /> Share</Button>
               </div>
+              <Button onClick={() => user ? setPriceAlertOpen(true) : base44.auth.redirectToLogin()} variant="outline" className="w-full gap-2 h-10">
+                🔔 Price Alert
+              </Button>
               <DeliveryOptions item={item} />
               <ItemMessaging item={item} user={user} />
               {sellerProfile?.terms_and_conditions && (
@@ -324,7 +332,14 @@ export default function ProductDetailContent({ itemId }) {
               <div className="px-0">
               <SimilarLots item={item} />
               </div>
-      </div>
-    </div>
-  );
-}
+
+              <SetPriceAlertModal
+              isOpen={priceAlertOpen}
+              onClose={() => setPriceAlertOpen(false)}
+              item={item}
+              user={user}
+              />
+              </div>
+              </div>
+              );
+              }
