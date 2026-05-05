@@ -15,6 +15,7 @@ import CategoryFields from "../components/listing/CategoryFields";
 import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
 
 const LIVE_STATUSES = ["first_bids", "prisometer", "pending_review"];
+const UNSOLD_STATUS = "unsold";
 
 const STEPS = [
   { id: 1, label: "Media",       icon: Camera },
@@ -39,6 +40,7 @@ export default function ListingStudio() {
   const [itemStatus, setItemStatus] = useState("draft");
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const isLive = LIVE_STATUSES.includes(itemStatus);
+  const isUnsold = itemStatus === UNSOLD_STATUS;
   // In live edit mode only steps 1 (photos), 3 (description), and 5 (review) are accessible
   const liveAllowedSteps = [1, 3, 5];
   const [form, setForm] = useState({
@@ -218,6 +220,28 @@ export default function ListingStudio() {
     navigate("/seller");
   };
 
+  const relistNow = async () => {
+    setSaving(true);
+    const now = new Date();
+    const firstBidsEnd = new Date(now.getTime() + form.first_bids_duration_hours * 3600000);
+    await base44.entities.Item.update(editId, buildPayload({
+      status: "first_bids",
+      first_bids_start: now.toISOString(),
+      first_bids_end: firstBidsEnd.toISOString(),
+      highest_bid: 0,
+      bid_count: 0,
+      sold_price: null,
+      sold_to_email: null,
+      sold_via: null,
+      make_it_mine_active: false,
+      make_it_mine_expires: null,
+      prisometer_activated_at: null,
+      current_price: +form.prisometer_start_price || 0,
+    }));
+    setSaving(false);
+    navigate("/seller");
+  };
+
   const cancelSale = async () => {
     setSaving(true);
     await base44.entities.Item.update(editId, { status: "unsold" });
@@ -304,6 +328,14 @@ export default function ListingStudio() {
               <Button variant="outline" size="sm" className="flex-1" onClick={() => setCancelConfirm(false)}>Keep Listing</Button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Unsold relist banner */}
+      {isUnsold && isEditMode && (
+        <div className="bg-amber-50 border-b border-amber-200 px-6 py-2.5 flex items-center gap-2 text-xs text-amber-800">
+          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+          <span><strong>Unsold item:</strong> Update any details, pricing or photos below, then relist when ready.</span>
         </div>
       )}
 
@@ -688,6 +720,15 @@ export default function ListingStudio() {
                       className="gap-2 h-12 text-destructive border-destructive/30 hover:bg-destructive/10"
                     >
                       <XCircle className="w-4 h-4" /> Cancel Sale
+                    </Button>
+                  </div>
+                ) : isUnsold ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <Button variant="outline" onClick={saveDraft} disabled={saving} className="gap-2 h-12">
+                      <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Changes"}
+                    </Button>
+                    <Button onClick={relistNow} disabled={saving || !form.title || !form.prisometer_start_price} className="gap-2 h-12 bg-primary">
+                      <Rocket className="w-4 h-4" /> {saving ? "Relisting…" : "Relist Now"}
                     </Button>
                   </div>
                 ) : (

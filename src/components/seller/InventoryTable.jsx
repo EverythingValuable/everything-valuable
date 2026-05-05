@@ -203,10 +203,10 @@ export default function InventoryTable({ items, view, limit }) {
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-2">
-                      {item.status !== "sold" && item.status !== "unsold" && (
+                      {item.status !== "sold" && (
                         <Link to={`/seller/studio?edit=${item.id}`}>
                           <Button variant="outline" size="sm" className="text-[11px] font-semibold rounded-lg h-8 px-3 border-border/60">
-                            {isLive ? "Manage" : "Edit"}
+                            {isLive ? "Manage" : item.status === "unsold" ? "Edit & Relist" : "Edit"}
                           </Button>
                         </Link>
                       )}
