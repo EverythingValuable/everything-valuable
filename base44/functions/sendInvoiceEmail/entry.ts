@@ -26,25 +26,99 @@ Deno.serve(async (req) => {
 
     const balanceDue = Math.max(0, Number(invoice.total_amount ?? invoice.item_price ?? 0) - Number(invoice.service_fee ?? 0));
 
-    const body = `
-Dear ${invoice.buyer_name || 'Valued Customer'},
+    const totalFormatted = `$${Number(invoice.total_amount ?? invoice.item_price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    const balanceFormatted = `$${balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 
-Thank you for your purchase through Everything Valuable. Please find your invoice details below.
+    const paymentInstructionsHtml = invoice.payment_instructions
+      ? `<tr><td style="padding:24px 0 0;">
+           <p style="margin:0 0 8px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Payment Instructions</p>
+           <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;font-size:14px;line-height:1.7;white-space:pre-line;color:#374151;">${invoice.payment_instructions}</div>
+         </td></tr>`
+      : '';
 
-Item: ${invoice.item_title || 'Your Purchase'}
-Invoice Total: $${Number(invoice.total_amount ?? invoice.item_price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-Balance Due Now: $${balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+    const notesHtml = invoice.notes
+      ? `<tr><td style="padding:16px 0 0;">
+           <p style="margin:0 0 6px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Notes</p>
+           <p style="margin:0;font-size:14px;line-height:1.6;color:#374151;white-space:pre-line;">${invoice.notes}</p>
+         </td></tr>`
+      : '';
 
-${invoice.payment_instructions ? `PAYMENT INSTRUCTIONS:\n${invoice.payment_instructions}\n` : ''}
-You can download your invoice PDF here:
-${invoice.pdf_url}
+    const body = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
 
-${invoice.notes ? `Notes: ${invoice.notes}\n` : ''}
-If you have any questions, please contact ${sellerName}.
+        <!-- Header -->
+        <tr><td style="background:#1a1a1a;padding:28px 32px;text-align:center;">
+          <p style="margin:0;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:0.02em;">Everything Valuable</p>
+          <p style="margin:6px 0 0;font-size:13px;color:#9ca3af;">Invoice from ${sellerName}</p>
+        </td></tr>
 
-Thank you,
-Everything Valuable
-    `.trim();
+        <!-- Body -->
+        <tr><td style="padding:32px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+
+            <!-- Greeting -->
+            <tr><td style="padding-bottom:20px;">
+              <p style="margin:0;font-size:16px;color:#111827;">Dear ${invoice.buyer_name || 'Valued Customer'},</p>
+              <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#4b5563;">Thank you for your purchase through <strong>Everything Valuable</strong>. Please find your invoice details below.</p>
+            </td></tr>
+
+            <!-- Divider -->
+            <tr><td style="border-top:1px solid #e5e7eb;padding-bottom:20px;"></td></tr>
+
+            <!-- Item -->
+            <tr><td style="padding-bottom:4px;">
+              <p style="margin:0 0 4px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;">Item</p>
+              <p style="margin:0;font-size:15px;font-weight:600;color:#111827;">${invoice.item_title || 'Your Purchase'}</p>
+            </td></tr>
+
+            <!-- Amounts -->
+            <tr><td style="padding:20px 0 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border-radius:8px;overflow:hidden;">
+                <tr>
+                  <td style="padding:14px 16px;font-size:14px;color:#4b5563;border-bottom:1px solid #e5e7eb;">Invoice Total</td>
+                  <td style="padding:14px 16px;font-size:14px;font-weight:600;color:#111827;text-align:right;border-bottom:1px solid #e5e7eb;">${totalFormatted}</td>
+                </tr>
+                <tr>
+                  <td style="padding:14px 16px;font-size:15px;font-weight:700;color:#111827;">Balance Due Now</td>
+                  <td style="padding:14px 16px;font-size:15px;font-weight:700;color:#b45309;text-align:right;">${balanceFormatted}</td>
+                </tr>
+              </table>
+            </td></tr>
+
+            ${paymentInstructionsHtml}
+            ${notesHtml}
+
+            <!-- PDF Button -->
+            <tr><td style="padding:28px 0 0;text-align:center;">
+              <a href="${invoice.pdf_url}" style="display:inline-block;background:#1a1a1a;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 28px;border-radius:8px;letter-spacing:0.01em;">⬇ Download Invoice PDF</a>
+            </td></tr>
+
+            <!-- Divider -->
+            <tr><td style="border-top:1px solid #e5e7eb;padding-top:20px;margin-top:28px;"></td></tr>
+
+            <!-- Footer note -->
+            <tr><td style="padding-top:4px;">
+              <p style="margin:0;font-size:13px;color:#9ca3af;line-height:1.6;">If you have any questions, please contact <strong>${sellerName}</strong>.</p>
+            </td></tr>
+
+          </table>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="background:#f9fafb;padding:18px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+          <p style="margin:0;font-size:12px;color:#9ca3af;">© Everything Valuable · This is an automated invoice notification.</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       from_name: 'Everything Valuable',
