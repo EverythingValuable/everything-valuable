@@ -24,8 +24,8 @@ export default function FeeBreakdownDisplay({ amount, onConfirmBid, onCancel, sh
       </div>
 
       <div className="border-t border-border pt-3 space-y-2">
-        <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Due Now If You Win</p>
-        <div className="text-xs text-muted-foreground mb-2">Upfront Service Fee Payment</div>
+        <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">If You Win</p>
+        <div className="text-xs text-muted-foreground mb-2">Card on file will be charged automatically</div>
         <div className="flex justify-between gap-2 min-w-0 font-semibold">
           <span></span>
           <span className="shrink-0">${serviceFee.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
