@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Plus, Package, Trash2, ArrowRight } from "lucide-react";
+import { Plus, Package, Trash2, ArrowRight, Clock, Gavel, ShieldCheck } from "lucide-react";
+import { formatDistanceToNow, isPast } from "date-fns";
 
 const STATUS_CONFIG = {
   draft:         { label: "Draft",             cls: "bg-gray-100 text-gray-500 border-gray-200" },
@@ -103,7 +104,9 @@ export default function InventoryTable({ items, view, limit }) {
               <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase">Item</th>
               <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden md:table-cell">Category</th>
               <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase">Status</th>
-              <th className="text-right px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden lg:table-cell">Price</th>
+              <th className="text-right px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden lg:table-cell">Price / Reserve</th>
+              <th className="text-right px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden xl:table-cell">Bids</th>
+              <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden xl:table-cell">Timer</th>
               <th className="px-5 py-3.5 w-24"></th>
             </tr>
           </thead>
@@ -145,6 +148,57 @@ export default function InventoryTable({ items, view, limit }) {
                   <td className="px-4 py-4 hidden lg:table-cell text-right">
                     <p className={`font-price text-sm font-semibold ${price.green ? "text-emerald-700" : "text-foreground"}`}>{price.value}</p>
                     <p className="text-[10px] text-muted-foreground/50 mt-0.5">{price.label}</p>
+                    {item.reserve_price > 0 && (
+                      <div className="flex items-center justify-end gap-1 mt-1.5">
+                        <ShieldCheck className="w-3 h-3 text-muted-foreground/40" />
+                        <span className="text-[10px] text-muted-foreground/50">Reserve: ${item.reserve_price.toLocaleString()}</span>
+                      </div>
+                    )}
+                  </td>
+                  {/* Bids column */}
+                  <td className="px-4 py-4 hidden xl:table-cell text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <Gavel className="w-3.5 h-3.5 text-muted-foreground/40" />
+                      <span className="font-price text-sm font-semibold text-foreground">{item.bid_count || 0}</span>
+                    </div>
+                    {item.highest_bid > 0 && (
+                      <p className="text-[10px] text-muted-foreground/50 mt-0.5">High: ${item.highest_bid.toLocaleString()}</p>
+                    )}
+                  </td>
+                  {/* Timer column */}
+                  <td className="px-4 py-4 hidden xl:table-cell">
+                    {item.status === "first_bids" && item.first_bids_end && (
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                        <div>
+                          <p className="text-[11px] font-medium text-blue-700">
+                            {isPast(new Date(item.first_bids_end)) ? "Ended" : formatDistanceToNow(new Date(item.first_bids_end), { addSuffix: true })}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground/50">1stBid$ ends</p>
+                        </div>
+                      </div>
+                    )}
+                    {item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours && (
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                        <div>
+                          {(() => {
+                            const end = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000);
+                            return (
+                              <>
+                                <p className={`text-[11px] font-medium ${isPast(end) ? "text-muted-foreground" : "text-red-700"}`}>
+                                  {isPast(end) ? "Expired" : formatDistanceToNow(end, { addSuffix: true })}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground/50">PRI$OMETER ends</p>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    )}
+                    {!["first_bids", "prisometer"].includes(item.status) && (
+                      <span className="text-[11px] text-muted-foreground/40">—</span>
+                    )}
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-2">
