@@ -54,12 +54,12 @@ function RecommendedCard({ item }) {
           <div className="absolute top-2.5 left-2.5 right-2.5">
             {isFirstBids && (
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[10px] font-semibold backdrop-blur-sm">
-                1stBid$ Active
+              1stBid$ Live
               </Badge>
-            )}
-            {isPrisometer && (
+              )}
+              {isPrisometer && (
               <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-[10px] font-semibold backdrop-blur-sm">
-                PRI$OMETER™ Live
+              PRI$OMETER™ Active
               </Badge>
             )}
           </div>
@@ -138,19 +138,20 @@ export default function RecommendedItems({ watchlist, bids, userEmail }) {
     queryKey: ["recommended-items", userEmail],
     placeholderData: (prev) => prev,
     queryFn: async () => {
+      const activeStatuses = ["first_bids", "prisometer"];
       if (topCategories.length === 0) {
         const items = await base44.entities.Item.filter({ status: "first_bids" }, "-created_date", 8);
-        return items.filter(i => !allEngagedItemIds.includes(i.id)).slice(0, 6);
+        return items.filter(i => !allEngagedItemIds.includes(i.id) && activeStatuses.includes(i.status)).slice(0, 6);
       }
       const results = await Promise.all(
-        topCategories.map(cat =>
-          base44.entities.Item.filter({ category: cat, status: "first_bids" }, "-created_date", 8)
+        topCategories.flatMap(cat =>
+          activeStatuses.map(status => base44.entities.Item.filter({ category: cat, status }, "-created_date", 8))
         )
       );
       const flat = results.flat();
       const seen = new Set();
       return flat
-        .filter(i => !allEngagedItemIds.includes(i.id) && !seen.has(i.id) && seen.add(i.id))
+        .filter(i => !allEngagedItemIds.includes(i.id) && activeStatuses.includes(i.status) && !seen.has(i.id) && seen.add(i.id))
         .slice(0, 6);
     },
     enabled: !!userEmail,

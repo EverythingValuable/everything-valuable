@@ -47,7 +47,7 @@ export default function RecentlyViewed() {
           base44.entities.Item.filter({ id }).then(r => r[0]).catch(() => null)
         )
       );
-      return results.filter(Boolean);
+      return results.filter(item => item && ["first_bids", "prisometer"].includes(item.status));
     },
     enabled: recentIds.length > 0,
     staleTime: 60000,
@@ -114,11 +114,7 @@ export default function RecentlyViewed() {
                   <h4 className="font-serif text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                     {item.title}
                   </h4>
-                  {item.prisometer_start_price && (
-                    <p className="text-sm font-bold text-foreground mt-1">
-                      ${item.prisometer_start_price.toLocaleString("en-US", { minimumFractionDigits: 0 })}
-                    </p>
-                  )}
+
                 </Link>
               </motion.div>
             ))}
