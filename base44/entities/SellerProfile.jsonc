@@ -117,16 +117,13 @@
         "type": "object",
         "properties": {
           "min": {
-            "type": "number",
-            "description": "Minimum price for this tier"
+            "type": "number"
           },
           "max": {
-            "type": "number",
-            "description": "Maximum price for this tier"
+            "type": "number"
           },
           "increment": {
-            "type": "number",
-            "description": "Bid increment in this tier"
+            "type": "number"
           }
         },
         "required": [
@@ -151,24 +148,34 @@
           "max": 999999999,
           "increment": 250
         }
-      ],
-      "description": "Price-range-based bidding increment tiers"
+      ]
     },
     "terms_and_conditions": {
-      "type": "string",
-      "description": "Default terms and conditions used on invoices"
+      "type": "string"
     },
     "payment_instructions": {
-      "type": "string",
-      "description": "Default payment instructions used on invoices (bank details, PayPal, etc.)"
+      "type": "string"
     },
     "notes": {
-      "type": "string",
-      "description": "Default notes included on every invoice"
+      "type": "string"
     },
     "shipping_info": {
-      "type": "string",
-      "description": "Detailed shipping information"
+      "type": "string"
+    },
+    "listing_custom_fields_template": {
+      "type": "array",
+      "description": "Saved template of custom tracking fields shown on every new listing",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [

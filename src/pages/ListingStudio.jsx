@@ -123,15 +123,19 @@ export default function ListingStudio() {
         base44.entities.SellerProfile.filter({ user_email: user.email }),
         editId ? base44.entities.Item.get(editId) : Promise.resolve(null),
       ]);
-      setSellerProfile(profiles[0] || null);
+      const profile = profiles[0] || null;
+      setSellerProfile(profile);
       if (item) {
         setItemStatus(item.status || "draft");
         // Parse custom_fields from internal_notes if stored there as JSON
-        let customFields = [];
+        // Seed values from stored data; labels/types come from profile template
+        const template = profile?.listing_custom_fields_template || [];
+        let storedValues = {};
         try {
           const parsed = JSON.parse(item.internal_notes || "{}");
-          customFields = parsed.custom_fields || [];
+          (parsed.custom_fields || []).forEach(f => { storedValues[f.label] = f.value; });
         } catch {}
+        const customFields = template.map(f => ({ ...f, value: storedValues[f.label] ?? "" }));
         setForm({
           images: item.images || [],
           title: item.title || "",
@@ -172,7 +176,10 @@ export default function ListingStudio() {
           custom_fields: customFields,
         });
       } else {
-        setForm(f => ({ ...f, location: profiles[0]?.location || "" }));
+        // New listing — seed custom fields from profile template (empty values)
+        const template = profile?.listing_custom_fields_template || [];
+        const seededFields = template.map(f => ({ ...f, value: "" }));
+        setForm(f => ({ ...f, location: profile?.location || "", custom_fields: seededFields }));
       }
       setLoading(false);
     };
@@ -315,6 +322,19 @@ export default function ListingStudio() {
     }
     setSaving(false);
     navigate("/seller");
+  };
+
+  // Save the field structure (label + type, no values) back to seller profile as template
+  const saveFieldTemplate = async (fields) => {
+    if (!sellerProfile?.id) return;
+    const template = fields.map(({ label, type }) => ({ label, type }));
+    await base44.entities.SellerProfile.update(sellerProfile.id, { listing_custom_fields_template: template });
+    setSellerProfile(p => ({ ...p, listing_custom_fields_template: template }));
+  };
+
+  const handleCustomFieldsChange = (fields) => {
+    set("custom_fields", fields);
+    saveFieldTemplate(fields);
   };
 
   const exportCSV = () => {
@@ -540,10 +560,10 @@ export default function ListingStudio() {
 
           {/* CUSTOM TRACKING FIELDS */}
           <Section title="Custom Tracking Fields">
-            <p className="text-xs text-muted-foreground -mt-2">Add your own fields to track internal data (cost, insurance value, location ref, etc.). These are private and exportable via CSV.</p>
+            <p className="text-xs text-muted-foreground -mt-2">Add your own fields to track internal data (cost, insurance value, etc.). Your field layout is saved to your profile and pre-filled on every new listing.</p>
             <CustomFieldsEditor
               fields={form.custom_fields}
-              onChange={v => set("custom_fields", v)}
+              onChange={handleCustomFieldsChange}
             />
             <Button variant="outline" size="sm" onClick={exportCSV} className="gap-1.5 text-xs mt-1">
               <Download className="w-3.5 h-3.5" /> Export All Fields as CSV
