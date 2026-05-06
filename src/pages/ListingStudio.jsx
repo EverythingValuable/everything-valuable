@@ -511,6 +511,18 @@ export default function ListingStudio() {
             )}
           </Section>
 
+          {/* INVENTORY # + LOCATION — always visible at top */}
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Inventory Number" hint="your internal reference">
+                <Input placeholder="e.g. EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
+              </Field>
+              <Field label="Physical Location" hint="where is this item stored?">
+                <Input placeholder="e.g. Kingston NY 12401, Warehouse B" value={form.location} onChange={e => set("location", e.target.value)} />
+              </Field>
+            </div>
+          </div>
+
           {/* ITEM DETAILS */}
           <Section title="Item Details" locked={isLive}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -542,9 +554,6 @@ export default function ListingStudio() {
               </Field>
               <Field label="Materials">
                 <Input placeholder="e.g. Oil on canvas, Bronze" value={form.materials} onChange={e => set("materials", e.target.value)} />
-              </Field>
-              <Field label="Location">
-                <Input placeholder="e.g. Kingston NY 12401" value={form.location} onChange={e => set("location", e.target.value)} />
               </Field>
               <Field label="Origin">
                 <Input placeholder="e.g. France" value={form.origin} onChange={e => set("origin", e.target.value)} />
@@ -580,11 +589,9 @@ export default function ListingStudio() {
           </Section>
 
           {/* INVENTORY & OWNERSHIP */}
-          <Section title="Inventory & Ownership">
+          <Section title="Ownership">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Inventory Number" hint="your internal reference">
-                <Input placeholder="e.g. EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
-              </Field>
+              <div className="sm:col-span-2">
               <Field label="Ownership Type">
                 <div className="flex gap-2">
                   {[["owned", "Self-Owned"], ["consignment", "Consignment"]].map(([val, label]) => (
@@ -599,6 +606,7 @@ export default function ListingStudio() {
                   ))}
                 </div>
               </Field>
+              </div>
             </div>
 
             {form.ownership_type === "consignment" && (
