@@ -110,7 +110,7 @@ function SavedItemCard({ itemId, watchlistId }) {
   );
 }
 
-const STAT_CARDS = (watchlist, activeBids, leadingBids, needsActionCount) => [
+const STAT_CARDS = (watchlist, activeBids, outbidCount, needsActionCount) => [
   {
     label: "Watching",
     value: watchlist.length,
@@ -130,13 +130,13 @@ const STAT_CARDS = (watchlist, activeBids, leadingBids, needsActionCount) => [
     border: "border-primary/15",
   },
   {
-    label: "Leading",
-    value: leadingBids,
+    label: "Outbid",
+    value: outbidCount,
     icon: Trophy,
     tab: "bids",
-    accent: "text-amber-600",
-    bg: "bg-amber-50",
-    border: "border-amber-100",
+    accent: outbidCount > 0 ? "text-amber-600" : "text-muted-foreground",
+    bg: outbidCount > 0 ? "bg-amber-50" : "bg-muted/50",
+    border: outbidCount > 0 ? "border-amber-100" : "border-border",
   },
   {
     label: "Needs Action",
@@ -189,13 +189,13 @@ export default function BuyerDashboard() {
   });
 
   const activeBids = bids.filter(b => b.status !== "lost");
-  const leadingBids = bids.filter(b => b.status === "active").length; // "active" = currently leading
+  const outbidCount = bids.filter(b => b.status === "outbid").length;
   const needsActionCount = purchases.filter(p => ["sent"].includes(p.status)).length;
 
   const pendingPurchases = purchases.filter(p => !["paid", "shipped", "delivered"].includes(p.status));
   const completedPurchases = purchases.filter(p => ["paid", "shipped", "delivered"].includes(p.status));
 
-  const statCards = STAT_CARDS(watchlist, activeBids, leadingBids, needsActionCount);
+  const statCards = STAT_CARDS(watchlist, activeBids, outbidCount, needsActionCount);
 
   return (
     <div className="min-h-screen bg-[hsl(40,20%,97%)]">
