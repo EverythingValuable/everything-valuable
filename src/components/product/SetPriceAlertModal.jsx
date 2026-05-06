@@ -71,7 +71,7 @@ export default function SetPriceAlertModal({ isOpen, onClose, item, user }) {
             Price Alert
           </DialogTitle>
           <DialogDescription>
-            Get notified when {item?.title} reaches your target price or if 1stBid$ is triggered.
+            Get notified when {item?.title} reaches your target price or when PRI$OMETER™ activates.
           </DialogDescription>
         </DialogHeader>
 
@@ -109,7 +109,7 @@ export default function SetPriceAlertModal({ isOpen, onClose, item, user }) {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2">
               <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-blue-700">
-                You'll also be notified if 1stBid$ starts on this item, regardless of price.
+                You'll also be notified when PRI$OMETER™ activates on this item, regardless of your target price.
               </p>
             </div>
 
