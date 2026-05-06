@@ -1,0 +1,46 @@
+{
+  "name": "SellerInquiry",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "seller_type": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "gallery",
+        "dealer",
+        "auction_house",
+        "estate",
+        "other"
+      ]
+    },
+    "specialty": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "approved",
+        "declined"
+      ],
+      "default": "new"
+    }
+  },
+  "required": [
+    "full_name",
+    "email"
+  ]
+}

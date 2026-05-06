@@ -1,0 +1,39 @@
+{
+  "name": "Bid",
+  "type": "object",
+  "properties": {
+    "item_id": {
+      "type": "string"
+    },
+    "bidder_email": {
+      "type": "string"
+    },
+    "bidder_name": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "first_bids",
+        "prisometer"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "outbid",
+        "won",
+        "lost"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "item_id",
+    "amount"
+  ]
+}

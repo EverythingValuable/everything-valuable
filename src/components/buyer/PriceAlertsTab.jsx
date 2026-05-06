@@ -84,10 +84,16 @@ export default function PriceAlertsTab({ userEmail }) {
                         <Link to={`/item/${alert.item_id}`} className="font-serif text-sm font-medium text-foreground hover:text-primary transition-colors line-clamp-2">
                           {alert.item_title}
                         </Link>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
                           <Badge variant="outline" className={statusLabels.active.color}>
                             {statusLabels.active.label}
                           </Badge>
+                          {item?.status === "first_bids" && (
+                            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-xs">1stBid$™</Badge>
+                          )}
+                          {item?.status === "prisometer" && (
+                            <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-xs">PRI$OMETER™</Badge>
+                          )}
                           <span className="text-xs text-muted-foreground">
                             Target: <span className="font-semibold text-foreground">${alert.target_price.toLocaleString("en-US")}</span>
                           </span>

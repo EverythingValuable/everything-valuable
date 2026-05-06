@@ -1,0 +1,16 @@
+{
+  "name": "WatchlistItem",
+  "type": "object",
+  "properties": {
+    "item_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "item_id",
+    "user_email"
+  ]
+}

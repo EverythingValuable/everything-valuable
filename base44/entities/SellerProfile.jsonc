@@ -1,0 +1,177 @@
+{
+  "name": "SellerProfile",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "seller_type": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "gallery",
+        "dealer",
+        "auction_house",
+        "estate"
+      ]
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "legal_name": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "address_line1": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string",
+      "description": "Default item location (e.g., Kingston NY 12401)"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "about": {
+      "type": "string"
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "website": {
+      "type": "string"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "onboarding_complete": {
+      "type": "boolean",
+      "default": false
+    },
+    "shipping_preferences": {
+      "type": "string",
+      "enum": [
+        "worldwide",
+        "domestic",
+        "local_pickup",
+        "quote_required"
+      ],
+      "default": "worldwide"
+    },
+    "return_policy": {
+      "type": "string",
+      "enum": [
+        "no_returns",
+        "7_days",
+        "14_days",
+        "30_days",
+        "case_by_case"
+      ],
+      "default": "no_returns"
+    },
+    "tax_id": {
+      "type": "string"
+    },
+    "payout_info": {
+      "type": "string"
+    },
+    "default_first_bids_hours": {
+      "type": "number",
+      "default": 72
+    },
+    "default_prisometer_hours": {
+      "type": "number",
+      "default": 48
+    },
+    "default_below_reserve_percent": {
+      "type": "number",
+      "default": 10
+    },
+    "bid_increment_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": "number",
+            "description": "Minimum price for this tier"
+          },
+          "max": {
+            "type": "number",
+            "description": "Maximum price for this tier"
+          },
+          "increment": {
+            "type": "number",
+            "description": "Bid increment in this tier"
+          }
+        },
+        "required": [
+          "min",
+          "max",
+          "increment"
+        ]
+      },
+      "default": [
+        {
+          "min": 0,
+          "max": 1000,
+          "increment": 50
+        },
+        {
+          "min": 1001,
+          "max": 5000,
+          "increment": 100
+        },
+        {
+          "min": 5001,
+          "max": 999999999,
+          "increment": 250
+        }
+      ],
+      "description": "Price-range-based bidding increment tiers"
+    },
+    "terms_and_conditions": {
+      "type": "string",
+      "description": "Default terms and conditions used on invoices"
+    },
+    "payment_instructions": {
+      "type": "string",
+      "description": "Default payment instructions used on invoices (bank details, PayPal, etc.)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Default notes included on every invoice"
+    },
+    "shipping_info": {
+      "type": "string",
+      "description": "Detailed shipping information"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

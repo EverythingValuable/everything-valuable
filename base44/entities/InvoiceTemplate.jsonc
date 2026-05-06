@@ -1,0 +1,54 @@
+{
+  "name": "InvoiceTemplate",
+  "type": "object",
+  "properties": {
+    "seller_email": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Template name, e.g. 'Standard Sale'"
+    },
+    "payment_instructions": {
+      "type": "string"
+    },
+    "terms_and_conditions": {
+      "type": "string"
+    },
+    "additional_line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "tax",
+              "shipping",
+              "discount",
+              "fee",
+              "other"
+            ]
+          }
+        },
+        "required": [
+          "description",
+          "type"
+        ]
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "seller_email",
+    "name"
+  ]
+}
