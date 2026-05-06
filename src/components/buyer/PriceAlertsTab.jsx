@@ -98,14 +98,19 @@ export default function PriceAlertsTab({ userEmail }) {
                             Target: <span className="font-semibold text-foreground">${alert.target_price.toLocaleString("en-US")}</span>
                           </span>
                         </div>
-                        {item?.current_price && (
-                          <p className="text-xs text-muted-foreground mt-1.5">
-                            Current: ${item.current_price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                            {item.current_price <= alert.target_price && (
-                              <span className="text-green-600 ml-1 font-medium">✓ Target reached!</span>
-                            )}
-                          </p>
-                        )}
+                        {item && (() => {
+                          const displayPrice = item.status === "prisometer" && item.current_price
+                            ? item.current_price
+                            : item.prisometer_start_price;
+                          return displayPrice ? (
+                            <p className="text-xs text-muted-foreground mt-1.5">
+                              {item.status === "prisometer" ? "Live price" : "Starting price"}: ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                              {displayPrice <= alert.target_price && (
+                                <span className="text-green-600 ml-1 font-medium">✓ Target reached!</span>
+                              )}
+                            </p>
+                          ) : null;
+                        })()}
                       </div>
                       <button
                         onClick={() => deleteAlertMutation.mutate(alert.id)}
