@@ -201,6 +201,11 @@ export default function SellerAccess() {
               <p className="text-muted-foreground max-w-sm mx-auto">
                 Thank you! We'll review your application and get back to you within 1–3 business days.
               </p>
+              <div className="mt-6">
+                <Button variant="outline" onClick={() => window.location.href = "/browse"} className="gap-2">
+                  Explore Listings
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
