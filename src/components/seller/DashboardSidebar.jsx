@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -7,8 +7,9 @@ import {
   LayoutDashboard, Plus, Upload, Package, FileText,
   Gavel, Activity, Clock, CheckCircle2, XCircle,
   MessageSquare, BarChart2, User, Settings, ChevronLeft,
-  Tag, Layers
+  Tag, Layers, HeadphonesIcon
 } from "lucide-react";
+import ContactSupportModal from "@/components/shared/ContactSupportModal";
 
 const navGroups = [
   {
@@ -50,6 +51,7 @@ const navGroups = [
 export default function DashboardSidebar() {
   const location = useLocation();
   const urlView = new URLSearchParams(location.search).get("view");
+  const [supportOpen, setSupportOpen] = useState(false);
 
   const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
   const { data: profile } = useQuery({
@@ -141,9 +143,17 @@ export default function DashboardSidebar() {
         ))}
       </nav>
 
-      <div className="px-6 py-4 border-t border-border">
+      <div className="px-6 py-4 border-t border-border space-y-2">
+        <button
+          onClick={() => setSupportOpen(true)}
+          className="flex items-center gap-2 text-[12px] text-muted-foreground hover:text-foreground transition-colors w-full"
+        >
+          <HeadphonesIcon className="w-3.5 h-3.5" /> Contact Support
+        </button>
         <p className="text-[10px] text-muted-foreground/40 tracking-wide">© Everything Valuable</p>
       </div>
+
+      <ContactSupportModal open={supportOpen} onClose={() => setSupportOpen(false)} user={user} />
     </aside>
   );
 }

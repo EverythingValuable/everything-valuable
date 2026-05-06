@@ -12,6 +12,7 @@ import ActiveBidRow from "@/components/buyer/ActiveBidRow";
 import RecommendedItems from "@/components/buyer/RecommendedItems";
 import PurchaseCard from "@/components/buyer/PurchaseCard";
 import PriceAlertsTab from "@/components/buyer/PriceAlertsTab";
+import ContactSupportModal from "@/components/shared/ContactSupportModal";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -154,6 +155,7 @@ export default function BuyerDashboard() {
   const searchParams = new URLSearchParams(location.search);
   const defaultTab = searchParams.get("tab") || "watchlist";
   const [tab, setTab] = useState(defaultTab);
+  const [supportOpen, setSupportOpen] = useState(false);
 
   const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
 
@@ -347,9 +349,9 @@ export default function BuyerDashboard() {
                     <p className="text-sm text-foreground font-serif leading-relaxed mb-3">
                       Our team is here to help with any questions about your purchase, shipping, or payment.
                     </p>
-                    <a href="mailto:support@everythingvaluable.com" className="text-xs text-primary font-medium hover:underline">
+                    <button onClick={() => setSupportOpen(true)} className="text-xs text-primary font-medium hover:underline text-left">
                       Contact Support →
-                    </a>
+                    </button>
                   </div>
                   <div className="rounded-2xl border border-border bg-card p-5">
                     <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Buyer Protection</p>
@@ -377,6 +379,8 @@ export default function BuyerDashboard() {
 
         {/* Recommendations */}
         <RecommendedItems watchlist={watchlist} bids={bids} userEmail={user?.email} />
+
+        <ContactSupportModal open={supportOpen} onClose={() => setSupportOpen(false)} user={user} />
       </div>
     </div>
   );
