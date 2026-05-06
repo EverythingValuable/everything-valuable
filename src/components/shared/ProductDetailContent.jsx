@@ -341,7 +341,7 @@ export default function ProductDetailContent({ itemId }) {
               <SimilarLots item={item} />
               </div>
 
-              <ContactSupportModal open={supportOpen} onClose={() => setSupportOpen(false)} user={user} />
+              <ContactSupportModal open={supportOpen} onClose={() => setSupportOpen(false)} user={user} item={item} />
               <SetPriceAlertModal
               isOpen={priceAlertOpen}
               onClose={() => setPriceAlertOpen(false)}

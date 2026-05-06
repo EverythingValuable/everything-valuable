@@ -57,11 +57,18 @@ function TicketRow({ ticket }) {
           <div className="grid grid-cols-2 gap-3 text-xs">
             {[
               ["Submitted", ticket.created_date ? new Date(ticket.created_date).toLocaleDateString() : "—"],
-              ["Related Item", ticket.related_item_id || "—"],
               ["Assigned Admin", ticket.assigned_admin || "Unassigned"],
             ].map(([k, v]) => (
               <div key={k}><p className="text-muted-foreground uppercase tracking-wide mb-0.5">{k}</p><p className="font-medium">{v}</p></div>
             ))}
+            {ticket.related_item_id && (
+              <div className="col-span-2">
+                <p className="text-muted-foreground uppercase tracking-wide mb-0.5">Related Item</p>
+                <a href={`/item/${ticket.related_item_id}`} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">
+                  View Item →
+                </a>
+              </div>
+            )}
           </div>
           <Textarea placeholder="Reply to user…" value={reply} onChange={e => setReply(e.target.value)} rows={3} className="text-sm" />
           <div className="flex items-center gap-2 flex-wrap">

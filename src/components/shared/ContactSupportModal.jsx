@@ -21,7 +21,7 @@ const CATEGORIES = [
   { value: "other", label: "Other" },
 ];
 
-export default function ContactSupportModal({ open, onClose, user, defaultCategory }) {
+export default function ContactSupportModal({ open, onClose, user, defaultCategory, item }) {
   const [form, setForm] = useState({
     category: defaultCategory || "",
     subject: "",
@@ -38,6 +38,7 @@ export default function ContactSupportModal({ open, onClose, user, defaultCatego
       description: form.description,
       status: "open",
       priority: "medium",
+      ...(item ? { related_item_id: item.id, subject: form.subject || item.title } : {}),
     }),
     onSuccess: () => setDone(true),
   });
@@ -69,6 +70,11 @@ export default function ContactSupportModal({ open, onClose, user, defaultCatego
           </div>
         ) : (
           <div className="space-y-4 pt-1">
+            {item && (
+              <div className="bg-muted/50 rounded-lg px-3 py-2 text-xs text-muted-foreground">
+                Re: <span className="font-medium text-foreground">{item.title}</span>
+              </div>
+            )}
             <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">Category *</label>
               <Select value={form.category} onValueChange={v => setForm(f => ({ ...f, category: v }))}>
