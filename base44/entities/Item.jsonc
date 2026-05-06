@@ -68,7 +68,12 @@
       "type": "string"
     },
     "location": {
-      "type": "string"
+      "type": "string",
+      "description": "Internal storage location (not shown to buyers)"
+    },
+    "customer_location": {
+      "type": "string",
+      "description": "Public-facing location shown to buyers (e.g. New York, NY)"
     },
     "inventory_number": {
       "type": "string",

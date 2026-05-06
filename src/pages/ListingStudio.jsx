@@ -116,6 +116,7 @@ export default function ListingStudio() {
     consignor_name: "", consignor_email: "", consignor_phone: "",
     consignor_address: "", consignor_commission_percent: "",
     consignor_notes: "",
+    customer_location: "",
   });
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
@@ -187,6 +188,7 @@ export default function ListingStudio() {
           consignor_address: item.consignor_address || "",
           consignor_commission_percent: item.consignor_commission_percent || "",
           consignor_notes: item.consignor_notes || "",
+          customer_location: item.customer_location || "",
         });
       } else {
         // New listing — seed custom fields from profile template (empty values)
@@ -235,6 +237,7 @@ export default function ListingStudio() {
     period: form.period,
     origin: form.origin,
     location: form.location,
+    customer_location: form.customer_location || undefined,
     marks: form.marks || undefined,
     condition_notes: form.condition_notes,
     shipping_notes: form.shipping_notes,
@@ -512,13 +515,17 @@ export default function ListingStudio() {
           </Section>
 
           {/* INVENTORY # + LOCATION — always visible at top */}
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Inventory Number" hint="your internal reference">
+          <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+            <h3 className="font-serif text-base font-semibold text-foreground">Inventory & Location</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Field label="Inventory Number" hint="internal reference only">
                 <Input placeholder="e.g. EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
               </Field>
-              <Field label="Physical Location" hint="where is this item stored?">
-                <Input placeholder="e.g. Kingston NY 12401, Warehouse B" value={form.location} onChange={e => set("location", e.target.value)} />
+              <Field label="Internal Storage Location" hint="not shown to buyers">
+                <Input placeholder="e.g. Warehouse B, Shelf 3" value={form.location} onChange={e => set("location", e.target.value)} />
+              </Field>
+              <Field label="Item Location" hint="shown to buyers">
+                <Input placeholder="e.g. New York, NY" value={form.customer_location} onChange={e => set("customer_location", e.target.value)} />
               </Field>
             </div>
           </div>

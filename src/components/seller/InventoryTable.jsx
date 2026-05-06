@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Package, Trash2, ArrowRight, Clock, Gavel, ShieldCheck, Eye, Heart, Search, Tag, Handshake } from "lucide-react";
+import { Plus, Package, Trash2, ArrowRight, Clock, Gavel, ShieldCheck, Eye, Heart, Search, Handshake } from "lucide-react";
 import { formatDistanceToNow, isPast } from "date-fns";
 
 const STATUS_CONFIG = {
@@ -122,6 +122,7 @@ export default function InventoryTable({ items, view, limit }) {
                   <input type="checkbox" className="rounded" checked={selected.size === displayed.length && displayed.length > 0} onChange={toggleAll} />
                 </th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase w-full">Item</th>
+                <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden lg:table-cell whitespace-nowrap">Inv #</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden md:table-cell whitespace-nowrap">Category</th>
                 <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase">Status</th>
                 <th className="text-right px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden lg:table-cell">Price / Reserve</th>
@@ -152,11 +153,6 @@ export default function InventoryTable({ items, view, limit }) {
                         <div className="min-w-0 flex-1">
                           <p className="font-serif text-[15px] font-semibold text-foreground line-clamp-2 leading-snug">{item.title}</p>
                           <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            {item.inventory_number && (
-                              <span className="inline-flex items-center gap-1 text-[10px] bg-secondary px-1.5 py-0.5 rounded text-muted-foreground font-mono">
-                                <Tag className="w-2.5 h-2.5" />#{item.inventory_number}
-                              </span>
-                            )}
                             {isConsignment && (
                               <span className="inline-flex items-center gap-1 text-[10px] bg-violet-50 text-violet-700 border border-violet-100 px-1.5 py-0.5 rounded font-semibold">
                                 <Handshake className="w-2.5 h-2.5" />Consignment
@@ -170,6 +166,12 @@ export default function InventoryTable({ items, view, limit }) {
                           </div>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-4 py-4 hidden lg:table-cell">
+                      {item.inventory_number
+                        ? <span className="font-mono text-[12px] font-semibold text-foreground">{item.inventory_number}</span>
+                        : <span className="text-[11px] text-muted-foreground/30">—</span>
+                      }
                     </td>
                     <td className="px-4 py-4 hidden md:table-cell">
                       <span className="capitalize text-[11px] text-muted-foreground">{item.category?.replace(/_/g, " ") || "—"}</span>
