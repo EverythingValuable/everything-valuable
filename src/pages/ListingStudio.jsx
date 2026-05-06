@@ -293,6 +293,9 @@ export default function ListingStudio() {
           condition_notes: form.condition_notes,
           shipping_notes: form.shipping_notes,
           internal_notes: JSON.stringify({ custom_fields: form.custom_fields }),
+          inventory_number: form.inventory_number || undefined,
+          location: form.location || undefined,
+          customer_location: form.customer_location || undefined,
         };
         await base44.entities.Item.update(editId, restrictedPayload);
         await notifyWatchers("Category, description, photos, or condition was updated.");
