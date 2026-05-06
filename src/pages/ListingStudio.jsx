@@ -110,7 +110,12 @@ export default function ListingStudio() {
     prisometer_duration_hours: 168,
     estimated_low: "", estimated_high: "",
     internal_notes: "",
-    custom_fields: [], // [{ label, type, value }]
+    custom_fields: [],
+    inventory_number: "",
+    ownership_type: "owned",
+    consignor_name: "", consignor_email: "", consignor_phone: "",
+    consignor_address: "", consignor_commission_percent: "",
+    consignor_notes: "",
   });
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
@@ -174,6 +179,14 @@ export default function ListingStudio() {
           estimated_high: item.estimated_high || "",
           internal_notes: item.internal_notes || "",
           custom_fields: customFields,
+          inventory_number: item.inventory_number || "",
+          ownership_type: item.ownership_type || "owned",
+          consignor_name: item.consignor_name || "",
+          consignor_email: item.consignor_email || "",
+          consignor_phone: item.consignor_phone || "",
+          consignor_address: item.consignor_address || "",
+          consignor_commission_percent: item.consignor_commission_percent || "",
+          consignor_notes: item.consignor_notes || "",
         });
       } else {
         // New listing — seed custom fields from profile template (empty values)
@@ -236,6 +249,14 @@ export default function ListingStudio() {
     estimated_high: +form.estimated_high || undefined,
     // Store custom fields as JSON in internal_notes
     internal_notes: JSON.stringify({ custom_fields: form.custom_fields }),
+    inventory_number: form.inventory_number || undefined,
+    ownership_type: form.ownership_type,
+    consignor_name: form.ownership_type === "consignment" ? form.consignor_name : undefined,
+    consignor_email: form.ownership_type === "consignment" ? form.consignor_email : undefined,
+    consignor_phone: form.ownership_type === "consignment" ? form.consignor_phone : undefined,
+    consignor_address: form.ownership_type === "consignment" ? form.consignor_address : undefined,
+    consignor_commission_percent: form.ownership_type === "consignment" ? (+form.consignor_commission_percent || undefined) : undefined,
+    consignor_notes: form.ownership_type === "consignment" ? form.consignor_notes : undefined,
     ...extraFields,
   });
 
@@ -556,6 +577,68 @@ export default function ListingStudio() {
             <Field label="Auction Terms & Conditions" hint="optional">
               <Textarea placeholder="Payment due within 7 days. All sales final…" value={form.terms_and_conditions} onChange={e => set("terms_and_conditions", e.target.value)} className="h-20" />
             </Field>
+          </Section>
+
+          {/* INVENTORY & OWNERSHIP */}
+          <Section title="Inventory & Ownership">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Inventory Number" hint="your internal reference">
+                <Input placeholder="e.g. EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
+              </Field>
+              <Field label="Ownership Type">
+                <div className="flex gap-2">
+                  {[["owned", "Self-Owned"], ["consignment", "Consignment"]].map(([val, label]) => (
+                    <button key={val} onClick={() => set("ownership_type", val)}
+                      className={cn("flex-1 py-2 rounded-lg border text-xs font-semibold transition-all",
+                        form.ownership_type === val
+                          ? val === "consignment" ? "border-violet-400 bg-violet-50 text-violet-700" : "border-primary bg-primary/5 text-foreground"
+                          : "border-border text-muted-foreground hover:border-foreground/30"
+                      )}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+            </div>
+
+            {form.ownership_type === "consignment" && (
+              <div className="space-y-4 pt-2 border-t border-border/50">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Consignor Details</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Consignor Name" required>
+                    <Input placeholder="Full name" value={form.consignor_name} onChange={e => set("consignor_name", e.target.value)} />
+                  </Field>
+                  <Field label="Consignor Email">
+                    <Input type="email" placeholder="email@example.com" value={form.consignor_email} onChange={e => set("consignor_email", e.target.value)} />
+                  </Field>
+                  <Field label="Phone">
+                    <Input placeholder="+1 (555) 000-0000" value={form.consignor_phone} onChange={e => set("consignor_phone", e.target.value)} />
+                  </Field>
+                  <Field label="Commission %" hint="seller keeps">
+                    <div className="relative">
+                      <Input type="number" placeholder="e.g. 30" value={form.consignor_commission_percent} onChange={e => set("consignor_commission_percent", e.target.value)} className="pr-7" />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
+                    </div>
+                  </Field>
+                  <div className="sm:col-span-2">
+                    <Field label="Consignor Address">
+                      <Input placeholder="Street, City, State, ZIP" value={form.consignor_address} onChange={e => set("consignor_address", e.target.value)} />
+                    </Field>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <Field label="Consignment Notes" hint="agreement terms, special instructions">
+                      <Textarea placeholder="Payment terms, pickup/drop-off, special conditions…" value={form.consignor_notes} onChange={e => set("consignor_notes", e.target.value)} className="h-20" />
+                    </Field>
+                  </div>
+                </div>
+                {form.consignor_commission_percent && form.prisometer_start_price && (
+                  <div className="bg-violet-50 rounded-lg px-3 py-2 text-xs text-violet-700 space-y-0.5">
+                    <p className="font-semibold">Estimated consignor payout at start price</p>
+                    <p>${(form.prisometer_start_price * (1 - form.consignor_commission_percent / 100)).toLocaleString(undefined, { maximumFractionDigits: 0 })} ({100 - +form.consignor_commission_percent}% of ${(+form.prisometer_start_price).toLocaleString()})</p>
+                  </div>
+                )}
+              </div>
+            )}
           </Section>
 
           {/* CUSTOM TRACKING FIELDS */}

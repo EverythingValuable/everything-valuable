@@ -25,20 +25,16 @@
       ]
     },
     "subcategory": {
-      "type": "string",
-      "description": "Subcategory within the main category"
+      "type": "string"
     },
     "style": {
-      "type": "string",
-      "description": "Style or movement (e.g. Art Deco, Impressionism)"
+      "type": "string"
     },
     "technique": {
-      "type": "string",
-      "description": "Technique used (e.g. Oil on canvas, Etching)"
+      "type": "string"
     },
     "keywords": {
-      "type": "string",
-      "description": "Comma-separated search keywords and tags"
+      "type": "string"
     },
     "condition": {
       "type": "string",
@@ -51,8 +47,7 @@
       ]
     },
     "provenance": {
-      "type": "string",
-      "description": "Provenance notes"
+      "type": "string"
     },
     "condition_notes": {
       "type": "string"
@@ -64,8 +59,7 @@
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "description": "Array of image URLs"
+      }
     },
     "seller_email": {
       "type": "string"
@@ -74,8 +68,48 @@
       "type": "string"
     },
     "location": {
+      "type": "string"
+    },
+    "inventory_number": {
       "type": "string",
-      "description": "Item location (e.g., Kingston NY 12401)"
+      "description": "Custom inventory / lot reference number assigned by the seller"
+    },
+    "ownership_type": {
+      "type": "string",
+      "enum": [
+        "owned",
+        "consignment"
+      ],
+      "default": "owned",
+      "description": "Whether the seller owns the item outright or is selling on consignment"
+    },
+    "consignor_name": {
+      "type": "string",
+      "description": "Full name of the consignor (owner)"
+    },
+    "consignor_email": {
+      "type": "string",
+      "description": "Consignor email"
+    },
+    "consignor_phone": {
+      "type": "string",
+      "description": "Consignor phone"
+    },
+    "consignor_address": {
+      "type": "string",
+      "description": "Consignor mailing address"
+    },
+    "consignor_commission_percent": {
+      "type": "number",
+      "description": "Commission % the seller keeps from the sale"
+    },
+    "consignor_payout_amount": {
+      "type": "number",
+      "description": "Calculated payout due to the consignor after sale"
+    },
+    "consignor_notes": {
+      "type": "string",
+      "description": "Additional consignment agreement notes"
     },
     "status": {
       "type": "string",
@@ -92,12 +126,10 @@
       "default": "draft"
     },
     "lot_number": {
-      "type": "string",
-      "description": "Lot number used for bulk photo uploads (e.g. '1', '2'). Photos named 1_1.jpg, 1_2.jpg map to lot_number '1'."
+      "type": "string"
     },
     "first_bids_duration_hours": {
-      "type": "number",
-      "description": "Duration of 1stBid$ phase in hours"
+      "type": "number"
     },
     "first_bids_start": {
       "type": "string",
@@ -108,12 +140,10 @@
       "format": "date-time"
     },
     "prisometer_start_price": {
-      "type": "number",
-      "description": "PRI$OMETER visible starting price"
+      "type": "number"
     },
     "reserve_price": {
-      "type": "number",
-      "description": "Hidden reserve price"
+      "type": "number"
     },
     "below_reserve_percent": {
       "type": "number",
@@ -121,20 +151,17 @@
         10,
         15,
         20
-      ],
-      "description": "How far below reserve the PRI$OMETER may drop"
+      ]
     },
     "prisometer_duration_hours": {
-      "type": "number",
-      "description": "Total PRI$OMETER phase duration"
+      "type": "number"
     },
     "prisometer_activated_at": {
       "type": "string",
       "format": "date-time"
     },
     "current_price": {
-      "type": "number",
-      "description": "Current live PRI$OMETER price"
+      "type": "number"
     },
     "highest_bid": {
       "type": "number",
@@ -153,8 +180,7 @@
     },
     "view_count": {
       "type": "number",
-      "default": 0,
-      "description": "Total number of times the item detail page has been viewed"
+      "default": 0
     },
     "sold_price": {
       "type": "number"
@@ -200,12 +226,10 @@
       "type": "string"
     },
     "maker": {
-      "type": "string",
-      "description": "Artist, designer, maker, or manufacturer"
+      "type": "string"
     },
     "marks": {
-      "type": "string",
-      "description": "Signatures, marks, labels"
+      "type": "string"
     },
     "short_description": {
       "type": "string"
