@@ -47,6 +47,16 @@ Deno.serve(async (req) => {
       // ignore role update errors (e.g. app owner)
     }
 
+    // Send confirmation email
+    await base44.asServiceRole.integrations.Core.SendEmail({
+      to: email || user.email,
+      subject: 'Your Seller Application Has Been Received — Everything Valuable',
+      body: `<p>Hi ${full_name || user.full_name},</p>
+<p>Thank you for applying to sell on Everything Valuable! We've received your application and our team will review it within <strong>1–3 business days</strong>.</p>
+<p>We'll send you an email as soon as there's an update on your application status.</p>
+<p>— The Everything Valuable Team</p>`,
+    });
+
     return Response.json({ success: true, application_id: application.id });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

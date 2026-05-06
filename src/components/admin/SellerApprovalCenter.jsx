@@ -31,6 +31,7 @@ function ApplicationRow({ app }) {
       queryClient.invalidateQueries({ queryKey: ["admin-all-applications"] });
       setExpanded(false);
     },
+    onError: (err) => alert(err?.response?.data?.error || "Action failed. Please try again."),
   });
 
   const isPending = ["pending", "needs_more_info"].includes(app.application_status);
