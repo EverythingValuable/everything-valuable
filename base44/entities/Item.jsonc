@@ -151,6 +151,11 @@
       "type": "number",
       "default": 0
     },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of times the item detail page has been viewed"
+    },
     "sold_price": {
       "type": "number"
     },

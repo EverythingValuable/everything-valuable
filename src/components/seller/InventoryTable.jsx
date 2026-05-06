@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Plus, Package, Trash2, ArrowRight, Clock, Gavel, ShieldCheck } from "lucide-react";
+import { Plus, Package, Trash2, ArrowRight, Clock, Gavel, ShieldCheck, Eye, Heart } from "lucide-react";
 import { formatDistanceToNow, isPast } from "date-fns";
 
 const STATUS_CONFIG = {
@@ -106,6 +106,7 @@ export default function InventoryTable({ items, view, limit }) {
               <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase">Status</th>
               <th className="text-right px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden lg:table-cell">Price / Reserve</th>
               <th className="text-right px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden xl:table-cell">Bids</th>
+              <th className="text-center px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden xl:table-cell">Insights</th>
               <th className="text-left px-4 py-3.5 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden xl:table-cell">Timer</th>
               <th className="px-5 py-3.5 w-24"></th>
             </tr>
@@ -165,6 +166,21 @@ export default function InventoryTable({ items, view, limit }) {
                     {item.highest_bid > 0 && (
                       <p className="text-[10px] text-muted-foreground/50 mt-0.5">High: ${item.highest_bid.toLocaleString()}</p>
                     )}
+                  </td>
+                  {/* Insights column */}
+                  <td className="px-4 py-4 hidden xl:table-cell">
+                    <div className="flex flex-col gap-1.5 items-center">
+                      <div className="flex items-center gap-1.5" title="Page views">
+                        <Eye className="w-3.5 h-3.5 text-muted-foreground/40" />
+                        <span className="font-price text-sm font-semibold text-foreground">{item.view_count || 0}</span>
+                        <span className="text-[10px] text-muted-foreground/50">views</span>
+                      </div>
+                      <div className="flex items-center gap-1.5" title="Watchers">
+                        <Heart className="w-3.5 h-3.5 text-rose-300" />
+                        <span className="font-price text-sm font-semibold text-foreground">{item.watcher_count || 0}</span>
+                        <span className="text-[10px] text-muted-foreground/50">watching</span>
+                      </div>
+                    </div>
                   </td>
                   {/* Timer column */}
                   <td className="px-4 py-4 hidden xl:table-cell">

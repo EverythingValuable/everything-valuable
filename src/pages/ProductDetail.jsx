@@ -14,7 +14,7 @@ export default function ProductDetail() {
     enabled: !!itemId,
   });
 
-  // Track recently viewed
+  // Track recently viewed + increment view count
   useEffect(() => {
     if (itemId) {
       const stored = localStorage.getItem("recentlyViewed");
@@ -22,6 +22,17 @@ export default function ProductDetail() {
       const filtered = arr.filter(id => id !== itemId);
       const updated = [itemId, ...filtered].slice(0, 50);
       localStorage.setItem("recentlyViewed", JSON.stringify(updated));
+
+      // Increment view_count (fire-and-forget, once per session per item)
+      const sessionKey = `viewed_${itemId}`;
+      if (!sessionStorage.getItem(sessionKey)) {
+        sessionStorage.setItem(sessionKey, "1");
+        base44.entities.Item.filter({ id: itemId }).then(items => {
+          if (items[0]) {
+            base44.entities.Item.update(itemId, { view_count: (items[0].view_count || 0) + 1 });
+          }
+        });
+      }
     }
   }, [itemId]);
 
