@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Heart, User, Menu, X, ChevronDown, Bookmark, Trophy, LayoutDashboard, LogOut } from "lucide-react";
+import { Search, Heart, User, Menu, X, ChevronDown, Bookmark, Trophy, LayoutDashboard, LogOut, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
@@ -58,7 +58,8 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const isSeller = !!sellerProfile?.onboarding_complete;
+  const isSeller = user?.role === "seller" || user?.role === "admin" || user?.role === "super_admin";
+  const isAdmin = user?.role === "admin" || user?.role === "super_admin";
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
@@ -148,10 +149,10 @@ export default function Navbar() {
             <Heart className="w-4 h-4 text-muted-foreground" />
           </Link>
 
-          {/* Sell With Us — now goes to info page */}
-          <Link to="/sell" className="hidden md:inline-flex">
+          {/* Sell With Us — approved sellers go to dashboard, others go to apply */}
+          <Link to={isSeller ? "/seller" : "/seller-access"} className="hidden md:inline-flex">
             <Button variant="outline" size="sm" className="text-xs font-medium border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all">
-              Sell With Us
+              {isSeller ? "Seller Dashboard" : "Sell With Us"}
             </Button>
           </Link>
 
@@ -198,6 +199,14 @@ export default function Navbar() {
                           <div className="border-t border-border my-1" />
                           <div className="py-1">
                             <DropLink to="/seller" icon={LayoutDashboard} label="Seller Dashboard" onClick={() => setProfileOpen(false)} highlight />
+                          </div>
+                        </>
+                      )}
+                      {isAdmin && (
+                        <>
+                          <div className="border-t border-border my-1" />
+                          <div className="py-1">
+                            <DropLink to="/admin" icon={ShieldCheck} label="Admin Dashboard" onClick={() => setProfileOpen(false)} highlight />
                           </div>
                         </>
                       )}
@@ -251,6 +260,7 @@ export default function Navbar() {
                 <Link to="/buyer?view=saves" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>My Saves</Link>
                 <Link to="/buyer?view=won" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>Won Items</Link>
                 {isSeller && <Link to="/seller" className="block py-2 text-sm font-medium text-primary" onClick={() => setMobileOpen(false)}>Seller Dashboard</Link>}
+                {isAdmin && <Link to="/admin" className="block py-2 text-sm font-medium text-purple-700" onClick={() => setMobileOpen(false)}>Admin Dashboard</Link>}
               </div>
             </nav>
           </motion.div>

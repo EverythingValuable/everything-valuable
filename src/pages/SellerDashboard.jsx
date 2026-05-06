@@ -134,7 +134,9 @@ function InventoryCommandBar({ activeItems, activeValue, issueCount }) {
   );
 }
 
-export default function SellerDashboard() {
+import RoleGuard from "@/components/auth/RoleGuard";
+
+function SellerDashboardInner() {
   const [searchParams] = useSearchParams();
   const view = searchParams.get("view") || "overview";
 
@@ -266,5 +268,13 @@ export default function SellerDashboard() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function SellerDashboard() {
+  return (
+    <RoleGuard allowedRoles={["seller", "admin", "super_admin"]} redirectTo="/seller-access">
+      <SellerDashboardInner />
+    </RoleGuard>
   );
 }

@@ -1,17 +1,54 @@
 {
+  "name": "User",
+  "type": "object",
   "properties": {
     "role": {
       "type": "string",
-      "description": "The role of the user in the app",
       "enum": [
+        "buyer",
+        "pending_seller",
+        "seller",
         "admin",
-        "user"
-      ]
+        "super_admin"
+      ],
+      "default": "buyer"
+    },
+    "seller_status": {
+      "type": "string",
+      "enum": [
+        "not_applied",
+        "pending",
+        "approved",
+        "rejected",
+        "suspended"
+      ],
+      "default": "not_applied"
+    },
+    "seller_application_id": {
+      "type": "string"
+    },
+    "account_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "locked",
+        "deleted"
+      ],
+      "default": "active"
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "support_access_notes": {
+      "type": "string"
     }
-  },
-  "required": [
-    "role"
-  ],
-  "name": "User",
-  "type": "object"
+  }
 }
