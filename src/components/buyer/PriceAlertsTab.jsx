@@ -12,6 +12,22 @@ const statusLabels = {
   triggered: { label: "Triggered", color: "bg-green-50 text-green-700 border-green-200" },
 };
 
+function calcLivePrice(item) {
+  if (item.status !== "prisometer") return item.prisometer_start_price;
+  if (!item.prisometer_activated_at || !item.prisometer_duration_hours || !item.prisometer_start_price) return item.prisometer_start_price;
+
+  const startTime = new Date(item.prisometer_activated_at).getTime();
+  const startPrice = item.prisometer_start_price;
+  const reservePrice = item.reserve_price || startPrice * 0.5;
+  const belowPercent = item.below_reserve_percent || 10;
+  const floorPrice = reservePrice * (1 - belowPercent / 100);
+  const durationMs = item.prisometer_duration_hours * 3600000;
+  const elapsed = Date.now() - startTime;
+  const progress = Math.min(elapsed / durationMs, 1);
+  const calculated = startPrice - (startPrice - floorPrice) * progress;
+  return Math.max(calculated, item.highest_bid || 0);
+}
+
 export default function PriceAlertsTab({ userEmail }) {
   const queryClient = useQueryClient();
 
@@ -99,13 +115,11 @@ export default function PriceAlertsTab({ userEmail }) {
                           </span>
                         </div>
                         {item && (() => {
-                          const displayPrice = item.status === "prisometer" && item.current_price
-                            ? item.current_price
-                            : item.prisometer_start_price;
-                          return displayPrice ? (
+                          const livePrice = calcLivePrice(item);
+                          return livePrice ? (
                             <p className="text-xs text-muted-foreground mt-1.5">
-                              {item.status === "prisometer" ? "Live price" : "Starting price"}: ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                              {displayPrice <= alert.target_price && (
+                              {item.status === "prisometer" ? "Live price" : "Starting price"}: ${livePrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                              {livePrice <= alert.target_price && (
                                 <span className="text-green-600 ml-1 font-medium">✓ Target reached!</span>
                               )}
                             </p>
