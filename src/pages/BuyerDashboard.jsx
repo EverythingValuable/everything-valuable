@@ -22,8 +22,8 @@ const categoryLabels = {
 };
 
 const savedStatusConfig = {
-  first_bids: { label: "1stBid$ Active", color: "bg-primary/10 text-primary border-primary/20" },
-  prisometer:  { label: "PRI$OMETER™ Live", color: "bg-red-50 text-red-600 border-red-200" },
+  first_bids: { label: "1stBid$ Live", color: "bg-primary/10 text-primary border-primary/20" },
+  prisometer:  { label: "PRI$OMETER™ Active", color: "bg-red-50 text-red-600 border-red-200" },
   sold:        { label: "Sold", color: "bg-muted text-muted-foreground border-border" },
 };
 
