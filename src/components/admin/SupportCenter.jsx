@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { HeadphonesIcon, ChevronDown, ChevronUp } from "lucide-react";
+import { HeadphonesIcon, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const STATUS_COLORS = {
   open: "bg-red-50 text-red-700 border-red-200",
@@ -27,6 +28,13 @@ function TicketRow({ ticket }) {
   const [expanded, setExpanded] = useState(false);
   const [reply, setReply] = useState(ticket.admin_reply || "");
   const [newStatus, setNewStatus] = useState(ticket.status);
+
+  const { data: relatedItem } = useQuery({
+    queryKey: ["ticket-item", ticket.related_item_id],
+    queryFn: () => base44.entities.Item.filter({ id: ticket.related_item_id }).then(r => r[0]),
+    enabled: !!ticket.related_item_id && expanded,
+    staleTime: 300000,
+  });
 
   const updateMutation = useMutation({
     mutationFn: (updates) => base44.entities.SupportTicket.update(ticket.id, updates),
@@ -64,9 +72,13 @@ function TicketRow({ ticket }) {
             {ticket.related_item_id && (
               <div className="col-span-2">
                 <p className="text-muted-foreground uppercase tracking-wide mb-0.5">Related Item</p>
-                <a href={`/item/${ticket.related_item_id}`} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">
-                  View Item →
-                </a>
+                <Link
+                  to={`/item/${ticket.related_item_id}`}
+                  className="inline-flex items-center gap-1.5 font-medium text-primary hover:underline"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  {relatedItem ? relatedItem.title : ticket.related_item_id}
+                </Link>
               </div>
             )}
           </div>
