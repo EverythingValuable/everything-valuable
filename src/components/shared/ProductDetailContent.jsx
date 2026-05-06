@@ -16,6 +16,7 @@ import DeliveryOptions from "@/components/product/DeliveryOptions";
 import TermsAndConditions from "@/components/product/TermsAndConditions";
 import SimilarLots from "@/components/product/SimilarLots";
 import SetPriceAlertModal from "@/components/product/SetPriceAlertModal";
+import ContactSupportModal from "@/components/shared/ContactSupportModal";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -106,6 +107,7 @@ function PriceConvergenceModuleWrapper({ item }) {
 export default function ProductDetailContent({ itemId }) {
   const [user, setUser] = useState(null);
   const [priceAlertOpen, setPriceAlertOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -226,6 +228,9 @@ export default function ProductDetailContent({ itemId }) {
             </Button>
             <DeliveryOptions item={item} />
             <ItemMessaging item={item} user={user} />
+            <button onClick={() => setSupportOpen(true)} className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1 text-center underline underline-offset-2">
+              Contact Support about this lot
+            </button>
               <Separator />
             </div>
 
@@ -322,6 +327,9 @@ export default function ProductDetailContent({ itemId }) {
               </Button>
               <DeliveryOptions item={item} />
               <ItemMessaging item={item} user={user} />
+              <button onClick={() => setSupportOpen(true)} className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1 text-center underline underline-offset-2">
+                Contact Support about this lot
+              </button>
               {sellerProfile?.terms_and_conditions && (
                 <TermsAndConditions terms={sellerProfile.terms_and_conditions} defaultOpen={false} />
               )}
@@ -333,6 +341,7 @@ export default function ProductDetailContent({ itemId }) {
               <SimilarLots item={item} />
               </div>
 
+              <ContactSupportModal open={supportOpen} onClose={() => setSupportOpen(false)} user={user} />
               <SetPriceAlertModal
               isOpen={priceAlertOpen}
               onClose={() => setPriceAlertOpen(false)}
