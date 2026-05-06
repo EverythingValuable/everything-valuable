@@ -1,0 +1,76 @@
+{
+  "name": "SupportTicket",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "login_access",
+        "seller_application",
+        "bidding_issue",
+        "prisometer_issue",
+        "payment_issue",
+        "invoice_issue",
+        "technical",
+        "dispute",
+        "shipping_pickup",
+        "other"
+      ]
+    },
+    "subject": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "related_item_id": {
+      "type": "string"
+    },
+    "related_invoice_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "waiting_on_user",
+        "resolved",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "assigned_admin": {
+      "type": "string"
+    },
+    "admin_reply": {
+      "type": "string"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_email",
+    "category",
+    "subject",
+    "description"
+  ]
+}

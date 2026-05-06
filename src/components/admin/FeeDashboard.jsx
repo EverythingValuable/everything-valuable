@@ -29,18 +29,15 @@ export default function FeeDashboard() {
   );
 
   const totalFees = invoices.reduce((s, i) => s + (i.service_fee || 0), 0);
-  const totalCredits = invoices.reduce((s, i) => s + (i.fee_credit || 0), 0);
-  const netRetained = totalFees - totalCredits;
   const totalGross = invoices.reduce((s, i) => s + (i.item_price || 0), 0);
 
   return (
     <div>
       <h2 className="font-serif text-2xl font-semibold mb-6">Processing Fee Dashboard</h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
         <FeeStatCard label="Total Fees Charged" value={`$${totalFees.toLocaleString("en-US", { minimumFractionDigits: 2 })}`} accent="text-primary" />
-        <FeeStatCard label="Fee Credits Applied" value={`$${totalCredits.toLocaleString("en-US", { minimumFractionDigits: 2 })}`} accent="text-amber-600" />
-        <FeeStatCard label="Net Platform Revenue" value={`$${netRetained.toLocaleString("en-US", { minimumFractionDigits: 2 })}`} accent="text-emerald-600" />
+        <FeeStatCard label="Net Platform Revenue" value={`$${totalFees.toLocaleString("en-US", { minimumFractionDigits: 2 })}`} accent="text-emerald-600" />
         <FeeStatCard label="Total Gross Sales" value={`$${totalGross.toLocaleString("en-US", { minimumFractionDigits: 2 })}`} accent="text-foreground" />
       </div>
 
@@ -53,27 +50,24 @@ export default function FeeDashboard() {
           <table className="w-full text-sm">
             <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
-                {["Item", "Buyer", "Seller", "Sale Price", "Fee Charged", "Fee Credit", "Net Fee", "Method", "Status"].map(h => (
+                {["Item", "Buyer", "Seller", "Sale Price", "Fee Charged", "Method", "Status"].map(h => (
                   <th key={h} className="text-left px-4 py-3 font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {isLoading ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">Loading…</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No invoices found</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">No invoices found</td></tr>
               ) : filtered.map(inv => {
-                const netFee = (inv.service_fee || 0) - (inv.fee_credit || 0);
                 return (
                   <tr key={inv.id} className="hover:bg-muted/20 transition-colors">
                     <td className="px-4 py-3 font-medium max-w-[180px] truncate">{inv.item_title || "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground text-xs truncate max-w-[140px]">{inv.buyer_email || "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground text-xs truncate max-w-[140px]">{inv.seller_email || "—"}</td>
                     <td className="px-4 py-3 font-semibold">${(inv.item_price || 0).toLocaleString("en-US")}</td>
-                    <td className="px-4 py-3 text-primary font-medium">${(inv.service_fee || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
-                    <td className="px-4 py-3 text-amber-600">-${(inv.fee_credit || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
-                    <td className="px-4 py-3 text-emerald-600 font-semibold">${netFee.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                    <td className="px-4 py-3 text-emerald-600 font-semibold">${(inv.service_fee || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
                     <td className="px-4 py-3"><Badge variant="outline" className="text-[10px]">{inv.purchase_method || "—"}</Badge></td>
                     <td className="px-4 py-3"><Badge variant="outline" className="text-[10px]">{inv.status || "—"}</Badge></td>
                   </tr>

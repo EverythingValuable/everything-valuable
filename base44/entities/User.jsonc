@@ -50,5 +50,12 @@
     "support_access_notes": {
       "type": "string"
     }
-  }
+  },
+  "required": [
+    "seller_application_id",
+    "admin_notes",
+    "approved_at",
+    "approved_by",
+    "support_access_notes"
+  ]
 }

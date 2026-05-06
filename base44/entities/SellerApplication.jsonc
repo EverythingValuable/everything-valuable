@@ -1,0 +1,101 @@
+{
+  "name": "SellerApplication",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "full_name": {
+      "type": "string"
+    },
+    "business_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "seller_type": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "dealer",
+        "gallery",
+        "auction_house",
+        "estate",
+        "other"
+      ]
+    },
+    "business_website": {
+      "type": "string"
+    },
+    "specialty": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "tax_id": {
+      "type": "string"
+    },
+    "payout_information_status": {
+      "type": "string",
+      "enum": [
+        "not_provided",
+        "provided",
+        "verified"
+      ],
+      "default": "not_provided"
+    },
+    "identity_verification_status": {
+      "type": "string",
+      "enum": [
+        "not_submitted",
+        "pending",
+        "verified",
+        "failed"
+      ],
+      "default": "not_submitted"
+    },
+    "application_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "needs_more_info"
+      ],
+      "default": "pending"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewed_by": {
+      "type": "string"
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "rejection_reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_email",
+    "full_name",
+    "seller_type"
+  ]
+}

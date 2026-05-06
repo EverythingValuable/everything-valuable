@@ -1,0 +1,51 @@
+{
+  "name": "AdminLog",
+  "type": "object",
+  "properties": {
+    "admin_email": {
+      "type": "string"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "seller_approved",
+        "seller_rejected",
+        "account_suspended",
+        "account_restored",
+        "role_changed",
+        "listing_removed",
+        "fee_refunded",
+        "dispute_resolved",
+        "ticket_closed",
+        "note_added",
+        "financial_adjustment",
+        "other"
+      ]
+    },
+    "affected_user_email": {
+      "type": "string"
+    },
+    "affected_item_id": {
+      "type": "string"
+    },
+    "affected_invoice_id": {
+      "type": "string"
+    },
+    "previous_value": {
+      "type": "string"
+    },
+    "new_value": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "admin_email",
+    "action_type"
+  ]
+}
