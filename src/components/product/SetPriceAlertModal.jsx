@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -6,10 +6,42 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertCircle, Bell, Check } from "lucide-react";
 
+function useLivePrice(item) {
+  const [livePrice, setLivePrice] = useState(item?.current_price || item?.prisometer_start_price || 0);
+
+  React.useEffect(() => {
+    if (!item) return;
+    const isActive = item.status === "prisometer" && !item.make_it_mine_active;
+    if (isActive && item.prisometer_activated_at && item.prisometer_duration_hours) {
+      const startTime = new Date(item.prisometer_activated_at).getTime();
+      const startPrice = item.prisometer_start_price;
+      const reservePrice = item.reserve_price || startPrice * 0.5;
+      const belowPercent = item.below_reserve_percent || 10;
+      const floorPrice = reservePrice * (1 - belowPercent / 100);
+      const durationMs = item.prisometer_duration_hours * 3600000;
+      const calc = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+        const calculated = startPrice - (startPrice - floorPrice) * progress;
+        const effectiveFloor = Math.max(floorPrice, item.highest_bid || 0);
+        setLivePrice(Math.max(calculated, effectiveFloor));
+      };
+      calc();
+      const t = setInterval(calc, 5000);
+      return () => clearInterval(t);
+    } else {
+      setLivePrice(item.current_price || item.prisometer_start_price || 0);
+    }
+  }, [item]);
+
+  return livePrice;
+}
+
 export default function SetPriceAlertModal({ isOpen, onClose, item, user }) {
   const [targetPrice, setTargetPrice] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const queryClient = useQueryClient();
+  const livePrice = useLivePrice(item);
 
   const { data: existingAlert } = useQuery({
     queryKey: ["price-alert", item?.id, user?.email],
@@ -99,9 +131,9 @@ export default function SetPriceAlertModal({ isOpen, onClose, item, user }) {
                   className="flex-1"
                 />
               </div>
-              {item?.current_price && (
+              {livePrice > 0 && (
                 <p className="text-xs text-muted-foreground mt-1.5">
-                  Current price: ${item.current_price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  Current price: ${Math.floor(livePrice).toLocaleString("en-US")}
                 </p>
               )}
             </div>
