@@ -32,9 +32,9 @@ export default function Browse() {
       "-created_date",
       200
     ),
-    initialData: [],
-    refetchInterval: 60000, // Refresh every minute to catch newly ended items
-    staleTime: 30000,
+    refetchInterval: 60000,
+    staleTime: 0,
+    refetchOnMount: true,
   });
 
   const filtered = useMemo(() => {
