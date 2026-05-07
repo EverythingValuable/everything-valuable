@@ -311,11 +311,11 @@ export default function ProductDetailContent({ itemId }) {
               {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
               {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
               <Separator />
-              {item.customer_location && (
+              {(item.customer_location || item.location) && (
                 <div className="bg-secondary/40 rounded-lg p-4 space-y-2">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Location</p>
                   <p className="text-sm font-medium text-foreground">
-                    <LocationFlag location={item.customer_location} />
+                    <LocationFlag location={item.customer_location || item.location} />
                   </p>
                 </div>
               )}
