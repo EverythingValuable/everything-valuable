@@ -19,12 +19,16 @@ export default function Home() {
     queryKey: ["items-live"],
     queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 8),
     initialData: [],
+    refetchInterval: 60000,
+    staleTime: 30000,
   });
 
   const { data: previewItems = [] } = useQuery({
     queryKey: ["items-preview"],
     queryFn: () => base44.entities.Item.filter({ status: "first_bids" }, "-created_date", 10),
     initialData: [],
+    refetchInterval: 60000,
+    staleTime: 30000,
   });
 
   const allFeatured = [...liveItems, ...previewItems].slice(0, 16);

@@ -33,6 +33,8 @@ export default function Browse() {
       200
     ),
     initialData: [],
+    refetchInterval: 60000, // Refresh every minute to catch newly ended items
+    staleTime: 30000,
   });
 
   const filtered = useMemo(() => {
