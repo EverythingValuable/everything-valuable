@@ -4,7 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { MapPin, Globe, Instagram, Search, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MapPin, Globe, Search, ChevronRight, MessageCircle } from "lucide-react";
+import DealerContactModal from "@/components/dealers/DealerContactModal";
 
 const sellerTypeLabels = {
   individual: "Individual Collector",
@@ -14,13 +16,14 @@ const sellerTypeLabels = {
   estate: "Estate",
 };
 
-function DealerCard({ profile, itemCount }) {
+function DealerCard({ profile, itemCount, onContact }) {
   const location = [profile.city, profile.state, profile.country].filter(Boolean).join(", ");
 
   return (
+    <div className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
     <Link
       to={`/seller/profile?seller=${profile.user_email}`}
-      className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col"
+      className="flex flex-col flex-1"
     >
       {/* Banner / Cover */}
       <div className="relative h-32 bg-gradient-to-br from-muted to-secondary overflow-hidden">
@@ -113,12 +116,26 @@ function DealerCard({ profile, itemCount }) {
         <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
       </div>
     </Link>
+    <button
+      onClick={() => onContact(profile)}
+      className="w-full flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-medium text-muted-foreground hover:text-foreground border-t border-border hover:bg-muted/40 transition-colors"
+    >
+      <MessageCircle className="w-3.5 h-3.5" /> Contact / Consign
+    </button>
+    </div>
   );
 }
 
 export default function Dealers() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [contactProfile, setContactProfile] = useState(null);
+
+  const { data: user } = useQuery({
+    queryKey: ["me"],
+    queryFn: () => base44.auth.me(),
+    retry: false,
+  });
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ["all-seller-profiles"],
@@ -246,11 +263,21 @@ export default function Dealers() {
                 key={profile.id}
                 profile={profile}
                 itemCount={itemCountBySeller[profile.user_email] || 0}
+                onContact={setContactProfile}
               />
             ))}
           </div>
         )}
       </div>
+
+      {contactProfile && (
+        <DealerContactModal
+          isOpen={!!contactProfile}
+          onClose={() => setContactProfile(null)}
+          profile={contactProfile}
+          user={user}
+        />
+      )}
     </div>
   );
 }
