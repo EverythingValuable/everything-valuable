@@ -17,6 +17,7 @@ import TermsAndConditions from "@/components/product/TermsAndConditions";
 import SimilarLots from "@/components/product/SimilarLots";
 import SetPriceAlertModal from "@/components/product/SetPriceAlertModal";
 import ContactSupportModal from "@/components/shared/ContactSupportModal";
+import LocationFlag from "@/components/shared/LocationFlag";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -310,10 +311,12 @@ export default function ProductDetailContent({ itemId }) {
               {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
               {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
               <Separator />
-              {item.location && (
+              {item.customer_location && (
                 <div className="bg-secondary/40 rounded-lg p-4 space-y-2">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Location</p>
-                  <p className="text-sm font-medium text-foreground">{item.location}</p>
+                  <p className="text-sm font-medium text-foreground">
+                    <LocationFlag location={item.customer_location} />
+                  </p>
                 </div>
               )}
               <div className="flex gap-3">
