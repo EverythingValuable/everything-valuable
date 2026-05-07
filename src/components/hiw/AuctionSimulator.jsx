@@ -40,6 +40,7 @@ export default function AuctionSimulator() {
   const [mimCountdown, setMimCountdown] = useState(null);
   const [mimPrice, setMimPrice] = useState(null);
   const [soldPrice, setSoldPrice] = useState(null);
+  const [soldViaPreview, setSoldViaPreview] = useState(false);
   const [log, setLog] = useState([]);
 
   const timerRef = useRef(null);
@@ -63,7 +64,7 @@ export default function AuctionSimulator() {
     const s = { startPrice: sp, reservePrice: rp, firstBidsDuration: fd, prisometerDuration: pd };
     setSettings(s);
     settingsRef.current = s;
-    setCurrentBid(0); setBids([]); setBidInput(""); setBidError(""); setLog([]); setSoldPrice(null); setMimCountdown(null); setMimPrice(null);
+    setCurrentBid(0); setBids([]); setBidInput(""); setBidError(""); setLog([]); setSoldPrice(null); setMimCountdown(null); setMimPrice(null); setSoldViaPreview(false);
     setTimeLeft(fd);
     setPhase(PHASE.FIRST_BIDS);
     addLog("1stBid$™ preview phase is open. Place your bids.", "start");
@@ -80,6 +81,7 @@ export default function AuctionSimulator() {
             const s = settingsRef.current;
             if (cur >= s.startPrice) {
               setSoldPrice(cur);
+              setSoldViaPreview(true);
               setTimeout(() => setPhase(PHASE.SOLD_BID), 0);
               addLog(`High bid of ${formatPrice(cur)} met the start price. Item sold during preview!`, "success");
             } else {
@@ -494,7 +496,9 @@ export default function AuctionSimulator() {
                     <CheckCircle2 className="w-7 h-7 text-primary" />
                   </motion.div>
                   <h3 className="font-serif text-2xl font-semibold text-foreground">Sold</h3>
-                  <p className="text-xs text-muted-foreground">{phase === PHASE.SOLD_MIM ? "Purchased via Make It Mine™" : "Won via bid match"}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {phase === PHASE.SOLD_MIM ? "Purchased via Make It Mine™" : soldViaPreview ? "Won during 1stBid$™ preview — PRI$OMETER never activated" : "Won via PRI$OMETER bid match"}
+                  </p>
                 </div>
 
                 {/* Fee breakdown — matching the How It Works page exactly */}
