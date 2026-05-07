@@ -47,10 +47,55 @@ Deno.serve(async (req) => {
         const isSold = highestBid >= reservePrice;
         await base44.asServiceRole.entities.Item.update(item.id, {
           status: isSold ? 'sold' : 'pending_review',
-          sold_price: highestBid,
-          sold_to_email: item.highest_bidder_email,
-          sold_via: 'bid',
+          sold_price: isSold ? highestBid : undefined,
+          sold_to_email: isSold ? item.highest_bidder_email : undefined,
+          sold_via: isSold ? 'bid' : undefined,
         });
+
+        // Create invoice draft
+        if (item.highest_bidder_email && item.seller_email) {
+          const serviceFee = highestBid * 0.10 + 30;
+          const feeCredit = serviceFee * 0.50;
+          await base44.asServiceRole.entities.Invoice.create({
+            item_id: item.id,
+            item_title: item.title,
+            buyer_email: item.highest_bidder_email,
+            seller_email: item.seller_email,
+            item_price: highestBid,
+            service_fee: serviceFee,
+            fee_credit: feeCredit,
+            purchase_method: 'bid',
+            total_amount: highestBid + serviceFee - feeCredit,
+            status: 'draft',
+          });
+        }
+
+        // Notify buyer
+        if (item.highest_bidder_email) {
+          await base44.asServiceRole.integrations.Core.SendEmail({
+            to: item.highest_bidder_email,
+            subject: isSold
+              ? `Congratulations! You won: ${item.title}`
+              : `Your offer is under review: ${item.title}`,
+            body: isSold
+              ? `Great news! Your bid of $${highestBid.toLocaleString('en-US')} won the auction for "${item.title}".\n\nThe seller will be in touch shortly with an invoice. You can view it in My Account > Purchases.\n\nThank you for bidding on Everything Valuable.`
+              : `Your bid of $${highestBid.toLocaleString('en-US')} on "${item.title}" was below the reserve price. The seller is reviewing your offer and will respond shortly.\n\nCheck My Account > Purchases for updates.`,
+          });
+        }
+
+        // Notify seller
+        if (item.seller_email) {
+          await base44.asServiceRole.integrations.Core.SendEmail({
+            to: item.seller_email,
+            subject: isSold
+              ? `Your item sold: ${item.title}`
+              : `Offer below reserve — review needed: ${item.title}`,
+            body: isSold
+              ? `Your item "${item.title}" sold for $${highestBid.toLocaleString('en-US')} via 1stBid$™.\n\nAn invoice draft has been created in your Seller Dashboard. Please review and send it to the buyer to proceed with payment.`
+              : `The 1stBid$™ phase for "${item.title}" ended with a highest bid of $${highestBid.toLocaleString('en-US')}, which is below the reserve price.\n\nLog into your Seller Dashboard to review and decide whether to accept this offer.`,
+          });
+        }
+
         sold++;
       } else {
         // Otherwise activate prisometer

@@ -107,8 +107,8 @@ Deno.serve(async (req) => {
             ? `Your item sold: ${item.title}`
             : `Offer below reserve — review needed: ${item.title}`,
           body: aboveReserve
-            ? `Your item "${item.title}" has sold for $${highestBid.toLocaleString('en-US')} via PRI$OMETER™ convergence.\n\nAn invoice draft has been created in your Seller Dashboard. Please review and send it to the buyer to proceed with payment and fulfillment.`
-            : `The PRI$OMETER™ for "${item.title}" has ended with a highest bid of $${highestBid.toLocaleString('en-US')}, which is below the reserve price.\n\nPlease log into your Seller Dashboard to review and decide whether to accept this offer.`,
+            ? `Your item "${item.title}" has sold for $${highestBid.toLocaleString('en-US')} via PRI$OMETER™ convergence.\n\nAn invoice draft has been automatically created in your Seller Dashboard under "Invoices". Please open it, review the details, and click Send to deliver it to the buyer so they can proceed with payment.\n\nLog in at everythingvaluable.com/seller`
+              : `The PRI$OMETER™ for "${item.title}" has ended with a highest bid of $${highestBid.toLocaleString('en-US')}, which is below the reserve price.\n\nPlease log into your Seller Dashboard to review and decide whether to accept this offer.\n\nLog in at everythingvaluable.com/seller`,
         });
       }
 
