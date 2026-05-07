@@ -15,23 +15,22 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const { data: liveItems = [] } = useQuery({
+  const { data: liveItems = [], isLoading: loadingLive } = useQuery({
     queryKey: ["items-live"],
     queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 8),
-    initialData: [],
     refetchInterval: 60000,
     staleTime: 30000,
   });
 
-  const { data: previewItems = [] } = useQuery({
+  const { data: previewItems = [], isLoading: loadingPreview } = useQuery({
     queryKey: ["items-preview"],
     queryFn: () => base44.entities.Item.filter({ status: "first_bids" }, "-created_date", 10),
-    initialData: [],
     refetchInterval: 60000,
     staleTime: 30000,
   });
 
-  const allFeatured = [...liveItems, ...previewItems].slice(0, 16);
+  const allFeatured = [...(liveItems || []), ...(previewItems || [])].slice(0, 16);
+  const featuredLoading = loadingLive || loadingPreview;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -75,6 +74,7 @@ export default function Home() {
         items={allFeatured}
         title="Featured Live Sales"
         subtitle=""
+        isLoading={featuredLoading}
       />
 
       {/* How it works */}
