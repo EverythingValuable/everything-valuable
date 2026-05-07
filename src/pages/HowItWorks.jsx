@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, TrendingDown, ShoppingBag, FileText, Users, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import AuctionSimulator from "../components/hiw/AuctionSimulator";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -122,6 +123,34 @@ export default function HowItWorks() {
             Preview. Bid. Watch the market move. Buy with confidence.
           </motion.p>
         </motion.div>
+      </section>
+
+      {/* ===== INTERACTIVE DEMO ===== */}
+      <section className="py-20 md:py-28 border-b border-border/50 bg-muted/20">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          <motion.div
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Interactive Demo</span>
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mt-3">
+              Try It Yourself
+            </h2>
+            <p className="text-muted-foreground mt-3 max-w-xl mx-auto text-base leading-relaxed">
+              Set the prices, place bids, and watch the PRI$OMETER™ activate in real time. No account needed.
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            <AuctionSimulator />
+          </motion.div>
+        </div>
       </section>
 
       {/* ===== THE BIG IDEA ===== */}
