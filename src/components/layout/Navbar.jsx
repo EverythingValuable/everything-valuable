@@ -136,6 +136,9 @@ export default function Navbar() {
                 <Link to="/browse?status=prisometer" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
                   Live Now
                 </Link>
+                <Link to="/dealers" className={`text-sm font-medium transition-colors ${location.pathname === "/dealers" ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+                  Dealers
+                </Link>
               </>
             )}
           </nav>
@@ -248,6 +251,7 @@ export default function Navbar() {
             <nav className="px-6 py-4 space-y-1">
               <Link to="/real-property" className="block py-3 text-sm font-medium border-b border-border/50" onClick={() => setMobileOpen(false)}>Real Property</Link>
               <Link to="/personal-property" className="block py-3 text-sm font-medium border-b border-border/50" onClick={() => setMobileOpen(false)}>Personal Property</Link>
+              <Link to="/dealers" className="block py-3 text-sm font-medium border-b border-border/50" onClick={() => setMobileOpen(false)}>Dealers</Link>
               {isPersonalProperty && categories.map(cat => (
                 <Link key={cat.path} to={cat.path} className="block py-2.5 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>
                   {cat.label}

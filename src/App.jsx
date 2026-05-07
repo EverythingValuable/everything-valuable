@@ -28,6 +28,7 @@ import HotspotManager from './pages/HotspotManager';
 import BulkUpload from './pages/BulkUpload';
 import AdminDashboard from './pages/AdminDashboard';
 import SellerAccess from './pages/SellerAccess';
+import Dealers from './pages/Dealers';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -73,6 +74,7 @@ const AuthenticatedApp = () => {
         <Route path="/seller/bulk-upload" element={<BulkUpload />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/seller-access" element={<SellerAccess />} />
+        <Route path="/dealers" element={<Dealers />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
