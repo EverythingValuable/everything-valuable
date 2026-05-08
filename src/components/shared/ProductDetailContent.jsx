@@ -94,8 +94,9 @@ function PriceConvergenceModuleWrapper({ item }) {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / durationMs, 1);
         const calculatedPrice = startPrice - (startPrice - floorPrice) * progress;
-        // Display the raw calculated price — don't freeze at the bid
-        const currentPrice = Math.max(calculatedPrice, floorPrice);
+        // Never drop below the highest bid
+        const effectiveFloor = Math.max(floorPrice, highestBid);
+        const currentPrice = Math.max(calculatedPrice, effectiveFloor);
         setDisplayPrice(currentPrice);
         setCents(Math.floor((currentPrice % 1) * 100));
 
