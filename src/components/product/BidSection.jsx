@@ -20,7 +20,7 @@ const CONFIRM_SECONDS = 120;
 
 export default function BidSection({ item, onMakeItMine, onCancel }) {
   const [bidAmount, setBidAmount] = useState("");
-  const [customBid, setCustomBid] = useState("");
+
   const [showConfirm, setShowConfirm] = useState(false);
   const [bidSuccess, setBidSuccess] = useState(false);
   const [lockedPrice, setLockedPrice] = useState(null);
@@ -148,7 +148,6 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       queryClient.invalidateQueries({ queryKey: ["bids", item.id] });
       setBidSuccess(true);
       setBidAmount("");
-      setCustomBid("");
     },
     onError: (err) => {
       toast({ title: "Bid failed", description: err.message, variant: "destructive" });
@@ -449,75 +448,75 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       )}
 
       {/* Place a Bid */}
-      {canBid && !showConfirm && !bidSuccess && (
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full max-w-full min-w-0 overflow-hidden">
-          <div className="flex items-center gap-2">
-            <Gavel className="w-4 h-4 text-primary" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Place a Bid</span>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full max-w-full min-w-0 overflow-hidden">
-            <div className="w-full min-w-0">
-              <Select value={bidAmount} onValueChange={(val) => setBidAmount(val)}>
-                <SelectTrigger className="w-full h-11 min-w-0">
-                  <SelectValue placeholder={`Min: $${minBid.toLocaleString()}`} />
+      {canBid && !showConfirm && !bidSuccess && (() => {
+        const allOptions = generateBidOptions();
+        const quickPicks = allOptions.slice(0, 3);
+        const dropdownOptions = allOptions.slice(3);
+        return (
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 space-y-4 w-full min-w-0 overflow-hidden">
+            <div className="flex items-center gap-2">
+              <Gavel className="w-4 h-4 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Place a Bid</span>
+            </div>
+
+            {/* Quick-pick buttons */}
+            <div className="grid grid-cols-3 gap-2">
+              {quickPicks.map((option, i) => {
+                const labels = ["Bid", "Bid", "Bid"];
+                return (
+                  <button
+                    key={option}
+                    onClick={() => setBidAmount(option.toString())}
+                    className={`flex flex-col items-center justify-center border rounded-xl py-3 px-2 transition-colors text-center
+                      ${bidAmount === option.toString()
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-background text-foreground hover:border-primary/50 hover:bg-muted/30"}`}
+                  >
+                    <span className="font-semibold text-sm">${option.toLocaleString("en-US")}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Dropdown for higher amounts */}
+            {dropdownOptions.length > 0 && (
+              <Select
+                value={dropdownOptions.includes(parseInt(bidAmount)) ? bidAmount : ""}
+                onValueChange={(val) => setBidAmount(val)}
+              >
+                <SelectTrigger className="w-full h-11">
+                  <SelectValue placeholder="Or select a higher bid amount" />
                 </SelectTrigger>
                 <SelectContent className="max-h-64">
-                  {generateBidOptions().map((option) => (
+                  {dropdownOptions.map((option) => (
                     <SelectItem key={option} value={option.toString()}>
                       ${option.toLocaleString("en-US")}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            )}
+
+            {/* Place Bid button */}
             <Button
               onClick={() => placeBidMutation.mutate()}
               disabled={!bidAmount || placeBidMutation.isPending}
-              className="w-full sm:w-auto h-11 px-6 bg-foreground text-background hover:bg-foreground/90 shrink-0"
+              className="w-full h-12 bg-foreground text-background hover:bg-foreground/90 font-semibold text-sm rounded-xl tracking-wide"
             >
-              {placeBidMutation.isPending ? "Placing..." : "Bid"}
+              {placeBidMutation.isPending ? "Placing..." : "Place Bid"}
             </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">Choose from suggested amounts or enter a custom bid</p>
 
-          <div className="border-t border-border pt-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Or Enter Custom Bid</p>
-            <div className="flex flex-col sm:flex-row gap-2 w-full max-w-full min-w-0 overflow-hidden">
-              <input
-                type="text"
-                placeholder="Enter custom amount"
-                value={customBid}
-                onChange={(e) => setCustomBid(e.target.value.replace(/\D/g, ""))}
-                className="w-full h-10 px-3 border border-input rounded-md bg-background text-foreground text-sm min-w-0"
+            {bidAmount && (
+              <BidConfirmModal
+                amount={parseInt(bidAmount)}
+                onConfirm={() => placeBidMutation.mutate()}
+                onCancel={() => setBidAmount("")}
+                isPending={placeBidMutation.isPending}
               />
-              <Button
-                onClick={() => {
-                  const amt = parseInt(customBid) || 0;
-                  if (amt > 0) {
-                    setBidAmount(amt.toString());
-                    setCustomBid("");
-                  } else {
-                    toast({ title: "Invalid bid", description: "Enter a valid amount", variant: "destructive" });
-                  }
-                }}
-                disabled={!customBid}
-                className="w-full sm:w-auto h-10 px-4 bg-foreground text-background hover:bg-foreground/90 text-sm shrink-0"
-              >
-                Submit
-              </Button>
-            </div>
+            )}
           </div>
-
-          {bidAmount && (
-            <BidConfirmModal
-              amount={parseInt(bidAmount)}
-              onConfirm={() => placeBidMutation.mutate()}
-              onCancel={() => { setBidAmount(""); setCustomBid(""); }}
-              isPending={placeBidMutation.isPending}
-            />
-          )}
-        </div>
-      )}
+        );
+      })()}
 
           {/* Bid Increments */}
       {canBid && !showConfirm && !bidSuccess && sellerProfile?.bid_increment_tiers?.length > 0 && (
