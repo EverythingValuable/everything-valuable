@@ -37,7 +37,7 @@ const AuthenticatedApp = () => {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
-          <img src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3e96b4dd9_5a2936050f1c6c03c0x22e4f356b3a3db57e9a93ef2e7087845606dadbaae2c9acopy.png" alt="Everything Valuable Logo" className="h-12 w-auto mx-auto" />
+          <img src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png" alt="Everything Valuable Logo" className="h-12 w-auto mx-auto" />
           <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
         </div>
       </div>
