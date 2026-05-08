@@ -74,6 +74,12 @@ function PriceConvergenceModuleWrapper({ item }) {
     return () => clearInterval(t);
   }, [isPaused, item.make_it_mine_expires, item.id, queryClient]);
 
+  const convergenceTriggeredRef = useRef(false);
+
+  useEffect(() => {
+    convergenceTriggeredRef.current = false;
+  }, [item.id]);
+
   useEffect(() => {
     if (isActive && item.prisometer_activated_at && item.prisometer_duration_hours) {
       const startTime = new Date(item.prisometer_activated_at).getTime();
@@ -82,15 +88,24 @@ function PriceConvergenceModuleWrapper({ item }) {
       const belowPercent = item.below_reserve_percent || 10;
       const floorPrice = reservePrice * (1 - belowPercent / 100);
       const durationMs = item.prisometer_duration_hours * 3600000;
+      const highestBid = item.highest_bid || 0;
+
       const updatePrice = () => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / durationMs, 1);
         const calculatedPrice = startPrice - (startPrice - floorPrice) * progress;
-        // Never drop below the highest bid
-        const effectiveFloor = Math.max(floorPrice, item.highest_bid || 0);
-        const currentPrice = Math.max(calculatedPrice, effectiveFloor);
+        // Display the raw calculated price — don't freeze at the bid
+        const currentPrice = Math.max(calculatedPrice, floorPrice);
         setDisplayPrice(currentPrice);
         setCents(Math.floor((currentPrice % 1) * 100));
+
+        // Trigger convergence when calculated price meets or drops below highest bid
+        if (highestBid > 0 && calculatedPrice <= highestBid && !convergenceTriggeredRef.current) {
+          convergenceTriggeredRef.current = true;
+          base44.functions.invoke("checkPrisometerConvergence", {})
+            .then(() => queryClient.invalidateQueries({ queryKey: ["item", item.id] }))
+            .catch(() => {});
+        }
       };
       updatePrice();
       intervalRef.current = setInterval(updatePrice, 800);

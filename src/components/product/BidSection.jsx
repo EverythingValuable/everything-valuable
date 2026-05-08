@@ -166,8 +166,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / durationMs, 1);
       const calculated = startPrice - (startPrice - floorPrice) * progress;
-      const effectiveFloor = Math.max(floorPrice, item.highest_bid || 0);
-      return Math.max(calculated, effectiveFloor);
+      return Math.max(calculated, floorPrice);
     }
     return item.current_price || item.prisometer_start_price;
   };
