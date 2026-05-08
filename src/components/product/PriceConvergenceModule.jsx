@@ -177,7 +177,7 @@ function LiveState({ item, isActive, isPaused, pauseTimeLeft, displayPrice, cent
           transition={{ duration: 0.4 }}
           className="font-sans text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mt-1"
         >
-          <span className="text-emerald-700">${formatPrice(displayPrice)}</span>
+          <span className="text-foreground">${formatPrice(displayPrice)}</span>
           {isActive && (
             <span className="font-sans text-xl text-red-500 animate-price-tick">.{cents.toString().padStart(2, "0")}</span>
           )}
