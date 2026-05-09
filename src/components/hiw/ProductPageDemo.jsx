@@ -186,8 +186,7 @@ function BidSection({ phase, settings, prisometerPrice, highestBid, bidCount, mi
   const snapBid = (val) => {
     const t = tiers.find(t => val >= t.min && val <= t.max);
     if (!t) return val;
-    const offset = val - t.min;
-    const rem = offset % t.inc;
+    const rem = val % t.inc;
     return rem === 0 ? val : val + (t.inc - rem);
   };
 

@@ -274,17 +274,20 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       return tier ? tier.increment : 50;
     };
 
-    // Snap a value UP to the nearest clean multiple of the increment
-    const snapToValidBid = (rawVal, inc) => {
-      const remainder = rawVal % inc;
-      return remainder === 0 ? rawVal : rawVal + (inc - remainder);
+    // Snap a value up to the nearest valid multiple of the increment within its tier
+    const snapToValidBid = (rawVal) => {
+      const tier = sellerTiers.find(t => rawVal >= t.min && rawVal <= t.max);
+      if (!tier) return rawVal;
+      const offsetFromMin = rawVal - tier.min;
+      const remainder = offsetFromMin % tier.increment;
+      return remainder === 0 ? rawVal : rawVal + (tier.increment - remainder);
     };
 
     const increment = getTierIncrement(currentHighest);
     const rawStart = currentHighest > 0
       ? currentHighest + increment
       : Math.max(item.estimated_low ? item.estimated_low / 2 : 0, 100);
-    let start = snapToValidBid(rawStart, increment);
+    let start = snapToValidBid(rawStart);
 
     // For prisometer phase, cap options at (or below) the live current price
     const livePrice = item.status === "prisometer" ? Math.floor(getLivePrice()) : Infinity;
@@ -293,7 +296,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     while (val <= livePrice && options.length < 200) {
       options.push(val);
       const nextIncrement = getTierIncrement(val);
-      val = snapToValidBid(val + nextIncrement, nextIncrement);
+      val += nextIncrement;
     }
     return options;
   };
