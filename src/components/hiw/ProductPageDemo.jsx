@@ -499,6 +499,8 @@ export default function ProductPageDemo() {
   const [bidCount, setBidCount] = useState(0);
   const [mimPrice, setMimPrice] = useState(null);
   const [mimTimeLeft, setMimTimeLeft] = useState(120);
+  const [savedPrisometerPrice, setSavedPrisometerPrice] = useState(0);
+  const [savedPrisometerTimeLeft, setSavedPrisometerTimeLeft] = useState(0);
   const [activeImage, setActiveImage] = useState(0);
   const [descOpen, setDescOpen] = useState(false);
   const [showSetup, setShowSetup] = useState(true);
@@ -644,6 +646,8 @@ export default function ProductPageDemo() {
     clearInterval(prisRef.current);
     clearInterval(centRef.current);
     const price = Math.round(prisometerPriceRef.current);
+    setSavedPrisometerPrice(price);
+    setSavedPrisometerTimeLeft(prisometerTimeLeft);
     setMimPrice(price);
     setPhase(PHASE.MIM_CONFIRM);
     phaseRef.current = PHASE.MIM_CONFIRM;
@@ -656,20 +660,61 @@ export default function ProductPageDemo() {
     phaseRef.current = aboveReserve ? PHASE.SOLD_ABOVE : PHASE.SOLD_BELOW;
   };
 
-  const handleCancelMim = () => {
+  const resumePrisometer = (fromPrice, fromTimeLeft) => {
     clearInterval(mimRef.current);
     setMimPrice(null);
     setPhase(PHASE.PRISOMETER);
     phaseRef.current = PHASE.PRISOMETER;
-    activatePrisometer(settingsRef.current, highestBidRef.current);
+
+    const s = settingsRef.current;
+    const floor = s.reservePrice * 0.9;
+    const step = (s.startPrice - floor) / s.prisometerDuration;
+
+    setPrisometerPrice(fromPrice);
+    prisometerPriceRef.current = fromPrice;
+    setPrisometerTimeLeft(fromTimeLeft);
+
+    centRef.current = setInterval(() => setCents(Math.floor(Math.random() * 100)), 100);
+
+    prisRef.current = setInterval(() => {
+      if (phaseRef.current !== PHASE.PRISOMETER) { clearInterval(prisRef.current); return; }
+      setPrisometerTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(prisRef.current);
+          clearInterval(centRef.current);
+          const cur = prisometerPriceRef.current;
+          const bid = highestBidRef.current;
+          if (bid > 0 && cur <= bid) {
+            if (bid >= settingsRef.current.reservePrice) { setPhase(PHASE.SOLD_ABOVE); phaseRef.current = PHASE.SOLD_ABOVE; }
+            else { setPhase(PHASE.SOLD_BELOW); phaseRef.current = PHASE.SOLD_BELOW; }
+          } else {
+            setPhase(PHASE.UNSOLD); phaseRef.current = PHASE.UNSOLD;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+      setPrisometerPrice(prev => {
+        const next = Math.max(floor, prev - step);
+        prisometerPriceRef.current = next;
+        const bid = highestBidRef.current;
+        if (bid > 0 && next <= bid && phaseRef.current === PHASE.PRISOMETER) {
+          clearInterval(prisRef.current);
+          clearInterval(centRef.current);
+          if (bid >= settingsRef.current.reservePrice) { setPhase(PHASE.SOLD_ABOVE); phaseRef.current = PHASE.SOLD_ABOVE; }
+          else { setPhase(PHASE.SOLD_BELOW); phaseRef.current = PHASE.SOLD_BELOW; }
+        }
+        return next;
+      });
+    }, 1000);
+  };
+
+  const handleCancelMim = () => {
+    resumePrisometer(savedPrisometerPrice, savedPrisometerTimeLeft);
   };
 
   const handleCancelMimExpired = () => {
-    clearInterval(mimRef.current);
-    setMimPrice(null);
-    setPhase(PHASE.PRISOMETER);
-    phaseRef.current = PHASE.PRISOMETER;
-    activatePrisometer(settingsRef.current, highestBidRef.current);
+    resumePrisometer(savedPrisometerPrice, savedPrisometerTimeLeft);
   };
 
   const reset = () => {
