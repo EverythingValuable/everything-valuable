@@ -355,6 +355,27 @@ function BidSection({ phase, settings, prisometerPrice, highestBid, bidCount, mi
               {dropdownOpts.map(opt => <option key={opt} value={opt}>${fmtDollars(opt)}</option>)}
             </select>
           )}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+              <input
+                type="number"
+                placeholder="Enter custom amount"
+                className="w-full h-10 border border-input bg-background rounded pl-6 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                onKeyDown={e => { if (e.key === "Enter" && e.target.value) handleSelectBid(parseInt(e.target.value)); }}
+                id="custom-bid-input"
+              />
+            </div>
+            <button
+              onClick={() => {
+                const el = document.getElementById("custom-bid-input");
+                if (el && el.value) handleSelectBid(parseInt(el.value));
+              }}
+              className="h-10 px-4 bg-foreground text-background text-sm font-semibold rounded hover:bg-foreground/90 transition-colors whitespace-nowrap"
+            >
+              Review Bid
+            </button>
+          </div>
           {bidError && <p className="text-xs text-destructive">{bidError}</p>}
           {bidSuccess && <p className="text-xs text-green-600 font-medium">✓ Bid placed successfully!</p>}
 
