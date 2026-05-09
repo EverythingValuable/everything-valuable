@@ -471,7 +471,7 @@ function SetupPanel({ settings, setSettings, onStart, onJumpToPrisometer }) {
       <div className="flex items-center gap-2">
         <Settings className="w-4 h-4 text-primary" />
         <h3 className="font-display font-bold text-sm uppercase tracking-wider text-primary">Demo Configuration</h3>
-        <span className="text-xs text-muted-foreground ml-auto">Video Recording Mode</span>
+
       </div>
       <div className="grid grid-cols-2 gap-3">
         {[
@@ -768,8 +768,8 @@ export default function ProductPageDemo() {
       <div className="border border-primary/20 bg-primary/5 rounded px-4 py-2.5 mb-4 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="text-xs font-bold text-primary uppercase tracking-wider">Video Demo Mode</span>
-          <span className="text-xs text-muted-foreground">· No account or real bids required</span>
+          <span className="text-xs font-bold text-primary uppercase tracking-wider">Demo Mode</span>
+
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowSetup(p => !p)}
