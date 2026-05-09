@@ -125,6 +125,39 @@ export default function HowItWorks() {
         </motion.div>
       </section>
 
+      {/* ===== VIDEO ===== */}
+      <section className="py-20 md:py-28 border-b border-border/50">
+        <div className="max-w-4xl mx-auto px-4 md:px-6">
+          <motion.div
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">See It In Action</span>
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mt-3">
+              Watch How It Works
+            </h2>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            style={{ padding: "56.25% 0 0 0", position: "relative" }}
+          >
+            <iframe
+              src="https://player.vimeo.com/video/1190761948?badge=0&autopause=0&player_id=0&app_id=58479"
+              frameBorder="0"
+              allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+              title="How Everything Valuable Works"
+            />
+          </motion.div>
+        </div>
+      </section>
+
       {/* ===== INTERACTIVE DEMO ===== */}
       <section className="py-20 md:py-28 border-b border-border/50 bg-muted/20">
         <div className="max-w-6xl mx-auto px-4 md:px-6">
