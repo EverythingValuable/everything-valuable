@@ -171,6 +171,7 @@ function BidSection({ phase, settings, prisometerPrice, highestBid, bidCount, mi
   const [bidInput, setBidInput] = useState("");
   const [bidError, setBidError] = useState("");
   const [bidSuccess, setBidSuccess] = useState(false);
+  const [showFeeModal, setShowFeeModal] = useState(false);
 
   const tiers = [
     { min: 0, max: 1000, inc: 50 },
@@ -202,15 +203,27 @@ function BidSection({ phase, settings, prisometerPrice, highestBid, bidCount, mi
     return options;
   };
 
-  const handlePlaceBid = () => {
+  const handleSelectBid = (val) => {
+    setBidInput(val.toString());
+    setBidError("");
+    setShowFeeModal(true);
+  };
+
+  const handleConfirmBid = () => {
     const amount = parseInt(bidInput);
     if (!amount || amount <= 0) { setBidError("Enter a valid bid amount."); return; }
     if (amount <= highestBid) { setBidError(`Bid must exceed current high bid of $${fmtDollars(highestBid)}.`); return; }
+    setShowFeeModal(false);
     setBidError("");
     setBidInput("");
     setBidSuccess(true);
     onPlaceBid(amount);
     setTimeout(() => setBidSuccess(false), 2000);
+  };
+
+  const handleCancelBid = () => {
+    setShowFeeModal(false);
+    setBidInput("");
   };
 
   const allOptions = generateOptions();
@@ -329,15 +342,14 @@ function BidSection({ phase, settings, prisometerPrice, highestBid, bidCount, mi
           </div>
           <div className="grid grid-cols-3 gap-2">
             {quickPicks.map(opt => (
-              <button key={opt} onClick={() => { setBidInput(opt.toString()); setBidError(""); }}
-                className={`flex flex-col items-center justify-center border rounded py-3 px-2 transition-colors text-center
-                  ${bidInput === opt.toString() ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-foreground hover:border-primary/50 hover:bg-muted/30"}`}>
+              <button key={opt} onClick={() => handleSelectBid(opt)}
+                className="flex flex-col items-center justify-center border rounded py-3 px-2 transition-colors text-center border-border bg-background text-foreground hover:border-primary/50 hover:bg-muted/30">
                 <span className="font-semibold text-sm">${fmtDollars(opt)}</span>
               </button>
             ))}
           </div>
           {dropdownOpts.length > 0 && (
-            <select value={dropdownOpts.includes(parseInt(bidInput)) ? bidInput : ""} onChange={e => { setBidInput(e.target.value); setBidError(""); }}
+            <select value="" onChange={e => { if (e.target.value) handleSelectBid(parseInt(e.target.value)); }}
               className="w-full h-10 border border-input bg-background rounded px-3 text-sm text-foreground">
               <option value="">Or select a higher bid amount</option>
               {dropdownOpts.map(opt => <option key={opt} value={opt}>${fmtDollars(opt)}</option>)}
@@ -345,10 +357,69 @@ function BidSection({ phase, settings, prisometerPrice, highestBid, bidCount, mi
           )}
           {bidError && <p className="text-xs text-destructive">{bidError}</p>}
           {bidSuccess && <p className="text-xs text-green-600 font-medium">✓ Bid placed successfully!</p>}
-          <Button onClick={handlePlaceBid} disabled={!bidInput}
-            className="w-full h-12 bg-foreground text-background hover:bg-foreground/90 font-semibold text-sm tracking-wide">
-            Place Bid
-          </Button>
+
+          {/* Fee breakdown modal */}
+          {showFeeModal && bidInput && (
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={handleCancelBid}>
+              <div className="w-full max-w-md bg-card rounded-2xl shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+                  <h2 className="font-serif text-lg font-semibold">Review Your Bid</h2>
+                  <button onClick={handleCancelBid} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="overflow-y-auto max-h-[70vh] p-5">
+                  {(() => {
+                    const amount = parseInt(bidInput);
+                    const serviceFee = amount * 0.10 + 30;
+                    const feeCredit = serviceFee * 0.50;
+                    const remainingBalance = amount + feeCredit - serviceFee;
+                    const totalPaid = serviceFee + remainingBalance;
+                    const fmt = (n) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    return (
+                      <div className="rounded-lg border border-border bg-background/50 p-4 space-y-4 text-sm">
+                        <div className="space-y-2">
+                          <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Item Price</p>
+                          <div className="flex justify-between"><span className="text-muted-foreground">Price</span><span>${amount.toLocaleString("en-US")}.00</span></div>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Service Fee</p>
+                          <div className="text-xs text-muted-foreground">10% of item price + $30</div>
+                          <div className="flex justify-between"><span></span><span>${fmt(serviceFee)}</span></div>
+                        </div>
+                        <div className="border-t border-border pt-3 space-y-2">
+                          <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">If You Win</p>
+                          <div className="text-xs text-muted-foreground">Card on file will be charged automatically</div>
+                          <div className="flex justify-between font-semibold"><span></span><span>${fmt(serviceFee)}</span></div>
+                          <p className="text-xs text-muted-foreground italic mt-2">This payment secures your winning position. If the sale is completed, 50% of this fee is credited back on your final invoice.</p>
+                        </div>
+                        <div className="border-t border-border pt-3 space-y-2">
+                          <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Final Invoice From Seller</p>
+                          <div className="flex justify-between text-xs"><span className="text-muted-foreground">Item Price</span><span>${amount.toLocaleString("en-US")}.00</span></div>
+                          <div className="flex justify-between text-xs text-green-600"><span className="text-muted-foreground">Less Service Fee Credit</span><span>-${fmt(feeCredit)}</span></div>
+                          <div className="flex justify-between font-semibold"><span className="text-muted-foreground">Remaining Balance Due</span><span>${fmt(remainingBalance)}</span></div>
+                        </div>
+                        <div className="border-t border-border pt-3 space-y-2">
+                          <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Total Paid</p>
+                          <div className="flex justify-between text-xs"><span className="text-muted-foreground">Paid Upfront</span><span>${fmt(serviceFee)}</span></div>
+                          <div className="flex justify-between text-xs"><span className="text-muted-foreground">Paid on Final Invoice</span><span>${fmt(remainingBalance)}</span></div>
+                          <div className="border-t border-border mt-2 pt-2 flex justify-between font-semibold"><span className="text-muted-foreground">Total Paid Before Tax / Shipping</span><span>${fmt(totalPaid)}</span></div>
+                        </div>
+                        <p className="text-xs text-muted-foreground italic">Does not include sales tax, shipping, or other fees.</p>
+                        <div className="border-t border-border pt-4 space-y-3">
+                          <p className="text-xs text-muted-foreground">Your credit card on file will be charged automatically if successful for service fee only.</p>
+                          <div className="flex gap-3">
+                            <button onClick={handleConfirmBid} className="flex-1 h-11 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-md transition-colors">Confirm Bid</button>
+                            <button onClick={handleCancelBid} className="flex-1 h-11 border border-input bg-background hover:bg-muted text-foreground font-semibold rounded-md transition-colors">Cancel</button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
