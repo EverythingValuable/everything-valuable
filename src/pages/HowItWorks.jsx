@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, TrendingDown, ShoppingBag, FileText, Users, Zap } from "lucide-react";
 import { motion } from "framer-motion";
-import AuctionSimulator from "../components/hiw/AuctionSimulator";
+import ProductPageDemo from "../components/hiw/ProductPageDemo";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -148,7 +148,7 @@ export default function HowItWorks() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            <AuctionSimulator />
+            <ProductPageDemo />
           </motion.div>
         </div>
       </section>
