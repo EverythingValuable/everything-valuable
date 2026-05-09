@@ -274,12 +274,11 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
       return tier ? tier.increment : 50;
     };
 
-    // Snap a value up to the nearest valid multiple of the increment within its tier
+    // Snap a value UP to the nearest clean multiple of the increment (not relative to tier.min)
     const snapToValidBid = (rawVal) => {
       const tier = sellerTiers.find(t => rawVal >= t.min && rawVal <= t.max);
       if (!tier) return rawVal;
-      const offsetFromMin = rawVal - tier.min;
-      const remainder = offsetFromMin % tier.increment;
+      const remainder = rawVal % tier.increment;
       return remainder === 0 ? rawVal : rawVal + (tier.increment - remainder);
     };
 
