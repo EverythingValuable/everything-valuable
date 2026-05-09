@@ -11,21 +11,23 @@ import { Badge } from "@/components/ui/badge";
 
 // ─── Demo item data ───────────────────────────────────────────────────────────
 const DEMO_ITEM = {
-  title: "Juan Gris Style Cubist Composition With Violin and Pipe",
-  subtitle: "Painting, Signed and Dated 1959",
+  title: "Erik Kollin, Fabergé Master Goldsmith, Russian Imperial Signed Mechanical Silver Easter Egg Clock",
+  subtitle: "with Pop-Up Crucifix Compartment and Double-Headed Eagle, 84 Mark",
   seller: "Collective Hudson",
-  category: "Painting",
-  description: "A compelling Cubist-influenced composition depicting a violin, pipe, and abstracted tabletop elements executed in a geometric, modernist manner. Signed and dated lower right, 1959. Painted on heavy card.",
-  dimensions: "Measurement: 13 3/8 × 13 3/8 in. (34 × 34 cm.)",
-  condition: "Very Good",
-  location: "50 Broadway, 12401, Kingston, United States",
-  estimated_low: 18000,
-  estimated_high: 25000,
+  category: "Watches & Clocks",
+  description: "Erik Kollin was Fabergé's chief goldsmith, appointed by Peter Carl Fabergé in 1870. He is credited with creating the first Fabergé egg, the Hen Egg, commissioned by the Tsar in 1885.\n\nThis egg-form table clock bears Imperial markings for the Russian 84 silver standard, Moscow, and Erik Kollin's mark. The silver clock is richly decorated with chased foliate scrollwork and blue and green enamel panels, and is raised on a hexagonal base with conforming ornament and ball feet. The front is fitted with a white enamel dial with Roman numerals. The egg opens at the center to reveal a silver crucifix in the round, along with a small covered compartment in the upper half. The top is surmounted by an enamel medallion bearing the Russian Imperial double-headed eagle.",
+  dimensions: "Measurement: 10 x 5 x 5 in. (25.4 x 12.7 x 12.7 cm.) approx",
+  condition: "Very Good — Attractive overall appearance with honest age. Clock movement not tested.",
+  location: "Kingston, NY 12401",
+  estimated_low: 20000,
+  estimated_high: 40000,
   images: [
-    "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=700&h=700&fit=crop",
-    "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?w=700&h=700&fit=crop",
-    "https://images.unsplash.com/photo-1549887534-1541e9326642?w=700&h=700&fit=crop",
-    "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=700&h=700&fit=crop",
+    "https://base44.app/api/apps/69beac1c3231aaeb891946d5/files/mp/public/69beac1c3231aaeb891946d5/b07d8d465_11_01.jpg",
+    "https://base44.app/api/apps/69beac1c3231aaeb891946d5/files/mp/public/69beac1c3231aaeb891946d5/0f97db25a_11_03.jpg",
+    "https://base44.app/api/apps/69beac1c3231aaeb891946d5/files/mp/public/69beac1c3231aaeb891946d5/35653a00d_11_04.jpg",
+    "https://base44.app/api/apps/69beac1c3231aaeb891946d5/files/mp/public/69beac1c3231aaeb891946d5/cdc2007dc_11_05.jpg",
+    "https://base44.app/api/apps/69beac1c3231aaeb891946d5/files/mp/public/69beac1c3231aaeb891946d5/1838be99b_11_06.jpg",
+    "https://base44.app/api/apps/69beac1c3231aaeb891946d5/files/mp/public/69beac1c3231aaeb891946d5/31a1385bb_11_07.jpg",
   ],
 };
 
@@ -410,8 +412,8 @@ function SetupPanel({ settings, setSettings, onStart, onJumpToPrisometer }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function ProductPageDemo() {
   const DEFAULT_SETTINGS = {
-    startPrice: 25000,
-    reservePrice: 18000,
+    startPrice: 40000,
+    reservePrice: 20000,
     firstBidsDuration: 30,
     prisometerDuration: 90,
     estimatedLow: DEMO_ITEM.estimated_low,
