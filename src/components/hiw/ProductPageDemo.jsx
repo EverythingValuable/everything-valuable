@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // ─── Demo item data ───────────────────────────────────────────────────────────
 const DEMO_ITEM = {
@@ -520,6 +521,8 @@ export default function ProductPageDemo() {
   const [descOpen, setDescOpen] = useState(false);
   const [showSetup, setShowSetup] = useState(true);
 
+  const isMobile = useIsMobile();
+
   const timerRef = useRef(null);
   const prisRef = useRef(null);
   const mimRef = useRef(null);
@@ -758,6 +761,17 @@ export default function ProductPageDemo() {
 
   return (
     <div className="bg-background">
+      {/* Sticky Price module for mobile */}
+      {isMobile && (phase === PHASE.FIRST_BIDS || phase === PHASE.PRISOMETER || phase === PHASE.MIM_CONFIRM) && (
+        <div className="md:hidden sticky top-0 z-10 bg-background border-b border-border p-4 shadow-sm">
+          <PriceModule
+            phase={phase} settings={settings} timeLeft={timeLeft}
+            prisometerPrice={prisometerPrice} cents={cents}
+            highestBid={highestBid} bidCount={bidCount} mimTimeLeft={mimTimeLeft}
+          />
+        </div>
+      )}
+
       {/* Demo control bar */}
       <div className="border border-primary/20 bg-primary/5 rounded px-4 py-2.5 mb-4 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2">
@@ -841,7 +855,7 @@ export default function ProductPageDemo() {
           </div>
 
           {/* Price module */}
-          {phase !== PHASE.SETUP && (
+          {phase !== PHASE.SETUP && !isMobile && (
             <PriceModule
               phase={phase} settings={settings} timeLeft={timeLeft}
               prisometerPrice={prisometerPrice} cents={cents}
