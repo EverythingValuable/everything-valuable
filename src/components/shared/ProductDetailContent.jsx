@@ -20,6 +20,44 @@ import ContactSupportModal from "@/components/shared/ContactSupportModal";
 import LocationFlag from "@/components/shared/LocationFlag";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Small live price display for the sticky mobile bar
+function MobileStickyPrice({ item }) {
+  const [displayPrice, setDisplayPrice] = useState(item.current_price || item.prisometer_start_price);
+  const [cents, setCents] = useState(0);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    if (item.status !== "prisometer" || !item.prisometer_activated_at || item.make_it_mine_active) {
+      setDisplayPrice(item.current_price || item.prisometer_start_price);
+      return;
+    }
+    const startTime = new Date(item.prisometer_activated_at).getTime();
+    const startPrice = item.prisometer_start_price;
+    const reservePrice = item.reserve_price || startPrice * 0.5;
+    const belowPercent = item.below_reserve_percent || 10;
+    const floorPrice = reservePrice * (1 - belowPercent / 100);
+    const durationMs = item.prisometer_duration_hours * 3600000;
+
+    const update = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      const price = Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
+      setDisplayPrice(price);
+      setCents(Math.floor((price % 1) * 100));
+    };
+    update();
+    intervalRef.current = setInterval(update, 800);
+    return () => clearInterval(intervalRef.current);
+  }, [item]);
+
+  return (
+    <span className="font-price text-xl font-bold text-foreground tabular-nums">
+      ${Math.floor(displayPrice).toLocaleString("en-US")}
+      <span className="text-sm text-red-500">.{cents.toString().padStart(2, "0")}</span>
+    </span>
+  );
+}
+
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
   decorative_arts: "Decorative Arts", design: "Design", antiques: "Antiques",
@@ -206,10 +244,26 @@ export default function ProductDetailContent({ itemId }) {
 
   return (
     <div className="w-full max-w-7xl mx-auto overflow-x-hidden">
-      {/* Sticky price header for mobile during active phases */}
+      {/* Sticky compact price bar for mobile during active phases */}
       {isMobile && (item.status === "first_bids" || item.status === "prisometer") && (
-        <div className="lg:hidden sticky top-0 z-20 bg-background border-b border-border px-4 py-3 shadow-sm">
-          <PriceConvergenceModuleWrapper item={item} />
+        <div className="lg:hidden sticky top-0 z-20 bg-background border-b border-border px-4 py-2.5 shadow-sm flex items-center justify-between gap-3">
+          {item.status === "first_bids" && (
+            <>
+              <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">1stBid$™ Preview</span>
+              <span className="font-price text-lg font-bold text-foreground">
+                {item.highest_bid > 0 ? `High: $${item.highest_bid.toLocaleString("en-US")}` : "No bids yet"}
+              </span>
+            </>
+          )}
+          {item.status === "prisometer" && (
+            <>
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse inline-block" />
+                <span className="text-xs font-bold text-red-600 uppercase tracking-wider">PRI$OMETER™ Live</span>
+              </div>
+              <MobileStickyPrice item={item} />
+            </>
+          )}
         </div>
       )}
 
@@ -240,7 +294,7 @@ export default function ProductDetailContent({ itemId }) {
                 </p>
               )}
             </div>
-            {!isMobile && (item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
+            {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
             {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
 
             <div className="flex gap-3">
