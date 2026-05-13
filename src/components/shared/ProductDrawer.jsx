@@ -1,13 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { X, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductDetailContent from "./ProductDetailContent";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function ProductDrawer({ itemId, onClose }) {
-  const isMobile = useIsMobile();
-  const dragY = useRef(0);
+  const isMobile = window.innerWidth < 1024;
 
   // Lock body scroll while open
   useEffect(() => {
@@ -37,8 +35,8 @@ export default function ProductDrawer({ itemId, onClose }) {
 
           {/* Bottom sheet */}
           <motion.div
-            className="relative w-full bg-background shadow-2xl flex flex-col rounded-t-2xl overflow-hidden"
-            style={{ maxHeight: "92dvh" }}
+            className="relative w-full bg-background shadow-2xl flex flex-col rounded-t-2xl"
+            style={{ maxHeight: "92dvh", height: "92dvh" }}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -46,10 +44,8 @@ export default function ProductDrawer({ itemId, onClose }) {
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.3 }}
-            onDragEnd={(e, info) => {
-              if (info.offset.y > 80 || info.velocity.y > 400) {
-                onClose();
-              }
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 80 || info.velocity.y > 400) onClose();
             }}
           >
             {/* Drag handle */}
@@ -84,11 +80,10 @@ export default function ProductDrawer({ itemId, onClose }) {
     );
   }
 
-  // Desktop: side panel (unchanged)
+  // Desktop: side panel
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex">
-        {/* Backdrop */}
         <motion.div
           className="absolute inset-0 bg-black/40 backdrop-blur-sm"
           initial={{ opacity: 0 }}
@@ -96,8 +91,6 @@ export default function ProductDrawer({ itemId, onClose }) {
           exit={{ opacity: 0 }}
           onClick={onClose}
         />
-
-        {/* Drawer panel */}
         <motion.div
           className="relative ml-auto w-full max-w-4xl h-full bg-background shadow-2xl flex flex-col overflow-hidden"
           initial={{ x: "100%" }}
@@ -105,7 +98,6 @@ export default function ProductDrawer({ itemId, onClose }) {
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 30, stiffness: 300 }}
         >
-          {/* Header bar */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0 bg-background/95 backdrop-blur-sm z-10">
             <Link
               to={`/item/${itemId}`}
@@ -121,8 +113,6 @@ export default function ProductDrawer({ itemId, onClose }) {
               <X className="w-4 h-4" />
             </button>
           </div>
-
-          {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto">
             <ProductDetailContent itemId={itemId} />
           </div>
