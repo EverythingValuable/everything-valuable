@@ -82,7 +82,7 @@ export default function Navbar() {
       {/* Main nav */}
       <div className="flex items-center justify-between px-6 md:px-8 h-16 md:h-20">
         <div className="flex items-center gap-8">
-          <button className="md:hidden p-1" onClick={() => setMobileOpen(!mobileOpen)}>
+          <button className="hidden p-1" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
@@ -145,10 +145,10 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link to="/browse" className="p-2 rounded-full hover:bg-muted transition-colors">
+          <Link to="/browse" className="p-2 rounded-full hover:bg-muted transition-colors hidden md:flex">
             <Search className="w-4 h-4 text-muted-foreground" />
           </Link>
-          <Link to="/buyer" className="p-2 rounded-full hover:bg-muted transition-colors hidden sm:flex">
+          <Link to="/buyer" className="p-2 rounded-full hover:bg-muted transition-colors hidden md:flex">
             <Heart className="w-4 h-4 text-muted-foreground" />
           </Link>
 

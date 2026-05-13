@@ -89,7 +89,7 @@ function App() {
           <ScrollToTop />
           <AuthenticatedApp />
         </Router>
-        <Toaster />
+        <Toaster position="bottom-center" />
       </QueryClientProvider>
     </AuthProvider>
   )

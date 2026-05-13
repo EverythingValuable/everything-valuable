@@ -4,7 +4,7 @@ import { Shield, Lock, Truck } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-foreground text-background">
+    <footer className="hidden md:block bg-foreground text-background">
       {/* Trust bar */}
       <div className="border-b border-background/10">
         <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
