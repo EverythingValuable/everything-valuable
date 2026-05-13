@@ -50,7 +50,7 @@ export default function SetPriceAlertModal({ isOpen, onClose, item, user }) {
         item_id: item?.id,
         user_email: user?.email,
         status: "active"
-      }).then(r => r[0]),
+      }).then(r => r[0] ?? null),
     enabled: !!item?.id && !!user?.email,
   });
 
