@@ -325,7 +325,7 @@ function BidSection({ phase, settings, prisometerPrice, highestBid, bidCount, mi
 
         {phase === PHASE.PRISOMETER && (
           <Button onClick={onMakeItMine} className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 text-base font-semibold gap-2">
-            <ShoppingBag className="w-5 h-5" /> Make It Mine — ${fmtDollars(prisometerPrice)}
+            <ShoppingBag className="w-5 h-5" /> Make It Mine
           </Button>
         )}
 
