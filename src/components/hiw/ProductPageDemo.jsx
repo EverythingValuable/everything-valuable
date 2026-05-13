@@ -138,12 +138,6 @@ function PriceModule({ phase, settings, timeLeft, prisometerPrice, cents, highes
             <span className="text-foreground">${fmtDollars(prisometerPrice)}</span>
             {!isPaused && <span className="text-xl text-primary animate-price-tick">.{String(cents).padStart(2,"0")}</span>}
           </motion.div>
-          <div className="w-full h-1 bg-border rounded-full overflow-hidden mt-3">
-            <motion.div className="h-full bg-primary rounded-full"
-              style={{ width: `${Math.max(0, Math.min(100, ((prisometerPrice - settings.reservePrice*0.9) / (settings.startPrice - settings.reservePrice*0.9))*100))}%` }}
-              transition={{ duration: 0.8 }} />
-          </div>
-          <p className="text-[10px] text-muted-foreground mt-1 flex justify-between"><span>Floor</span><span>Start ${fmtDollars(settings.startPrice)}</span></p>
           <InfoBox text="The PRI$OMETER™ is our live declining-price engine. The price starts high and drops continuously over time. You can place a bid at any moment — or use Make It Mine to buy instantly at the current price." />
         </div>
         <div className="rounded border border-border bg-card px-5 py-4">
