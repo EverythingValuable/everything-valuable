@@ -18,6 +18,7 @@ import SimilarLots from "@/components/product/SimilarLots";
 import SetPriceAlertModal from "@/components/product/SetPriceAlertModal";
 import ContactSupportModal from "@/components/shared/ContactSupportModal";
 import LocationFlag from "@/components/shared/LocationFlag";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const categoryLabels = {
   fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
@@ -127,6 +128,7 @@ export default function ProductDetailContent({ itemId }) {
   const [supportOpen, setSupportOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   // All hooks must be called unconditionally before any early returns
   useEffect(() => {
@@ -204,6 +206,13 @@ export default function ProductDetailContent({ itemId }) {
 
   return (
     <div className="w-full max-w-7xl mx-auto overflow-x-hidden">
+      {/* Sticky price header for mobile during active phases */}
+      {isMobile && (item.status === "first_bids" || item.status === "prisometer") && (
+        <div className="lg:hidden sticky top-0 z-20 bg-background border-b border-border px-4 py-3 shadow-sm">
+          <PriceConvergenceModuleWrapper item={item} />
+        </div>
+      )}
+
       <div className="w-full max-w-full px-4 md:px-6 py-6 pb-12 overflow-x-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 w-full max-w-full overflow-x-hidden">
 
@@ -231,7 +240,7 @@ export default function ProductDetailContent({ itemId }) {
                 </p>
               )}
             </div>
-            {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
+            {!isMobile && (item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
             {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
 
             <div className="flex gap-3">
