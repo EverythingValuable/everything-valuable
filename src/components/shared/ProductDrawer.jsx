@@ -45,7 +45,7 @@ export default function ProductDrawer({ itemId, onClose }) {
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.3 }}
             onDragEnd={(_, info) => {
-              if (info.offset.y > 80 || info.velocity.y > 400) onClose();
+              if (info.offset.y > 150 && info.velocity.y > 100) onClose();
             }}
           >
             {/* Drag handle */}
