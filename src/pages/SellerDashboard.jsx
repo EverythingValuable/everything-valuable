@@ -14,6 +14,7 @@ import InvoiceBuilder from "@/components/seller/InvoiceBuilder";
 import { Button } from "@/components/ui/button";
 import { Plus, Boxes, ClipboardCheck, DollarSign, AlertTriangle, Upload, ArrowRight, SearchCheck } from "lucide-react";
 import { format } from "date-fns";
+import BelowReserveAlert from "@/components/seller/BelowReserveAlert";
 
 const VIEW_LABELS = {
   listings: "Inventory", draft: "Drafts", first_bids: "1stBid$ Preview",
@@ -227,6 +228,7 @@ function SellerDashboardInner() {
           {/* Overview-only sections */}
           {view === "overview" && (
             <>
+              <BelowReserveAlert user={user} />
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                 <StatTile icon={Boxes} label="Total Inventory" value={stats.total} subtext={`${activeItems.length} currently live or previewing`} tone="blue" />
                 <StatTile icon={DollarSign} label="Active Value" value={money(activeValue)} subtext={`${money(averageValue)} average tracked item value`} tone="green" />
