@@ -795,8 +795,9 @@ export default function ProductPageDemo() {
       {/* ── Product Page Layout ── */}
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
 
-        {/* Left: Gallery */}
-        <div className="space-y-3 md:order-1 order-1">
+        {/* Left col: Gallery + (desktop) item details below */}
+        <div className="space-y-3">
+          {/* Gallery */}
           <div className="aspect-square rounded overflow-hidden bg-muted border border-border">
             <AnimatePresence mode="wait">
               <motion.img key={activeImage} src={DEMO_ITEM.images[activeImage]} alt={DEMO_ITEM.title}
@@ -813,15 +814,14 @@ export default function ProductPageDemo() {
             ))}
           </div>
 
-          {/* Item details below gallery */}
-          <div className="space-y-2 pt-2">
+          {/* Desktop-only: about/dimensions/condition below gallery */}
+          <div className="hidden md:block space-y-2 pt-2">
             <button onClick={() => setDescOpen(o => !o)}
               className="w-full flex items-center justify-between py-3 border-b border-border text-sm font-semibold text-foreground hover:text-primary transition-colors">
               <span>About this lot</span>
               {descOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
             {descOpen && <p className="text-sm text-muted-foreground leading-relaxed pb-3">{DEMO_ITEM.description}</p>}
-
             <div className="py-3 border-b border-border">
               <p className="text-xs font-bold uppercase tracking-widest text-foreground/60 mb-1">Dimensions</p>
               <p className="text-sm text-muted-foreground">{DEMO_ITEM.dimensions}</p>
@@ -833,9 +833,9 @@ export default function ProductPageDemo() {
           </div>
         </div>
 
-        {/* Right: Info + Bidding */}
-        <div className="space-y-4 md:order-2 order-2">
-          {/* Header */}
+        {/* Right col: title → price → bid → save/share → alert → delivery → message → support → (mobile) about/dims/condition */}
+        <div className="space-y-4">
+          {/* Title */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-medium text-muted-foreground border border-border rounded px-2 py-0.5">{DEMO_ITEM.category}</span>
@@ -845,7 +845,7 @@ export default function ProductPageDemo() {
             <p className="text-sm text-muted-foreground">Offered by <span className="font-medium text-foreground">{DEMO_ITEM.seller}</span></p>
           </div>
 
-          {/* Price module — always here, full width on mobile too */}
+          {/* Price module */}
           {phase !== PHASE.SETUP && (
             <PriceModule
               phase={phase} settings={settings} timeLeft={timeLeft}
@@ -854,7 +854,7 @@ export default function ProductPageDemo() {
             />
           )}
 
-          {/* Bid section — immediately below price module */}
+          {/* Bid section */}
           {phase !== PHASE.SETUP && (
             <BidSection
               phase={phase} settings={settings} prisometerPrice={prisometerPrice}
@@ -876,7 +876,7 @@ export default function ProductPageDemo() {
             </div>
           )}
 
-          {/* Action row */}
+          {/* Save / Share */}
           {(phase === PHASE.FIRST_BIDS || phase === PHASE.PRISOMETER) && (
             <div className="flex gap-3">
               <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground border border-border rounded px-4 py-2 transition-colors flex-1 justify-center">
@@ -887,13 +887,15 @@ export default function ProductPageDemo() {
               </button>
             </div>
           )}
+
+          {/* Price Alert */}
           {(phase === PHASE.FIRST_BIDS || phase === PHASE.PRISOMETER) && (
             <button className="w-full flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground border border-border rounded px-4 py-2.5 transition-colors">
               <Bell className="w-4 h-4 text-amber-500" /> Price Alert
             </button>
           )}
 
-          {/* Location */}
+          {/* Delivery Options */}
           {phase !== PHASE.SETUP && (
             <div className="rounded border border-border p-4 text-sm flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-base shrink-0">📍</div>
@@ -905,15 +907,37 @@ export default function ProductPageDemo() {
             </div>
           )}
 
-          {/* Terms */}
-          {(phase === PHASE.FIRST_BIDS || phase === PHASE.PRISOMETER) && (
-            <div className="rounded border border-border p-4">
-              <button className="w-full flex items-center justify-between text-sm font-medium text-foreground">
-                <span>Terms &amp; Conditions</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
+          {/* Message Seller */}
+          {phase !== PHASE.SETUP && (
+            <div className="rounded border border-border p-4 text-sm text-muted-foreground italic">
+              Message the seller about this lot...
             </div>
           )}
+
+          {/* Contact Support */}
+          {phase !== PHASE.SETUP && (
+            <button className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1 text-center underline underline-offset-2">
+              Contact Support about this lot
+            </button>
+          )}
+
+          {/* Mobile-only: about/dimensions/condition */}
+          <div className="md:hidden space-y-2 pt-2">
+            <button onClick={() => setDescOpen(o => !o)}
+              className="w-full flex items-center justify-between py-3 border-b border-border text-sm font-semibold text-foreground hover:text-primary transition-colors">
+              <span>About this lot</span>
+              {descOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+            {descOpen && <p className="text-sm text-muted-foreground leading-relaxed pb-3">{DEMO_ITEM.description}</p>}
+            <div className="py-3 border-b border-border">
+              <p className="text-xs font-bold uppercase tracking-widest text-foreground/60 mb-1">Dimensions</p>
+              <p className="text-sm text-muted-foreground">{DEMO_ITEM.dimensions}</p>
+            </div>
+            <div className="py-3 border-b border-border">
+              <p className="text-xs font-bold uppercase tracking-widest text-foreground/60 mb-1">Condition</p>
+              <p className="text-sm text-muted-foreground">{DEMO_ITEM.condition}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
