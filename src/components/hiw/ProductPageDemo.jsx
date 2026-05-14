@@ -796,7 +796,7 @@ export default function ProductPageDemo() {
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
 
         {/* Left: Gallery */}
-        <div className="space-y-3 md:order-1 order-2">
+        <div className="space-y-3 md:order-1 order-1">
           <div className="aspect-square rounded overflow-hidden bg-muted border border-border">
             <AnimatePresence mode="wait">
               <motion.img key={activeImage} src={DEMO_ITEM.images[activeImage]} alt={DEMO_ITEM.title}
@@ -834,7 +834,7 @@ export default function ProductPageDemo() {
         </div>
 
         {/* Right: Info + Bidding */}
-        <div className="space-y-4 md:order-2 order-1">
+        <div className="space-y-4 md:order-2 order-2">
           {/* Header */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
