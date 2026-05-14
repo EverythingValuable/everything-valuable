@@ -796,7 +796,7 @@ export default function ProductPageDemo() {
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
 
         {/* Left: Gallery */}
-        <div className="space-y-3">
+        <div className="space-y-3 md:order-1 order-2">
           <div className="aspect-square rounded overflow-hidden bg-muted border border-border">
             <AnimatePresence mode="wait">
               <motion.img key={activeImage} src={DEMO_ITEM.images[activeImage]} alt={DEMO_ITEM.title}
@@ -812,17 +812,6 @@ export default function ProductPageDemo() {
               </button>
             ))}
           </div>
-
-          {/* Mobile-only: Price module below gallery */}
-          {isMobile && phase !== PHASE.SETUP && (
-            <div className="space-y-1.5">
-              <PriceModule
-                phase={phase} settings={settings} timeLeft={timeLeft}
-                prisometerPrice={prisometerPrice} cents={cents}
-                highestBid={highestBid} bidCount={bidCount} mimTimeLeft={mimTimeLeft}
-              />
-            </div>
-          )}
 
           {/* Item details below gallery */}
           <div className="space-y-2 pt-2">
@@ -845,7 +834,7 @@ export default function ProductPageDemo() {
         </div>
 
         {/* Right: Info + Bidding */}
-        <div className="space-y-4">
+        <div className="space-y-4 md:order-2 order-1">
           {/* Header */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
@@ -856,8 +845,8 @@ export default function ProductPageDemo() {
             <p className="text-sm text-muted-foreground">Offered by <span className="font-medium text-foreground">{DEMO_ITEM.seller}</span></p>
           </div>
 
-          {/* Price module */}
-          {phase !== PHASE.SETUP && !isMobile && (
+          {/* Price module — always here, full width on mobile too */}
+          {phase !== PHASE.SETUP && (
             <PriceModule
               phase={phase} settings={settings} timeLeft={timeLeft}
               prisometerPrice={prisometerPrice} cents={cents}
@@ -865,7 +854,7 @@ export default function ProductPageDemo() {
             />
           )}
 
-          {/* Bid section */}
+          {/* Bid section — immediately below price module */}
           {phase !== PHASE.SETUP && (
             <BidSection
               phase={phase} settings={settings} prisometerPrice={prisometerPrice}
