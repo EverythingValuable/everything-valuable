@@ -87,6 +87,7 @@ export default function FeeBreakdownDisplay({ amount, onConfirmBid, onCancel, sh
           </div>
         </div>
       )}
+
       
 
     </div>
