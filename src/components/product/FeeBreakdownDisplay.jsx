@@ -5,7 +5,7 @@ export default function FeeBreakdownDisplay({ amount, onConfirmBid, onCancel, sh
   const totalPaid = serviceFee + remainingBalance;
 
   return (
-    <div className="rounded-lg border border-border bg-background/50 p-4 space-y-4 text-sm w-full overflow-hidden">
+    <div className="rounded-lg border border-border bg-background/50 p-4 sm:p-6 space-y-4 text-sm w-full overflow-hidden">
       <div className="space-y-2">
         <p className="font-semibold text-xs uppercase tracking-wider text-muted-foreground">Item Price</p>
         <div className="flex justify-between gap-2 min-w-0">

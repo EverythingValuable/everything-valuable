@@ -3,9 +3,9 @@ import FeeBreakdownDisplay from "./FeeBreakdownDisplay";
 
 export default function BidConfirmModal({ amount, onConfirm, onCancel, isPending }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onCancel}>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm" onClick={onCancel}>
       <div
-        className="w-full max-w-md bg-card rounded-2xl shadow-2xl overflow-hidden"
+        className="w-full max-w-2xl bg-card rounded-2xl shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
