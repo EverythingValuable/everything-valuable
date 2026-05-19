@@ -5,12 +5,14 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Plus, Package, Trash2, ArrowRight, Clock, Gavel, ShieldCheck,
-  Eye, Heart, Search, Handshake, MoreHorizontal, Download,
+  Plus, Package, Trash2, Clock, Gavel, ShieldCheck,
+  Eye, Heart, Search, Handshake, Download,
   SlidersHorizontal, ChevronLeft, ChevronRight, Activity,
   Package2, DollarSign, CheckCircle2, AlertCircle
 } from "lucide-react";
-import { formatDistanceToNow, isPast } from "date-fns";
+import { formatDistanceToNow, isPast, subDays } from "date-fns";
+import ItemRowMenu from "./ItemRowMenu";
+import AdvancedFiltersPanel from "./AdvancedFiltersPanel";
 
 const STATUS_CONFIG = {
   draft:          { label: "Draft",             cls: "bg-gray-100 text-gray-500 border-gray-200" },
@@ -102,6 +104,8 @@ export default function InventoryTable({ items, view, limit }) {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({});
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const queryClient = useQueryClient();
@@ -118,7 +122,15 @@ export default function InventoryTable({ items, view, limit }) {
     );
     const matchCat = !categoryFilter || categoryFilter === "All Categories" || item.category === categoryFilter;
     const matchStatus = !statusFilter || item.status === statusFilter;
-    return matchQ && matchCat && matchStatus;
+    const af = advancedFilters;
+    const price = item.current_price || item.highest_bid || item.prisometer_start_price || 0;
+    const matchPriceMin = !af.priceMin || price >= Number(af.priceMin);
+    const matchPriceMax = !af.priceMax || price <= Number(af.priceMax);
+    const matchDate = !af.dateRange || (item.created_date && new Date(item.created_date) >= subDays(new Date(), Number(af.dateRange)));
+    const matchOwnership = !af.ownershipType || item.ownership_type === af.ownershipType;
+    const matchCondition = !af.condition || item.condition === af.condition;
+    const matchBids = !af.hasBids || (af.hasBids === "yes" ? (item.bid_count || 0) > 0 : (item.bid_count || 0) === 0);
+    return matchQ && matchCat && matchStatus && matchPriceMin && matchPriceMax && matchDate && matchOwnership && matchCondition && matchBids;
   });
 
   // ── Pagination ──
@@ -221,10 +233,27 @@ export default function InventoryTable({ items, view, limit }) {
         >
           {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
         </select>
-        <Button variant="outline" size="sm" className="gap-1.5 text-[12px] h-9 border-border/60">
-          <SlidersHorizontal className="w-3.5 h-3.5" /> More Filters
+        <Button
+          variant="outline"
+          size="sm"
+          className={`gap-1.5 text-[12px] h-9 border-border/60 ${showAdvanced ? "bg-primary/5 border-primary/30 text-primary" : ""}`}
+          onClick={() => setShowAdvanced(o => !o)}
+        >
+          <SlidersHorizontal className="w-3.5 h-3.5" />
+          More Filters
+          {Object.values(advancedFilters).some(v => v !== "" && v !== undefined) && (
+            <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" />
+          )}
         </Button>
       </div>
+
+      {/* ── Advanced Filters Panel ── */}
+      {showAdvanced && (
+        <AdvancedFiltersPanel
+          onApply={setAdvancedFilters}
+          onClose={() => setShowAdvanced(false)}
+        />
+      )}
 
       {/* ── Bulk action bar ── */}
       {selected.size > 0 && (
@@ -396,9 +425,7 @@ export default function InventoryTable({ items, view, limit }) {
                             <Button variant="outline" size="sm" className="text-[11px] font-semibold h-7 px-3 border-border/60">View</Button>
                           </Link>
                         )}
-                        <button className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </button>
+                        <ItemRowMenu item={item} />
                       </div>
                     </td>
                   </tr>
