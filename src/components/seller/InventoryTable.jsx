@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -8,8 +8,55 @@ import {
   Plus, Package, Trash2, Clock, Gavel, ShieldCheck,
   Eye, Heart, Search, Handshake, Download,
   SlidersHorizontal, ChevronLeft, ChevronRight, Activity,
-  Package2, DollarSign, CheckCircle2, AlertCircle
+  Package2, DollarSign, CheckCircle2, AlertCircle, X, ZoomIn
 } from "lucide-react";
+
+// ─── Image Lightbox ────────────────────────────────────────────────────────────
+function ImageLightbox({ images, startIndex, onClose }) {
+  const [idx, setIdx] = useState(startIndex);
+  const prev = useCallback(() => setIdx(i => (i - 1 + images.length) % images.length), [images.length]);
+  const next = useCallback(() => setIdx(i => (i + 1) % images.length), [images.length]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose, prev, next]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90" onClick={onClose}>
+      <button onClick={onClose} className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors">
+        <X className="w-6 h-6" />
+      </button>
+      <div className="relative max-w-4xl max-h-[85vh] flex items-center gap-4" onClick={e => e.stopPropagation()}>
+        {images.length > 1 && (
+          <button onClick={prev} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors shrink-0">
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+        )}
+        <img src={images[idx]} alt="" className="max-h-[85vh] max-w-full object-contain rounded-lg" />
+        {images.length > 1 && (
+          <button onClick={next} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors shrink-0">
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        )}
+      </div>
+      {images.length > 1 && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          {images.map((_, i) => (
+            <button key={i} onClick={e => { e.stopPropagation(); setIdx(i); }}
+              className={`w-2 h-2 rounded-full transition-colors ${i === idx ? "bg-white" : "bg-white/30"}`} />
+          ))}
+        </div>
+      )}
+      <p className="absolute bottom-4 right-4 text-white/50 text-sm">{idx + 1} / {images.length}</p>
+    </div>
+  );
+}
 import { formatDistanceToNow, isPast, subDays } from "date-fns";
 import ItemRowMenu from "./ItemRowMenu";
 import AdvancedFiltersPanel from "./AdvancedFiltersPanel";
@@ -108,7 +155,15 @@ export default function InventoryTable({ items, view, limit }) {
   const [advancedFilters, setAdvancedFilters] = useState({});
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [lightbox, setLightbox] = useState(null);
+  const [expandedDesc, setExpandedDesc] = useState(new Set());
   const queryClient = useQueryClient();
+
+  const toggleDesc = (id) => setExpandedDesc(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
 
   // ── Filter ──
   const q = search.toLowerCase().trim();
@@ -301,15 +356,34 @@ export default function InventoryTable({ items, view, limit }) {
                 const isLive = ["first_bids", "prisometer", "pending_review"].includes(item.status);
                 const isConsignment = item.ownership_type === "consignment";
 
+                const hasDesc = !!item.description;
+                const descOpen = expandedDesc.has(item.id);
+
                 return (
-                  <tr key={item.id} className={`transition-colors hover:bg-[hsl(40,20%,99%)] ${selected.has(item.id) ? "bg-primary/3" : ""}`}>
+                  <React.Fragment key={item.id}>
+                  <tr className={`transition-colors hover:bg-[hsl(40,20%,99%)] ${selected.has(item.id) ? "bg-primary/3" : ""}`}>
                     <td className="px-4 py-3.5">
                       <input type="checkbox" className="rounded" checked={selected.has(item.id)} onChange={() => toggleSelect(item.id)} />
                     </td>
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
                         {item.images?.[0]
-                          ? <img src={item.images[0]} alt="" className="w-14 h-14 rounded-lg object-cover shrink-0 border border-border/50 shadow-sm" />
+                          ? (
+                            <button
+                              onClick={() => setLightbox({ images: item.images, startIndex: 0 })}
+                              className="relative shrink-0 w-14 h-14 rounded-lg overflow-hidden border border-border/50 shadow-sm group focus:outline-none"
+                            >
+                              <img src={item.images[0]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                <ZoomIn className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </div>
+                              {item.images.length > 1 && (
+                                <span className="absolute bottom-0.5 right-0.5 bg-black/60 text-white text-[9px] font-bold px-1 rounded leading-tight">
+                                  +{item.images.length - 1}
+                                </span>
+                              )}
+                            </button>
+                          )
                           : <div className="w-14 h-14 rounded-lg bg-secondary shrink-0 flex items-center justify-center text-muted-foreground/40 text-[10px]">No img</div>
                         }
                         <div className="min-w-0 flex-1">
@@ -328,6 +402,14 @@ export default function InventoryTable({ items, view, limit }) {
                               <span className="text-[10px] bg-secondary text-muted-foreground border border-border px-1.5 py-0.5 rounded font-mono">
                                 Lot #{item.lot_number}
                               </span>
+                            )}
+                            {hasDesc && (
+                              <button
+                                onClick={() => toggleDesc(item.id)}
+                                className="text-[10px] text-primary/70 hover:text-primary underline underline-offset-2 transition-colors"
+                              >
+                                {descOpen ? "Hide description" : "Show description"}
+                              </button>
                             )}
                           </div>
                         </div>
@@ -429,11 +511,31 @@ export default function InventoryTable({ items, view, limit }) {
                       </div>
                     </td>
                   </tr>
+                  {descOpen && hasDesc && (
+                    <tr className="bg-secondary/30">
+                      <td colSpan={10} className="px-6 pb-4 pt-2">
+                        <div className="pl-[4.25rem]">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-1">Description</p>
+                          <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap max-w-3xl">{item.description}</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  </React.Fragment>
                 );
               })}
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* ── Lightbox ── */}
+      {lightbox && (
+        <ImageLightbox
+          images={lightbox.images}
+          startIndex={lightbox.startIndex}
+          onClose={() => setLightbox(null)}
+        />
       )}
 
       {/* ── Pagination ── */}
