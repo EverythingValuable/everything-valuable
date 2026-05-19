@@ -53,18 +53,20 @@ export default function DashboardSidebar() {
   const urlView = new URLSearchParams(location.search).get("view");
   const [supportOpen, setSupportOpen] = useState(false);
 
-  const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
+  const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me(), staleTime: 5 * 60 * 1000 });
   const { data: profile } = useQuery({
     queryKey: ["seller-profile", user?.email],
     queryFn: () => base44.entities.SellerProfile.filter({ user_email: user?.email }),
     select: d => d[0],
     enabled: !!user?.email,
+    staleTime: 5 * 60 * 1000,
   });
   const { data: unreadMessages = [] } = useQuery({
     queryKey: ["unread-messages", user?.email],
     queryFn: () => base44.entities.Message.filter({ recipient_email: user.email, read: false }),
     enabled: !!user?.email,
-    refetchInterval: 30000,
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
   });
   const unreadCount = unreadMessages.length;
 
@@ -73,15 +75,18 @@ export default function DashboardSidebar() {
     queryFn: () => base44.entities.Invoice.filter({ seller_email: user.email }),
     select: d => d.filter(inv => ["draft", "pending"].includes(inv.status)),
     enabled: !!user?.email,
-    refetchInterval: 60000,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 10 * 60 * 1000,
   });
   const pendingInvoiceCount = pendingInvoices.length;
 
+  // Reuse the same cache key as the main dashboard to avoid duplicate requests
   const { data: sellerItems = [] } = useQuery({
-    queryKey: ["seller-items-sidebar", user?.email],
+    queryKey: ["seller-items", user?.email],
     queryFn: () => base44.entities.Item.filter({ seller_email: user.email }),
     enabled: !!user?.email,
-    refetchInterval: 60000,
+    staleTime: 2 * 60 * 1000,
+    refetchInterval: 10 * 60 * 1000,
   });
   const draftCount = sellerItems.filter(i => i.status === "draft").length;
   const reviewCount = sellerItems.filter(i => i.status === "pending_review").length;

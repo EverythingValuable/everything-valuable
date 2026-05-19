@@ -144,12 +144,14 @@ function SellerDashboardInner() {
   const { data: user } = useQuery({
     queryKey: ["me"],
     queryFn: () => base44.auth.me(),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: items = [] } = useQuery({
     queryKey: ["seller-items", user?.email],
     queryFn: () => base44.entities.Item.filter({ seller_email: user?.email }),
     enabled: !!user?.email,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: profile } = useQuery({
@@ -157,7 +159,7 @@ function SellerDashboardInner() {
     queryFn: () => base44.entities.SellerProfile.filter({ user_email: user?.email }),
     select: (d) => d[0],
     enabled: !!user?.email,
-    staleTime: 0,
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
 
