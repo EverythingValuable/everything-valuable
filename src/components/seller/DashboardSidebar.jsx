@@ -77,6 +77,15 @@ export default function DashboardSidebar() {
   });
   const pendingInvoiceCount = pendingInvoices.length;
 
+  const { data: sellerItems = [] } = useQuery({
+    queryKey: ["seller-items-sidebar", user?.email],
+    queryFn: () => base44.entities.Item.filter({ seller_email: user.email }),
+    enabled: !!user?.email,
+    refetchInterval: 60000,
+  });
+  const draftCount = sellerItems.filter(i => i.status === "draft").length;
+  const reviewCount = sellerItems.filter(i => i.status === "pending_review").length;
+
   const isActive = (item) => {
     if (item.exact) return location.pathname === "/seller" && !urlView;
     if (item.href.includes("?view=")) {
@@ -133,6 +142,16 @@ export default function DashboardSidebar() {
                     {item.href.includes("view=invoices") && pendingInvoiceCount > 0 && (
                       <span className="bg-destructive text-white text-[9px] font-bold rounded-full min-w-[1rem] h-4 px-1 flex items-center justify-center shrink-0">
                         {pendingInvoiceCount > 9 ? "9+" : pendingInvoiceCount}
+                      </span>
+                    )}
+                    {item.href.includes("view=draft") && draftCount > 0 && (
+                      <span className="bg-gray-400 text-white text-[9px] font-bold rounded-full min-w-[1rem] h-4 px-1 flex items-center justify-center shrink-0">
+                        {draftCount > 9 ? "9+" : draftCount}
+                      </span>
+                    )}
+                    {item.href.includes("view=pending_review") && reviewCount > 0 && (
+                      <span className="bg-amber-500 text-white text-[9px] font-bold rounded-full min-w-[1rem] h-4 px-1 flex items-center justify-center shrink-0">
+                        {reviewCount > 9 ? "9+" : reviewCount}
                       </span>
                     )}
                   </Link>
