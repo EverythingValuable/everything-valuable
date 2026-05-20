@@ -68,22 +68,22 @@ export default function Navbar() {
   const showMarketplaceLinks = isLanding || isPersonalProperty;
 
   const headerClass = isLanding
-    ? "absolute top-0 left-0 right-0 z-50 bg-transparent"
+    ? "sticky top-0 z-50 bg-white border-b border-border"
     : "sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border";
 
   const navLinkClass = (active = false) =>
     `text-sm font-semibold transition-colors ${
       isLanding
         ? active
-          ? "text-white"
-          : "text-white/80 hover:text-white"
+          ? "text-primary"
+          : "text-muted-foreground hover:text-foreground"
         : active
         ? "text-primary"
         : "text-muted-foreground hover:text-foreground"
     }`;
 
   const iconLinkClass = isLanding
-    ? "p-2 rounded-full hover:bg-white/10 transition-colors hidden md:flex items-center text-white/80 hover:text-white"
+    ? "p-2 rounded-full hover:bg-muted transition-colors hidden md:flex items-center text-muted-foreground hover:text-foreground"
     : "p-2 rounded-full hover:bg-muted transition-colors hidden md:flex items-center text-muted-foreground hover:text-foreground";
 
   return (
@@ -116,27 +116,18 @@ export default function Navbar() {
             aria-label="Toggle menu"
           >
             {mobileOpen
-              ? <X className={`w-5 h-5 ${isLanding ? "text-white" : ""}`} />
-              : <Menu className={`w-5 h-5 ${isLanding ? "text-white" : ""}`} />
+              ? <X className="w-5 h-5" />
+              : <Menu className="w-5 h-5" />
             }
           </button>
 
           {/* Logo */}
           <Link to={homeLink} className="flex items-center gap-2 shrink-0">
-            {isLanding ? (
-              <span className="flex items-center gap-1.5 whitespace-nowrap">
-                <span className="inline-flex h-7 w-8 items-center justify-center bg-primary text-[13px] font-black tracking-[-0.02em] text-white">EV</span>
-                <span className="text-[15px] font-black uppercase tracking-[-0.04em] text-white">
-                  Everything<span className="text-primary">Valuable</span>
-                </span>
-              </span>
-            ) : (
-              <img
-                src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png"
-                alt="Everything Valuable Logo"
-                className="h-8 md:h-10 w-auto"
-              />
-            )}
+            <img
+              src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png"
+              alt="Everything Valuable Logo"
+              className="h-8 md:h-10 w-auto"
+            />
           </Link>
 
           {/* Desktop nav links */}
@@ -236,11 +227,7 @@ export default function Navbar() {
           {!user && (
             <button
               onClick={() => base44.auth.redirectToLogin(window.location.href)}
-              className={`hidden md:inline-flex items-center justify-center h-9 px-4 text-xs font-bold transition-colors ${
-                isLanding
-                  ? "bg-white text-foreground hover:bg-white/90"
-                  : "bg-primary text-primary-foreground hover:bg-primary/90"
-              }`}
+              className="hidden md:inline-flex items-center justify-center h-9 px-4 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Sign In / Join
             </button>
@@ -251,9 +238,7 @@ export default function Navbar() {
             {user && (
               <button
                 onClick={() => setProfileOpen((p) => !p)}
-                className={`p-2 rounded-full transition-colors flex items-center gap-1 ${
-                  isLanding ? "hover:bg-white/10 text-white/80 hover:text-white" : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                }`}
+                className="p-2 rounded-full hover:bg-muted transition-colors flex items-center gap-1 text-muted-foreground hover:text-foreground"
               >
                 <User className="w-4 h-4" />
               </button>
@@ -342,16 +327,16 @@ export default function Navbar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className={`md:hidden overflow-hidden border-t ${isLanding ? "border-white/20 bg-black/80 backdrop-blur-md" : "border-border bg-background"}`}
+            className="md:hidden overflow-hidden border-t border-border bg-background"
           >
             <nav className="px-6 py-4 space-y-1">
-              <Link to="/personal-property" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50"}`} onClick={() => setMobileOpen(false)}>Personal Property</Link>
-              <Link to="/real-property" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50"}`} onClick={() => setMobileOpen(false)}>Real Property</Link>
-              <Link to="/browse?status=prisometer" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50 text-primary"}`} onClick={() => setMobileOpen(false)}>Live Now</Link>
-              <Link to="/dealers" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50"}`} onClick={() => setMobileOpen(false)}>Dealers</Link>
-              <div className={`pt-3 border-t space-y-2 ${isLanding ? "border-white/15" : "border-border/50"}`}>
-                <Link to="/how-it-works" className={`block py-2 text-sm ${isLanding ? "text-white/70" : "text-muted-foreground"}`} onClick={() => setMobileOpen(false)}>How It Works</Link>
-                <Link to="/pricing" className={`block py-2 text-sm ${isLanding ? "text-white/70" : "text-muted-foreground"}`} onClick={() => setMobileOpen(false)}>Pricing &amp; Fees</Link>
+              <Link to="/personal-property" className="block py-3 text-sm font-semibold border-b border-border/50" onClick={() => setMobileOpen(false)}>Personal Property</Link>
+              <Link to="/real-property" className="block py-3 text-sm font-semibold border-b border-border/50" onClick={() => setMobileOpen(false)}>Real Property</Link>
+              <Link to="/browse?status=prisometer" className="block py-3 text-sm font-semibold border-b border-border/50 text-primary" onClick={() => setMobileOpen(false)}>Live Now</Link>
+              <Link to="/dealers" className="block py-3 text-sm font-semibold border-b border-border/50" onClick={() => setMobileOpen(false)}>Dealers</Link>
+              <div className="pt-3 border-t border-border/50 space-y-2">
+                <Link to="/how-it-works" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>How It Works</Link>
+                <Link to="/pricing" className="block py-2 text-sm text-muted-foreground" onClick={() => setMobileOpen(false)}>Pricing &amp; Fees</Link>
                 <Link to={isSeller ? "/seller" : "/seller-access"} className={`block py-2 text-sm font-semibold ${isLanding ? "text-primary" : "text-primary"}`} onClick={() => setMobileOpen(false)}>
                   {isSeller ? "Seller Dashboard" : "Sell With Us"}
                 </Link>
