@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,37 +7,60 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import {
   ChevronLeft, Upload, X, GripVertical, Lock, AlertTriangle,
-  XCircle, Save, Rocket, Calendar, Info, Download
+  XCircle, Save, Rocket, Eye, Globe, EyeOff, Info
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryFields from "../components/listing/CategoryFields";
 import CustomFieldsEditor from "../components/listing/CustomFieldsEditor";
+import ListingPreview from "../components/listing/ListingPreview";
+import ListingChecklist from "../components/listing/ListingChecklist";
 import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
 
 const LIVE_STATUSES = ["first_bids", "prisometer", "pending_review"];
 const UNSOLD_STATUS = "unsold";
 const CONDITIONS = ["excellent", "very_good", "good", "fair", "as_is"];
 
-// ─── Section wrapper ─────────────────────────────────────────────────────────
-function Section({ title, children, locked }) {
+// ─── UI Primitives ────────────────────────────────────────────────────────────
+function SectionCard({ title, subtitle, children, locked, badge }) {
   return (
-    <div className={cn("rounded-2xl border border-border bg-card p-6 space-y-4", locked && "opacity-60 pointer-events-none")}>
-      <h3 className="font-serif text-base font-semibold text-foreground flex items-center gap-2">
-        {locked && <Lock className="w-3.5 h-3.5 text-amber-600" />}
-        {title}
-      </h3>
-      {children}
+    <div className={cn(
+      "bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden",
+      locked && "opacity-60 pointer-events-none"
+    )}>
+      <div className="px-6 py-5 border-b border-neutral-100 flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            {locked && <Lock className="w-3.5 h-3.5 text-amber-500" />}
+            <h3 className="font-serif text-base font-semibold text-neutral-900">{title}</h3>
+            {badge && <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 bg-primary/10 text-primary rounded-full">{badge}</span>}
+          </div>
+          {subtitle && <p className="text-xs text-neutral-400 mt-0.5">{subtitle}</p>}
+        </div>
+      </div>
+      <div className="px-6 py-5 space-y-5">{children}</div>
     </div>
   );
 }
 
-function Field({ label, hint, required, children }) {
+function Field({ label, hint, required, children, visibility }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1">
-        {label}{required && <span className="text-destructive">*</span>}
-        {hint && <span className="font-normal normal-case tracking-normal ml-1">· {hint}</span>}
-      </label>
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-neutral-500">
+          {label}{required && <span className="text-primary ml-0.5">*</span>}
+        </label>
+        {hint && <span className="text-[11px] text-neutral-400">· {hint}</span>}
+        {visibility === "public" && (
+          <span className="flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full ml-auto">
+            <Globe className="w-2.5 h-2.5" /> Public
+          </span>
+        )}
+        {visibility === "private" && (
+          <span className="flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-widest text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded-full ml-auto">
+            <EyeOff className="w-2.5 h-2.5" /> Private
+          </span>
+        )}
+      </div>
       {children}
     </div>
   );
@@ -46,9 +69,32 @@ function Field({ label, hint, required, children }) {
 function PriceInput({ value, onChange, placeholder, disabled }) {
   return (
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-      <Input type="number" className="pl-6" placeholder={placeholder} value={value} onChange={onChange} disabled={disabled} />
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm font-medium">$</span>
+      <Input
+        type="number"
+        className="pl-7 font-price text-base"
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        disabled={disabled}
+      />
     </div>
+  );
+}
+
+function ToggleButton({ active, onClick, children }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "px-4 py-2 rounded-xl border text-xs font-semibold transition-all",
+        active
+          ? "border-primary bg-primary text-white shadow-sm"
+          : "border-neutral-200 text-neutral-500 hover:border-neutral-400 bg-white"
+      )}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -65,12 +111,15 @@ function DropZone({ onFiles }) {
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
       className={cn(
-        "flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer transition-all py-8 px-6 text-center",
-        dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/40 bg-secondary/20"
-      )}>
-      <Upload className="w-6 h-6 text-muted-foreground mb-2" />
-      <p className="font-medium text-sm">Drop photos here or click to browse</p>
-      <p className="text-xs text-muted-foreground mt-0.5">JPEG, PNG, WEBP · Multiple files accepted</p>
+        "flex flex-col items-center justify-center border-2 border-dashed rounded-2xl cursor-pointer transition-all py-10 px-6 text-center",
+        dragging ? "border-primary bg-primary/5" : "border-neutral-200 hover:border-primary/40 bg-neutral-50"
+      )}
+    >
+      <div className="w-12 h-12 rounded-2xl bg-neutral-100 flex items-center justify-center mb-3">
+        <Upload className="w-5 h-5 text-neutral-500" />
+      </div>
+      <p className="font-semibold text-sm text-neutral-800">Drop photos here or click to browse</p>
+      <p className="text-xs text-neutral-400 mt-1">JPEG, PNG, WEBP · Multiple files accepted</p>
       <input type="file" accept="image/*" multiple className="sr-only" onChange={e => onFiles(e.target.files)} />
     </label>
   );
@@ -121,7 +170,6 @@ export default function ListingStudio() {
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
-  // Load data
   useEffect(() => {
     const loadData = async () => {
       const user = await base44.auth.me();
@@ -133,8 +181,6 @@ export default function ListingStudio() {
       setSellerProfile(profile);
       if (item) {
         setItemStatus(item.status || "draft");
-        // Parse custom_fields from internal_notes if stored there as JSON
-        // Seed values from stored data; labels/types come from profile template
         const template = profile?.listing_custom_fields_template || [];
         let storedValues = {};
         try {
@@ -144,54 +190,36 @@ export default function ListingStudio() {
         const customFields = template.map(f => ({ ...f, value: storedValues[f.label] ?? "" }));
         setForm({
           images: item.images || [],
-          title: item.title || "",
-          category: item.category || "",
-          subcategory: item.subcategory || "",
-          maker: item.maker || "",
-          period: item.period || "",
-          style: item.style || "",
-          technique: item.technique || "",
-          keywords: item.keywords || "",
-          materials: item.materials || "",
-          dimensions: item.dimensions || "",
-          origin: item.origin || "",
-          location: item.location || profiles[0]?.location || "",
-          model: item.model || "",
-          movement_type: item.movement_type || "",
-          running_status: item.running_status || "",
-          metal_purity: item.metal_purity || "",
-          stone_type: item.stone_type || "",
-          ring_size: item.ring_size || "",
-          length: item.length || "",
-          condition: item.condition || "very_good",
-          provenance: item.provenance || "",
-          description: item.description || "",
-          short_description: item.short_description || "",
-          condition_notes: item.condition_notes || "",
-          shipping_notes: item.shipping_notes || "",
-          marks: item.marks || "",
+          title: item.title || "", category: item.category || "",
+          subcategory: item.subcategory || "", maker: item.maker || "",
+          period: item.period || "", style: item.style || "",
+          technique: item.technique || "", keywords: item.keywords || "",
+          materials: item.materials || "", dimensions: item.dimensions || "",
+          origin: item.origin || "", location: item.location || profiles[0]?.location || "",
+          model: item.model || "", movement_type: item.movement_type || "",
+          running_status: item.running_status || "", metal_purity: item.metal_purity || "",
+          stone_type: item.stone_type || "", ring_size: item.ring_size || "",
+          length: item.length || "", condition: item.condition || "very_good",
+          provenance: item.provenance || "", description: item.description || "",
+          short_description: item.short_description || "", condition_notes: item.condition_notes || "",
+          shipping_notes: item.shipping_notes || "", marks: item.marks || "",
           terms_and_conditions: item.terms_and_conditions || "",
           first_bids_duration_hours: item.first_bids_duration_hours || 168,
           prisometer_start_price: item.prisometer_start_price || "",
           reserve_price: item.reserve_price || "",
           below_reserve_percent: item.below_reserve_percent || 10,
           prisometer_duration_hours: item.prisometer_duration_hours || 168,
-          estimated_low: item.estimated_low || "",
-          estimated_high: item.estimated_high || "",
-          internal_notes: item.internal_notes || "",
-          custom_fields: customFields,
+          estimated_low: item.estimated_low || "", estimated_high: item.estimated_high || "",
+          internal_notes: item.internal_notes || "", custom_fields: customFields,
           inventory_number: item.inventory_number || "",
           ownership_type: item.ownership_type || "owned",
-          consignor_name: item.consignor_name || "",
-          consignor_email: item.consignor_email || "",
-          consignor_phone: item.consignor_phone || "",
-          consignor_address: item.consignor_address || "",
+          consignor_name: item.consignor_name || "", consignor_email: item.consignor_email || "",
+          consignor_phone: item.consignor_phone || "", consignor_address: item.consignor_address || "",
           consignor_commission_percent: item.consignor_commission_percent || "",
           consignor_notes: item.consignor_notes || "",
           customer_location: item.customer_location || "",
         });
       } else {
-        // New listing — seed custom fields from profile template (empty values)
         const template = profile?.listing_custom_fields_template || [];
         const seededFields = template.map(f => ({ ...f, value: "" }));
         setForm(f => ({ ...f, location: profile?.location || "", custom_fields: seededFields }));
@@ -250,7 +278,6 @@ export default function ListingStudio() {
     make_it_mine_active: true,
     estimated_low: +form.estimated_low || undefined,
     estimated_high: +form.estimated_high || undefined,
-    // Store custom fields as JSON in internal_notes
     internal_notes: JSON.stringify({ custom_fields: form.custom_fields }),
     inventory_number: form.inventory_number || undefined,
     ownership_type: form.ownership_type,
@@ -280,22 +307,14 @@ export default function ListingStudio() {
     if (isEditMode) {
       if (isLive) {
         const restrictedPayload = {
-          images: form.images,
-          category: form.category,
-          subcategory: form.subcategory || undefined,
-          style: form.style || undefined,
-          maker: form.maker || undefined,
-          period: form.period || undefined,
-          technique: form.technique || undefined,
-          description: form.description,
-          short_description: form.short_description,
-          condition: form.condition,
-          condition_notes: form.condition_notes,
-          shipping_notes: form.shipping_notes,
+          images: form.images, category: form.category, subcategory: form.subcategory || undefined,
+          style: form.style || undefined, maker: form.maker || undefined, period: form.period || undefined,
+          technique: form.technique || undefined, description: form.description,
+          short_description: form.short_description, condition: form.condition,
+          condition_notes: form.condition_notes, shipping_notes: form.shipping_notes,
           internal_notes: JSON.stringify({ custom_fields: form.custom_fields }),
           inventory_number: form.inventory_number || undefined,
-          location: form.location || undefined,
-          customer_location: form.customer_location || undefined,
+          location: form.location || undefined, customer_location: form.customer_location || undefined,
         };
         await base44.entities.Item.update(editId, restrictedPayload);
         await notifyWatchers("Category, description, photos, or condition was updated.");
@@ -315,14 +334,10 @@ export default function ListingStudio() {
     const now = new Date();
     const firstBidsEnd = new Date(now.getTime() + form.first_bids_duration_hours * 3600000);
     await base44.entities.Item.update(editId, buildPayload({
-      status: "first_bids",
-      first_bids_start: now.toISOString(),
-      first_bids_end: firstBidsEnd.toISOString(),
-      highest_bid: 0, bid_count: 0,
-      sold_price: null, sold_to_email: null, sold_via: null,
+      status: "first_bids", first_bids_start: now.toISOString(), first_bids_end: firstBidsEnd.toISOString(),
+      highest_bid: 0, bid_count: 0, sold_price: null, sold_to_email: null, sold_via: null,
       make_it_mine_active: false, make_it_mine_expires: null,
-      prisometer_activated_at: null,
-      current_price: +form.prisometer_start_price || 0,
+      prisometer_activated_at: null, current_price: +form.prisometer_start_price || 0,
     }));
     setSaving(false);
     navigate("/seller");
@@ -351,7 +366,6 @@ export default function ListingStudio() {
     navigate("/seller");
   };
 
-  // Save the field structure (label + type, no values) back to seller profile as template
   const saveFieldTemplate = async (fields) => {
     if (!sellerProfile?.id) return;
     const template = fields.map(({ label, type }) => ({ label, type }));
@@ -364,120 +378,143 @@ export default function ListingStudio() {
     saveFieldTemplate(fields);
   };
 
-  const exportCSV = () => {
-    const coreFields = [
-      ["Title", form.title],
-      ["Category", form.category],
-      ["Maker", form.maker],
-      ["Period", form.period],
-      ["Dimensions", form.dimensions],
-      ["Condition", form.condition],
-      ["Location", form.location],
-      ["Estimate Low", form.estimated_low],
-      ["Estimate High", form.estimated_high],
-      ["Start Price", form.prisometer_start_price],
-      ["Reserve Price", form.reserve_price],
-      ["1stBid Duration (hrs)", form.first_bids_duration_hours],
-      ["PRI$OMETER Duration (hrs)", form.prisometer_duration_hours],
-    ];
-    const customRows = form.custom_fields.map(f => [f.label, f.value]);
-    const allRows = [...coreFields, ...customRows];
-    const csv = allRows.map(([k, v]) => `"${k}","${String(v ?? "").replace(/"/g, '""')}"`).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${form.title || "listing"}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   const floorPrice = form.reserve_price && form.below_reserve_percent
     ? (form.reserve_price * (1 - form.below_reserve_percent / 100)).toFixed(0)
     : null;
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+        <div className="text-center space-y-4">
+          <img src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png" alt="EV" className="h-10 w-auto mx-auto opacity-50" />
+          <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-[hsl(40,20%,97%)]">
+  const statusLabel = isLive ? "Live" : isUnsold ? "Unsold" : isEditMode ? "Draft" : "New Listing";
 
-      {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur px-4 md:px-8 py-3 flex items-center gap-3">
-        <button onClick={() => navigate("/seller")} className="text-muted-foreground hover:text-foreground transition-colors">
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div className="flex-1 min-w-0">
-          <p className="font-serif text-sm font-semibold truncate">
-            {isEditMode ? (isLive ? "Edit Live Listing" : "Edit Listing") : "New Listing"}
-            {isLive && <span className="ml-2 text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">Limited Editing</span>}
-          </p>
-          <p className="text-[11px] text-muted-foreground truncate">{form.title || "Untitled listing"}</p>
+  return (
+    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
+
+      {/* ── Top Bar ─────────────────────────────────────────────────────── */}
+      <header className="sticky top-0 z-30 bg-white border-b border-neutral-200 shadow-sm">
+        <div className="max-w-[1600px] mx-auto px-5 md:px-8 h-16 flex items-center gap-4">
+          {/* Logo + Back */}
+          <div className="flex items-center gap-3 shrink-0">
+            <Link to="/seller" className="flex items-center gap-1.5 text-neutral-400 hover:text-neutral-700 transition-colors text-xs font-semibold">
+              <ChevronLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Seller Dashboard</span>
+            </Link>
+            <div className="w-px h-5 bg-neutral-200" />
+            <img
+              src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png"
+              alt="Everything Valuable"
+              className="h-7 w-auto"
+            />
+          </div>
+
+          {/* Title + status */}
+          <div className="flex-1 min-w-0 flex items-center gap-2.5">
+            <div className="hidden sm:block w-px h-5 bg-neutral-200" />
+            <p className="font-serif text-sm font-semibold text-neutral-700 truncate hidden sm:block">
+              {form.title || "Untitled Listing"}
+            </p>
+            <span className={cn(
+              "text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full shrink-0",
+              isLive ? "bg-amber-100 text-amber-700" :
+              isUnsold ? "bg-neutral-100 text-neutral-500" :
+              "bg-neutral-100 text-neutral-500"
+            )}>
+              {statusLabel}
+            </span>
+            {isLive && (
+              <span className="flex items-center gap-1 text-[10px] text-amber-600 font-medium hidden md:flex">
+                <Lock className="w-3 h-3" /> Limited editing while live
+              </span>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            {editId && (
+              <Link to={`/item/${editId}`} target="_blank">
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs hidden md:flex border-neutral-300">
+                  <Eye className="w-3.5 h-3.5" /> Preview Page
+                </Button>
+              </Link>
+            )}
+            {isLive && isEditMode && (
+              <Button variant="outline" size="sm" onClick={() => setCancelConfirm(true)}
+                className="gap-1.5 text-xs text-destructive border-destructive/30 hover:bg-destructive/5">
+                <XCircle className="w-3.5 h-3.5" /> Cancel Sale
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={saveDraft} disabled={saving}
+              className="gap-1.5 text-xs border-neutral-300">
+              <Save className="w-3.5 h-3.5" /> Save Draft
+            </Button>
+            {!isLive && (
+              <Button size="sm" onClick={isUnsold ? relistNow : publishNow}
+                disabled={saving || !form.title || !form.prisometer_start_price}
+                className="gap-1.5 text-xs bg-primary hover:bg-primary/90 font-bold px-4">
+                <Rocket className="w-3.5 h-3.5" />
+                {saving ? "Publishing…" : isUnsold ? "Relist Now" : "Publish Listing"}
+              </Button>
+            )}
+            {isLive && (
+              <Button size="sm" onClick={saveDraft} disabled={saving}
+                className="gap-1.5 text-xs bg-primary hover:bg-primary/90 font-bold px-4">
+                <Save className="w-3.5 h-3.5" />
+                {saving ? "Saving…" : "Save Changes"}
+              </Button>
+            )}
+          </div>
         </div>
-        <Button variant="outline" size="sm" onClick={exportCSV} className="gap-1.5 text-xs hidden sm:flex">
-          <Download className="w-3.5 h-3.5" /> Export CSV
-        </Button>
-        {isLive && isEditMode && (
-          <Button variant="outline" size="sm" onClick={() => setCancelConfirm(true)} className="gap-1.5 text-xs text-destructive border-destructive/30 hover:bg-destructive/10">
-            <XCircle className="w-3.5 h-3.5" /> Cancel Sale
-          </Button>
-        )}
-        <Button size="sm" onClick={saveDraft} disabled={saving} className="gap-1.5 text-xs">
-          <Save className="w-3.5 h-3.5" /> {isEditMode ? "Save" : "Save Draft"}
-        </Button>
       </header>
 
-      {/* Banners */}
-      {isLive && isEditMode && (
-        <div className="bg-amber-50 border-b border-amber-200 px-6 py-2.5 flex items-center gap-2 text-xs text-amber-800">
-          <Lock className="w-3.5 h-3.5 shrink-0" />
-          <span><strong>Limited editing:</strong> Pricing and duration cannot be changed while a listing is live.</span>
-        </div>
-      )}
-      {isUnsold && isEditMode && (
-        <div className="bg-amber-50 border-b border-amber-200 px-6 py-2.5 flex items-center gap-2 text-xs text-amber-800">
-          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-          <span><strong>Unsold item:</strong> Update details or pricing below, then relist when ready.</span>
-        </div>
-      )}
-
-      {/* Cancel Confirm Modal */}
+      {/* ── Cancel Confirm Modal ─────────────────────────────────────────── */}
       {cancelConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setCancelConfirm(false)}>
-          <div className="bg-card rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 space-y-4" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 space-y-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-semibold text-sm">Cancel this listing?</h3>
-                <p className="text-xs text-muted-foreground mt-1">This will end the sale immediately. All watchers and bidders will be notified.</p>
+                <p className="text-xs text-neutral-500 mt-1">This will end the sale immediately. All watchers and bidders will be notified.</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <Button variant="destructive" size="sm" className="flex-1" onClick={cancelSale} disabled={saving}>{saving ? "Cancelling…" : "Yes, Cancel Sale"}</Button>
+              <Button variant="destructive" size="sm" className="flex-1" onClick={cancelSale} disabled={saving}>
+                {saving ? "Cancelling…" : "Yes, Cancel Sale"}
+              </Button>
               <Button variant="outline" size="sm" className="flex-1" onClick={() => setCancelConfirm(false)}>Keep Listing</Button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Main Content */}
-      <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* ── Main split layout ────────────────────────────────────────────── */}
+      <div className="flex-1 max-w-[1600px] mx-auto w-full px-4 md:px-8 py-6 grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
 
-        {/* LEFT COLUMN — Photos + Details + Description */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* ── LEFT: Builder Form ─────────────────────────────────────────── */}
+        <div className="space-y-5 min-w-0">
 
-          {/* PHOTOS */}
-          <Section title="Photos">
+          {/* 1. Photos */}
+          <SectionCard title="Photos" subtitle="First photo is used as the cover image">
             <DropZone onFiles={handleImageUpload} />
-            {uploadingImages && <p className="text-xs text-muted-foreground animate-pulse">Uploading…</p>}
+            {uploadingImages && (
+              <div className="flex items-center gap-2 text-xs text-neutral-500 animate-pulse">
+                <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+                Uploading photos…
+              </div>
+            )}
             {form.images.length > 0 && (
               <div>
-                <p className="text-xs text-muted-foreground mb-2">Drag to reorder · First image is cover</p>
+                <p className="text-xs text-neutral-400 mb-3 flex items-center gap-1.5">
+                  <GripVertical className="w-3.5 h-3.5" /> Drag to reorder · First image is cover
+                </p>
                 <DragDropContext onDragEnd={({ source, destination }) => {
                   if (!destination || source.index === destination.index) return;
                   const imgs = [...form.images];
@@ -487,22 +524,26 @@ export default function ListingStudio() {
                 }}>
                   <Droppable droppableId="images" direction="horizontal">
                     {(provided) => (
-                      <div ref={provided.innerRef} {...provided.droppableProps} className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                      <div ref={provided.innerRef} {...provided.droppableProps} className="flex gap-3 flex-wrap">
                         {form.images.map((url, i) => (
                           <Draggable key={url + i} draggableId={`img-${i}`} index={i}>
                             {(drag, snapshot) => (
                               <div
                                 ref={drag.innerRef}
                                 {...drag.draggableProps}
-                                className={cn("relative rounded-lg overflow-hidden border-2 aspect-square group", i === 0 ? "border-primary" : "border-border", snapshot.isDragging && "shadow-xl scale-105 z-10")}
+                                className={cn(
+                                  "relative w-24 h-24 rounded-xl overflow-hidden border-2 group",
+                                  i === 0 ? "border-primary" : "border-neutral-200",
+                                  snapshot.isDragging && "shadow-xl scale-105 z-10"
+                                )}
                               >
                                 <img src={url} alt="" className="w-full h-full object-cover" />
-                                <div {...drag.dragHandleProps} className="absolute top-1 left-1 bg-black/50 text-white rounded p-0.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
-                                  <GripVertical className="w-2.5 h-2.5" />
+                                <div {...drag.dragHandleProps} className="absolute top-1.5 left-1.5 bg-black/50 text-white rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
+                                  <GripVertical className="w-3 h-3" />
                                 </div>
-                                {i === 0 && <div className="absolute bottom-1 left-1 bg-primary text-primary-foreground text-[9px] px-1 py-0.5 rounded font-medium">Cover</div>}
-                                <button onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <X className="w-2.5 h-2.5" />
+                                {i === 0 && <div className="absolute bottom-1.5 left-1.5 bg-primary text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">Cover</div>}
+                                <button onClick={() => removeImage(i)} className="absolute top-1.5 right-1.5 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <X className="w-3 h-3" />
                                 </button>
                               </div>
                             )}
@@ -515,114 +556,218 @@ export default function ListingStudio() {
                 </DragDropContext>
               </div>
             )}
-          </Section>
+          </SectionCard>
 
-          {/* INVENTORY # + LOCATION — always visible at top */}
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
-            <h3 className="font-serif text-base font-semibold text-foreground">Inventory & Location</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Field label="Inventory Number" hint="internal reference only">
-                <Input placeholder="e.g. EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
-              </Field>
-              <Field label="Internal Storage Location" hint="not shown to buyers">
-                <Input placeholder="e.g. Warehouse B, Shelf 3" value={form.location} onChange={e => set("location", e.target.value)} />
-              </Field>
-              <Field label="Item Location" hint="shown to buyers">
-                <Input placeholder="e.g. New York, NY" value={form.customer_location} onChange={e => set("customer_location", e.target.value)} />
-              </Field>
-            </div>
-          </div>
-
-          {/* ITEM DETAILS */}
-          <Section title="Item Details" locked={isLive}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* 2. Listing Basics */}
+          <SectionCard title="Listing Basics" locked={isLive}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="sm:col-span-2">
                 <Field label="Title" required>
-                  <Input placeholder="e.g. Fernand Léger — Composition with Figures, 1928" value={form.title} onChange={e => set("title", e.target.value)} />
+                  <Input
+                    className="text-base font-serif"
+                    placeholder="e.g. Fernand Léger — Composition with Figures, 1928"
+                    value={form.title}
+                    onChange={e => set("title", e.target.value)}
+                  />
                 </Field>
               </div>
               <Field label="Category" required>
                 <select value={form.category} onChange={e => { set("category", e.target.value); set("subcategory", ""); set("style", ""); }}
-                  className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+                  className="w-full h-10 rounded-xl border border-neutral-200 bg-white px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20">
                   <option value="">Select category…</option>
                   {MAIN_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               </Field>
               <Field label="Condition">
                 <select value={form.condition} onChange={e => set("condition", e.target.value)}
-                  className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
-                  {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g, " ")}</option>)}
+                  className="w-full h-10 rounded-xl border border-neutral-200 bg-white px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                  {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</option>)}
                 </select>
               </Field>
-            </div>
-
-            {form.category && <CategoryFields form={form} set={set} />}
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Dimensions">
-                <Input placeholder="e.g. 60 × 80 cm, H 12 in." value={form.dimensions} onChange={e => set("dimensions", e.target.value)} />
+              <Field label="Artist / Maker">
+                <Input placeholder="e.g. Henri Matisse" value={form.maker} onChange={e => set("maker", e.target.value)} />
+              </Field>
+              <Field label="Period">
+                <Input placeholder="e.g. 1920s, Ming Dynasty" value={form.period} onChange={e => set("period", e.target.value)} />
+              </Field>
+              <Field label="Origin">
+                <Input placeholder="e.g. France, China" value={form.origin} onChange={e => set("origin", e.target.value)} />
               </Field>
               <Field label="Materials">
                 <Input placeholder="e.g. Oil on canvas, Bronze" value={form.materials} onChange={e => set("materials", e.target.value)} />
               </Field>
-              <Field label="Origin">
-                <Input placeholder="e.g. France" value={form.origin} onChange={e => set("origin", e.target.value)} />
+              <Field label="Dimensions">
+                <Input placeholder="e.g. 60 × 80 cm, H 12 in." value={form.dimensions} onChange={e => set("dimensions", e.target.value)} />
               </Field>
               <Field label="Marks / Signatures">
                 <Input placeholder="e.g. Signed lower right in pencil" value={form.marks} onChange={e => set("marks", e.target.value)} />
               </Field>
-              <Field label="Provenance">
-                <Input placeholder="e.g. Private collection, Paris; acquired 1974" value={form.provenance} onChange={e => set("provenance", e.target.value)} />
-              </Field>
             </div>
-          </Section>
+            {form.category && <CategoryFields form={form} set={set} />}
+          </SectionCard>
 
-          {/* DESCRIPTION */}
-          <Section title="Description">
-            <Field label="Short Summary" hint="shown in search results">
-              <Textarea placeholder="A concise one or two sentence description…" value={form.short_description} onChange={e => set("short_description", e.target.value)} className="h-16" />
+          {/* 3. Auction Presentation */}
+          <SectionCard title="Auction Presentation" subtitle="Compelling descriptions drive buyer engagement">
+            <Field label="Short Summary" hint="shown in search results & cards">
+              <Textarea
+                placeholder="A compelling one or two sentence overview for search results…"
+                value={form.short_description}
+                onChange={e => set("short_description", e.target.value)}
+                className="h-16 resize-none"
+              />
             </Field>
             <Field label="Full Description">
-              <Textarea placeholder="Describe the work in detail — style, context, significance, visual qualities…" value={form.description} onChange={e => set("description", e.target.value)} className="h-32" />
+              <Textarea
+                placeholder="Describe the work in detail — style, context, significance, visual qualities, historical importance…"
+                value={form.description}
+                onChange={e => set("description", e.target.value)}
+                className="h-36 resize-none"
+              />
             </Field>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Condition Notes">
-                <Textarea placeholder="Wear, restoration, or damage details…" value={form.condition_notes} onChange={e => set("condition_notes", e.target.value)} className="h-20" />
-              </Field>
-              <Field label="Shipping Notes">
-                <Textarea placeholder="Packaging, fragility, shipping requirements…" value={form.shipping_notes} onChange={e => set("shipping_notes", e.target.value)} className="h-20" />
-              </Field>
-            </div>
-            <Field label="Auction Terms & Conditions" hint="optional">
-              <Textarea placeholder="Payment due within 7 days. All sales final…" value={form.terms_and_conditions} onChange={e => set("terms_and_conditions", e.target.value)} className="h-20" />
+            <Field label="Condition Report">
+              <Textarea
+                placeholder="Detail any wear, restoration, or damage. Honest reporting builds buyer confidence…"
+                value={form.condition_notes}
+                onChange={e => set("condition_notes", e.target.value)}
+                className="h-24 resize-none"
+              />
             </Field>
-          </Section>
+            <Field label="Provenance">
+              <Textarea
+                placeholder="e.g. Private collection, Paris; acquired directly from the artist in 1974; thence by descent…"
+                value={form.provenance}
+                onChange={e => set("provenance", e.target.value)}
+                className="h-20 resize-none"
+              />
+            </Field>
+            <Field label="Auction Terms & Conditions" hint="optional override">
+              <Textarea
+                placeholder="Payment due within 7 days. All sales final. Buyer responsible for shipping…"
+                value={form.terms_and_conditions}
+                onChange={e => set("terms_and_conditions", e.target.value)}
+                className="h-20 resize-none"
+              />
+            </Field>
+          </SectionCard>
 
-          {/* INVENTORY & OWNERSHIP */}
-          <Section title="Ownership">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2">
-              <Field label="Ownership Type">
-                <div className="flex gap-2">
-                  {[["owned", "Self-Owned"], ["consignment", "Consignment"]].map(([val, label]) => (
-                    <button key={val} onClick={() => set("ownership_type", val)}
-                      className={cn("flex-1 py-2 rounded-lg border text-xs font-semibold transition-all",
-                        form.ownership_type === val
-                          ? val === "consignment" ? "border-violet-400 bg-violet-50 text-violet-700" : "border-primary bg-primary/5 text-foreground"
-                          : "border-border text-muted-foreground hover:border-foreground/30"
-                      )}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
+          {/* 4. Pricing & PRI$OMETER */}
+          <SectionCard
+            title="Pricing & PRI$OMETER™ Setup"
+            subtitle="Configure your auction parameters"
+            locked={isLive}
+            badge="Auction Config"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <Field label="Estimate Low">
+                <PriceInput placeholder="e.g. 8,000" value={form.estimated_low} onChange={e => set("estimated_low", e.target.value)} />
               </Field>
+              <Field label="Estimate High">
+                <PriceInput placeholder="e.g. 12,000" value={form.estimated_high} onChange={e => set("estimated_high", e.target.value)} />
+              </Field>
+              <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Field label="Visible Start Price" required hint="shown to buyers">
+                  <PriceInput placeholder="e.g. 5,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
+                </Field>
+                <Field label="Hidden Reserve Price" hint="never shown to buyers">
+                  <PriceInput placeholder="e.g. 9,000" value={form.reserve_price} onChange={e => set("reserve_price", e.target.value)} />
+                </Field>
               </div>
             </div>
 
+            {floorPrice && (
+              <div className="flex items-center gap-2 bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-xs text-neutral-600">
+                <Info className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                Price floor at {form.below_reserve_percent}% below reserve:
+                <span className="font-bold text-neutral-900 ml-auto">${Number(floorPrice).toLocaleString()}</span>
+              </div>
+            )}
+
+            <Field label="Below-Reserve Drop Allowance" hint="how far below reserve the price can fall">
+              <div className="flex gap-2">
+                {[10, 15, 20].map(pct => (
+                  <ToggleButton key={pct} active={form.below_reserve_percent === pct} onClick={() => set("below_reserve_percent", pct)}>
+                    {pct}%
+                  </ToggleButton>
+                ))}
+              </div>
+            </Field>
+
+            <Field label="1stBid$™ Preview Duration">
+              <div className="flex gap-2">
+                {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 720, label: "30 days" }].map(({ h, label }) => (
+                  <ToggleButton key={h} active={form.first_bids_duration_hours === h} onClick={() => set("first_bids_duration_hours", h)}>
+                    {label}
+                  </ToggleButton>
+                ))}
+              </div>
+            </Field>
+
+            <Field label="PRI$OMETER™ Live Duration">
+              <div className="flex gap-2">
+                {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 504, label: "21 days" }].map(({ h, label }) => (
+                  <ToggleButton key={h} active={form.prisometer_duration_hours === h} onClick={() => set("prisometer_duration_hours", h)}>
+                    {label}
+                  </ToggleButton>
+                ))}
+              </div>
+            </Field>
+
+            <div className="flex items-center justify-between bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3">
+              <div>
+                <p className="text-xs font-bold text-neutral-800">Make It Mine™</p>
+                <p className="text-[11px] text-neutral-400 mt-0.5">Buyers can purchase at your asking price. Always visible.</p>
+              </div>
+              <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-full">Always On</span>
+            </div>
+          </SectionCard>
+
+          {/* 5. Inventory & Logistics */}
+          <SectionCard title="Inventory & Logistics" subtitle="Internal tracking and logistics details">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              <Field label="Inventory Number" visibility="private">
+                <Input placeholder="e.g. EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
+              </Field>
+              <Field label="Internal Storage Location" visibility="private">
+                <Input placeholder="e.g. Warehouse B, Shelf 3" value={form.location} onChange={e => set("location", e.target.value)} />
+              </Field>
+              <Field label="Public Item Location" visibility="public">
+                <Input placeholder="e.g. New York, NY" value={form.customer_location} onChange={e => set("customer_location", e.target.value)} />
+              </Field>
+            </div>
+            <Field label="Shipping Notes" visibility="public">
+              <Textarea
+                placeholder="Packaging, fragility, shipping requirements, pickup availability…"
+                value={form.shipping_notes}
+                onChange={e => set("shipping_notes", e.target.value)}
+                className="h-20 resize-none"
+              />
+            </Field>
+            <Field label="Search Keywords" hint="comma-separated, improves discoverability" visibility="private">
+              <Textarea
+                placeholder="e.g. oil painting, impressionism, landscape, 19th century…"
+                value={form.keywords}
+                onChange={e => set("keywords", e.target.value)}
+                className="h-14 resize-none"
+              />
+            </Field>
+
+            {/* Ownership */}
+            <div className="border-t border-neutral-100 pt-5">
+              <Field label="Ownership Type">
+                <div className="flex gap-2">
+                  {[["owned", "Self-Owned"], ["consignment", "Consignment"]].map(([val, label]) => (
+                    <ToggleButton key={val} active={form.ownership_type === val} onClick={() => set("ownership_type", val)}>
+                      {label}
+                    </ToggleButton>
+                  ))}
+                </div>
+              </Field>
+            </div>
+
             {form.ownership_type === "consignment" && (
-              <div className="space-y-4 pt-2 border-t border-border/50">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Consignor Details</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-4 pt-4 border-t border-neutral-100">
+                <p className="text-xs font-bold uppercase tracking-[0.1em] text-neutral-400">Consignor Details</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <Field label="Consignor Name" required>
                     <Input placeholder="Full name" value={form.consignor_name} onChange={e => set("consignor_name", e.target.value)} />
                   </Field>
@@ -635,7 +780,7 @@ export default function ListingStudio() {
                   <Field label="Commission %" hint="seller keeps">
                     <div className="relative">
                       <Input type="number" placeholder="e.g. 30" value={form.consignor_commission_percent} onChange={e => set("consignor_commission_percent", e.target.value)} className="pr-7" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">%</span>
                     </div>
                   </Field>
                   <div className="sm:col-span-2">
@@ -645,154 +790,40 @@ export default function ListingStudio() {
                   </div>
                   <div className="sm:col-span-2">
                     <Field label="Consignment Notes" hint="agreement terms, special instructions">
-                      <Textarea placeholder="Payment terms, pickup/drop-off, special conditions…" value={form.consignor_notes} onChange={e => set("consignor_notes", e.target.value)} className="h-20" />
+                      <Textarea placeholder="Payment terms, pickup/drop-off, special conditions…" value={form.consignor_notes} onChange={e => set("consignor_notes", e.target.value)} className="h-20 resize-none" />
                     </Field>
                   </div>
                 </div>
                 {form.consignor_commission_percent && form.prisometer_start_price && (
-                  <div className="bg-violet-50 rounded-lg px-3 py-2 text-xs text-violet-700 space-y-0.5">
+                  <div className="bg-violet-50 border border-violet-100 rounded-xl px-4 py-3 text-xs text-violet-700">
                     <p className="font-semibold">Estimated consignor payout at start price</p>
-                    <p>${(form.prisometer_start_price * (1 - form.consignor_commission_percent / 100)).toLocaleString(undefined, { maximumFractionDigits: 0 })} ({100 - +form.consignor_commission_percent}% of ${(+form.prisometer_start_price).toLocaleString()})</p>
+                    <p className="mt-0.5">${(form.prisometer_start_price * (1 - form.consignor_commission_percent / 100)).toLocaleString(undefined, { maximumFractionDigits: 0 })} ({100 - +form.consignor_commission_percent}% of ${(+form.prisometer_start_price).toLocaleString()})</p>
                   </div>
                 )}
               </div>
             )}
-          </Section>
+          </SectionCard>
 
-          {/* CUSTOM TRACKING FIELDS */}
-          <Section title="Custom Tracking Fields">
-            <p className="text-xs text-muted-foreground -mt-2">Add your own fields to track internal data (cost, insurance value, etc.). Your field layout is saved to your profile and pre-filled on every new listing.</p>
-            <CustomFieldsEditor
-              fields={form.custom_fields}
-              onChange={handleCustomFieldsChange}
-            />
-            <Button variant="outline" size="sm" onClick={exportCSV} className="gap-1.5 text-xs mt-1">
-              <Download className="w-3.5 h-3.5" /> Export All Fields as CSV
-            </Button>
-          </Section>
+          {/* Custom Fields */}
+          <SectionCard title="Custom Tracking Fields" subtitle="Internal fields saved to your profile template">
+            <CustomFieldsEditor fields={form.custom_fields} onChange={handleCustomFieldsChange} />
+          </SectionCard>
         </div>
 
-        {/* RIGHT COLUMN — Sales Setup + Publish */}
-        <div className="space-y-6">
-
-          {/* ESTIMATES */}
-          <Section title="Estimates" locked={isLive}>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Est. Low">
-                <PriceInput placeholder="0" value={form.estimated_low} onChange={e => set("estimated_low", e.target.value)} />
-              </Field>
-              <Field label="Est. High">
-                <PriceInput placeholder="0" value={form.estimated_high} onChange={e => set("estimated_high", e.target.value)} />
-              </Field>
+        {/* ── RIGHT: Sticky Preview + Checklist ─────────────────────────── */}
+        <div className="hidden xl:flex flex-col gap-5">
+          <div className="sticky top-24 flex flex-col gap-5 max-h-[calc(100vh-7rem)] overflow-hidden">
+            <ListingChecklist form={form} />
+            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+              <div className="flex items-center justify-between mb-3 shrink-0">
+                <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-neutral-500">Live Buyer Preview</h3>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              </div>
+              <div className="flex-1 overflow-y-auto scrollbar-hide">
+                <ListingPreview form={form} />
+              </div>
             </div>
-          </Section>
-
-          {/* SALES SETUP */}
-          <Section title="Sales Setup" locked={isLive}>
-            <Field label="Visible Start Price" required>
-              <PriceInput placeholder="e.g. 12,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
-              <p className="text-[11px] text-muted-foreground mt-1">Shown publicly to buyers.</p>
-            </Field>
-            <Field label="Hidden Reserve Price" required>
-              <PriceInput placeholder="e.g. 8,000" value={form.reserve_price} onChange={e => set("reserve_price", e.target.value)} />
-              <p className="text-[11px] text-muted-foreground mt-1">Never shown to buyers.</p>
-            </Field>
-
-            <Field label="Below-Reserve Drop Allowance">
-              <div className="flex gap-1.5">
-                {[10, 15, 20].map(pct => (
-                  <button key={pct} onClick={() => set("below_reserve_percent", pct)}
-                    className={cn("flex-1 py-1.5 rounded-lg border text-xs font-medium transition-all",
-                      form.below_reserve_percent === pct ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-foreground/30"
-                    )}>
-                    {pct}%
-                  </button>
-                ))}
-              </div>
-            </Field>
-
-            {floorPrice && (
-              <div className="bg-secondary/50 rounded-lg px-3 py-2 text-xs text-muted-foreground">
-                Price floor: <span className="font-semibold text-foreground">${Number(floorPrice).toLocaleString()}</span>
-              </div>
-            )}
-
-            <Field label="1stBid$™ Preview Duration">
-              <div className="flex gap-1.5 flex-wrap">
-                {[168, 504, 720].map(h => (
-                  <button key={h} onClick={() => set("first_bids_duration_hours", h)}
-                    className={cn("px-3 py-1.5 rounded-lg border text-xs font-medium transition-all",
-                      form.first_bids_duration_hours === h ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-foreground/30"
-                    )}>
-                    {h / 24}d
-                  </button>
-                ))}
-              </div>
-            </Field>
-
-            <Field label="PRI$OMETER™ Live Duration">
-              <div className="flex gap-1.5 flex-wrap">
-                {[168, 336, 504].map(h => (
-                  <button key={h} onClick={() => set("prisometer_duration_hours", h)}
-                    className={cn("px-3 py-1.5 rounded-lg border text-xs font-medium transition-all",
-                      form.prisometer_duration_hours === h ? "border-primary bg-primary/5 text-foreground" : "border-border text-muted-foreground hover:border-foreground/30"
-                    )}>
-                    {h / 24}d
-                  </button>
-                ))}
-              </div>
-            </Field>
-
-            <div className="bg-primary/5 rounded-lg px-3 py-2 flex items-center justify-between text-xs">
-              <span className="font-medium">Make It Mine™</span>
-              <span className="text-primary font-semibold uppercase tracking-wide">Always On</span>
-            </div>
-          </Section>
-
-          {/* PUBLISH ACTIONS */}
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
-            <h3 className="font-serif text-sm font-semibold">Publish</h3>
-
-            {isLive ? (
-              <>
-                <Button className="w-full gap-2" onClick={saveDraft} disabled={saving}>
-                  <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Changes"}
-                </Button>
-                <Button variant="outline" className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
-                  onClick={() => setCancelConfirm(true)}>
-                  <XCircle className="w-4 h-4" /> Cancel Sale
-                </Button>
-              </>
-            ) : isUnsold ? (
-              <>
-                <Button variant="outline" className="w-full gap-2" onClick={saveDraft} disabled={saving}>
-                  <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Changes"}
-                </Button>
-                <Button className="w-full gap-2 bg-primary" onClick={relistNow} disabled={saving || !form.title || !form.prisometer_start_price}>
-                  <Rocket className="w-4 h-4" /> {saving ? "Relisting…" : "Relist Now"}
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="outline" className="w-full gap-2" onClick={saveDraft} disabled={saving}>
-                  <Save className="w-4 h-4" /> Save Draft
-                </Button>
-                <Button variant="outline" disabled className="w-full gap-2 opacity-50">
-                  <Calendar className="w-4 h-4" /> Schedule (coming soon)
-                </Button>
-                <Button className="w-full gap-2 bg-primary" onClick={publishNow} disabled={saving || !form.title || !form.prisometer_start_price}>
-                  <Rocket className="w-4 h-4" /> {saving ? "Publishing…" : "Publish Now"}
-                </Button>
-              </>
-            )}
           </div>
-
-          {/* Keywords */}
-          <Section title="Keywords & Tags" locked={isLive}>
-            <Field label="Search Keywords" hint="comma-separated">
-              <Textarea placeholder="e.g. oil painting, impressionism, landscape, 19th century…" value={form.keywords} onChange={e => set("keywords", e.target.value)} className="h-16" />
-            </Field>
-          </Section>
         </div>
       </div>
     </div>
