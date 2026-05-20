@@ -3,265 +3,247 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  ShieldCheck,
-  Globe,
-  Gavel,
-  HeadphonesIcon,
-  Sofa,
+  BadgeDollarSign,
+  Building2,
+  CheckCircle2,
+  Gem,
   Home,
+  ShieldCheck,
+  TrendingDown,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-const fade = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } } };
-const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.08 } } };
+const personalImage =
+  "https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6266dc1b-6783-4359-ab40-562f1ab357a5/ChatGPT+Image+Jan+28%2C+2026%2C+11_09_41+AM+copy.jpg?content-type=image%2Fjpeg";
 
-const PERSONAL_IMG = "https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6266dc1b-6783-4359-ab40-562f1ab357a5/ChatGPT+Image+Jan+28%2C+2026%2C+11_09_41+AM+copy.jpg?content-type=image%2Fjpeg";
-const REAL_IMG     = "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/7db4c466d_370977b8de8c632e2fcfe47f1bfad9d516a5050abbdb2691631738688fd4bf3d.jpg";
-const ABOUT_IMG    = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&q=80";
-const FOREST_BG    = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1800&q=80";
-const REAL_CAT     = "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/7db4c466d_370977b8de8c632e2fcfe47f1bfad9d516a5050abbdb2691631738688fd4bf3d.jpg";
+const realImage =
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&q=85";
 
-const trustItems = [
-  { icon: ShieldCheck,     title: "Trusted & Verified",    desc: "Every seller is verified. Every auction is secure." },
-  { icon: Globe,           title: "Global Reach",          desc: "Connecting buyers and sellers worldwide." },
-  { icon: Gavel,           title: "Live & Timed Auctions", desc: "Real-time bidding with transparent results." },
-  { icon: HeadphonesIcon,  title: "Exceptional Service",   desc: "Dedicated support every step of the way." },
+const estateImage =
+  "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1800&q=85";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.12 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
+};
+
+const paths = [
+  {
+    title: "Personal Property",
+    eyebrow: "Fine art, jewelry, design, antiques",
+    description: "Browse and sell valuable objects with transparent fees, verified listings, and live market pricing.",
+    href: "/personal-property",
+    image: personalImage,
+    icon: Gem,
+    action: "Enter Personal Property",
+    stats: ["Fine Art", "Jewelry", "Furniture", "Collectibles"],
+  },
+  {
+    title: "Real Property",
+    eyebrow: "Homes, estates, investment property",
+    description: "Explore select property listings and estate opportunities as the real-property marketplace expands.",
+    href: "/real-property",
+    image: realImage,
+    icon: Home,
+    action: "Enter Real Property",
+    stats: ["Residential", "Estate", "Land", "Investment"],
+  },
+];
+
+const proofPoints = [
+  {
+    icon: BadgeDollarSign,
+    title: "No Buyer Premium",
+    description: "Pricing stays clear so buyers and sellers know the real transaction cost.",
+  },
+  {
+    icon: TrendingDown,
+    title: "Dynamic Market Pricing",
+    description: "1stBid$ and PRI$OMETER help value surface through buyer demand.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Seller-Led Control",
+    description: "Sellers manage listings, reserves, terms, invoices, and buyer communication in one place.",
+  },
 ];
 
 export default function Portal() {
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
+    <div className="min-h-screen bg-background text-foreground">
+      <section
+        className="relative min-h-[calc(100vh-88px)] overflow-hidden border-b border-border/60 bg-cover bg-center"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.72), rgba(0,0,0,0.64)), url(${estateImage})`,
+        }}
+      >
+        <div className="absolute inset-x-0 bottom-0 z-10 h-44 bg-gradient-to-t from-background to-transparent" />
 
-      {/* ══════════════════════════════════════════════════════
-          HERO
-      ══════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden" style={{ minHeight: "88vh" }}>
-
-        {/* Split backgrounds — diagonal clip */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${PERSONAL_IMG})`,
-            clipPath: "polygon(0 0, 55% 0, 42% 100%, 0 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${REAL_IMG})`,
-            clipPath: "polygon(53% 0, 100% 0, 100% 100%, 40% 100%)",
-          }}
-        />
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/58" />
-
-        {/* Content grid */}
         <motion.div
-          className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10"
-          style={{ minHeight: "88vh", display: "flex", alignItems: "center" }}
-          variants={stagger}
+          className="relative z-20 mx-auto flex min-h-[calc(100vh-88px)] max-w-7xl flex-col justify-center px-5 py-10 lg:px-8"
+          variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          <div className="w-full relative py-16">
+          <motion.div variants={itemVariants} className="max-w-3xl pt-6 [text-shadow:0_2px_24px_rgba(0,0,0,0.65)]">
+            <p className="mb-4 text-[12px] font-bold uppercase tracking-[0.22em] text-white/70">
+              Everything Valuable
+            </p>
+            <h1 className="font-display text-4xl font-extrabold leading-[0.98] text-white md:text-6xl lg:text-7xl">
+              Choose the marketplace for the asset in front of you.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/80 md:text-lg">
+              Move between personal property and real property with a cleaner starting point for buying, selling, and discovering value.
+            </p>
+          </motion.div>
 
-            {/* LEFT — hero text */}
-            <div className="max-w-lg text-left">
-              <motion.p variants={fade} className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/55 mb-5">
-                Welcome to Everything Valuable
-              </motion.p>
-              <motion.h1
-                variants={fade}
-                className="font-display font-extrabold text-white leading-[0.95] mb-6"
-                style={{ fontSize: "clamp(2.8rem, 5vw, 4.2rem)" }}
-              >
-                Exceptional assets. Trusted auctions. Extraordinary results.
-              </motion.h1>
-              <motion.p variants={fade} className="text-white/65 text-[14px] leading-relaxed mb-8 max-w-xs">
-                Discover rare art, collectibles, luxury items, and premier real estate from trusted sellers in curated, live auctions.
-              </motion.p>
-              <motion.div variants={fade} className="flex flex-wrap gap-3">
-                <Link to="/personal-property">
-                  <button className="inline-flex items-center gap-2 bg-primary text-white font-semibold text-[13px] px-5 py-3 hover:bg-primary/85 transition-colors">
-                    Explore Personal Property <ArrowRight className="w-4 h-4" />
-                  </button>
-                </Link>
-                <Link to="/real-property">
-                  <button className="inline-flex items-center gap-2 border border-white/45 text-white font-semibold text-[13px] px-5 py-3 hover:bg-white/10 transition-colors">
-                    Explore Real Property <ArrowRight className="w-4 h-4" />
-                  </button>
-                </Link>
-              </motion.div>
-            </div>
-
-            {/* BOTTOM-RIGHT — stat cards */}
-            <motion.div
-              variants={fade}
-              className="absolute bottom-0 right-0 hidden lg:flex flex-row gap-3 pb-6"
-            >
-              <div className="bg-white/80 backdrop-blur-sm p-5 w-48 shadow-xl">
-                <Sofa className="w-5 h-5 text-primary mb-2" />
-                <p className="font-display text-4xl font-extrabold text-foreground leading-none">180°</p>
-                <p className="text-[12px] text-muted-foreground mt-2 leading-snug">Curated selection of exceptional assets across categories.</p>
-              </div>
-              <div className="bg-white/80 backdrop-blur-sm p-5 w-48 shadow-xl">
-                <Home className="w-5 h-5 text-primary mb-2" />
-                <p className="font-display text-4xl font-extrabold text-foreground leading-none">100%</p>
-                <p className="text-[12px] text-muted-foreground mt-2 leading-snug">Trusted experience with verified sellers and secure transactions.</p>
-              </div>
-            </motion.div>
-
-          </div>
+          <motion.div variants={containerVariants} className="mt-8 grid gap-4 lg:grid-cols-2">
+            {paths.map((path) => {
+              const Icon = path.icon;
+              return (
+                <motion.div key={path.title} variants={itemVariants}>
+                  <Link
+                    to={path.href}
+                    className="group block overflow-hidden rounded-lg border border-white/20 bg-black/35 shadow-2xl backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-white/40 hover:bg-black/30"
+                  >
+                    <div className="grid min-h-[310px] md:grid-cols-[0.95fr_1.05fr]">
+                      <div className="relative min-h-[190px] overflow-hidden md:min-h-full">
+                        <img
+                          src={path.image}
+                          alt={path.title}
+                          className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/20" />
+                      </div>
+                      <div className="flex flex-col justify-between p-5 md:p-6">
+                        <div>
+                          <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-white text-foreground">
+                            <Icon className="h-5 w-5" />
+                          </div>
+                          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-white/80">
+                            {path.eyebrow}
+                          </p>
+                          <h2 className="mt-2 font-display text-2xl font-extrabold text-white md:text-3xl">
+                            {path.title}
+                          </h2>
+                          <p className="mt-3 text-sm leading-6 text-white">
+                            {path.description}
+                          </p>
+                        </div>
+                        <div>
+                          <div className="mt-5 flex flex-wrap gap-1.5">
+                            {path.stats.map((stat) => (
+                              <span key={stat} className="border-b border-white/35 pb-0.5 text-[11px] font-semibold text-white">
+                                {stat}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-white">
+                            {path.action}
+                            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </motion.div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          ABOUT
-      ══════════════════════════════════════════════════════ */}
-      <section className="py-20 md:py-28 bg-white border-b border-border/40">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 grid lg:grid-cols-2 gap-16 items-center">
-
-          {/* Copy */}
-          <motion.div
-            className="max-w-md"
-            variants={stagger}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-          >
-            <motion.p variants={fade} className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted-foreground/50 mb-3">
-              02 · About Us
-            </motion.p>
-            <motion.h2 variants={fade} className="font-display font-extrabold text-foreground leading-tight mb-5" style={{ fontSize: "clamp(1.9rem, 3vw, 2.6rem)" }}>
-              A marketplace built on trust, passion, and unmatched expertise.
-            </motion.h2>
-            <motion.p variants={fade} className="text-muted-foreground text-[14px] leading-relaxed mb-3">
-              Everything Valuable connects buyers and sellers through transparent, live auctions featuring the world's most desirable personal property and real estate.
-            </motion.p>
-            <motion.p variants={fade} className="text-muted-foreground text-[13px] leading-relaxed mb-8">
-              Whether you're collecting, investing, or searching for your next opportunity, we're here to help you find what truly matters.
-            </motion.p>
-            <motion.div variants={fade}>
-              <Link to="/about">
-                <button className="inline-flex items-center gap-2 border border-border text-foreground font-semibold text-[13px] px-5 py-2.5 hover:bg-secondary transition-colors">
-                  Learn More About Us <ArrowRight className="w-4 h-4" />
-                </button>
-              </Link>
-            </motion.div>
-          </motion.div>
-
-          {/* Image + verified badge */}
-          <motion.div
-            className="relative"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6 }}
-          >
-            <img src={ABOUT_IMG} alt="Interior" className="w-full object-cover shadow-xl" style={{ height: 400 }} />
-            <div className="absolute bottom-5 right-5 bg-white p-4 flex items-start gap-3 shadow-xl max-w-[210px]">
-              <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold text-[13px] text-foreground">Verified &amp; Secure</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">All sellers are verified and transactions are protected from start to finish.</p>
-              </div>
-            </div>
-          </motion.div>
-
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════
-          TWO WORLDS
-      ══════════════════════════════════════════════════════ */}
-      <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${FOREST_BG})` }} />
-        <div className="absolute inset-0 bg-black/72" />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-10 grid lg:grid-cols-[380px_1fr_1fr] gap-8 items-center">
-
-          {/* Left copy */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.55 }}
-          >
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/40 mb-3">03 · Explore Categories</p>
-            <h2 className="font-display font-extrabold text-white leading-tight mb-4" style={{ fontSize: "clamp(2rem, 3.2vw, 3rem)" }}>
-              Two worlds of exceptional value.
+      <section className="border-b border-border/60 bg-background py-14 md:py-18">
+        <motion.div
+          className="mx-auto max-w-7xl px-5 lg:px-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+        >
+          <motion.div variants={itemVariants} className="mb-7">
+            <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-primary">
+              One platform, two asset paths
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-extrabold leading-tight md:text-4xl">
+              Start with the kind of property. Keep the value process connected.
             </h2>
-            <p className="text-white/55 text-[13px] leading-relaxed">Choose your path and explore what inspires you.</p>
           </motion.div>
-
-          {/* Personal Property card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.55, delay: 0.1 }}
-          >
-            <Link to="/personal-property" className="group block relative overflow-hidden shadow-2xl" style={{ height: 300 }}>
-              <img src={PERSONAL_IMG} alt="Personal Property" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="font-display text-2xl font-extrabold text-white mb-1">Personal Property</h3>
-                <p className="text-white/65 text-[13px] mb-5 leading-snug">Art, antiques, jewelry, collectibles, furniture and more.</p>
-                <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center group-hover:bg-primary transition-colors duration-200">
-                  <ArrowRight className="w-4 h-4 text-foreground group-hover:text-white transition-colors duration-200" />
-                </div>
-              </div>
-            </Link>
+          <motion.div variants={containerVariants} className="grid gap-4 lg:grid-cols-3">
+            {proofPoints.map((point) => {
+              const Icon = point.icon;
+              return (
+                <motion.div key={point.title} variants={itemVariants} className="flex gap-3 rounded-lg border border-border bg-white p-6 shadow-sm">
+                  <Icon className="h-6 w-6 shrink-0 text-primary" />
+                  <div>
+                    <h3 className="font-display text-base font-extrabold">{point.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{point.description}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
-
-          {/* Real Property card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.55, delay: 0.2 }}
-          >
-            <Link to="/real-property" className="group block relative overflow-hidden shadow-2xl" style={{ height: 300 }}>
-              <img src={REAL_CAT} alt="Real Property" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="font-display text-2xl font-extrabold text-white mb-1">Real Property</h3>
-                <p className="text-white/65 text-[13px] mb-5 leading-snug">Residential, commercial, land and investment opportunities.</p>
-                <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center group-hover:bg-primary transition-colors duration-200">
-                  <ArrowRight className="w-4 h-4 text-foreground group-hover:text-white transition-colors duration-200" />
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-
-        </div>
+        </motion.div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          TRUST BAR
-      ══════════════════════════════════════════════════════ */}
-      <section className="py-16 bg-white border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 grid grid-cols-2 md:grid-cols-4 gap-10">
-          {trustItems.map(({ icon: Icon, title, desc }, i) => (
-            <motion.div
-              key={title}
-              className="flex flex-col items-start gap-3"
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-            >
-              <div className="w-11 h-11 rounded-full border border-primary/25 flex items-center justify-center">
-                <Icon className="w-5 h-5 text-primary" />
+      <section className="bg-[hsl(40,22%,96%)] py-14 md:py-18">
+        <motion.div
+          className="mx-auto max-w-7xl px-5 lg:px-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+        >
+          <motion.div variants={itemVariants} className="mb-7 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+              <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-primary">How value moves</p>
+              <h2 className="mt-3 font-display text-3xl font-extrabold md:text-4xl">
+                Modern selling tools without the old auction fog.
+              </h2>
+            </div>
+            <Link to="/how-it-works">
+              <Button variant="outline" className="h-10 rounded-lg gap-2">
+                How It Works <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </motion.div>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            <motion.div variants={itemVariants} className="rounded-lg border border-border bg-white p-6 shadow-sm">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-6 w-6 text-primary" />
+                <h3 className="font-display text-xl font-extrabold">List with context</h3>
               </div>
-              <div>
-                <p className="font-semibold text-[13px] text-foreground">{title}</p>
-                <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed">{desc}</p>
-              </div>
+              <p className="mt-4 text-sm leading-6 text-muted-foreground">
+                Sellers add photos, provenance, condition, location, reserves, and terms so buyers can act with confidence.
+              </p>
             </motion.div>
-          ))}
-        </div>
+            <motion.div variants={itemVariants} className="rounded-lg border border-border bg-white p-6 shadow-sm">
+              <div className="flex items-center gap-3">
+                <Building2 className="h-6 w-6 text-primary" />
+                <h3 className="font-display text-xl font-extrabold">Match the asset</h3>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-muted-foreground">
+                Personal property and real property stay distinct, while estate and collection value can be discovered from one entry point.
+              </p>
+            </motion.div>
+            <motion.div variants={itemVariants} className="rounded-lg border border-border bg-white p-6 shadow-sm">
+              <div className="flex items-center gap-3">
+                <TrendingDown className="h-6 w-6 text-primary" />
+                <h3 className="font-display text-xl font-extrabold">Let demand speak</h3>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-muted-foreground">
+                1stBid$ and PRI$OMETER create an active price-discovery path instead of a static listing that sits untouched.
+              </p>
+            </motion.div>
+          </div>
+        </motion.div>
       </section>
-
     </div>
   );
 }
