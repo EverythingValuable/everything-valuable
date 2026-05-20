@@ -92,11 +92,7 @@ export default function Portal() {
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
 
-        {/* Diagonal white divider line */}
-        <div
-          className="absolute inset-y-0 left-[51%] hidden w-px rotate-[14deg] bg-white/70 lg:block"
-          aria-hidden="true"
-        />
+
 
         <motion.div
           variants={stagger}
