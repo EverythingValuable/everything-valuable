@@ -145,13 +145,13 @@ export default function Portal() {
             >
               <StatCard
                 icon={Sofa}
-                value="180°"
-                text="Curated selection of exceptional assets across categories."
+                value="Rare Finds"
+                text="Unlock a world of unique art, antiques and collectibles"
               />
               <StatCard
                 icon={Home}
-                value="100%"
-                text="Trusted experience with verified sellers and secure transactions."
+                value="Full Transparency"
+                text="Peace of mind with verified sellers and protected transactions."
               />
             </motion.div>
           </div>
