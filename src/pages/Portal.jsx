@@ -273,7 +273,7 @@ export default function Portal() {
 
 function StatCard({ icon: Icon, value, text }) {
   return (
-    <div className="rounded-[6px] bg-white/95 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.18)] backdrop-blur-sm">
+    <div className="rounded-[6px] bg-white/80 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.18)] backdrop-blur-sm">
       <Icon className="mb-3 h-6 w-6 text-primary" />
       <p className="font-serif text-3xl font-bold text-neutral-900">{value}</p>
       <p className="mt-2 text-[12px] leading-5 text-neutral-500">{text}</p>
