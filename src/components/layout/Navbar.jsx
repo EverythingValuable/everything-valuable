@@ -123,20 +123,11 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to={homeLink} className="flex items-center gap-2 shrink-0">
-            {isLanding ? (
-              <span className="flex items-center gap-1.5 whitespace-nowrap">
-                <span className="inline-flex h-7 w-8 items-center justify-center bg-primary text-[13px] font-black tracking-[-0.02em] text-white">EV</span>
-                <span className="text-[15px] font-black uppercase tracking-[-0.04em] text-white">
-                  Everything<span className="text-primary">Valuable</span>
-                </span>
-              </span>
-            ) : (
-              <img
-                src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png"
-                alt="Everything Valuable Logo"
-                className="h-8 md:h-10 w-auto"
-              />
-            )}
+            <img
+              src={isLanding ? "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/0c824150a_LOGOEV.png" : "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png"}
+              alt="Everything Valuable Logo"
+              className="h-8 md:h-10 w-auto"
+            />
           </Link>
 
           {/* Desktop nav links */}
