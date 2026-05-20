@@ -18,7 +18,7 @@ const PERSONAL_IMG = "https://images.squarespace-cdn.com/content/62717c6c7f5a1c4
 const REAL_IMG     = "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/7db4c466d_370977b8de8c632e2fcfe47f1bfad9d516a5050abbdb2691631738688fd4bf3d.jpg";
 const ABOUT_IMG    = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&q=80";
 const FOREST_BG    = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1800&q=80";
-const REAL_CAT     = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80";
+const REAL_CAT     = "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/7db4c466d_370977b8de8c632e2fcfe47f1bfad9d516a5050abbdb2691631738688fd4bf3d.jpg";
 
 const trustItems = [
   { icon: ShieldCheck,     title: "Trusted & Verified",    desc: "Every seller is verified. Every auction is secure." },
