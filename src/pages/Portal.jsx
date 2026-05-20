@@ -15,7 +15,7 @@ const fade = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, trans
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.08 } } };
 
 const PERSONAL_IMG = "https://images.squarespace-cdn.com/content/62717c6c7f5a1c4dd576c1e9/6266dc1b-6783-4359-ab40-562f1ab357a5/ChatGPT+Image+Jan+28%2C+2026%2C+11_09_41+AM+copy.jpg?content-type=image%2Fjpeg";
-const REAL_IMG     = "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1400&q=85";
+const REAL_IMG     = "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/7db4c466d_370977b8de8c632e2fcfe47f1bfad9d516a5050abbdb2691631738688fd4bf3d.jpg";
 const ABOUT_IMG    = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&q=80";
 const FOREST_BG    = "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1800&q=80";
 const REAL_CAT     = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80";
