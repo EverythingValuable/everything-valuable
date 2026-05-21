@@ -625,7 +625,7 @@ export default function ListingStudio() {
           {/* 01 · Photos */}
           <Section number="01" title="Photos" subtitle="First photo becomes the cover image">
             <TipBox title="Tips for Great Photos"
-              image="https://images.unsplash.com/photo-1569171727594-63efdf8ea9f8?w=400&q=80"
+              image="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80"
               tips={[
               "Use natural, diffused light — avoid harsh flash or deep shadows",
               "Shoot on a clean, neutral background (white, grey, or linen)",
