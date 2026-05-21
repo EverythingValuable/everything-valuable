@@ -70,41 +70,42 @@ const TIPS = [
 ];
 
 function TipsAccordion() {
-  const [openId, setOpenId] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [activeId, setActiveId] = useState(null);
   return (
     <div className="border-t border-neutral-100">
       <button
         className="w-full px-5 py-4 flex items-center justify-between hover:bg-neutral-50 transition-colors"
-        onClick={() => setOpenId(openId === "__tips__" ? null : "__tips__")}
+        onClick={() => { setOpen(o => !o); setActiveId(null); }}
       >
         <div className="flex items-center gap-2">
           <Lightbulb className="w-3.5 h-3.5 text-neutral-500" />
           <span className="text-xs font-bold tracking-[0.18em] uppercase text-neutral-600">Listing Tips</span>
         </div>
-        {openId === "__tips__"
+        {open
           ? <ChevronUp className="w-4 h-4 text-neutral-400" />
           : <ChevronDown className="w-4 h-4 text-neutral-400" />
         }
       </button>
 
-      {openId === "__tips__" && (
+      {open && (
         <div className="pb-2">
           {TIPS.map(({ id, icon: Icon, title, tips }) => (
             <div key={id} className="border-t border-neutral-50">
               <button
                 className="w-full px-5 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors"
-                onClick={() => setOpenId(openId === id ? "__tips__" : id)}
+                onClick={() => setActiveId(activeId === id ? null : id)}
               >
                 <div className="flex items-center gap-2">
                   <Icon className="w-3.5 h-3.5 text-neutral-400" />
                   <span className="text-xs font-semibold tracking-[0.12em] uppercase text-neutral-500">{title}</span>
                 </div>
-                {openId === id
+                {activeId === id
                   ? <ChevronUp className="w-3.5 h-3.5 text-neutral-300" />
                   : <ChevronDown className="w-3.5 h-3.5 text-neutral-300" />
                 }
               </button>
-              {openId === id && (
+              {activeId === id && (
                 <ul className="px-5 pb-4 space-y-2.5">
                   {tips.map((tip, i) => (
                     <li key={i} className="flex items-start gap-2">
