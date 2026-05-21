@@ -44,14 +44,7 @@ export default function CategoryFields({ form, set }) {
   return (
     <div className="space-y-6">
 
-      {/* Subcategory */}
-      {config.showSubcategory && subcats.length > 0 && (
-        <Field label="Subcategory">
-          <NativeSelect value={form.subcategory} onChange={v => set("subcategory", v)} placeholder="Select subcategory…">
-            {subcats.map(s => <option key={s} value={s}>{s}</option>)}
-          </NativeSelect>
-        </Field>
-      )}
+
 
       {/* Style (Fine Art only — dropdown) */}
       {showStyles && (
