@@ -719,10 +719,9 @@ export default function ListingStudio() {
           {/* 04 · Pricing */}
           <Section number="04" title="Pricing & Auction" locked={isLive} badge="Auction Config">
             <TipBox color="green" title="Pricing Tips" tips={[
-              "Set the Prisometer™ price at or slightly below your low estimate to attract early bids",
-              "Use the hidden reserve to protect yourself — it's never disclosed to buyers",
-              "A lower opening price often creates more bidding activity and a higher final result",
-              "The floor price (reserve minus drop allowance) is the lowest you'll accept",
+              "Set the PRI$OMETER starting price near the high end of what a serious buyer might pay",
+              "The reserve should protect the seller, but still leave room for bidding activity and price movement",
+              "Overpricing can reduce early interest — a strong starting price should create urgency, not scare buyers away",
             ]} />
             <div className="grid grid-cols-2 gap-8">
               <Field label="Estimate Low">
