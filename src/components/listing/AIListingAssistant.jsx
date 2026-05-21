@@ -18,28 +18,26 @@ function ListingStrength({ form }) {
   ];
 
   const score = checks.reduce((acc, c) => acc + (c.done ? c.weight : 0), 0);
-  const color = score >= 80 ? "bg-emerald-500" : score >= 50 ? "bg-amber-400" : "bg-primary";
-  const textColor = score >= 80 ? "text-emerald-600" : score >= 50 ? "text-amber-600" : "text-primary";
   const label = score >= 80 ? "Strong" : score >= 50 ? "Good" : "Needs Work";
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm space-y-4">
+    <div className="border border-neutral-100 p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-xs font-bold uppercase tracking-[0.12em] text-neutral-500">Listing Strength</h4>
-        <span className={cn("text-sm font-bold", textColor)}>{score}/100 · {label}</span>
+        <h4 className="text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-400">Listing Strength</h4>
+        <span className="text-xs font-bold text-neutral-700">{score}/100 · {label}</span>
       </div>
-      <div className="w-full h-2 bg-neutral-100 rounded-full overflow-hidden">
-        <div className={cn("h-full rounded-full transition-all duration-700", color)} style={{ width: `${score}%` }} />
+      <div className="w-full h-px bg-neutral-100 overflow-hidden">
+        <div className="h-full bg-neutral-900 transition-all duration-700" style={{ width: `${score}%` }} />
       </div>
       <ul className="space-y-1.5">
         {checks.map(({ label, done, weight }) => (
           <li key={label} className="flex items-center gap-2">
             {done
-              ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-              : <Circle className="w-3.5 h-3.5 text-neutral-300 shrink-0" />
+              ? <CheckCircle2 className="w-3 h-3 text-neutral-700 shrink-0" />
+              : <Circle className="w-3 h-3 text-neutral-200 shrink-0" />
             }
-            <span className={cn("text-xs flex-1", done ? "text-neutral-600" : "text-neutral-400")}>{label}</span>
-            <span className="text-[10px] text-neutral-300 font-medium">+{weight}pts</span>
+            <span className={cn("text-[11px] flex-1 tracking-wide", done ? "text-neutral-600" : "text-neutral-300")}>{label}</span>
+            <span className="text-[10px] text-neutral-200">+{weight}</span>
           </li>
         ))}
       </ul>
@@ -58,22 +56,22 @@ function BuyerConfidence({ form }) {
   if (!form.customer_location?.trim()) missing.push("Set item location — buyers factor this into shipping costs");
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-sm space-y-3">
-      <div className="flex items-center gap-2">
-        <h4 className="text-xs font-bold uppercase tracking-[0.12em] text-neutral-500">Buyer Confidence</h4>
-        {missing.length === 0 && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full ml-auto">Excellent</span>}
-        {missing.length > 0 && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full ml-auto">{missing.length} gaps</span>}
+    <div className="border border-neutral-100 p-5 space-y-3">
+      <div className="flex items-center justify-between">
+        <h4 className="text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-400">Buyer Confidence</h4>
+        {missing.length === 0
+          ? <span className="text-[10px] tracking-[0.12em] uppercase text-neutral-400">✓ Complete</span>
+          : <span className="text-[10px] tracking-[0.12em] uppercase text-neutral-400">{missing.length} gaps</span>
+        }
       </div>
       {missing.length === 0 ? (
-        <p className="text-xs text-emerald-700 bg-emerald-50 rounded-xl px-3 py-2.5">
-          ✓ Buyers have everything they need to bid with confidence.
-        </p>
+        <p className="text-[11px] text-neutral-400 tracking-wide">Buyers have everything they need to bid with confidence.</p>
       ) : (
         <ul className="space-y-2">
           {missing.map((m, i) => (
             <li key={i} className="flex items-start gap-2">
-              <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-              <span className="text-xs text-neutral-500">{m}</span>
+              <AlertCircle className="w-3 h-3 text-neutral-300 shrink-0 mt-0.5" />
+              <span className="text-[11px] text-neutral-400 leading-snug">{m}</span>
             </li>
           ))}
         </ul>
@@ -135,101 +133,69 @@ Return as JSON with keys: title, description, keywords, condition_note`;
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+    <div className="border border-neutral-100 overflow-hidden">
       <div
-        className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-neutral-50 transition-colors"
+        className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-neutral-50 transition-colors border-b border-neutral-100"
         onClick={() => setExpanded(e => !e)}
       >
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <h4 className="text-xs font-bold uppercase tracking-[0.12em] text-neutral-700">AI Listing Assistant</h4>
+          <Sparkles className="w-3.5 h-3.5 text-neutral-500" />
+          <h4 className="text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-600">AI Listing Assistant</h4>
         </div>
-        {expanded ? <ChevronUp className="w-4 h-4 text-neutral-400" /> : <ChevronDown className="w-4 h-4 text-neutral-400" />}
+        {expanded ? <ChevronUp className="w-3.5 h-3.5 text-neutral-300" /> : <ChevronDown className="w-3.5 h-3.5 text-neutral-300" />}
       </div>
 
       {expanded && (
-        <div className="px-5 pb-5 space-y-4">
+        <div className="px-5 pb-5 pt-4 space-y-5">
           {!suggestions && !loading && (
-            <div className="text-center space-y-3 py-2">
-              <p className="text-xs text-neutral-400">
+            <div className="space-y-3">
+              <p className="text-[11px] text-neutral-400 leading-relaxed tracking-wide">
                 {hasEnoughData
                   ? "Generate AI-powered improvements for your title, description, keywords, and condition note."
-                  : "Fill in some details above (title, category, or description) to unlock AI suggestions."}
+                  : "Fill in some listing details above to unlock AI suggestions."}
               </p>
-              <Button
-                size="sm"
+              <button
                 onClick={generate}
                 disabled={!hasEnoughData}
-                className="gap-2 bg-primary hover:bg-primary/90 text-xs w-full"
+                className="w-full flex items-center justify-center gap-2 bg-neutral-900 hover:bg-black text-white text-[10px] font-bold tracking-[0.18em] uppercase py-3 transition-colors disabled:opacity-30"
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                Generate AI Suggestions
-              </Button>
+                <Sparkles className="w-3 h-3" />
+                Generate Suggestions
+              </button>
             </div>
           )}
 
           {loading && (
-            <div className="flex flex-col items-center gap-3 py-4">
-              <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-              <p className="text-xs text-neutral-400 animate-pulse">Analyzing your listing…</p>
+            <div className="flex flex-col items-center gap-3 py-6">
+              <div className="w-5 h-5 border border-neutral-200 border-t-neutral-600 rounded-full animate-spin" />
+              <p className="text-[11px] text-neutral-300 tracking-widest uppercase animate-pulse">Analyzing…</p>
             </div>
           )}
 
           {suggestions && !loading && (
-            <div className="space-y-4">
-              {/* Title */}
-              <div className="space-y-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Suggested Title</p>
-                <p className="text-sm font-serif text-neutral-800 bg-neutral-50 rounded-xl px-3 py-2.5 leading-snug">
-                  {suggestions.title}
-                </p>
-                <Button size="sm" variant="outline" className="text-xs w-full border-primary/30 text-primary hover:bg-primary/5"
-                  onClick={() => onApply("title", suggestions.title)}>
-                  Use This Title
-                </Button>
-              </div>
+            <div className="space-y-5">
+              {[
+                { key: "title", label: "Suggested Title", value: suggestions.title, applyKey: "title", applyLabel: "Use This Title" },
+                { key: "desc", label: "Suggested Description", value: suggestions.description, applyKey: "description", applyLabel: "Use Description" },
+                { key: "kw", label: "SEO Keywords", value: suggestions.keywords, applyKey: "keywords", applyLabel: "Add Keywords" },
+                { key: "cond", label: "Condition Note", value: suggestions.condition_note, applyKey: "condition_notes", applyLabel: "Use Condition Note" },
+              ].map(({ key, label, value, applyKey, applyLabel }) => (
+                <div key={key} className="space-y-2 border-b border-neutral-50 pb-5 last:border-0 last:pb-0">
+                  <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-300">{label}</p>
+                  <p className="text-[11px] text-neutral-600 leading-relaxed bg-neutral-50 px-3 py-2.5">{value}</p>
+                  <button
+                    onClick={() => onApply(applyKey, value)}
+                    className="w-full text-[10px] font-bold tracking-[0.15em] uppercase border border-neutral-200 py-2 text-neutral-500 hover:border-neutral-900 hover:text-neutral-900 transition-colors"
+                  >
+                    {applyLabel}
+                  </button>
+                </div>
+              ))}
 
-              {/* Description */}
-              <div className="space-y-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Suggested Description</p>
-                <p className="text-xs text-neutral-600 bg-neutral-50 rounded-xl px-3 py-2.5 leading-relaxed">
-                  {suggestions.description}
-                </p>
-                <Button size="sm" variant="outline" className="text-xs w-full border-primary/30 text-primary hover:bg-primary/5"
-                  onClick={() => onApply("description", suggestions.description)}>
-                  Use This Description
-                </Button>
-              </div>
-
-              {/* Keywords */}
-              <div className="space-y-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">SEO Keywords</p>
-                <p className="text-xs text-neutral-600 bg-neutral-50 rounded-xl px-3 py-2.5 leading-relaxed">
-                  {suggestions.keywords}
-                </p>
-                <Button size="sm" variant="outline" className="text-xs w-full border-primary/30 text-primary hover:bg-primary/5"
-                  onClick={() => onApply("keywords", suggestions.keywords)}>
-                  Add Keywords
-                </Button>
-              </div>
-
-              {/* Condition Note */}
-              <div className="space-y-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Condition Note</p>
-                <p className="text-xs text-neutral-600 bg-neutral-50 rounded-xl px-3 py-2.5 leading-relaxed">
-                  {suggestions.condition_note}
-                </p>
-                <Button size="sm" variant="outline" className="text-xs w-full border-primary/30 text-primary hover:bg-primary/5"
-                  onClick={() => onApply("condition_notes", suggestions.condition_note)}>
-                  Use Condition Note
-                </Button>
-              </div>
-
-              {/* Regenerate */}
-              <Button size="sm" variant="ghost" onClick={generate}
-                className="text-xs w-full text-neutral-400 hover:text-neutral-600 gap-1.5">
+              <button onClick={generate}
+                className="w-full flex items-center justify-center gap-1.5 text-[10px] text-neutral-300 hover:text-neutral-600 tracking-widest uppercase transition-colors py-1">
                 <RefreshCw className="w-3 h-3" /> Regenerate
-              </Button>
+              </button>
             </div>
           )}
         </div>

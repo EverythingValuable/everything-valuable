@@ -1,13 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import {
   ChevronLeft, Upload, X, GripVertical, Lock, AlertTriangle,
-  XCircle, Save, Rocket, Eye, Globe, EyeOff, Info
+  XCircle, Save, Rocket, Eye, EyeOff, Globe, Info, ArrowLeft
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryFields from "../components/listing/CategoryFields";
@@ -21,43 +20,39 @@ const LIVE_STATUSES = ["first_bids", "prisometer", "pending_review"];
 const UNSOLD_STATUS = "unsold";
 const CONDITIONS = ["excellent", "very_good", "good", "fair", "as_is"];
 
-// ─── UI Primitives ────────────────────────────────────────────────────────────
-function SectionCard({ title, subtitle, children, locked, badge }) {
+// ─── Minimal UI Primitives ────────────────────────────────────────────────────
+
+function Section({ title, subtitle, children, locked, badge }) {
   return (
-    <div className={cn(
-      "bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden",
-      locked && "opacity-60 pointer-events-none"
-    )}>
-      <div className="px-6 py-5 border-b border-neutral-100 flex items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            {locked && <Lock className="w-3.5 h-3.5 text-amber-500" />}
-            <h3 className="font-serif text-base font-semibold text-neutral-900">{title}</h3>
-            {badge && <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 bg-primary/10 text-primary rounded-full">{badge}</span>}
-          </div>
-          {subtitle && <p className="text-xs text-neutral-400 mt-0.5">{subtitle}</p>}
+    <div className={cn("border-b border-neutral-100 pb-12", locked && "opacity-50 pointer-events-none")}>
+      <div className="mb-8">
+        <div className="flex items-center gap-3">
+          {locked && <Lock className="w-3 h-3 text-neutral-400" />}
+          <h2 className="text-xs font-bold tracking-[0.2em] uppercase text-neutral-900">{title}</h2>
+          {badge && <span className="text-[9px] tracking-[0.15em] uppercase border border-neutral-300 text-neutral-500 px-2 py-0.5">{badge}</span>}
         </div>
+        {subtitle && <p className="text-xs text-neutral-400 mt-1.5 tracking-wide">{subtitle}</p>}
       </div>
-      <div className="px-6 py-7 space-y-7">{children}</div>
+      <div className="space-y-8">{children}</div>
     </div>
   );
 }
 
 function Field({ label, hint, required, children, visibility }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <label className="text-[11px] font-bold uppercase tracking-[0.1em] text-neutral-500">
-          {label}{required && <span className="text-primary ml-0.5">*</span>}
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 flex-wrap">
+        <label className="text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-500">
+          {label}{required && <span className="text-neutral-900 ml-0.5">*</span>}
         </label>
-        {hint && <span className="text-[11px] text-neutral-400">· {hint}</span>}
+        {hint && <span className="text-[10px] text-neutral-300 tracking-wide">/ {hint}</span>}
         {visibility === "public" && (
-          <span className="flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full ml-auto">
+          <span className="flex items-center gap-0.5 text-[9px] tracking-[0.12em] uppercase text-neutral-400 ml-auto">
             <Globe className="w-2.5 h-2.5" /> Public
           </span>
         )}
         {visibility === "private" && (
-          <span className="flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-widest text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded-full ml-auto">
+          <span className="flex items-center gap-0.5 text-[9px] tracking-[0.12em] uppercase text-neutral-300 ml-auto">
             <EyeOff className="w-2.5 h-2.5" /> Private
           </span>
         )}
@@ -67,13 +62,24 @@ function Field({ label, hint, required, children, visibility }) {
   );
 }
 
+const inputClass = "w-full h-10 border-0 border-b border-neutral-200 bg-transparent px-0 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:border-neutral-900 transition-colors rounded-none";
+const textareaClass = "w-full border-0 border-b border-neutral-200 bg-transparent px-0 text-sm text-neutral-900 placeholder:text-neutral-300 focus:outline-none focus:border-neutral-900 transition-colors rounded-none resize-none";
+
+function MinInput(props) {
+  return <input className={cn(inputClass, props.className)} {...props} />;
+}
+
+function MinTextarea(props) {
+  return <textarea className={cn(textareaClass, "py-2", props.className)} {...props} />;
+}
+
 function PriceInput({ value, onChange, placeholder, disabled }) {
   return (
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm font-medium">$</span>
-      <Input
+      <span className="absolute left-0 top-1/2 -translate-y-1/2 text-neutral-300 text-sm">$</span>
+      <input
         type="number"
-        className="pl-7 font-price text-base"
+        className={cn(inputClass, "pl-4 font-mono")}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
@@ -83,15 +89,13 @@ function PriceInput({ value, onChange, placeholder, disabled }) {
   );
 }
 
-function ToggleButton({ active, onClick, children }) {
+function Toggle({ active, onClick, children }) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "px-4 py-2 rounded-xl border text-xs font-semibold transition-all",
-        active
-          ? "border-primary bg-primary text-white shadow-sm"
-          : "border-neutral-200 text-neutral-500 hover:border-neutral-400 bg-white"
+        "px-4 py-2 text-[10px] font-bold tracking-[0.15em] uppercase border transition-all",
+        active ? "border-neutral-900 bg-neutral-900 text-white" : "border-neutral-200 text-neutral-400 hover:border-neutral-400"
       )}
     >
       {children}
@@ -102,9 +106,7 @@ function ToggleButton({ active, onClick, children }) {
 function DropZone({ onFiles }) {
   const [dragging, setDragging] = useState(false);
   const onDrop = useCallback((e) => {
-    e.preventDefault();
-    setDragging(false);
-    onFiles(e.dataTransfer.files);
+    e.preventDefault(); setDragging(false); onFiles(e.dataTransfer.files);
   }, [onFiles]);
   return (
     <label
@@ -112,15 +114,13 @@ function DropZone({ onFiles }) {
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
       className={cn(
-        "flex flex-col items-center justify-center border-2 border-dashed rounded-2xl cursor-pointer transition-all py-10 px-6 text-center",
-        dragging ? "border-primary bg-primary/5" : "border-neutral-200 hover:border-primary/40 bg-neutral-50"
+        "flex flex-col items-center justify-center border border-dashed cursor-pointer transition-all py-12 px-6 text-center",
+        dragging ? "border-neutral-900 bg-neutral-50" : "border-neutral-200 hover:border-neutral-400"
       )}
     >
-      <div className="w-12 h-12 rounded-2xl bg-neutral-100 flex items-center justify-center mb-3">
-        <Upload className="w-5 h-5 text-neutral-500" />
-      </div>
-      <p className="font-semibold text-sm text-neutral-800">Drop photos here or click to browse</p>
-      <p className="text-xs text-neutral-400 mt-1">JPEG, PNG, WEBP · Multiple files accepted</p>
+      <Upload className="w-5 h-5 text-neutral-300 mb-3" />
+      <p className="text-xs font-medium text-neutral-500 tracking-wide">Drop photos or click to browse</p>
+      <p className="text-[10px] text-neutral-300 mt-1 tracking-widest uppercase">JPEG · PNG · WEBP</p>
       <input type="file" accept="image/*" multiple className="sr-only" onChange={e => onFiles(e.target.files)} />
     </label>
   );
@@ -145,8 +145,7 @@ export default function ListingStudio() {
   const isUnsold = itemStatus === UNSOLD_STATUS;
 
   const [form, setForm] = useState({
-    images: [],
-    title: "", category: "", subcategory: "", maker: "",
+    images: [], title: "", category: "", subcategory: "", maker: "",
     period: "", style: "", technique: "", keywords: "",
     materials: "", dimensions: "", origin: "", location: "",
     model: "", movement_type: "", running_status: "",
@@ -154,20 +153,15 @@ export default function ListingStudio() {
     condition: "very_good", provenance: "",
     description: "", short_description: "", condition_notes: "",
     shipping_notes: "", marks: "", terms_and_conditions: "",
-    first_bids_duration_hours: 168,
-    prisometer_start_price: "",
-    reserve_price: "",
-    below_reserve_percent: 10,
+    first_bids_duration_hours: 168, prisometer_start_price: "",
+    reserve_price: "", below_reserve_percent: 10,
     prisometer_duration_hours: 168,
     estimated_low: "", estimated_high: "",
-    internal_notes: "",
-    custom_fields: [],
-    inventory_number: "",
-    ownership_type: "owned",
+    internal_notes: "", custom_fields: [],
+    inventory_number: "", ownership_type: "owned",
     consignor_name: "", consignor_email: "", consignor_phone: "",
     consignor_address: "", consignor_commission_percent: "",
-    consignor_notes: "",
-    customer_location: "",
+    consignor_notes: "", customer_location: "",
   });
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
@@ -191,8 +185,7 @@ export default function ListingStudio() {
         } catch {}
         const customFields = template.map(f => ({ ...f, value: storedValues[f.label] ?? "" }));
         setForm({
-          images: item.images || [],
-          title: item.title || "", category: item.category || "",
+          images: item.images || [], title: item.title || "", category: item.category || "",
           subcategory: item.subcategory || "", maker: item.maker || "",
           period: item.period || "", style: item.style || "",
           technique: item.technique || "", keywords: item.keywords || "",
@@ -213,13 +206,11 @@ export default function ListingStudio() {
           prisometer_duration_hours: item.prisometer_duration_hours || 168,
           estimated_low: item.estimated_low || "", estimated_high: item.estimated_high || "",
           internal_notes: item.internal_notes || "", custom_fields: customFields,
-          inventory_number: item.inventory_number || "",
-          ownership_type: item.ownership_type || "owned",
+          inventory_number: item.inventory_number || "", ownership_type: item.ownership_type || "owned",
           consignor_name: item.consignor_name || "", consignor_email: item.consignor_email || "",
           consignor_phone: item.consignor_phone || "", consignor_address: item.consignor_address || "",
           consignor_commission_percent: item.consignor_commission_percent || "",
-          consignor_notes: item.consignor_notes || "",
-          customer_location: item.customer_location || "",
+          consignor_notes: item.consignor_notes || "", customer_location: item.customer_location || "",
         });
       } else {
         const template = profile?.listing_custom_fields_template || [];
@@ -386,97 +377,86 @@ export default function ListingStudio() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
-        <div className="text-center space-y-4">
-          <img src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png" alt="EV" className="h-10 w-auto mx-auto opacity-50" />
-          <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-5 h-5 border border-neutral-200 border-t-neutral-900 rounded-full animate-spin" />
       </div>
     );
   }
 
-  const statusLabel = isLive ? "Live" : isUnsold ? "Unsold" : isEditMode ? "Draft" : "New Listing";
+  const statusLabel = isLive ? "Live" : isUnsold ? "Unsold" : isEditMode ? "Draft" : "New";
 
   return (
-    <div className="min-h-screen bg-[#F8F7F5] flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col font-sans">
 
       {/* ── Top Bar ─────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-white border-b border-neutral-200 shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-5 md:px-8 h-16 flex items-center gap-4">
-          {/* Logo + Back */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Link to="/seller" className="flex items-center gap-1.5 text-neutral-400 hover:text-neutral-700 transition-colors text-xs font-semibold">
-              <ChevronLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Seller Dashboard</span>
-            </Link>
-            <div className="w-px h-5 bg-neutral-200" />
-            <img
-              src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png"
-              alt="Everything Valuable"
-              className="h-7 w-auto"
-            />
-          </div>
+      <header className="sticky top-0 z-30 bg-white border-b border-neutral-100">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 h-14 flex items-center gap-6">
+          <Link to="/seller" className="flex items-center gap-2 text-neutral-400 hover:text-neutral-900 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-[10px] font-bold tracking-[0.18em] uppercase">Dashboard</span>
+          </Link>
 
-          {/* Title + status */}
-          <div className="flex-1 min-w-0 flex items-center gap-2.5">
-            <div className="hidden sm:block w-px h-5 bg-neutral-200" />
-            <p className="font-serif text-sm font-semibold text-neutral-700 truncate hidden sm:block">
-              {form.title || "Untitled Listing"}
-            </p>
+          <div className="w-px h-4 bg-neutral-100" />
+
+          <div className="flex-1 flex items-center gap-3 min-w-0">
+            <span className="text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-300 shrink-0">
+              Listing Studio
+            </span>
+            {form.title && (
+              <>
+                <span className="text-neutral-200">/</span>
+                <span className="text-xs text-neutral-500 truncate">{form.title}</span>
+              </>
+            )}
             <span className={cn(
-              "text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full shrink-0",
-              isLive ? "bg-amber-100 text-amber-700" :
-              isUnsold ? "bg-neutral-100 text-neutral-500" :
-              "bg-neutral-100 text-neutral-500"
+              "text-[9px] font-bold tracking-[0.15em] uppercase px-2 py-0.5 border shrink-0",
+              isLive ? "border-neutral-900 text-neutral-900" : "border-neutral-200 text-neutral-300"
             )}>
               {statusLabel}
             </span>
-            {isLive && (
-              <span className="flex items-center gap-1 text-[10px] text-amber-600 font-medium hidden md:flex">
-                <Lock className="w-3 h-3" /> Limited editing while live
-              </span>
-            )}
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
             {editId && (
-              <Link to={`/item/${editId}`} target="_blank">
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs hidden md:flex border-neutral-300">
-                  <Eye className="w-3.5 h-3.5" /> Preview Page
-                </Button>
+              <Link to={`/item/${editId}`} target="_blank"
+                className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.15em] uppercase text-neutral-400 hover:text-neutral-900 transition-colors">
+                <Eye className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Preview</span>
               </Link>
             )}
             {isLive && isEditMode && (
-              <Button variant="outline" size="sm" onClick={() => setCancelConfirm(true)}
-                className="gap-1.5 text-xs text-destructive border-destructive/30 hover:bg-destructive/5">
+              <button onClick={() => setCancelConfirm(true)}
+                className="text-[10px] font-bold tracking-[0.15em] uppercase text-neutral-400 hover:text-neutral-900 transition-colors flex items-center gap-1.5">
                 <XCircle className="w-3.5 h-3.5" /> Cancel Sale
-              </Button>
+              </button>
             )}
-            <Button variant="outline" size="sm" onClick={saveDraft} disabled={saving}
-              className="gap-1.5 text-xs border-neutral-300">
-              <Save className="w-3.5 h-3.5" /> Save Draft
-            </Button>
+            <button onClick={saveDraft} disabled={saving}
+              className="text-[10px] font-bold tracking-[0.15em] uppercase text-neutral-400 hover:text-neutral-900 transition-colors flex items-center gap-1.5">
+              <Save className="w-3.5 h-3.5" />
+              {saving ? "Saving…" : "Save Draft"}
+            </button>
             {!isLive && (
-              <Button size="sm" onClick={isUnsold ? relistNow : publishNow}
+              <button
+                onClick={isUnsold ? relistNow : publishNow}
                 disabled={saving || !form.title || !form.prisometer_start_price}
-                className="gap-1.5 text-xs bg-primary hover:bg-primary/90 font-bold px-4">
+                className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-[10px] font-bold tracking-[0.18em] uppercase px-5 py-2.5 transition-colors disabled:opacity-30"
+              >
                 <Rocket className="w-3.5 h-3.5" />
-                {saving ? "Publishing…" : isUnsold ? "Relist Now" : "Publish Listing"}
-              </Button>
+                {saving ? "Publishing…" : isUnsold ? "Relist" : "Publish"}
+              </button>
             )}
             {isLive && (
-              <Button size="sm" onClick={saveDraft} disabled={saving}
-                className="gap-1.5 text-xs bg-primary hover:bg-primary/90 font-bold px-4">
+              <button onClick={saveDraft} disabled={saving}
+                className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-[10px] font-bold tracking-[0.18em] uppercase px-5 py-2.5 transition-colors">
                 <Save className="w-3.5 h-3.5" />
                 {saving ? "Saving…" : "Save Changes"}
-              </Button>
+              </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* ── Category Picker Modal ───────────────────────────────────────── */}
+      {/* Modals */}
       {categoryPickerOpen && (
         <CategoryPickerModal
           value={form.category}
@@ -486,56 +466,46 @@ export default function ListingStudio() {
         />
       )}
 
-      {/* ── Cancel Confirm Modal ─────────────────────────────────────────── */}
       {cancelConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setCancelConfirm(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 space-y-4" onClick={e => e.stopPropagation()}>
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-sm">Cancel this listing?</h3>
-                <p className="text-xs text-neutral-500 mt-1">This will end the sale immediately. All watchers and bidders will be notified.</p>
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setCancelConfirm(false)}>
+          <div className="bg-white p-8 max-w-sm w-full mx-4 space-y-6" onClick={e => e.stopPropagation()}>
+            <div>
+              <h3 className="text-sm font-bold tracking-wide mb-2">Cancel this listing?</h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">This will end the sale immediately. All watchers and bidders will be notified.</p>
             </div>
             <div className="flex gap-3">
-              <Button variant="destructive" size="sm" className="flex-1" onClick={cancelSale} disabled={saving}>
-                {saving ? "Cancelling…" : "Yes, Cancel Sale"}
-              </Button>
-              <Button variant="outline" size="sm" className="flex-1" onClick={() => setCancelConfirm(false)}>Keep Listing</Button>
+              <button onClick={cancelSale} disabled={saving}
+                className="flex-1 bg-neutral-900 text-white text-[10px] font-bold tracking-[0.15em] uppercase py-3 hover:bg-black transition-colors">
+                {saving ? "Cancelling…" : "Yes, Cancel"}
+              </button>
+              <button onClick={() => setCancelConfirm(false)}
+                className="flex-1 border border-neutral-200 text-[10px] font-bold tracking-[0.15em] uppercase py-3 text-neutral-500 hover:border-neutral-400 transition-colors">
+                Keep Listing
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── Main split layout ────────────────────────────────────────────── */}
-      <div className="flex-1 max-w-[1600px] mx-auto w-full px-4 md:px-8 py-6 grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
+      {/* ── Main Layout ──────────────────────────────────────────────────── */}
+      <div className="flex-1 max-w-[1400px] mx-auto w-full px-6 md:px-12 py-12 grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-16">
 
-        {/* ── LEFT: Builder Form ─────────────────────────────────────────── */}
-        <div className="space-y-5 min-w-0">
+        {/* ── LEFT: Form ────────────────────────────────────────────────── */}
+        <div className="space-y-12 min-w-0">
 
-          {/* 1. Photos */}
-          <SectionCard title="Photos" subtitle="First photo is used as the cover image">
-            <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 space-y-1.5">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-700">Tips for great photos</p>
-              <ul className="text-xs text-emerald-800 space-y-0.5 list-disc list-inside">
-                <li>Recommended size: <strong>2000 × 2000 px</strong> minimum — square crops work best</li>
-                <li>Use natural, diffused light — avoid harsh flash or deep shadows</li>
-                <li>Shoot on a clean, neutral background (white, grey, or linen)</li>
-                <li>Include detail shots: signatures, hallmarks, damage, texture</li>
-                <li>First photo becomes the cover — make it your strongest image</li>
-              </ul>
-            </div>
+          {/* 01 · Photos */}
+          <Section title="01 · Photos" subtitle="First photo becomes the cover image">
             <DropZone onFiles={handleImageUpload} />
             {uploadingImages && (
-              <div className="flex items-center gap-2 text-xs text-neutral-500 animate-pulse">
-                <div className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-                Uploading photos…
+              <div className="flex items-center gap-2 text-xs text-neutral-300">
+                <div className="w-3.5 h-3.5 border border-neutral-200 border-t-neutral-500 rounded-full animate-spin" />
+                Uploading…
               </div>
             )}
             {form.images.length > 0 && (
               <div>
-                <p className="text-xs text-neutral-400 mb-3 flex items-center gap-1.5">
-                  <GripVertical className="w-3.5 h-3.5" /> Drag to reorder · First image is cover
+                <p className="text-[10px] text-neutral-300 mb-4 tracking-widest uppercase flex items-center gap-1.5">
+                  <GripVertical className="w-3 h-3" /> Drag to reorder
                 </p>
                 <DragDropContext onDragEnd={({ source, destination }) => {
                   if (!destination || source.index === destination.index) return;
@@ -554,18 +524,18 @@ export default function ListingStudio() {
                                 ref={drag.innerRef}
                                 {...drag.draggableProps}
                                 className={cn(
-                                  "relative w-24 h-24 rounded-xl overflow-hidden border-2 group",
-                                  i === 0 ? "border-primary" : "border-neutral-200",
-                                  snapshot.isDragging && "shadow-xl scale-105 z-10"
+                                  "relative w-24 h-24 overflow-hidden border group",
+                                  i === 0 ? "border-neutral-900" : "border-neutral-100",
+                                  snapshot.isDragging && "shadow-xl"
                                 )}
                               >
                                 <img src={url} alt="" className="w-full h-full object-cover" />
-                                <div {...drag.dragHandleProps} className="absolute top-1.5 left-1.5 bg-black/50 text-white rounded-lg p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
-                                  <GripVertical className="w-3 h-3" />
+                                <div {...drag.dragHandleProps} className="absolute top-1 left-1 bg-white/80 p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab">
+                                  <GripVertical className="w-2.5 h-2.5 text-neutral-500" />
                                 </div>
-                                {i === 0 && <div className="absolute bottom-1.5 left-1.5 bg-primary text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">Cover</div>}
-                                <button onClick={() => removeImage(i)} className="absolute top-1.5 right-1.5 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <X className="w-3 h-3" />
+                                {i === 0 && <div className="absolute bottom-1 left-1 bg-neutral-900 text-white text-[8px] px-1.5 py-0.5 tracking-widest uppercase">Cover</div>}
+                                <button onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-white/80 text-neutral-700 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <X className="w-2.5 h-2.5" />
                                 </button>
                               </div>
                             )}
@@ -578,294 +548,258 @@ export default function ListingStudio() {
                 </DragDropContext>
               </div>
             )}
-          </SectionCard>
+          </Section>
 
-          {/* 2. Listing Basics */}
-          <SectionCard title="Listing Basics" locked={isLive}>
+          {/* 02 · Basics */}
+          <Section title="02 · Item Details" locked={isLive}>
+            <Field label="Title" required>
+              <MinInput
+                className="text-lg tracking-tight font-medium h-12"
+                placeholder="e.g. Fernand Léger — Composition, 1928"
+                value={form.title}
+                onChange={e => set("title", e.target.value)}
+              />
+            </Field>
 
-            {/* Title */}
-            <div className="space-y-2">
-              <Field label="Title" required>
-                <Input
-                  className="text-base font-serif h-12"
-                  placeholder="e.g. Fernand Léger — Composition with Figures, 1928"
-                  value={form.title}
-                  onChange={e => set("title", e.target.value)}
-                />
-              </Field>
-              <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 space-y-1">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-amber-700">Tips for a great title</p>
-                <ul className="text-xs text-amber-800 space-y-0.5 list-disc list-inside">
-                  <li>Lead with Artist / Maker name if known (e.g. "Henri Matisse — …")</li>
-                  <li>Include medium or material (Oil on canvas, Bronze, Sterling Silver…)</li>
-                  <li>Add date or period ("circa 1920s", "Art Deco, 1935")</li>
-                  <li>Keep it under 80 characters for best search visibility</li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Category + Condition */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <Field label="Category" required>
                 <button
                   type="button"
                   onClick={() => setCategoryPickerOpen(true)}
-                  className="w-full h-10 rounded-xl border border-neutral-200 bg-white px-3 text-sm text-left flex items-center justify-between gap-2 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+                  className="w-full h-10 border-0 border-b border-neutral-200 bg-transparent text-sm text-left flex items-center justify-between gap-2 hover:border-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors"
                 >
-                  <span className={form.category ? "text-neutral-900 font-medium" : "text-neutral-400"}>
+                  <span className={form.category ? "text-neutral-900" : "text-neutral-300"}>
                     {form.category
                       ? [MAIN_CATEGORIES.find(c => c.value === form.category)?.label, form.subcategory].filter(Boolean).join(" › ")
-                      : "Select category…"
-                    }
+                      : "Select category…"}
                   </span>
-                  <ChevronLeft className="w-4 h-4 text-neutral-400 rotate-180 shrink-0" />
+                  <ChevronLeft className="w-3.5 h-3.5 text-neutral-300 rotate-180 shrink-0" />
                 </button>
               </Field>
+
               <Field label="Condition">
                 <select value={form.condition} onChange={e => set("condition", e.target.value)}
-                  className="w-full h-10 rounded-xl border border-neutral-200 bg-white px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                  className="w-full h-10 border-0 border-b border-neutral-200 bg-transparent text-sm text-neutral-900 focus:outline-none focus:border-neutral-900 transition-colors appearance-none">
                   {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</option>)}
                 </select>
               </Field>
             </div>
 
-            {/* Dimensions + Marks */}
-            <div className="space-y-5">
-              <Field label="Dimensions">
-                <DimensionsInput value={form.dimensions} onChange={v => set("dimensions", v)} />
-              </Field>
-              <Field label="Marks / Signatures">
-                <Input placeholder="e.g. Signed lower right in pencil" value={form.marks} onChange={e => set("marks", e.target.value)} />
-              </Field>
-            </div>
+            <Field label="Dimensions">
+              <DimensionsInput value={form.dimensions} onChange={v => set("dimensions", v)} />
+            </Field>
 
-            {/* Category-specific fields (includes maker, period, origin, materials, etc.) */}
+            <Field label="Marks / Signatures">
+              <MinInput placeholder="e.g. Signed lower right in pencil" value={form.marks} onChange={e => set("marks", e.target.value)} />
+            </Field>
+
             {form.category && (
               <div className="pt-2">
                 <CategoryFields form={form} set={set} />
               </div>
             )}
-          </SectionCard>
+          </Section>
 
-          {/* 3. Auction Presentation */}
-          <SectionCard title="Auction Presentation" subtitle="Compelling descriptions drive buyer engagement">
-            <Field label="Short Summary" hint="shown in search results & cards">
-              <Textarea
-                placeholder="A compelling one or two sentence overview for search results…"
+          {/* 03 · Presentation */}
+          <Section title="03 · Description & Presentation">
+            <Field label="Short Summary" hint="shown in search results">
+              <MinTextarea
+                placeholder="A compelling one-two sentence overview…"
                 value={form.short_description}
                 onChange={e => set("short_description", e.target.value)}
-                className="h-16 resize-none"
+                className="h-16"
               />
             </Field>
-            <div className="space-y-2">
-              <Field label="Full Description">
-                <Textarea
-                  placeholder="Describe the work in detail — style, context, significance, visual qualities, historical importance…"
-                  value={form.description}
-                  onChange={e => set("description", e.target.value)}
-                  className="h-40 resize-none"
-                />
-              </Field>
-              <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 space-y-1.5">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-blue-700">Tips for a compelling description</p>
-                <ul className="text-xs text-blue-800 space-y-1 list-disc list-inside">
-                  <li>What makes this piece unique or special?</li>
-                  <li>Why is it worth the price? What is its background or history?</li>
-                  <li>How would you describe it to someone who hasn't seen it in person?</li>
-                  <li>Add keywords early — search engines favor the first few sentences</li>
-                  <li>Do not include shipping or contact information here</li>
-                </ul>
-              </div>
-            </div>
+            <Field label="Full Description">
+              <MinTextarea
+                placeholder="Describe the work in detail — style, context, significance, visual qualities…"
+                value={form.description}
+                onChange={e => set("description", e.target.value)}
+                className="h-40"
+              />
+            </Field>
             <Field label="Condition Report">
-              <Textarea
-                placeholder="Detail any wear, restoration, or damage. Honest reporting builds buyer confidence…"
+              <MinTextarea
+                placeholder="Detail any wear, restoration, or damage…"
                 value={form.condition_notes}
                 onChange={e => set("condition_notes", e.target.value)}
-                className="h-24 resize-none"
+                className="h-20"
               />
             </Field>
             <Field label="Provenance">
-              <Textarea
-                placeholder="e.g. Private collection, Paris; acquired directly from the artist in 1974; thence by descent…"
+              <MinTextarea
+                placeholder="e.g. Private collection, Paris; acquired directly from the artist in 1974…"
                 value={form.provenance}
                 onChange={e => set("provenance", e.target.value)}
-                className="h-20 resize-none"
+                className="h-20"
               />
             </Field>
-            <Field label="Auction Terms & Conditions" hint="optional override">
-              <Textarea
-                placeholder="Payment due within 7 days. All sales final. Buyer responsible for shipping…"
+            <Field label="Terms & Conditions" hint="optional override">
+              <MinTextarea
+                placeholder="Payment due within 7 days. All sales final…"
                 value={form.terms_and_conditions}
                 onChange={e => set("terms_and_conditions", e.target.value)}
-                className="h-20 resize-none"
+                className="h-20"
               />
             </Field>
-          </SectionCard>
+          </Section>
 
-          {/* 4. Pricing & PRI$OMETER */}
-          <SectionCard
-            title="Pricing & PRI$OMETER™ Setup"
-            subtitle="Configure your auction parameters"
-            locked={isLive}
-            badge="Auction Config"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* 04 · Pricing */}
+          <Section title="04 · Pricing & Auction" locked={isLive} badge="Auction Config">
+            <div className="grid grid-cols-2 gap-8">
               <Field label="Estimate Low">
-                <PriceInput placeholder="e.g. 8,000" value={form.estimated_low} onChange={e => set("estimated_low", e.target.value)} />
+                <PriceInput placeholder="8,000" value={form.estimated_low} onChange={e => set("estimated_low", e.target.value)} />
               </Field>
               <Field label="Estimate High">
-                <PriceInput placeholder="e.g. 12,000" value={form.estimated_high} onChange={e => set("estimated_high", e.target.value)} />
+                <PriceInput placeholder="12,000" value={form.estimated_high} onChange={e => set("estimated_high", e.target.value)} />
               </Field>
-              <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field label="Prisometer Price" required hint="shown to buyers">
-                  <PriceInput placeholder="e.g. 5,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
-                </Field>
-                <Field label="Hidden Reserve Price" hint="never shown to buyers">
-                  <PriceInput placeholder="e.g. 9,000" value={form.reserve_price} onChange={e => set("reserve_price", e.target.value)} />
-                </Field>
-              </div>
+              <Field label="Prisometer Price" required hint="shown to buyers">
+                <PriceInput placeholder="5,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
+              </Field>
+              <Field label="Hidden Reserve Price" hint="never shown to buyers">
+                <PriceInput placeholder="9,000" value={form.reserve_price} onChange={e => set("reserve_price", e.target.value)} />
+              </Field>
             </div>
 
             {floorPrice && (
-              <div className="flex items-center gap-2 bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 text-xs text-neutral-600">
-                <Info className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+              <div className="flex items-center gap-2 border-l-2 border-neutral-200 pl-4 text-xs text-neutral-400">
+                <Info className="w-3.5 h-3.5 shrink-0" />
                 Price floor at {form.below_reserve_percent}% below reserve:
-                <span className="font-bold text-neutral-900 ml-auto">${Number(floorPrice).toLocaleString()}</span>
+                <span className="font-bold text-neutral-700 ml-1">${Number(floorPrice).toLocaleString()}</span>
               </div>
             )}
 
-            <Field label="Below-Reserve Drop Allowance" hint="how far below reserve the price can fall">
-              <div className="flex gap-2">
+            <Field label="Below-Reserve Drop Allowance">
+              <div className="flex gap-2 mt-1">
                 {[10, 15, 20].map(pct => (
-                  <ToggleButton key={pct} active={form.below_reserve_percent === pct} onClick={() => set("below_reserve_percent", pct)}>
+                  <Toggle key={pct} active={form.below_reserve_percent === pct} onClick={() => set("below_reserve_percent", pct)}>
                     {pct}%
-                  </ToggleButton>
+                  </Toggle>
                 ))}
               </div>
             </Field>
 
-            <Field label="1stBid$™ Preview Duration">
-              <div className="flex gap-2">
+            <Field label="1stBids™ Preview Duration">
+              <div className="flex gap-2 mt-1">
                 {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 720, label: "30 days" }].map(({ h, label }) => (
-                  <ToggleButton key={h} active={form.first_bids_duration_hours === h} onClick={() => set("first_bids_duration_hours", h)}>
+                  <Toggle key={h} active={form.first_bids_duration_hours === h} onClick={() => set("first_bids_duration_hours", h)}>
                     {label}
-                  </ToggleButton>
+                  </Toggle>
                 ))}
               </div>
             </Field>
 
-            <Field label="PRI$OMETER™ Live Duration">
-              <div className="flex gap-2">
+            <Field label="Prisometer™ Live Duration">
+              <div className="flex gap-2 mt-1">
                 {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 504, label: "21 days" }].map(({ h, label }) => (
-                  <ToggleButton key={h} active={form.prisometer_duration_hours === h} onClick={() => set("prisometer_duration_hours", h)}>
+                  <Toggle key={h} active={form.prisometer_duration_hours === h} onClick={() => set("prisometer_duration_hours", h)}>
                     {label}
-                  </ToggleButton>
+                  </Toggle>
                 ))}
               </div>
             </Field>
 
-            <div className="flex items-center justify-between bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3">
+            <div className="flex items-center justify-between border-t border-neutral-100 pt-6">
               <div>
-                <p className="text-xs font-bold text-neutral-800">Make It Mine™</p>
-                <p className="text-[11px] text-neutral-400 mt-0.5">Buyers can purchase at your asking price. Always visible.</p>
+                <p className="text-xs font-bold tracking-wide text-neutral-700">Make It Mine™</p>
+                <p className="text-[11px] text-neutral-400 mt-0.5">Buyers can purchase at your asking price.</p>
               </div>
-              <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1.5 rounded-full">Always On</span>
+              <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-neutral-400">Always On</span>
             </div>
-          </SectionCard>
+          </Section>
 
-          {/* 5. Inventory & Logistics */}
-          <SectionCard title="Inventory & Logistics" subtitle="Internal tracking and logistics details">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          {/* 05 · Logistics */}
+          <Section title="05 · Inventory & Logistics">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               <Field label="Inventory Number" visibility="private">
-                <Input placeholder="e.g. EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
+                <MinInput placeholder="EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
               </Field>
-              <Field label="Internal Storage Location" visibility="private">
-                <Input placeholder="e.g. Warehouse B, Shelf 3" value={form.location} onChange={e => set("location", e.target.value)} />
+              <Field label="Internal Location" visibility="private">
+                <MinInput placeholder="Warehouse B, Shelf 3" value={form.location} onChange={e => set("location", e.target.value)} />
               </Field>
               <Field label="Public Item Location" visibility="public">
-                <Input placeholder="e.g. New York, NY" value={form.customer_location} onChange={e => set("customer_location", e.target.value)} />
+                <MinInput placeholder="New York, NY" value={form.customer_location} onChange={e => set("customer_location", e.target.value)} />
               </Field>
             </div>
             <Field label="Shipping Notes" visibility="public">
-              <Textarea
-                placeholder="Packaging, fragility, shipping requirements, pickup availability…"
+              <MinTextarea
+                placeholder="Packaging, fragility, pickup availability…"
                 value={form.shipping_notes}
                 onChange={e => set("shipping_notes", e.target.value)}
-                className="h-20 resize-none"
+                className="h-20"
               />
             </Field>
-            <Field label="Search Keywords" hint="comma-separated, improves discoverability" visibility="private">
-              <Textarea
-                placeholder="e.g. oil painting, impressionism, landscape, 19th century…"
+            <Field label="Search Keywords" hint="comma-separated" visibility="private">
+              <MinTextarea
+                placeholder="oil painting, impressionism, landscape, 19th century…"
                 value={form.keywords}
                 onChange={e => set("keywords", e.target.value)}
-                className="h-14 resize-none"
+                className="h-14"
               />
             </Field>
 
-            {/* Ownership */}
-            <div className="border-t border-neutral-100 pt-5">
+            <div className="border-t border-neutral-100 pt-6">
               <Field label="Ownership Type">
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-1">
                   {[["owned", "Self-Owned"], ["consignment", "Consignment"]].map(([val, label]) => (
-                    <ToggleButton key={val} active={form.ownership_type === val} onClick={() => set("ownership_type", val)}>
+                    <Toggle key={val} active={form.ownership_type === val} onClick={() => set("ownership_type", val)}>
                       {label}
-                    </ToggleButton>
+                    </Toggle>
                   ))}
                 </div>
               </Field>
             </div>
 
             {form.ownership_type === "consignment" && (
-              <div className="space-y-4 pt-4 border-t border-neutral-100">
-                <p className="text-xs font-bold uppercase tracking-[0.1em] text-neutral-400">Consignor Details</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-6 pt-4 border-t border-neutral-100">
+                <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-300">Consignor Details</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                   <Field label="Consignor Name" required>
-                    <Input placeholder="Full name" value={form.consignor_name} onChange={e => set("consignor_name", e.target.value)} />
+                    <MinInput placeholder="Full name" value={form.consignor_name} onChange={e => set("consignor_name", e.target.value)} />
                   </Field>
                   <Field label="Consignor Email">
-                    <Input type="email" placeholder="email@example.com" value={form.consignor_email} onChange={e => set("consignor_email", e.target.value)} />
+                    <MinInput type="email" placeholder="email@example.com" value={form.consignor_email} onChange={e => set("consignor_email", e.target.value)} />
                   </Field>
                   <Field label="Phone">
-                    <Input placeholder="+1 (555) 000-0000" value={form.consignor_phone} onChange={e => set("consignor_phone", e.target.value)} />
+                    <MinInput placeholder="+1 (555) 000-0000" value={form.consignor_phone} onChange={e => set("consignor_phone", e.target.value)} />
                   </Field>
                   <Field label="Commission %" hint="seller keeps">
                     <div className="relative">
-                      <Input type="number" placeholder="e.g. 30" value={form.consignor_commission_percent} onChange={e => set("consignor_commission_percent", e.target.value)} className="pr-7" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">%</span>
+                      <MinInput type="number" placeholder="30" value={form.consignor_commission_percent} onChange={e => set("consignor_commission_percent", e.target.value)} className="pr-5" />
+                      <span className="absolute right-0 top-1/2 -translate-y-1/2 text-neutral-300 text-sm">%</span>
                     </div>
                   </Field>
                   <div className="sm:col-span-2">
                     <Field label="Consignor Address">
-                      <Input placeholder="Street, City, State, ZIP" value={form.consignor_address} onChange={e => set("consignor_address", e.target.value)} />
+                      <MinInput placeholder="Street, City, State, ZIP" value={form.consignor_address} onChange={e => set("consignor_address", e.target.value)} />
                     </Field>
                   </div>
                   <div className="sm:col-span-2">
-                    <Field label="Consignment Notes" hint="agreement terms, special instructions">
-                      <Textarea placeholder="Payment terms, pickup/drop-off, special conditions…" value={form.consignor_notes} onChange={e => set("consignor_notes", e.target.value)} className="h-20 resize-none" />
+                    <Field label="Consignment Notes">
+                      <MinTextarea placeholder="Payment terms, pickup/drop-off, special conditions…" value={form.consignor_notes} onChange={e => set("consignor_notes", e.target.value)} className="h-20" />
                     </Field>
                   </div>
                 </div>
                 {form.consignor_commission_percent && form.prisometer_start_price && (
-                  <div className="bg-violet-50 border border-violet-100 rounded-xl px-4 py-3 text-xs text-violet-700">
-                    <p className="font-semibold">Estimated consignor payout at start price</p>
-                    <p className="mt-0.5">${(form.prisometer_start_price * (1 - form.consignor_commission_percent / 100)).toLocaleString(undefined, { maximumFractionDigits: 0 })} ({100 - +form.consignor_commission_percent}% of ${(+form.prisometer_start_price).toLocaleString()})</p>
+                  <div className="border-l-2 border-neutral-200 pl-4 text-xs text-neutral-400">
+                    Estimated consignor payout at start price:
+                    <span className="font-bold text-neutral-700 ml-2">${(form.prisometer_start_price * (1 - form.consignor_commission_percent / 100)).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                    <span className="text-neutral-300 ml-1">({100 - +form.consignor_commission_percent}% of ${(+form.prisometer_start_price).toLocaleString()})</span>
                   </div>
                 )}
               </div>
             )}
-          </SectionCard>
+          </Section>
 
-          {/* Custom Fields */}
-          <SectionCard title="Custom Tracking Fields" subtitle="Internal fields saved to your profile template">
+          {/* 06 · Custom Fields */}
+          <Section title="06 · Custom Tracking Fields" subtitle="Internal fields saved to your profile template">
             <CustomFieldsEditor fields={form.custom_fields} onChange={handleCustomFieldsChange} />
-          </SectionCard>
+          </Section>
         </div>
 
-        {/* ── RIGHT: AI Listing Assistant ────────────────────────────────── */}
-        <div className="hidden xl:flex flex-col gap-5">
-          <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-hide space-y-4 pb-4">
+        {/* ── RIGHT: AI Assistant ────────────────────────────────────────── */}
+        <div className="hidden xl:flex flex-col">
+          <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-hide space-y-4 pb-4">
             <AIListingAssistant
               form={form}
               onApply={(field, value) => set(field, value)}
