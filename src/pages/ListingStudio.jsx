@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { cn } from "@/lib/utils";
 import {
   ChevronLeft, Upload, X, GripVertical, Lock,
-  XCircle, Save, Rocket, Eye, EyeOff, Globe, Info, ArrowLeft
+  XCircle, Save, Rocket, Eye, EyeOff, Globe, Info, ArrowLeft, Trash2
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryFields from "../components/listing/CategoryFields";
@@ -194,6 +194,7 @@ export default function ListingStudio() {
   const [sellerProfile, setSellerProfile] = useState(null);
   const [itemStatus, setItemStatus] = useState("draft");
   const [cancelConfirm, setCancelConfirm] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
 
@@ -410,6 +411,13 @@ export default function ListingStudio() {
     navigate("/seller");
   };
 
+  const deleteItem = async () => {
+    setSaving(true);
+    await base44.entities.Item.delete(editId);
+    setSaving(false);
+    navigate(fromConsignorId ? `/seller/consignor/${fromConsignorId}` : "/seller");
+  };
+
   const publishNow = async () => {
     setSaving(true);
     const now = new Date();
@@ -500,6 +508,12 @@ export default function ListingStudio() {
                 <XCircle className="w-3.5 h-3.5" /> Cancel Sale
               </button>
             )}
+            {!isLive && isEditMode && (
+              <button onClick={() => setDeleteConfirm(true)}
+                className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold tracking-[0.18em] uppercase text-red-400 hover:text-red-600 transition-colors">
+                <Trash2 className="w-3.5 h-3.5" /> Delete
+              </button>
+            )}
             <button onClick={saveDraft} disabled={saving}
               className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-400 hover:text-neutral-800 transition-colors">
               <Save className="w-3.5 h-3.5" />
@@ -534,6 +548,27 @@ export default function ListingStudio() {
           onSave={(cat, sub) => { set("category", cat); set("subcategory", sub || ""); set("style", ""); }}
           onClose={() => setCategoryPickerOpen(false)}
         />
+      )}
+
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setDeleteConfirm(false)}>
+          <div className="bg-white p-10 max-w-sm w-full mx-4 space-y-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div>
+              <h3 className="text-base font-bold tracking-wide mb-2">Delete this listing?</h3>
+              <p className="text-sm text-neutral-500 leading-relaxed">This will permanently remove the item and cannot be undone.</p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={deleteItem} disabled={saving}
+                className="flex-1 bg-red-600 text-white text-xs font-bold tracking-[0.15em] uppercase py-3.5 hover:bg-red-700 transition-colors">
+                {saving ? "Deleting…" : "Yes, Delete"}
+              </button>
+              <button onClick={() => setDeleteConfirm(false)}
+                className="flex-1 border border-neutral-200 text-xs font-bold tracking-[0.15em] uppercase py-3.5 text-neutral-600 hover:border-neutral-500 transition-colors">
+                Keep Listing
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {cancelConfirm && (
