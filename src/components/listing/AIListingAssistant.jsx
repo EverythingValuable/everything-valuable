@@ -1,43 +1,53 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Sparkles, CheckCircle2, Circle, AlertCircle, Zap, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { Sparkles, CheckCircle2, Circle, AlertCircle, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ── Listing Strength Score ────────────────────────────────────────────────────
 function ListingStrength({ form }) {
   const checks = [
-    { label: "Photos added",        done: form.images?.length > 0,              weight: 20 },
-    { label: "Title complete",      done: !!form.title?.trim(),                  weight: 15 },
-    { label: "Pricing set",         done: !!form.prisometer_start_price,         weight: 15 },
-    { label: "Full description",    done: (form.description?.trim()?.length || 0) > 80, weight: 15 },
-    { label: "Short summary",       done: !!form.short_description?.trim(),      weight: 10 },
-    { label: "Condition set",       done: !!form.condition,                      weight: 10 },
-    { label: "Category selected",   done: !!form.category,                       weight: 10 },
-    { label: "Item location",       done: !!form.customer_location?.trim(),      weight: 5  },
+    { label: "Photos added",      done: form.images?.length > 0,                       weight: 20 },
+    { label: "Title complete",    done: !!form.title?.trim(),                           weight: 15 },
+    { label: "Pricing set",       done: !!form.prisometer_start_price,                  weight: 15 },
+    { label: "Full description",  done: (form.description?.trim()?.length || 0) > 80,  weight: 15 },
+    { label: "Short summary",     done: !!form.short_description?.trim(),               weight: 10 },
+    { label: "Condition set",     done: !!form.condition,                               weight: 10 },
+    { label: "Category selected", done: !!form.category,                               weight: 10 },
+    { label: "Item location",     done: !!form.customer_location?.trim(),               weight: 5  },
   ];
 
   const score = checks.reduce((acc, c) => acc + (c.done ? c.weight : 0), 0);
   const label = score >= 80 ? "Strong" : score >= 50 ? "Good" : "Needs Work";
 
   return (
-    <div className="border border-neutral-100 p-5 space-y-4">
+    <div className="p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-400">Listing Strength</h4>
-        <span className="text-xs font-bold text-neutral-700">{score}/100 · {label}</span>
+        <h4 className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400">Listing Strength</h4>
+        <span className="text-[11px] font-bold text-neutral-700 tabular-nums">{score}/100</span>
       </div>
-      <div className="w-full h-px bg-neutral-100 overflow-hidden">
-        <div className="h-full bg-neutral-900 transition-all duration-700" style={{ width: `${score}%` }} />
+
+      {/* Progress bar */}
+      <div className="space-y-1">
+        <div className="w-full h-1 bg-neutral-100 overflow-hidden">
+          <div
+            className="h-full bg-neutral-800 transition-all duration-700 ease-out"
+            style={{ width: `${score}%` }}
+          />
+        </div>
+        <p className="text-[10px] tracking-[0.12em] uppercase text-neutral-300">{label}</p>
       </div>
-      <ul className="space-y-1.5">
+
+      <ul className="space-y-2 pt-1">
         {checks.map(({ label, done, weight }) => (
-          <li key={label} className="flex items-center gap-2">
+          <li key={label} className="flex items-center gap-2.5">
             {done
-              ? <CheckCircle2 className="w-3 h-3 text-neutral-700 shrink-0" />
+              ? <CheckCircle2 className="w-3 h-3 text-neutral-600 shrink-0" />
               : <Circle className="w-3 h-3 text-neutral-200 shrink-0" />
             }
-            <span className={cn("text-[11px] flex-1 tracking-wide", done ? "text-neutral-600" : "text-neutral-300")}>{label}</span>
-            <span className="text-[10px] text-neutral-200">+{weight}</span>
+            <span className={cn("text-[11px] flex-1 leading-none", done ? "text-neutral-600" : "text-neutral-300")}>
+              {label}
+            </span>
+            <span className="text-[10px] text-neutral-200 tabular-nums font-mono">+{weight}</span>
           </li>
         ))}
       </ul>
@@ -48,24 +58,23 @@ function ListingStrength({ form }) {
 // ── Buyer Confidence ──────────────────────────────────────────────────────────
 function BuyerConfidence({ form }) {
   const missing = [];
-  if (!form.images || form.images.length < 3) missing.push("Add at least 3 photos — buyers need multiple angles");
-  if (!form.condition_notes?.trim()) missing.push("Add a condition report — buyers want to know about wear");
-  if (!form.provenance?.trim()) missing.push("Add provenance info — increases trust and perceived value");
-  if (!form.shipping_notes?.trim()) missing.push("Describe shipping — buyers want to know before bidding");
-  if (!form.dimensions?.trim()) missing.push("Add dimensions — essential for furniture, art, and décor");
-  if (!form.customer_location?.trim()) missing.push("Set item location — buyers factor this into shipping costs");
+  if (!form.images || form.images.length < 3)  missing.push("Add at least 3 photos — buyers need multiple angles");
+  if (!form.condition_notes?.trim())            missing.push("Add a condition report — buyers want to know about wear");
+  if (!form.provenance?.trim())                 missing.push("Provenance increases trust and perceived value");
+  if (!form.shipping_notes?.trim())             missing.push("Describe shipping before buyers have to ask");
+  if (!form.dimensions?.trim())                 missing.push("Dimensions are essential for furniture, art & décor");
+  if (!form.customer_location?.trim())          missing.push("Set item location — factors into shipping estimates");
 
   return (
-    <div className="border border-neutral-100 p-5 space-y-3">
+    <div className="p-5 space-y-3 border-t border-neutral-100">
       <div className="flex items-center justify-between">
-        <h4 className="text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-400">Buyer Confidence</h4>
-        {missing.length === 0
-          ? <span className="text-[10px] tracking-[0.12em] uppercase text-neutral-400">✓ Complete</span>
-          : <span className="text-[10px] tracking-[0.12em] uppercase text-neutral-400">{missing.length} gaps</span>
-        }
+        <h4 className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400">Buyer Confidence</h4>
+        <span className="text-[10px] tracking-[0.12em] uppercase text-neutral-300">
+          {missing.length === 0 ? "✓ Complete" : `${missing.length} gaps`}
+        </span>
       </div>
       {missing.length === 0 ? (
-        <p className="text-[11px] text-neutral-400 tracking-wide">Buyers have everything they need to bid with confidence.</p>
+        <p className="text-[11px] text-neutral-400 leading-relaxed">Buyers have everything they need to bid with confidence.</p>
       ) : (
         <ul className="space-y-2">
           {missing.map((m, i) => (
@@ -132,32 +141,42 @@ Return as JSON with keys: title, description, keywords, condition_note`;
     setLoading(false);
   };
 
+  const ITEMS = [
+    { key: "title",  label: "Title",          value: suggestions?.title,          applyKey: "title",           applyLabel: "Use Title" },
+    { key: "desc",   label: "Description",    value: suggestions?.description,    applyKey: "description",     applyLabel: "Use Description" },
+    { key: "kw",     label: "SEO Keywords",   value: suggestions?.keywords,       applyKey: "keywords",        applyLabel: "Add Keywords" },
+    { key: "cond",   label: "Condition Note", value: suggestions?.condition_note, applyKey: "condition_notes", applyLabel: "Use Note" },
+  ];
+
   return (
-    <div className="border border-neutral-100 overflow-hidden">
-      <div
-        className="px-5 py-4 flex items-center justify-between cursor-pointer hover:bg-neutral-50 transition-colors border-b border-neutral-100"
+    <div className="border-t border-neutral-100 overflow-hidden">
+      <button
+        className="w-full px-5 py-4 flex items-center justify-between hover:bg-neutral-50 transition-colors"
         onClick={() => setExpanded(e => !e)}
       >
         <div className="flex items-center gap-2">
-          <Sparkles className="w-3.5 h-3.5 text-neutral-500" />
-          <h4 className="text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-600">AI Listing Assistant</h4>
+          <Sparkles className="w-3 h-3 text-neutral-500" />
+          <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-600">AI Assistant</span>
         </div>
-        {expanded ? <ChevronUp className="w-3.5 h-3.5 text-neutral-300" /> : <ChevronDown className="w-3.5 h-3.5 text-neutral-300" />}
-      </div>
+        {expanded
+          ? <ChevronUp className="w-3.5 h-3.5 text-neutral-300" />
+          : <ChevronDown className="w-3.5 h-3.5 text-neutral-300" />
+        }
+      </button>
 
       {expanded && (
-        <div className="px-5 pb-5 pt-4 space-y-5">
+        <div className="px-5 pb-6 pt-1 space-y-5">
           {!suggestions && !loading && (
-            <div className="space-y-3">
-              <p className="text-[11px] text-neutral-400 leading-relaxed tracking-wide">
+            <div className="space-y-4">
+              <p className="text-[11px] text-neutral-400 leading-relaxed">
                 {hasEnoughData
-                  ? "Generate AI-powered improvements for your title, description, keywords, and condition note."
-                  : "Fill in some listing details above to unlock AI suggestions."}
+                  ? "Generate AI-powered improvements for your title, description, keywords and condition note."
+                  : "Add some listing details above to unlock AI suggestions."}
               </p>
               <button
                 onClick={generate}
                 disabled={!hasEnoughData}
-                className="w-full flex items-center justify-center gap-2 bg-neutral-900 hover:bg-black text-white text-[10px] font-bold tracking-[0.18em] uppercase py-3 transition-colors disabled:opacity-30"
+                className="w-full flex items-center justify-center gap-2 bg-neutral-900 hover:bg-black text-white text-[10px] font-bold tracking-[0.2em] uppercase h-10 transition-colors disabled:opacity-30"
               >
                 <Sparkles className="w-3 h-3" />
                 Generate Suggestions
@@ -166,34 +185,31 @@ Return as JSON with keys: title, description, keywords, condition_note`;
           )}
 
           {loading && (
-            <div className="flex flex-col items-center gap-3 py-6">
+            <div className="flex flex-col items-center gap-3 py-8">
               <div className="w-5 h-5 border border-neutral-200 border-t-neutral-600 rounded-full animate-spin" />
-              <p className="text-[11px] text-neutral-300 tracking-widest uppercase animate-pulse">Analyzing…</p>
+              <p className="text-[10px] text-neutral-300 tracking-[0.2em] uppercase animate-pulse">Analyzing…</p>
             </div>
           )}
 
           {suggestions && !loading && (
-            <div className="space-y-5">
-              {[
-                { key: "title", label: "Suggested Title", value: suggestions.title, applyKey: "title", applyLabel: "Use This Title" },
-                { key: "desc", label: "Suggested Description", value: suggestions.description, applyKey: "description", applyLabel: "Use Description" },
-                { key: "kw", label: "SEO Keywords", value: suggestions.keywords, applyKey: "keywords", applyLabel: "Add Keywords" },
-                { key: "cond", label: "Condition Note", value: suggestions.condition_note, applyKey: "condition_notes", applyLabel: "Use Condition Note" },
-              ].map(({ key, label, value, applyKey, applyLabel }) => (
-                <div key={key} className="space-y-2 border-b border-neutral-50 pb-5 last:border-0 last:pb-0">
-                  <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-300">{label}</p>
+            <div className="space-y-0">
+              {ITEMS.map(({ key, label, value, applyKey, applyLabel }) => (
+                <div key={key} className="border-b border-neutral-50 py-4 last:border-0 space-y-2">
+                  <p className="text-[9px] font-bold tracking-[0.25em] uppercase text-neutral-300">{label}</p>
                   <p className="text-[11px] text-neutral-600 leading-relaxed bg-neutral-50 px-3 py-2.5">{value}</p>
                   <button
                     onClick={() => onApply(applyKey, value)}
-                    className="w-full text-[10px] font-bold tracking-[0.15em] uppercase border border-neutral-200 py-2 text-neutral-500 hover:border-neutral-900 hover:text-neutral-900 transition-colors"
+                    className="text-[10px] font-bold tracking-[0.15em] uppercase border border-neutral-200 px-3 py-1.5 text-neutral-500 hover:border-neutral-800 hover:text-neutral-800 transition-colors"
                   >
                     {applyLabel}
                   </button>
                 </div>
               ))}
 
-              <button onClick={generate}
-                className="w-full flex items-center justify-center gap-1.5 text-[10px] text-neutral-300 hover:text-neutral-600 tracking-widest uppercase transition-colors py-1">
+              <button
+                onClick={generate}
+                className="w-full flex items-center justify-center gap-1.5 text-[10px] text-neutral-300 hover:text-neutral-600 tracking-[0.15em] uppercase transition-colors pt-3"
+              >
                 <RefreshCw className="w-3 h-3" /> Regenerate
               </button>
             </div>
@@ -207,7 +223,10 @@ Return as JSON with keys: title, description, keywords, condition_note`;
 // ── Main Export ───────────────────────────────────────────────────────────────
 export default function AIListingAssistant({ form, onApply }) {
   return (
-    <div className="space-y-4">
+    <div className="border border-neutral-100">
+      <div className="px-5 py-4 border-b border-neutral-100">
+        <h3 className="text-[10px] font-bold tracking-[0.25em] uppercase text-neutral-300">Listing Quality</h3>
+      </div>
       <ListingStrength form={form} />
       <BuyerConfidence form={form} />
       <SmartSuggestions form={form} onApply={onApply} />
