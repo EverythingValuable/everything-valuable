@@ -12,10 +12,9 @@ import {
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryFields from "../components/listing/CategoryFields";
 import CustomFieldsEditor from "../components/listing/CustomFieldsEditor";
-import ListingPreview from "../components/listing/ListingPreview";
-import ListingChecklist from "../components/listing/ListingChecklist";
 import DimensionsInput from "../components/listing/DimensionsInput";
 import CategoryPickerModal from "../components/listing/CategoryPickerModal";
+import AIListingAssistant from "../components/listing/AIListingAssistant";
 import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
 
 const LIVE_STATUSES = ["first_bids", "prisometer", "pending_review"];
@@ -864,19 +863,13 @@ export default function ListingStudio() {
           </SectionCard>
         </div>
 
-        {/* ── RIGHT: Sticky Preview + Checklist ─────────────────────────── */}
+        {/* ── RIGHT: AI Listing Assistant ────────────────────────────────── */}
         <div className="hidden xl:flex flex-col gap-5">
-          <div className="sticky top-24 flex flex-col gap-5 max-h-[calc(100vh-7rem)] overflow-hidden">
-            <ListingChecklist form={form} />
-            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-              <div className="flex items-center justify-between mb-3 shrink-0">
-                <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-neutral-500">Live Buyer Preview</h3>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              </div>
-              <div className="flex-1 overflow-y-auto scrollbar-hide">
-                <ListingPreview form={form} />
-              </div>
-            </div>
+          <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-hide space-y-4 pb-4">
+            <AIListingAssistant
+              form={form}
+              onApply={(field, value) => set(field, value)}
+            />
           </div>
         </div>
       </div>
