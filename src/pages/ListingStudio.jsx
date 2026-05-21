@@ -537,7 +537,29 @@ export default function ListingStudio() {
       )}
 
       {/* ── Main Layout ──────────────────────────────────────────────────── */}
-      <div className="max-w-[1800px] mx-auto px-6 md:px-10 py-14 grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-12">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-10 py-14 grid grid-cols-1 xl:grid-cols-[120px_1fr_360px] gap-8">
+
+        {/* ── Section Navigator ─────────────────────────────────────────── */}
+        <div className="hidden xl:block">
+          <div className="sticky top-20 flex flex-col gap-0.5">
+            {[
+              { label: "Photos",        id: "section-01" },
+              { label: "Item Details",  id: "section-02" },
+              { label: "Description",   id: "section-03" },
+              { label: "Pricing",       id: "section-04" },
+              { label: "Logistics",     id: "section-05" },
+              { label: "Custom Fields", id: "section-06" },
+            ].map(({ label, id }) => (
+              <button
+                key={id}
+                onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                className="text-left text-[10px] font-bold tracking-[0.15em] uppercase text-neutral-300 hover:text-neutral-800 transition-colors py-1.5"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* ── LEFT FORM ─────────────────────────────────────────────────── */}
         <div className="space-y-6 min-w-0">
