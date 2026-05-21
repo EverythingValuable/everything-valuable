@@ -15,6 +15,7 @@ import CustomFieldsEditor from "../components/listing/CustomFieldsEditor";
 import ListingPreview from "../components/listing/ListingPreview";
 import ListingChecklist from "../components/listing/ListingChecklist";
 import DimensionsInput from "../components/listing/DimensionsInput";
+import CategoryPickerModal from "../components/listing/CategoryPickerModal";
 import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
 
 const LIVE_STATUSES = ["first_bids", "prisometer", "pending_review"];
@@ -139,6 +140,7 @@ export default function ListingStudio() {
   const [itemStatus, setItemStatus] = useState("draft");
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
 
   const isLive = LIVE_STATUSES.includes(itemStatus);
   const isUnsold = itemStatus === UNSOLD_STATUS;
@@ -475,6 +477,16 @@ export default function ListingStudio() {
         </div>
       </header>
 
+      {/* ── Category Picker Modal ───────────────────────────────────────── */}
+      {categoryPickerOpen && (
+        <CategoryPickerModal
+          value={form.category}
+          subcategory={form.subcategory}
+          onSave={(cat, sub) => { set("category", cat); set("subcategory", sub || ""); set("style", ""); }}
+          onClose={() => setCategoryPickerOpen(false)}
+        />
+      )}
+
       {/* ── Cancel Confirm Modal ─────────────────────────────────────────── */}
       {cancelConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setCancelConfirm(false)}>
@@ -596,11 +608,19 @@ export default function ListingStudio() {
             {/* Category + Condition */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
               <Field label="Category" required>
-                <select value={form.category} onChange={e => { set("category", e.target.value); set("subcategory", ""); set("style", ""); }}
-                  className="w-full h-10 rounded-xl border border-neutral-200 bg-white px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20">
-                  <option value="">Select category…</option>
-                  {MAIN_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                </select>
+                <button
+                  type="button"
+                  onClick={() => setCategoryPickerOpen(true)}
+                  className="w-full h-10 rounded-xl border border-neutral-200 bg-white px-3 text-sm text-left flex items-center justify-between gap-2 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
+                >
+                  <span className={form.category ? "text-neutral-900 font-medium" : "text-neutral-400"}>
+                    {form.category
+                      ? [MAIN_CATEGORIES.find(c => c.value === form.category)?.label, form.subcategory].filter(Boolean).join(" › ")
+                      : "Select category…"
+                    }
+                  </span>
+                  <ChevronLeft className="w-4 h-4 text-neutral-400 rotate-180 shrink-0" />
+                </button>
               </Field>
               <Field label="Condition">
                 <select value={form.condition} onChange={e => set("condition", e.target.value)}
