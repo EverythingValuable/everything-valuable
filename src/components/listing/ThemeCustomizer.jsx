@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,57 +26,66 @@ const THEMES = {
 };
 
 export default function ThemeCustomizer({ theme, darkMode, onThemeChange, onDarkModeChange }) {
+  const [open, setOpen] = useState(false);
+  
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-4">
+    <div className="flex items-center gap-3">
+      {/* Theme Swatches (visible in header) */}
+      <div className="hidden sm:flex items-center gap-1.5">
+        {Object.entries(THEMES).map(([key, { label, light }]) => (
+          <button
+            key={key}
+            onClick={() => onThemeChange(key)}
+            className={cn(
+              "w-5 h-5 rounded-full transition-all border-2",
+              theme === key ? "border-neutral-800 shadow-md scale-110" : "border-neutral-300 hover:border-neutral-500"
+            )}
+            style={{ backgroundColor: light.primary }}
+            title={label}
+          />
+        ))}
+      </div>
+
       {/* Dark Mode Toggle */}
       <button
         onClick={() => onDarkModeChange(!darkMode)}
-        className="w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105"
-        style={{
-          backgroundColor: darkMode ? "#2a2a2a" : "#ffffff",
-          border: `2px solid ${darkMode ? "#666" : "#ddd"}`,
-          color: darkMode ? "#fbbf24" : "#f59e0b"
-        }}
+        className="w-7 h-7 flex items-center justify-center text-neutral-600 hover:text-neutral-800 transition-colors"
         title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
       >
-        {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
       </button>
 
-      {/* Theme Selector */}
-      <div className="flex flex-col gap-2 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-3 border border-gray-200 dark:border-gray-700">
-        <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-gray-500 dark:text-gray-400 px-1">Theme</p>
-        <div className="grid grid-cols-2 gap-2">
-          {Object.entries(THEMES).map(([key, { label, light, dark }]) => {
-            const colors = darkMode ? dark : light;
-            return (
+      {/* Mobile menu toggle */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="sm:hidden w-7 h-7 flex items-center justify-center text-neutral-600 hover:text-neutral-800"
+      >
+        ⚙️
+      </button>
+
+      {/* Mobile theme menu */}
+      {open && (
+        <div className="absolute top-14 right-6 bg-white border border-neutral-200 rounded-lg shadow-lg p-3 z-50">
+          <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-neutral-500 mb-2">Theme</p>
+          <div className="grid grid-cols-2 gap-2">
+            {Object.entries(THEMES).map(([key, { label, light }]) => (
               <button
                 key={key}
-                onClick={() => onThemeChange(key)}
+                onClick={() => { onThemeChange(key); setOpen(false); }}
                 className={cn(
-                  "relative overflow-hidden rounded p-2.5 transition-all border-2",
+                  "p-2 rounded border-2 transition-all text-xs font-semibold",
                   theme === key
-                    ? "border-gray-800 dark:border-gray-200 shadow-md"
-                    : "border-gray-300 dark:border-gray-600 hover:border-gray-500"
+                    ? "border-neutral-800 bg-neutral-50"
+                    : "border-neutral-200 hover:border-neutral-500"
                 )}
-                title={label}
+                style={{ color: light.primary }}
               >
-                {/* Color preview */}
-                <div className="flex gap-1.5">
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: colors.primary }}
-                  />
-                  <div
-                    className="w-2 h-2 rounded-full opacity-70"
-                    style={{ backgroundColor: colors.bg }}
-                  />
-                </div>
-                <p className="text-[10px] font-semibold mt-1.5 text-gray-700 dark:text-gray-300">{label}</p>
+                {label}
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
