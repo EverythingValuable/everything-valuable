@@ -97,13 +97,7 @@ export default function InvoiceBuilder({ user }) {
 
   const { data: allItems = [] } = useQuery({
     queryKey: ["seller-all-items", user?.email],
-    queryFn: async () => {
-      const [sold, pending] = await Promise.all([
-        base44.entities.Item.filter({ seller_email: user?.email, status: "sold" }),
-        base44.entities.Item.filter({ seller_email: user?.email, status: "pending_review" }),
-      ]);
-      return [...sold, ...pending];
-    },
+    queryFn: () => base44.entities.Item.filter({ seller_email: user?.email, status: "sold" }),
     enabled: !!user?.email,
   });
 
