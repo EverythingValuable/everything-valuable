@@ -22,17 +22,17 @@ const CONDITIONS = ["excellent", "very_good", "good", "fair", "as_is"];
 function SectionHeader({ number, title, subtitle, locked, badge }) {
   return (
     <div className="mb-10">
-      <div className="flex items-baseline gap-4 mb-1">
-        <span className="font-serif text-[42px] leading-none text-neutral-100 select-none tabular-nums">{number}</span>
+      <div className="flex items-baseline gap-5 mb-1">
+        <span className="font-serif text-[52px] leading-none text-neutral-100 select-none tabular-nums">{number}</span>
         <div>
           <div className="flex items-center gap-3">
-            {locked && <Lock className="w-3 h-3 text-neutral-300" />}
-            <h2 className="text-[11px] font-bold tracking-[0.25em] uppercase text-neutral-700">{title}</h2>
+            {locked && <Lock className="w-4 h-4 text-neutral-300" />}
+            <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-neutral-700">{title}</h2>
             {badge && (
-              <span className="text-[9px] tracking-[0.15em] uppercase border border-neutral-200 text-neutral-400 px-2 py-0.5">{badge}</span>
+              <span className="text-[10px] tracking-[0.12em] uppercase border border-neutral-200 text-neutral-400 px-2.5 py-1">{badge}</span>
             )}
           </div>
-          {subtitle && <p className="text-[11px] text-neutral-400 mt-0.5 leading-snug">{subtitle}</p>}
+          {subtitle && <p className="text-sm text-neutral-400 mt-1 leading-snug">{subtitle}</p>}
         </div>
       </div>
       <div className="h-px bg-neutral-100 mt-4" />
@@ -54,20 +54,20 @@ function Section({ number, title, subtitle, children, locked, badge }) {
 
 function Field({ label, hint, required, children, visibility }) {
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-3">
       <div className="flex items-center gap-2 flex-wrap">
-        <label className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400">
+        <label className="text-xs font-bold tracking-[0.18em] uppercase text-neutral-500">
           {label}{required && <span className="text-neutral-800 ml-0.5">*</span>}
         </label>
-        {hint && <span className="text-[10px] text-neutral-300">/ {hint}</span>}
+        {hint && <span className="text-xs text-neutral-400">/ {hint}</span>}
         {visibility === "public" && (
-          <span className="flex items-center gap-1 text-[9px] tracking-[0.15em] uppercase text-neutral-400 ml-auto">
-            <Globe className="w-2.5 h-2.5" /> Public
+          <span className="flex items-center gap-1 text-[10px] tracking-[0.12em] uppercase text-neutral-400 ml-auto">
+            <Globe className="w-3 h-3" /> Public
           </span>
         )}
         {visibility === "private" && (
-          <span className="flex items-center gap-1 text-[9px] tracking-[0.15em] uppercase text-neutral-300 ml-auto">
-            <EyeOff className="w-2.5 h-2.5" /> Internal
+          <span className="flex items-center gap-1 text-[10px] tracking-[0.12em] uppercase text-neutral-300 ml-auto">
+            <EyeOff className="w-3 h-3" /> Internal
           </span>
         )}
       </div>
@@ -76,12 +76,12 @@ function Field({ label, hint, required, children, visibility }) {
   );
 }
 
-const lineClass = "w-full bg-transparent border-0 border-b border-neutral-150 focus:outline-none focus:border-neutral-700 transition-colors duration-200 text-neutral-800 placeholder:text-neutral-300";
+const lineClass = "w-full bg-transparent border-0 border-b border-neutral-200 focus:outline-none focus:border-neutral-700 transition-colors duration-200 text-neutral-800 placeholder:text-neutral-400";
 
 function LineInput({ className, large, ...props }) {
   return (
     <input
-      className={cn(lineClass, large ? "h-12 text-base" : "h-10 text-sm", className)}
+      className={cn(lineClass, large ? "h-14 text-lg" : "h-11 text-base", className)}
       {...props}
     />
   );
@@ -91,7 +91,7 @@ function LineTextarea({ className, rows = 3, ...props }) {
   return (
     <textarea
       rows={rows}
-      className={cn(lineClass, "py-2 text-sm resize-none leading-relaxed", className)}
+      className={cn(lineClass, "py-3 text-base resize-none leading-relaxed", className)}
       {...props}
     />
   );
@@ -100,10 +100,10 @@ function LineTextarea({ className, rows = 3, ...props }) {
 function PriceInput({ value, onChange, placeholder, disabled }) {
   return (
     <div className="relative">
-      <span className="absolute left-0 top-1/2 -translate-y-1/2 text-neutral-300 text-sm pointer-events-none">$</span>
+      <span className="absolute left-0 top-1/2 -translate-y-1/2 text-neutral-400 text-base pointer-events-none">$</span>
       <input
         type="number"
-        className={cn(lineClass, "h-10 text-sm pl-4 font-mono")}
+        className={cn(lineClass, "h-11 text-base pl-5 font-mono")}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
@@ -119,10 +119,10 @@ function Pill({ active, onClick, children }) {
       type="button"
       onClick={onClick}
       className={cn(
-        "px-4 py-2 text-[10px] font-bold tracking-[0.15em] uppercase border transition-all duration-150",
+        "px-5 py-2.5 text-xs font-bold tracking-[0.12em] uppercase border transition-all duration-150",
         active
           ? "border-neutral-800 bg-neutral-800 text-white"
-          : "border-neutral-200 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600"
+          : "border-neutral-200 text-neutral-500 hover:border-neutral-500 hover:text-neutral-700"
       )}
     >
       {children}
@@ -145,11 +145,11 @@ function DropZone({ onFiles }) {
         dragging ? "border-neutral-700 bg-neutral-50" : "border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50/50"
       )}
     >
-      <div className={cn("w-10 h-10 flex items-center justify-center border mb-4 transition-colors", dragging ? "border-neutral-700" : "border-neutral-200")}>
-        <Upload className="w-4 h-4 text-neutral-400" />
+      <div className={cn("w-12 h-12 flex items-center justify-center border mb-5 transition-colors", dragging ? "border-neutral-700" : "border-neutral-200")}>
+        <Upload className="w-5 h-5 text-neutral-400" />
       </div>
-      <p className="text-xs font-medium text-neutral-500 tracking-wide">Drop photos or click to browse</p>
-      <p className="text-[10px] text-neutral-300 mt-1.5 tracking-[0.2em] uppercase">JPEG · PNG · WEBP</p>
+      <p className="text-sm font-medium text-neutral-600 tracking-wide">Drop photos or click to browse</p>
+      <p className="text-xs text-neutral-400 mt-2 tracking-[0.15em] uppercase">JPEG · PNG · WEBP</p>
       <input type="file" accept="image/*" multiple className="sr-only" onChange={e => onFiles(e.target.files)} />
     </label>
   );
@@ -498,16 +498,16 @@ export default function ListingStudio() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setCancelConfirm(false)}>
           <div className="bg-white p-10 max-w-sm w-full mx-4 space-y-6 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div>
-              <h3 className="text-sm font-bold tracking-wide mb-2">Cancel this listing?</h3>
-              <p className="text-[11px] text-neutral-400 leading-relaxed">This will end the sale immediately. All watchers and bidders will be notified.</p>
+              <h3 className="text-base font-bold tracking-wide mb-2">Cancel this listing?</h3>
+              <p className="text-sm text-neutral-500 leading-relaxed">This will end the sale immediately. All watchers and bidders will be notified.</p>
             </div>
             <div className="flex gap-3">
               <button onClick={cancelSale} disabled={saving}
-                className="flex-1 bg-neutral-900 text-white text-[10px] font-bold tracking-[0.18em] uppercase py-3 hover:bg-black transition-colors">
+                className="flex-1 bg-neutral-900 text-white text-xs font-bold tracking-[0.15em] uppercase py-3.5 hover:bg-black transition-colors">
                 {saving ? "Cancelling…" : "Yes, Cancel"}
               </button>
               <button onClick={() => setCancelConfirm(false)}
-                className="flex-1 border border-neutral-200 text-[10px] font-bold tracking-[0.18em] uppercase py-3 text-neutral-500 hover:border-neutral-500 transition-colors">
+                className="flex-1 border border-neutral-200 text-xs font-bold tracking-[0.15em] uppercase py-3.5 text-neutral-600 hover:border-neutral-500 transition-colors">
                 Keep Listing
               </button>
             </div>
@@ -525,15 +525,15 @@ export default function ListingStudio() {
           <Section number="01" title="Photos" subtitle="First photo becomes the cover image">
             <DropZone onFiles={handleImageUpload} />
             {uploadingImages && (
-              <div className="flex items-center gap-2 text-[11px] text-neutral-300">
-                <div className="w-3.5 h-3.5 border border-neutral-200 border-t-neutral-500 rounded-full animate-spin" />
+              <div className="flex items-center gap-2 text-sm text-neutral-400">
+                <div className="w-4 h-4 border border-neutral-200 border-t-neutral-500 rounded-full animate-spin" />
                 Uploading…
               </div>
             )}
             {form.images.length > 0 && (
               <div>
-                <p className="text-[10px] text-neutral-300 mb-4 tracking-[0.2em] uppercase flex items-center gap-1.5">
-                  <GripVertical className="w-3 h-3" /> Drag to reorder · First image is cover
+                <p className="text-xs text-neutral-400 mb-4 tracking-[0.15em] uppercase flex items-center gap-1.5">
+                  <GripVertical className="w-3.5 h-3.5" /> Drag to reorder · First image is cover
                 </p>
                 <DragDropContext onDragEnd={({ source, destination }) => {
                   if (!destination || source.index === destination.index) return;
@@ -595,7 +595,7 @@ export default function ListingStudio() {
                 <button
                   type="button"
                   onClick={() => setCategoryPickerOpen(true)}
-                  className="w-full h-10 border-0 border-b border-neutral-150 bg-transparent text-sm text-left flex items-center justify-between gap-2 hover:border-neutral-700 focus:outline-none focus:border-neutral-700 transition-colors duration-200"
+                  className="w-full h-11 border-0 border-b border-neutral-200 bg-transparent text-base text-left flex items-center justify-between gap-2 hover:border-neutral-700 focus:outline-none focus:border-neutral-700 transition-colors duration-200"
                 >
                   <span className={form.category ? "text-neutral-800" : "text-neutral-300"}>
                     {form.category
@@ -608,7 +608,7 @@ export default function ListingStudio() {
 
               <Field label="Condition">
                 <select value={form.condition} onChange={e => set("condition", e.target.value)}
-                  className="w-full h-10 border-0 border-b border-neutral-150 bg-transparent text-sm text-neutral-800 focus:outline-none focus:border-neutral-700 transition-colors duration-200 appearance-none cursor-pointer">
+                  className="w-full h-11 border-0 border-b border-neutral-200 bg-transparent text-base text-neutral-800 focus:outline-none focus:border-neutral-700 transition-colors duration-200 appearance-none cursor-pointer">
                   {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</option>)}
                 </select>
               </Field>
@@ -695,7 +695,7 @@ export default function ListingStudio() {
             {floorPrice && (
               <div className="flex items-center gap-2.5 border-l-2 border-neutral-200 pl-4 py-1">
                 <Info className="w-3.5 h-3.5 text-neutral-300 shrink-0" />
-                <span className="text-[11px] text-neutral-400">
+                <span className="text-sm text-neutral-500">
                   Price floor at {form.below_reserve_percent}% below reserve:
                   <strong className="text-neutral-700 ml-1.5">${Number(floorPrice).toLocaleString()}</strong>
                 </span>
@@ -729,10 +729,10 @@ export default function ListingStudio() {
 
             <div className="flex items-center justify-between border-t border-neutral-100 pt-5">
               <div>
-                <p className="text-[11px] font-bold tracking-wide text-neutral-700">Make It Mine™</p>
-                <p className="text-[11px] text-neutral-400 mt-0.5">Buyers can purchase immediately at your asking price.</p>
+                <p className="text-sm font-bold tracking-wide text-neutral-700">Make It Mine™</p>
+                <p className="text-sm text-neutral-500 mt-1">Buyers can purchase immediately at your asking price.</p>
               </div>
-              <span className="text-[9px] font-bold tracking-[0.2em] uppercase border border-neutral-200 text-neutral-400 px-3 py-1">Always On</span>
+              <span className="text-xs font-bold tracking-[0.15em] uppercase border border-neutral-200 text-neutral-400 px-3 py-1.5">Always On</span>
             </div>
           </Section>
 
@@ -778,7 +778,7 @@ export default function ListingStudio() {
 
             {form.ownership_type === "consignment" && (
               <div className="space-y-8 pt-4 border-t border-neutral-50">
-                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-300">Consignor Details</p>
+                <p className="text-xs font-bold tracking-[0.18em] uppercase text-neutral-400">Consignor Details</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                   <Field label="Consignor Name" required>
                     <LineInput placeholder="Full legal name" value={form.consignor_name} onChange={e => set("consignor_name", e.target.value)} />
@@ -808,10 +808,10 @@ export default function ListingStudio() {
                 </div>
                 {form.consignor_commission_percent && form.prisometer_start_price && (
                   <div className="flex items-center gap-2.5 border-l-2 border-neutral-200 pl-4 py-1">
-                    <span className="text-[11px] text-neutral-400">
+                    <span className="text-sm text-neutral-500">
                       Estimated consignor payout at start price:
                       <strong className="text-neutral-700 ml-1.5">${(form.prisometer_start_price * (1 - form.consignor_commission_percent / 100)).toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong>
-                      <span className="text-neutral-300 ml-1">({100 - +form.consignor_commission_percent}%)</span>
+                      <span className="text-neutral-400 ml-1">({100 - +form.consignor_commission_percent}%)</span>
                     </span>
                   </div>
                 )}
