@@ -223,7 +223,7 @@ Return as JSON with keys: title, description, keywords, condition_note`;
 // ── Main Export ───────────────────────────────────────────────────────────────
 export default function AIListingAssistant({ form, onApply }) {
   return (
-    <div className="border border-neutral-100">
+    <div>
       <div className="px-5 py-4 border-b border-neutral-100">
         <h3 className="text-[10px] font-bold tracking-[0.25em] uppercase text-neutral-300">Listing Quality</h3>
       </div>

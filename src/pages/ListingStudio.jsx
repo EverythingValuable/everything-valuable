@@ -42,7 +42,10 @@ function SectionHeader({ number, title, subtitle, locked, badge }) {
 
 function Section({ number, title, subtitle, children, locked, badge }) {
   return (
-    <div className={cn("pb-16", locked && "opacity-50 pointer-events-none")}>
+    <div className={cn(
+      "bg-white/60 border border-neutral-100 shadow-[0_4px_24px_0_rgba(0,0,0,0.05)] px-10 py-10",
+      locked && "opacity-50 pointer-events-none"
+    )}>
       <SectionHeader number={number} title={title} subtitle={subtitle} locked={locked} badge={badge} />
       <div className="space-y-8">{children}</div>
     </div>
@@ -416,7 +419,7 @@ export default function ListingStudio() {
 
       {/* ── Top Bar ─────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-neutral-100">
-        <div className="max-w-[1440px] mx-auto px-8 md:px-16 h-14 flex items-center gap-5">
+        <div className="max-w-[1800px] mx-auto px-6 md:px-10 h-14 flex items-center gap-5">
           <Link to="/seller" className="flex items-center gap-1.5 text-neutral-400 hover:text-neutral-800 transition-colors group">
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
             <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Dashboard</span>
@@ -513,10 +516,10 @@ export default function ListingStudio() {
       )}
 
       {/* ── Main Layout ──────────────────────────────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto px-8 md:px-16 py-14 grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-20">
+      <div className="max-w-[1800px] mx-auto px-6 md:px-10 py-14 grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-12">
 
         {/* ── LEFT FORM ─────────────────────────────────────────────────── */}
-        <div className="space-y-0 min-w-0">
+        <div className="space-y-6 min-w-0">
 
           {/* 01 · Photos */}
           <Section number="01" title="Photos" subtitle="First photo becomes the cover image">
@@ -825,7 +828,7 @@ export default function ListingStudio() {
 
         {/* ── RIGHT: AI Assistant ────────────────────────────────────────── */}
         <div className="hidden xl:flex flex-col">
-          <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-hide pb-4">
+          <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-hide pb-4 bg-white/60 border border-neutral-100 shadow-[0_4px_24px_0_rgba(0,0,0,0.05)]">
             <AIListingAssistant form={form} onApply={(field, value) => set(field, value)} />
           </div>
         </div>
