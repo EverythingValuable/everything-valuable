@@ -14,6 +14,7 @@ import CategoryFields from "../components/listing/CategoryFields";
 import CustomFieldsEditor from "../components/listing/CustomFieldsEditor";
 import ListingPreview from "../components/listing/ListingPreview";
 import ListingChecklist from "../components/listing/ListingChecklist";
+import DimensionsInput from "../components/listing/DimensionsInput";
 import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
 
 const LIVE_STATUSES = ["first_bids", "prisometer", "pending_review"];
@@ -503,6 +504,16 @@ export default function ListingStudio() {
 
           {/* 1. Photos */}
           <SectionCard title="Photos" subtitle="First photo is used as the cover image">
+            <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 space-y-1.5">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-700">Tips for great photos</p>
+              <ul className="text-xs text-emerald-800 space-y-0.5 list-disc list-inside">
+                <li>Recommended size: <strong>2000 × 2000 px</strong> minimum — square crops work best</li>
+                <li>Use natural, diffused light — avoid harsh flash or deep shadows</li>
+                <li>Shoot on a clean, neutral background (white, grey, or linen)</li>
+                <li>Include detail shots: signatures, hallmarks, damage, texture</li>
+                <li>First photo becomes the cover — make it your strongest image</li>
+              </ul>
+            </div>
             <DropZone onFiles={handleImageUpload} />
             {uploadingImages && (
               <div className="flex items-center gap-2 text-xs text-neutral-500 animate-pulse">
@@ -600,9 +611,9 @@ export default function ListingStudio() {
             </div>
 
             {/* Dimensions + Marks */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="space-y-5">
               <Field label="Dimensions">
-                <Input placeholder="e.g. 60 × 80 cm, H 12 in." value={form.dimensions} onChange={e => set("dimensions", e.target.value)} />
+                <DimensionsInput value={form.dimensions} onChange={v => set("dimensions", v)} />
               </Field>
               <Field label="Marks / Signatures">
                 <Input placeholder="e.g. Signed lower right in pencil" value={form.marks} onChange={e => set("marks", e.target.value)} />
