@@ -616,6 +616,16 @@ export default function ListingStudio() {
                 <span className="text-[11px] font-semibold tracking-[0.08em] uppercase text-neutral-400 group-hover:text-neutral-700 transition-colors leading-tight whitespace-pre-line">{label}</span>
               </button>
             ))}
+            {editId && (
+              <Link
+                to={`/item/${editId}`}
+                target="_blank"
+                className="mt-6 flex items-center gap-2 pl-3 text-[11px] font-semibold tracking-[0.08em] uppercase text-neutral-400 hover:text-neutral-700 transition-colors group"
+              >
+                <Eye className="w-3 h-3 shrink-0" />
+                Preview
+              </Link>
+            )}
           </div>
         </div>
 
