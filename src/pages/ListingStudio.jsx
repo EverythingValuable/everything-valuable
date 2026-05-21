@@ -719,7 +719,7 @@ export default function ListingStudio() {
                 <PriceInput placeholder="e.g. 12,000" value={form.estimated_high} onChange={e => set("estimated_high", e.target.value)} />
               </Field>
               <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field label="Visible Start Price" required hint="shown to buyers">
+                <Field label="Prisometer Price" required hint="shown to buyers">
                   <PriceInput placeholder="e.g. 5,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
                 </Field>
                 <Field label="Hidden Reserve Price" hint="never shown to buyers">
