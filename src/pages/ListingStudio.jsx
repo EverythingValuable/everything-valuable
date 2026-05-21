@@ -21,21 +21,18 @@ const CONDITIONS = ["excellent", "very_good", "good", "fair", "as_is"];
 
 function SectionHeader({ number, title, subtitle, locked, badge }) {
   return (
-    <div className="mb-10">
-      <div className="flex items-baseline gap-5 mb-1">
-        <span className="font-serif text-[52px] leading-none text-neutral-100 select-none tabular-nums">{number}</span>
-        <div>
-          <div className="flex items-center gap-3">
-            {locked && <Lock className="w-4 h-4 text-neutral-300" />}
-            <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-neutral-700">{title}</h2>
-            {badge && (
-              <span className="text-[10px] tracking-[0.12em] uppercase border border-neutral-200 text-neutral-400 px-2.5 py-1">{badge}</span>
-            )}
-          </div>
-          {subtitle && <p className="text-sm text-neutral-400 mt-1 leading-snug">{subtitle}</p>}
+    <div className="mb-8 flex items-start gap-5">
+      <span className="font-serif text-[64px] leading-none text-neutral-150 select-none tabular-nums" style={{color:'#e8e4df'}}>{number}</span>
+      <div className="pt-3">
+        <div className="flex items-center gap-3">
+          {locked && <Lock className="w-3.5 h-3.5 text-neutral-300" />}
+          <h2 className="text-base font-bold tracking-[0.15em] uppercase text-neutral-800">{title}</h2>
+          {badge && (
+            <span className="text-[10px] tracking-[0.12em] uppercase border border-neutral-200 text-neutral-400 px-2.5 py-1">{badge}</span>
+          )}
         </div>
+        {subtitle && <p className="text-sm text-neutral-400 mt-1 leading-snug">{subtitle}</p>}
       </div>
-      <div className="h-px bg-neutral-100 mt-4" />
     </div>
   );
 }
@@ -45,12 +42,12 @@ function Section({ number, title, subtitle, children, locked, badge }) {
     <div
       id={`section-${number}`}
       className={cn(
-        "bg-white/60 border border-neutral-100 shadow-[0_4px_24px_0_rgba(0,0,0,0.05)] px-16 py-14",
+        "bg-white border border-neutral-200/70 shadow-sm px-10 py-10",
         locked && "opacity-50 pointer-events-none"
       )}
     >
       <SectionHeader number={number} title={title} subtitle={subtitle} locked={locked} badge={badge} />
-      <div className="space-y-10">{children}</div>
+      <div className="space-y-8">{children}</div>
     </div>
   );
 }
@@ -133,23 +130,30 @@ function Pill({ active, onClick, children }) {
   );
 }
 
-function TipBox({ color = "green", title, tips }) {
-  const colors = {
-    green: "bg-green-50 border-green-100 text-green-800",
-    amber: "bg-amber-50 border-amber-100 text-amber-800",
-    blue: "bg-blue-50 border-blue-100 text-blue-800",
-  };
+function TipBox({ color = "green", title, tips, image }) {
   return (
-    <div className={`border px-5 py-4 space-y-2 ${colors[color]}`}>
-      <p className="text-xs font-bold tracking-[0.15em] uppercase">{title}</p>
-      <ul className="space-y-1">
-        {tips.map((t, i) => (
-          <li key={i} className="flex items-start gap-2 text-xs leading-relaxed opacity-90">
-            <span className="mt-1.5 w-1 h-1 rounded-full bg-current shrink-0 opacity-60" />
-            {t}
-          </li>
-        ))}
-      </ul>
+    <div className="border border-neutral-200/80 bg-[#f7f5f2] overflow-hidden">
+      <div className="flex gap-0">
+        {image && (
+          <div className="w-48 shrink-0 hidden sm:block">
+            <img src={image} alt="" className="w-full h-full object-cover" />
+          </div>
+        )}
+        <div className="px-5 py-5 space-y-3 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-amber-500">✦</span>
+            <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-neutral-600">{title}</p>
+          </div>
+          <ul className="space-y-1.5">
+            {tips.map((t, i) => (
+              <li key={i} className="flex items-start gap-2 text-xs leading-relaxed text-neutral-500">
+                <span className="mt-1.5 w-1 h-1 rounded-full bg-neutral-400 shrink-0" />
+                {t}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
@@ -165,15 +169,15 @@ function DropZone({ onFiles }) {
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
       className={cn(
-        "flex flex-col items-center justify-center border border-dashed cursor-pointer transition-all duration-200 py-16",
-        dragging ? "border-neutral-700 bg-neutral-50" : "border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50/50"
+        "flex flex-col items-center justify-center border border-dashed cursor-pointer transition-all duration-200 py-14",
+        dragging ? "border-neutral-500 bg-neutral-50" : "border-neutral-300 hover:border-neutral-500 hover:bg-neutral-50/30"
       )}
     >
-      <div className={cn("w-12 h-12 flex items-center justify-center border mb-5 transition-colors", dragging ? "border-neutral-700" : "border-neutral-200")}>
-        <Upload className="w-5 h-5 text-neutral-400" />
+      <div className={cn("w-10 h-10 flex items-center justify-center rounded-full border mb-4 transition-colors", dragging ? "border-neutral-600 bg-neutral-100" : "border-neutral-200 bg-white")}>
+        <Upload className="w-4 h-4 text-neutral-500" />
       </div>
-      <p className="text-sm font-medium text-neutral-600 tracking-wide">Drop photos or click to browse</p>
-      <p className="text-xs text-neutral-400 mt-2 tracking-[0.15em] uppercase">JPEG · PNG · WEBP</p>
+      <p className="text-sm font-medium text-neutral-600">Drag & drop photos here or <span className="underline">browse</span></p>
+      <p className="text-xs text-neutral-400 mt-1.5">JPG, PNG, WEBP up to 25MB</p>
       <input type="file" accept="image/*" multiple className="sr-only" onChange={e => onFiles(e.target.files)} />
     </label>
   );
@@ -451,7 +455,7 @@ export default function ListingStudio() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#faf9f7]">
         <div className="w-5 h-5 border border-neutral-200 border-t-neutral-700 rounded-full animate-spin" />
       </div>
     );
@@ -460,62 +464,61 @@ export default function ListingStudio() {
   const statusLabel = isLive ? "Live" : isUnsold ? "Unsold" : isEditMode ? "Draft" : "New";
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-[#faf9f7] font-sans">
 
       {/* ── Top Bar ─────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-neutral-100">
-        <div className="w-full px-6 md:px-16 h-14 flex items-center gap-5">
+      <header className="sticky top-0 z-30 bg-[#faf9f7]/95 backdrop-blur-sm border-b border-neutral-200/60">
+        <div className="w-full px-6 md:px-10 h-13 flex items-center gap-4">
           <Link
             to={fromConsignorId ? `/seller/consignor/${fromConsignorId}` : "/seller"}
             className="flex items-center gap-1.5 text-neutral-400 hover:text-neutral-800 transition-colors group"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
+            <span className="text-xs text-neutral-500">
               {fromConsignorName ? fromConsignorName : "Dashboard"}
             </span>
           </Link>
 
-          <div className="w-px h-4 bg-neutral-100" />
+          <span className="text-neutral-300">/</span>
+          <span className="text-xs font-semibold text-neutral-700">Listing Studio</span>
 
-          <div className="flex-1 flex items-center gap-3 min-w-0">
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-300 shrink-0 hidden sm:block">
-              Listing Studio
-            </span>
-            {form.title && (
-              <>
-                <span className="text-neutral-200 hidden sm:block">/</span>
-                <span className="text-xs text-neutral-500 truncate font-serif italic">{form.title}</span>
-              </>
-            )}
-            <span className={cn(
-              "text-[9px] font-bold tracking-[0.18em] uppercase px-2 py-0.5 border shrink-0",
-              isLive ? "border-neutral-700 text-neutral-700" : "border-neutral-200 text-neutral-300"
-            )}>
-              {statusLabel}
-            </span>
-          </div>
+          {form.title && (
+            <>
+              <span className="text-neutral-300">/</span>
+              <span className="text-xs text-neutral-400 truncate font-serif italic max-w-[200px]">{form.title}</span>
+            </>
+          )}
 
-          <div className="flex items-center gap-4 shrink-0">
+          <span className={cn(
+            "text-[9px] font-bold tracking-[0.18em] uppercase px-2 py-0.5 border shrink-0",
+            isLive ? "border-neutral-700 text-neutral-700" : "border-neutral-300 text-neutral-400"
+          )}>
+            {statusLabel}
+          </span>
+
+          <div className="flex-1" />
+
+          <div className="flex items-center gap-5 shrink-0">
             {editId && (
               <Link to={`/item/${editId}`} target="_blank"
-                className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-400 hover:text-neutral-800 transition-colors">
-                <Eye className="w-3.5 h-3.5" /> Preview
+                className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-800 transition-colors">
+                <Eye className="w-3.5 h-3.5" /> Preview Listing
               </Link>
             )}
             {isLive && isEditMode && (
               <button onClick={() => setCancelConfirm(true)}
-                className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-400 hover:text-neutral-800 transition-colors">
+                className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-800 transition-colors">
                 <XCircle className="w-3.5 h-3.5" /> Cancel Sale
               </button>
             )}
             {!isLive && isEditMode && (
               <button onClick={() => setDeleteConfirm(true)}
-                className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold tracking-[0.18em] uppercase text-red-400 hover:text-red-600 transition-colors">
+                className="hidden sm:flex items-center gap-1.5 text-xs text-red-400 hover:text-red-600 transition-colors">
                 <Trash2 className="w-3.5 h-3.5" /> Delete
               </button>
             )}
             <button onClick={saveDraft} disabled={saving}
-              className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold tracking-[0.18em] uppercase text-neutral-400 hover:text-neutral-800 transition-colors">
+              className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-800 transition-colors">
               <Save className="w-3.5 h-3.5" />
               {saving ? "Saving…" : "Save Draft"}
             </button>
@@ -523,16 +526,14 @@ export default function ListingStudio() {
               <button
                 onClick={isUnsold ? relistNow : publishNow}
                 disabled={saving || !form.title || !form.prisometer_start_price}
-                className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-[10px] font-bold tracking-[0.2em] uppercase px-5 h-9 transition-colors disabled:opacity-30"
+                className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-xs font-semibold tracking-wide px-5 h-9 transition-colors disabled:opacity-30"
               >
-                <Rocket className="w-3 h-3" />
-                {saving ? "Publishing…" : isUnsold ? "Relist" : "Publish"}
+                {saving ? "Publishing…" : isUnsold ? "Relist Listing" : "Publish Listing"}
               </button>
             )}
             {isLive && (
               <button onClick={saveDraft} disabled={saving}
-                className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-[10px] font-bold tracking-[0.2em] uppercase px-5 h-9 transition-colors">
-                <Save className="w-3 h-3" />
+                className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-xs font-semibold tracking-wide px-5 h-9 transition-colors">
                 {saving ? "Saving…" : "Save Changes"}
               </button>
             )}
@@ -593,40 +594,42 @@ export default function ListingStudio() {
       )}
 
       {/* ── Main Layout ──────────────────────────────────────────────────── */}
-      <div className="w-full px-6 md:px-16 py-14 grid grid-cols-1 xl:grid-cols-[140px_1fr_440px] gap-10">
+      <div className="w-full px-6 md:px-10 py-10 grid grid-cols-1 xl:grid-cols-[160px_1fr_400px] gap-8">
 
         {/* ── Section Navigator ─────────────────────────────────────────── */}
         <div className="hidden xl:block">
-          <div className="sticky top-20 flex flex-col gap-0.5">
+          <div className="sticky top-16 flex flex-col">
             {[
-              { label: "Photos",        id: "section-01" },
-              { label: "Item Details",  id: "section-02" },
-              { label: "Description",   id: "section-03" },
-              { label: "Pricing",       id: "section-04" },
-              { label: "Logistics",     id: "section-05" },
-              { label: "Custom Fields", id: "section-06" },
-            ].map(({ label, id }) => (
+              { num: "01", label: "Photos",           id: "section-01" },
+              { num: "02", label: "Item Details",     id: "section-02" },
+              { num: "03", label: "Description",      id: "section-03" },
+              { num: "04", label: "Pricing & Auction",id: "section-04" },
+              { num: "05", label: "Inventory &\nLogistics", id: "section-05" },
+              { num: "06", label: "Custom Fields",    id: "section-06" },
+            ].map(({ num, label, id }) => (
               <button
                 key={id}
                 onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                className="text-left text-[10px] font-bold tracking-[0.15em] uppercase text-neutral-300 hover:text-neutral-800 transition-colors py-1.5"
+                className="group text-left flex items-start gap-3 py-3 border-l-2 border-transparent hover:border-neutral-400 pl-3 transition-all"
               >
-                {label}
+                <span className="text-[11px] font-bold text-neutral-300 group-hover:text-neutral-500 tabular-nums mt-0.5 shrink-0">{num}</span>
+                <span className="text-[11px] font-semibold tracking-[0.08em] uppercase text-neutral-400 group-hover:text-neutral-700 transition-colors leading-tight whitespace-pre-line">{label}</span>
               </button>
             ))}
           </div>
         </div>
 
         {/* ── LEFT FORM ─────────────────────────────────────────────────── */}
-        <div className="space-y-8 min-w-0">
+        <div className="space-y-5 min-w-0">
 
           {/* 01 · Photos */}
           <Section number="01" title="Photos" subtitle="First photo becomes the cover image">
-            <TipBox color="green" title="Tips for Great Photos" tips={[
-              "Recommended size: 2000 × 2000 px minimum — square crops work best",
+            <TipBox title="Tips for Great Photos"
+              image="https://images.unsplash.com/photo-1569171727594-63efdf8ea9f8?w=400&q=80"
+              tips={[
               "Use natural, diffused light — avoid harsh flash or deep shadows",
               "Shoot on a clean, neutral background (white, grey, or linen)",
-              "Include detail shots: signatures, hallmarks, damage, texture",
+              "Include detail shots: signatures, hallmarks, condition",
               "First photo becomes the cover — make it your strongest image",
             ]} />
             <DropZone onFiles={handleImageUpload} />
@@ -695,7 +698,7 @@ export default function ListingStudio() {
                 onChange={e => set("title", e.target.value)}
               />
             </Field>
-            <TipBox color="amber" title="Tips for a Great Title" tips={[
+            <TipBox title="Tips for a Great Title" tips={[
               'Lead with Artist / Maker name if known (e.g. "Henri Matisse — ...")',
               "Include medium or material (Oil on canvas, Bronze, Sterling Silver…)",
               'Add date or period ("circa 1920s", "Art Deco, 1935")',
@@ -743,12 +746,13 @@ export default function ListingStudio() {
 
           {/* 03 · Description */}
           <Section number="03" title="Description & Presentation">
-            <TipBox color="blue" title="Tips for a Great Description" tips={[
+            <TipBox title="Tips for a Great Description"
+              image="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"
+              tips={[
               "Open with the most important facts: maker, date, medium, subject",
               "Describe what makes this piece significant — rarity, exhibition history, style",
               "Include all physical details: dimensions, materials, technique, origin",
               "Mention provenance if known: previous owners, purchase receipts, auction records",
-              "Close with context that helps a buyer imagine it in their home or collection",
             ]} />
             <Field label="Short Summary" hint="shown in search results">
               <LineTextarea
@@ -799,7 +803,7 @@ export default function ListingStudio() {
 
           {/* 04 · Pricing */}
           <Section number="04" title="Pricing & Auction" locked={isLive} badge="Auction Config">
-            <TipBox color="green" title="Pricing Tips" tips={[
+            <TipBox title="Pricing Tips" tips={[
               "Set the PRI$OMETER starting price near the high end of what a serious buyer might pay",
               "The reserve should protect the seller, but still leave room for bidding activity and price movement",
               "Overpricing can reduce early interest — a strong starting price should create urgency, not scare buyers away",
@@ -958,7 +962,7 @@ export default function ListingStudio() {
 
         {/* ── RIGHT: AI Assistant ────────────────────────────────────────── */}
         <div className="hidden xl:flex flex-col">
-          <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-hide pb-4 bg-white/60 border border-neutral-100 shadow-[0_4px_24px_0_rgba(0,0,0,0.05)]">
+          <div className="sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-hide pb-4 bg-white border border-neutral-200/70 shadow-sm">
             <AIListingAssistant form={form} onApply={(field, value) => set(field, value)} />
           </div>
         </div>
