@@ -8,7 +8,8 @@ import {
   Plus, Package, Trash2, Clock, Gavel, ShieldCheck,
   Eye, Heart, Search, Handshake, Download,
   SlidersHorizontal, ChevronLeft, ChevronRight, Activity,
-  Package2, DollarSign, CheckCircle2, AlertCircle, X, ZoomIn
+  Package2, DollarSign, CheckCircle2, AlertCircle, X, ZoomIn,
+  Loader2, XCircle
 } from "lucide-react";
 
 // ─── Image Lightbox ────────────────────────────────────────────────────────────
@@ -157,7 +158,45 @@ export default function InventoryTable({ items, view, limit }) {
   const [pageSize, setPageSize] = useState(10);
   const [lightbox, setLightbox] = useState(null);
   const [expandedDesc, setExpandedDesc] = useState(new Set());
+  const [processingOffer, setProcessingOffer] = useState(null);
   const queryClient = useQueryClient();
+
+  const handleAcceptOffer = async (item) => {
+    setProcessingOffer(item.id);
+    await base44.entities.Item.update(item.id, {
+      status: "sold",
+      sold_price: item.make_it_mine_buyer ? item.prisometer_start_price : item.highest_bid,
+      sold_to_email: item.make_it_mine_buyer || item.highest_bidder_email,
+      sold_via: "make_it_mine",
+    });
+    if (item.make_it_mine_buyer || item.highest_bidder_email) {
+      await base44.integrations.Core.SendEmail({
+        to: item.make_it_mine_buyer || item.highest_bidder_email,
+        subject: `Your offer on "${item.title}" has been accepted!`,
+        body: `Congratulations! The seller has accepted your offer on "${item.title}". You will receive an invoice shortly with payment instructions.`,
+      });
+    }
+    queryClient.invalidateQueries({ queryKey: ["seller-items"] });
+    setProcessingOffer(null);
+  };
+
+  const handleDeclineOffer = async (item) => {
+    setProcessingOffer(item.id);
+    await base44.entities.Item.update(item.id, {
+      status: "unsold",
+      make_it_mine_buyer: null,
+      make_it_mine_expires: null,
+    });
+    if (item.make_it_mine_buyer || item.highest_bidder_email) {
+      await base44.integrations.Core.SendEmail({
+        to: item.make_it_mine_buyer || item.highest_bidder_email,
+        subject: `Update on your offer for "${item.title}"`,
+        body: `Thank you for your interest in "${item.title}". Unfortunately the seller has declined this offer at this time.`,
+      });
+    }
+    queryClient.invalidateQueries({ queryKey: ["seller-items"] });
+    setProcessingOffer(null);
+  };
 
   const toggleDesc = (id) => setExpandedDesc(prev => {
     const next = new Set(prev);
@@ -495,8 +534,33 @@ export default function InventoryTable({ items, view, limit }) {
                       )}
                     </td>
                     <td className="px-4 py-3.5">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {item.status !== "sold" ? (
+                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                        {item.status === "pending_review" ? (
+                          <>
+                            <Button
+                              size="sm"
+                              className="text-[11px] font-semibold h-7 px-2.5 gap-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                              onClick={() => handleAcceptOffer(item)}
+                              disabled={processingOffer === item.id}
+                            >
+                              {processingOffer === item.id
+                                ? <Loader2 className="w-3 h-3 animate-spin" />
+                                : <CheckCircle2 className="w-3 h-3" />
+                              }
+                              Accept
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-[11px] font-semibold h-7 px-2.5 gap-1 border-amber-400 text-amber-800 hover:bg-amber-50"
+                              onClick={() => handleDeclineOffer(item)}
+                              disabled={processingOffer === item.id}
+                            >
+                              <XCircle className="w-3 h-3" />
+                              Decline
+                            </Button>
+                          </>
+                        ) : item.status !== "sold" ? (
                           <Link to={`/seller/studio?edit=${item.id}`}>
                             <Button variant="outline" size="sm" className="text-[11px] font-semibold h-7 px-3 border-border/60">
                               {isLive ? "Manage" : item.status === "unsold" ? "Relist" : "Edit"}
