@@ -37,7 +37,7 @@ function SectionCard({ title, subtitle, children, locked, badge }) {
           {subtitle && <p className="text-xs text-neutral-400 mt-0.5">{subtitle}</p>}
         </div>
       </div>
-      <div className="px-6 py-5 space-y-5">{children}</div>
+      <div className="px-6 py-7 space-y-7">{children}</div>
     </div>
   );
 }
@@ -560,17 +560,30 @@ export default function ListingStudio() {
 
           {/* 2. Listing Basics */}
           <SectionCard title="Listing Basics" locked={isLive}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="sm:col-span-2">
-                <Field label="Title" required>
-                  <Input
-                    className="text-base font-serif"
-                    placeholder="e.g. Fernand Léger — Composition with Figures, 1928"
-                    value={form.title}
-                    onChange={e => set("title", e.target.value)}
-                  />
-                </Field>
+
+            {/* Title */}
+            <div className="space-y-2">
+              <Field label="Title" required>
+                <Input
+                  className="text-base font-serif h-12"
+                  placeholder="e.g. Fernand Léger — Composition with Figures, 1928"
+                  value={form.title}
+                  onChange={e => set("title", e.target.value)}
+                />
+              </Field>
+              <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 space-y-1">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-amber-700">Tips for a great title</p>
+                <ul className="text-xs text-amber-800 space-y-0.5 list-disc list-inside">
+                  <li>Lead with Artist / Maker name if known (e.g. "Henri Matisse — …")</li>
+                  <li>Include medium or material (Oil on canvas, Bronze, Sterling Silver…)</li>
+                  <li>Add date or period ("circa 1920s", "Art Deco, 1935")</li>
+                  <li>Keep it under 80 characters for best search visibility</li>
+                </ul>
               </div>
+            </div>
+
+            {/* Category + Condition */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
               <Field label="Category" required>
                 <select value={form.category} onChange={e => { set("category", e.target.value); set("subcategory", ""); set("style", ""); }}
                   className="w-full h-10 rounded-xl border border-neutral-200 bg-white px-3 text-sm text-neutral-900 focus:outline-none focus:ring-2 focus:ring-primary/20">
@@ -584,18 +597,10 @@ export default function ListingStudio() {
                   {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</option>)}
                 </select>
               </Field>
-              <Field label="Artist / Maker">
-                <Input placeholder="e.g. Henri Matisse" value={form.maker} onChange={e => set("maker", e.target.value)} />
-              </Field>
-              <Field label="Period">
-                <Input placeholder="e.g. 1920s, Ming Dynasty" value={form.period} onChange={e => set("period", e.target.value)} />
-              </Field>
-              <Field label="Origin">
-                <Input placeholder="e.g. France, China" value={form.origin} onChange={e => set("origin", e.target.value)} />
-              </Field>
-              <Field label="Materials">
-                <Input placeholder="e.g. Oil on canvas, Bronze" value={form.materials} onChange={e => set("materials", e.target.value)} />
-              </Field>
+            </div>
+
+            {/* Dimensions + Marks */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <Field label="Dimensions">
                 <Input placeholder="e.g. 60 × 80 cm, H 12 in." value={form.dimensions} onChange={e => set("dimensions", e.target.value)} />
               </Field>
@@ -603,7 +608,13 @@ export default function ListingStudio() {
                 <Input placeholder="e.g. Signed lower right in pencil" value={form.marks} onChange={e => set("marks", e.target.value)} />
               </Field>
             </div>
-            {form.category && <CategoryFields form={form} set={set} />}
+
+            {/* Category-specific fields (includes maker, period, origin, materials, etc.) */}
+            {form.category && (
+              <div className="pt-2">
+                <CategoryFields form={form} set={set} />
+              </div>
+            )}
           </SectionCard>
 
           {/* 3. Auction Presentation */}
@@ -616,14 +627,26 @@ export default function ListingStudio() {
                 className="h-16 resize-none"
               />
             </Field>
-            <Field label="Full Description">
-              <Textarea
-                placeholder="Describe the work in detail — style, context, significance, visual qualities, historical importance…"
-                value={form.description}
-                onChange={e => set("description", e.target.value)}
-                className="h-36 resize-none"
-              />
-            </Field>
+            <div className="space-y-2">
+              <Field label="Full Description">
+                <Textarea
+                  placeholder="Describe the work in detail — style, context, significance, visual qualities, historical importance…"
+                  value={form.description}
+                  onChange={e => set("description", e.target.value)}
+                  className="h-40 resize-none"
+                />
+              </Field>
+              <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 space-y-1.5">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-blue-700">Tips for a compelling description</p>
+                <ul className="text-xs text-blue-800 space-y-1 list-disc list-inside">
+                  <li>What makes this piece unique or special?</li>
+                  <li>Why is it worth the price? What is its background or history?</li>
+                  <li>How would you describe it to someone who hasn't seen it in person?</li>
+                  <li>Add keywords early — search engines favor the first few sentences</li>
+                  <li>Do not include shipping or contact information here</li>
+                </ul>
+              </div>
+            </div>
             <Field label="Condition Report">
               <Textarea
                 placeholder="Detail any wear, restoration, or damage. Honest reporting builds buyer confidence…"

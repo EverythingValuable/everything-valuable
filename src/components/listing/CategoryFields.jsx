@@ -42,7 +42,7 @@ export default function CategoryFields({ form, set }) {
   const showStyles = cat === "fine_art";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
 
       {/* Subcategory */}
       {config.showSubcategory && subcats.length > 0 && (
