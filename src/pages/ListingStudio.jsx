@@ -42,12 +42,15 @@ function SectionHeader({ number, title, subtitle, locked, badge }) {
 
 function Section({ number, title, subtitle, children, locked, badge }) {
   return (
-    <div className={cn(
-      "bg-white/60 border border-neutral-100 shadow-[0_4px_24px_0_rgba(0,0,0,0.05)] px-10 py-10",
-      locked && "opacity-50 pointer-events-none"
-    )}>
+    <div
+      id={`section-${number}`}
+      className={cn(
+        "bg-white/60 border border-neutral-100 shadow-[0_4px_24px_0_rgba(0,0,0,0.05)] px-16 py-14",
+        locked && "opacity-50 pointer-events-none"
+      )}
+    >
       <SectionHeader number={number} title={title} subtitle={subtitle} locked={locked} badge={badge} />
-      <div className="space-y-8">{children}</div>
+      <div className="space-y-10">{children}</div>
     </div>
   );
 }
@@ -440,7 +443,7 @@ export default function ListingStudio() {
 
       {/* ── Top Bar ─────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-neutral-100">
-        <div className="max-w-[1800px] mx-auto px-6 md:px-10 h-14 flex items-center gap-5">
+        <div className="w-full px-6 md:px-16 h-14 flex items-center gap-5">
           <Link to="/seller" className="flex items-center gap-1.5 text-neutral-400 hover:text-neutral-800 transition-colors group">
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
             <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Dashboard</span>
@@ -537,7 +540,7 @@ export default function ListingStudio() {
       )}
 
       {/* ── Main Layout ──────────────────────────────────────────────────── */}
-      <div className="max-w-[1800px] mx-auto px-6 md:px-10 py-14 grid grid-cols-1 xl:grid-cols-[120px_1fr_360px] gap-8">
+      <div className="w-full px-6 md:px-16 py-14 grid grid-cols-1 xl:grid-cols-[140px_1fr_440px] gap-10">
 
         {/* ── Section Navigator ─────────────────────────────────────────── */}
         <div className="hidden xl:block">
@@ -562,7 +565,7 @@ export default function ListingStudio() {
         </div>
 
         {/* ── LEFT FORM ─────────────────────────────────────────────────── */}
-        <div className="space-y-6 min-w-0">
+        <div className="space-y-8 min-w-0">
 
           {/* 01 · Photos */}
           <Section number="01" title="Photos" subtitle="First photo becomes the cover image">
