@@ -314,8 +314,8 @@ export default function ListingStudio() {
     customer_location: form.customer_location || undefined,
     marks: form.marks || undefined,
     condition_notes: form.condition_notes,
-    shipping_notes: form.shipping_notes,
-    terms_and_conditions: form.terms_and_conditions || undefined,
+    shipping_notes: form.shipping_notes || sellerProfile?.shipping_info || undefined,
+    terms_and_conditions: form.terms_and_conditions || sellerProfile?.terms_and_conditions || undefined,
     prisometer_start_price: +form.prisometer_start_price || 0,
     reserve_price: +form.reserve_price || 0,
     below_reserve_percent: form.below_reserve_percent,
@@ -734,10 +734,13 @@ export default function ListingStudio() {
             <Field label="Terms & Conditions" hint="optional — overrides your default">
               <LineTextarea
                 rows={2}
-                placeholder="Payment due within 7 days. All sales final…"
+                placeholder={sellerProfile?.terms_and_conditions || "Payment due within 7 days. All sales final…"}
                 value={form.terms_and_conditions}
                 onChange={e => set("terms_and_conditions", e.target.value)}
               />
+              {!form.terms_and_conditions && sellerProfile?.terms_and_conditions && (
+                <p className="text-xs text-neutral-400 mt-1">Using your <span className="underline cursor-pointer hover:text-neutral-600" onClick={() => set("terms_and_conditions", sellerProfile.terms_and_conditions)}>default terms</span> — click to customize</p>
+              )}
             </Field>
           </Section>
 
@@ -823,10 +826,13 @@ export default function ListingStudio() {
             <Field label="Shipping Notes" visibility="public">
               <LineTextarea
                 rows={2}
-                placeholder="Packaging, fragility, pickup availability, shipping carriers…"
+                placeholder={sellerProfile?.shipping_info || "Packaging, fragility, pickup availability, shipping carriers…"}
                 value={form.shipping_notes}
                 onChange={e => set("shipping_notes", e.target.value)}
               />
+              {!form.shipping_notes && sellerProfile?.shipping_info && (
+                <p className="text-xs text-neutral-400 mt-1">Using your <span className="underline cursor-pointer hover:text-neutral-600" onClick={() => set("shipping_notes", sellerProfile.shipping_info)}>default shipping note</span> — click to customize</p>
+              )}
             </Field>
             <Field label="Search Keywords" hint="comma-separated" visibility="private">
               <LineTextarea
