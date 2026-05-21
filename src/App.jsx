@@ -27,6 +27,7 @@ import Portal from './pages/Portal';
 import HotspotManager from './pages/HotspotManager';
 import BulkUpload from './pages/BulkUpload';
 import AdminDashboard from './pages/AdminDashboard';
+import ConsignorDetail from './pages/ConsignorDetail';
 import SellerAccess from './pages/SellerAccess';
 import Dealers from './pages/Dealers';
 
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
         <Route path="/real-property/listing/:id" element={<RealEstateDetail />} />
         <Route path="/hotspot-manager" element={<HotspotManager />} />
         <Route path="/seller/bulk-upload" element={<BulkUpload />} />
+        <Route path="/seller/consignor/:id" element={<ConsignorDetail />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/seller-access" element={<SellerAccess />} />
         <Route path="/dealers" element={<Dealers />} />

@@ -1,0 +1,50 @@
+{
+  "name": "Consignor",
+  "type": "object",
+  "properties": {
+    "seller_email": {
+      "type": "string",
+      "description": "Email of the seller who manages this consignor"
+    },
+    "name": {
+      "type": "string",
+      "description": "Consignor full name or business name"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "default_commission_percent": {
+      "type": "number",
+      "description": "Default commission % the seller keeps"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    },
+    "contract_mailed": {
+      "type": "boolean",
+      "default": false
+    },
+    "contract_mailed_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "seller_email",
+    "name"
+  ]
+}

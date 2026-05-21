@@ -11,6 +11,7 @@ import SellerSettings from "./SellerSettings";
 import SellerMessages from "@/components/seller/SellerMessages";
 import SellerAnalytics from "@/components/seller/SellerAnalytics";
 import InvoiceBuilder from "@/components/seller/InvoiceBuilder";
+import ConsignorsPanel from "@/components/seller/ConsignorsPanel";
 import { Button } from "@/components/ui/button";
 import { Plus, Boxes, ClipboardCheck, DollarSign, AlertTriangle, Upload, ArrowRight, SearchCheck } from "lucide-react";
 import { format } from "date-fns";
@@ -19,10 +20,10 @@ import BelowReserveAlert from "@/components/seller/BelowReserveAlert";
 const VIEW_LABELS = {
   listings: "Inventory", draft: "Drafts", first_bids: "1stBid$ Preview",
   prisometer: "PRI$OMETER Live", pending_review: "Under Review",
-  sold: "Sold Items", unsold: "Unsold Items",
+  sold: "Sold Items", unsold: "Unsold Items", consignors: "Consignors",
 };
 
-const PANEL_VIEWS = ["profile", "settings", "messages", "analytics", "invoices"];
+const PANEL_VIEWS = ["profile", "settings", "messages", "analytics", "invoices", "consignors"];
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -249,7 +250,8 @@ function SellerDashboardInner() {
           {view === "settings"  && <SellerSettings />}
           {view === "messages"  && <SellerMessages user={user} />}
           {view === "analytics" && <SellerAnalytics user={user} />}
-          {view === "invoices"  && <InvoiceBuilder user={user} />}
+          {view === "invoices"   && <InvoiceBuilder user={user} />}
+          {view === "consignors" && <ConsignorsPanel user={user} />}
 
           {/* Inventory table — shown for overview + listing views */}
           {!isPanel && (

@@ -185,6 +185,9 @@ export default function ListingStudio() {
   const urlParams = new URLSearchParams(window.location.search);
   const editId = urlParams.get("edit");
   const isEditMode = !!editId;
+  const fromConsignorId = urlParams.get("consignor");
+  const fromConsignorName = urlParams.get("consignor_name") ? decodeURIComponent(urlParams.get("consignor_name")) : "";
+  const fromConsignorCommission = urlParams.get("commission") || "";
 
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(isEditMode);
@@ -268,7 +271,17 @@ export default function ListingStudio() {
       } else {
         const template = profile?.listing_custom_fields_template || [];
         const seededFields = template.map(f => ({ ...f, value: "" }));
-        setForm(f => ({ ...f, location: profile?.location || "", custom_fields: seededFields }));
+        setForm(f => ({
+          ...f,
+          location: profile?.location || "",
+          custom_fields: seededFields,
+          // Pre-fill consignor if launched from a consignor detail page
+          ...(fromConsignorName ? {
+            ownership_type: "consignment",
+            consignor_name: fromConsignorName,
+            consignor_commission_percent: fromConsignorCommission,
+          } : {}),
+        }));
       }
       setLoading(false);
     };
@@ -444,9 +457,14 @@ export default function ListingStudio() {
       {/* ── Top Bar ─────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-neutral-100">
         <div className="w-full px-6 md:px-16 h-14 flex items-center gap-5">
-          <Link to="/seller" className="flex items-center gap-1.5 text-neutral-400 hover:text-neutral-800 transition-colors group">
+          <Link
+            to={fromConsignorId ? `/seller/consignor/${fromConsignorId}` : "/seller"}
+            className="flex items-center gap-1.5 text-neutral-400 hover:text-neutral-800 transition-colors group"
+          >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Dashboard</span>
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
+              {fromConsignorName ? fromConsignorName : "Dashboard"}
+            </span>
           </Link>
 
           <div className="w-px h-4 bg-neutral-100" />

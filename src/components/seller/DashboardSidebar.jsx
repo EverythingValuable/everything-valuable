@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Plus, Upload, Package, FileText,
   Gavel, Activity, Clock, CheckCircle2, XCircle,
   MessageSquare, BarChart2, User, Settings, ChevronLeft,
-  Tag, Layers, HeadphonesIcon
+  Tag, Layers, HeadphonesIcon, Users
 } from "lucide-react";
 import ContactSupportModal from "@/components/shared/ContactSupportModal";
 
@@ -34,6 +34,7 @@ const navGroups = [
       { label: "Under Review", icon: Clock, href: "/seller?view=pending_review" },
       { label: "Sold Items", icon: CheckCircle2, href: "/seller?view=sold" },
       { label: "Unsold Items", icon: XCircle, href: "/seller?view=unsold" },
+      { label: "Consignors", icon: Users, href: "/seller?view=consignors" },
     ]
   },
   {
