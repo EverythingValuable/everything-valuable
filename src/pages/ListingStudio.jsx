@@ -624,6 +624,7 @@ export default function ListingStudio() {
 
           {/* 01 · Photos */}
           <Section number="01" title="Photos" subtitle="First photo becomes the cover image">
+            <DropZone onFiles={handleImageUpload} />
             <TipBox title="Tips for Great Photos"
               image="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80"
               tips={[
@@ -632,7 +633,6 @@ export default function ListingStudio() {
               "Include detail shots: signatures, hallmarks, condition",
               "First photo becomes the cover — make it your strongest image",
             ]} />
-            <DropZone onFiles={handleImageUpload} />
             {uploadingImages && (
               <div className="flex items-center gap-2 text-sm text-neutral-400">
                 <div className="w-4 h-4 border border-neutral-200 border-t-neutral-500 rounded-full animate-spin" />
