@@ -1,46 +1,76 @@
 import React, { useState } from "react";
-import { Monitor, Smartphone, LayoutGrid, MapPin, Tag, Gavel, Gem } from "lucide-react";
+import { Monitor, Smartphone, LayoutGrid, MapPin, ChevronDown, ChevronUp, Gavel, ShoppingBag, Heart, Share2, Bell } from "lucide-react";
 
 const CONDITION_LABELS = {
-  excellent: "Excellent",
-  very_good: "Very Good",
-  good: "Good",
-  fair: "Fair",
-  as_is: "As Is",
+  excellent: "Excellent", very_good: "Very Good", good: "Good", fair: "Fair", as_is: "As Is",
 };
 
-function PlaceholderText({ text, className = "" }) {
+const CATEGORY_LABELS = {
+  fine_art: "Fine Art", decorative_art: "Decorative Art", jewelry: "Jewelry",
+  asian_antiques: "Asian Antiques", fashion_accessories: "Fashion & Accessories",
+  watches_clocks: "Watches & Clocks", furniture: "Furniture",
+  collectibles: "Collectibles", other: "Other",
+};
+
+function Placeholder({ text, className = "" }) {
   return <span className={`italic text-neutral-300 ${className}`}>{text}</span>;
 }
 
-// ── Full listing preview ──────────────────────────────────────────────────────
+function CollapsibleRow({ title, children, defaultOpen = true }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-t border-neutral-100">
+      <button
+        className="w-full flex items-center justify-between py-3 text-left"
+        onClick={() => setOpen(o => !o)}
+      >
+        <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">{title}</span>
+        {open ? <ChevronUp className="w-3.5 h-3.5 text-neutral-300" /> : <ChevronDown className="w-3.5 h-3.5 text-neutral-300" />}
+      </button>
+      {open && <div className="pb-3">{children}</div>}
+    </div>
+  );
+}
+
+// ── Full listing preview — matches actual ProductDetail layout ────────────────
 function FullPreview({ form }) {
   const [activeImg, setActiveImg] = useState(0);
   const hasImages = form.images?.length > 0;
   const hasEstimate = form.estimated_low || form.estimated_high;
+  const categoryLabel = CATEGORY_LABELS[form.category] || form.category?.replace(/_/g, " ");
+  const conditionLabel = CONDITION_LABELS[form.condition];
+  const hasDetails = form.period || form.materials || form.origin;
 
   return (
     <div className="bg-white rounded-xl overflow-hidden border border-neutral-200 shadow-sm text-sm">
-      {/* Image */}
-      <div className="bg-neutral-100 aspect-[4/3] flex items-center justify-center overflow-hidden">
+      {/* Gallery */}
+      <div className="bg-neutral-50 aspect-[4/3] flex items-center justify-center overflow-hidden relative">
         {hasImages ? (
-          <img src={form.images[activeImg]} alt="" className="w-full h-full object-cover" />
+          <img src={form.images[activeImg]} alt="" className="w-full h-full object-contain" />
         ) : (
           <div className="flex flex-col items-center gap-2 text-neutral-300">
-            <Gem className="w-8 h-8" />
+            <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center">
+              <LayoutGrid className="w-6 h-6 text-neutral-300" />
+            </div>
             <span className="text-xs">Photos will appear here</span>
+          </div>
+        )}
+        {/* First image badge */}
+        {hasImages && (
+          <div className="absolute top-2 left-2 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+            Cover
           </div>
         )}
       </div>
 
       {/* Thumbnail strip */}
       {hasImages && form.images.length > 1 && (
-        <div className="flex gap-1.5 px-4 pt-3 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-1.5 px-3 pt-2 overflow-x-auto scrollbar-hide border-b border-neutral-100 pb-2">
           {form.images.map((url, i) => (
             <button
               key={i}
               onClick={() => setActiveImg(i)}
-              className={`shrink-0 w-12 h-12 rounded-md overflow-hidden border-2 transition-all ${i === activeImg ? "border-primary" : "border-transparent"}`}
+              className={`shrink-0 w-10 h-10 rounded overflow-hidden border-2 transition-all ${i === activeImg ? "border-primary" : "border-transparent opacity-60"}`}
             >
               <img src={url} alt="" className="w-full h-full object-cover" />
             </button>
@@ -48,147 +78,140 @@ function FullPreview({ form }) {
         </div>
       )}
 
-      {/* Content */}
-      <div className="p-5 space-y-4">
-        {/* Title & estimate */}
-        <div>
-          <h2 className="font-serif text-xl font-semibold text-neutral-950 leading-tight">
-            {form.title || <PlaceholderText text="Item title will appear here" />}
-          </h2>
-          {(form.maker || form.period) && (
-            <p className="text-xs text-neutral-500 mt-1">
-              {[form.maker, form.period].filter(Boolean).join(" · ")}
-            </p>
+      <div className="p-4 space-y-4">
+        {/* Category badge */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {categoryLabel && (
+            <span className="text-[10px] font-bold uppercase tracking-widest border border-neutral-200 text-neutral-500 px-2 py-0.5 rounded">
+              {categoryLabel}
+            </span>
           )}
-          {hasEstimate && (
-            <p className="mt-2 text-xs text-neutral-500">
-              Estimate: <span className="font-semibold text-neutral-800">
-                {form.estimated_low ? `$${Number(form.estimated_low).toLocaleString()}` : ""}
-                {form.estimated_low && form.estimated_high ? " – " : ""}
-                {form.estimated_high ? `$${Number(form.estimated_high).toLocaleString()}` : ""}
-              </span>
-            </p>
-          )}
+          <span className="text-[10px] font-bold uppercase tracking-widest bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded">
+            1stBid$™ Preview
+          </span>
         </div>
 
-        {/* Auction status strip */}
+        {/* Title + seller */}
+        <div>
+          <h2 className="font-serif text-lg font-bold text-neutral-950 leading-tight">
+            {form.title || <Placeholder text="Item title will appear here" />}
+          </h2>
+          {form.maker && <p className="text-xs text-neutral-500 mt-0.5">{form.maker}{form.period ? ` · ${form.period}` : ""}</p>}
+          <p className="text-xs text-neutral-400 mt-0.5">Offered by <span className="font-medium text-neutral-600">Your Seller Name</span></p>
+        </div>
+
+        {/* Price Convergence block */}
         <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">1stBid$ Preview</p>
-              <p className="font-price text-2xl font-bold text-neutral-900 mt-0.5">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-neutral-400">Starting Price</p>
+              <p className="font-price text-2xl font-bold text-neutral-900 mt-0.5 tabular-nums">
                 {form.prisometer_start_price
                   ? `$${Number(form.prisometer_start_price).toLocaleString()}`
-                  : <PlaceholderText text="$—" className="font-sans text-xl not-italic" />
+                  : <Placeholder text="$—" className="font-sans text-xl not-italic" />
                 }
               </p>
             </div>
-            <div className="text-right">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Duration</p>
-              <p className="text-sm font-semibold text-neutral-700 mt-0.5">{form.first_bids_duration_hours / 24}d preview</p>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button disabled className="flex-1 h-9 bg-primary text-white text-xs font-bold opacity-40 rounded-lg cursor-not-allowed">
-              Place Preview Bid
-            </button>
-            <button disabled className="flex-1 h-9 border border-neutral-300 text-neutral-500 text-xs font-semibold opacity-40 rounded-lg cursor-not-allowed">
-              Make It Mine™
-            </button>
-          </div>
-          <p className="text-[10px] text-neutral-400 text-center">Preview — buttons disabled in builder</p>
-        </div>
-
-        {/* Details grid */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-          {[
-            ["Category", form.category?.replace(/_/g, " ")],
-            ["Condition", CONDITION_LABELS[form.condition]],
-            ["Materials", form.materials],
-            ["Dimensions", form.dimensions],
-            ["Origin", form.origin],
-            ["Marks", form.marks],
-          ].filter(([, v]) => v).map(([k, v]) => (
-            <div key={k}>
-              <p className="text-neutral-400 font-semibold uppercase tracking-widest text-[9px]">{k}</p>
-              <p className="text-neutral-800 mt-0.5 capitalize">{v}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Description */}
-        {(form.short_description || form.description) && (
-          <div className="border-t border-neutral-100 pt-4 space-y-2">
-            {form.short_description && (
-              <p className="text-xs font-medium text-neutral-700 leading-relaxed">{form.short_description}</p>
-            )}
-            {form.description && (
-              <p className="text-xs text-neutral-500 leading-relaxed line-clamp-4">{form.description}</p>
+            {hasEstimate && (
+              <div className="text-right">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-neutral-400">Estimate</p>
+                <p className="text-xs font-medium text-neutral-600 mt-0.5">
+                  {form.estimated_low ? `$${Number(form.estimated_low).toLocaleString()}` : ""}
+                  {form.estimated_low && form.estimated_high ? " – " : ""}
+                  {form.estimated_high ? `$${Number(form.estimated_high).toLocaleString()}` : ""}
+                </p>
+              </div>
             )}
           </div>
-        )}
-
-        {/* Provenance */}
-        {form.provenance && (
-          <div className="border-t border-neutral-100 pt-4">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-1">Provenance</p>
-            <p className="text-xs text-neutral-600 leading-relaxed">{form.provenance}</p>
+          <div className="text-[10px] text-neutral-400 text-center">
+            Preview phase — {form.first_bids_duration_hours ? `${form.first_bids_duration_hours / 24}d` : "—"} duration
           </div>
-        )}
-
-        {/* Condition notes */}
-        {form.condition_notes && (
-          <div className="border-t border-neutral-100 pt-4">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-1">Condition Report</p>
-            <p className="text-xs text-neutral-600 leading-relaxed">{form.condition_notes}</p>
-          </div>
-        )}
-
-        {/* Location */}
-        {form.customer_location && (
-          <div className="flex items-center gap-1.5 text-xs text-neutral-500 border-t border-neutral-100 pt-3">
-            <MapPin className="w-3 h-3" />
-            {form.customer_location}
-          </div>
-        )}
-
-        {/* Terms */}
-        {form.terms_and_conditions && (
-          <div className="border-t border-neutral-100 pt-4">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-1">Seller Terms</p>
-            <p className="text-xs text-neutral-500 leading-relaxed">{form.terms_and_conditions}</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── Mobile preview ────────────────────────────────────────────────────────────
-function MobilePreview({ form }) {
-  const hasImages = form.images?.length > 0;
-  return (
-    <div className="max-w-[320px] mx-auto bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden text-sm">
-      <div className="bg-neutral-100 aspect-square flex items-center justify-center overflow-hidden">
-        {hasImages
-          ? <img src={form.images[0]} alt="" className="w-full h-full object-cover" />
-          : <Gem className="w-8 h-8 text-neutral-300" />
-        }
-      </div>
-      <div className="p-4 space-y-3">
-        <h2 className="font-serif text-base font-semibold text-neutral-950 leading-tight">
-          {form.title || <PlaceholderText text="Item title" />}
-        </h2>
-        {form.maker && <p className="text-xs text-neutral-400">{form.maker}</p>}
-        <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Starting at</p>
-          <p className="font-price text-xl font-bold text-neutral-900 mt-0.5">
-            {form.prisometer_start_price ? `$${Number(form.prisometer_start_price).toLocaleString()}` : "—"}
-          </p>
         </div>
-        <button disabled className="w-full h-10 bg-primary text-white text-xs font-bold opacity-40 rounded-xl cursor-not-allowed">
-          Place Preview Bid
+
+        {/* Bid panel mockup */}
+        <div className="rounded-xl border border-neutral-200 p-4 space-y-3">
+          <div className="flex items-center gap-1.5">
+            <Gavel className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-400">Place a Bid</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {["—", "—", "—"].map((_, i) => (
+              <div key={i} className="border border-neutral-200 rounded-lg py-2 text-center text-xs text-neutral-300 font-semibold bg-neutral-50">
+                Bid {i + 1}
+              </div>
+            ))}
+          </div>
+          <button disabled className="w-full h-9 bg-neutral-800 text-white text-xs font-bold opacity-30 rounded-lg cursor-not-allowed">
+            Place Bid
+          </button>
+        </div>
+
+        {/* Make It Mine */}
+        <button disabled className="w-full h-10 bg-primary text-white text-xs font-bold opacity-30 rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5">
+          <ShoppingBag className="w-3.5 h-3.5" /> Make It Mine™
         </button>
+
+        {/* Save + Share + Alert */}
+        <div className="flex gap-2">
+          <button disabled className="flex-1 h-9 border border-neutral-200 rounded-lg text-xs text-neutral-400 flex items-center justify-center gap-1 opacity-50 cursor-not-allowed">
+            <Heart className="w-3 h-3" /> Save
+          </button>
+          <button disabled className="flex-1 h-9 border border-neutral-200 rounded-lg text-xs text-neutral-400 flex items-center justify-center gap-1 opacity-50 cursor-not-allowed">
+            <Share2 className="w-3 h-3" /> Share
+          </button>
+        </div>
+        <button disabled className="w-full h-9 border border-neutral-200 rounded-lg text-xs text-neutral-400 flex items-center justify-center gap-1.5 opacity-50 cursor-not-allowed">
+          <Bell className="w-3 h-3" /> 🔔 Price Alert
+        </button>
+
+        <p className="text-[9px] text-neutral-300 text-center">Buttons disabled in builder preview</p>
+
+        {/* Collapsible sections — matches actual buyer view */}
+        {form.description && (
+          <CollapsibleRow title="About This Lot" defaultOpen={true}>
+            <p className="text-xs text-neutral-600 leading-relaxed line-clamp-4">{form.description}</p>
+          </CollapsibleRow>
+        )}
+        {form.dimensions && (
+          <CollapsibleRow title="Dimensions" defaultOpen={true}>
+            <p className="text-xs text-neutral-500">{form.dimensions}</p>
+          </CollapsibleRow>
+        )}
+        {form.condition && (
+          <CollapsibleRow title="Condition" defaultOpen={false}>
+            <p className="text-xs text-neutral-500">{conditionLabel || form.condition}</p>
+          </CollapsibleRow>
+        )}
+        {hasDetails && (
+          <CollapsibleRow title="Details" defaultOpen={true}>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+              {form.period && <div><p className="text-[9px] font-bold text-neutral-400 mb-0.5">Period</p><p className="text-xs text-neutral-600">{form.period}</p></div>}
+              {form.materials && <div><p className="text-[9px] font-bold text-neutral-400 mb-0.5">Materials</p><p className="text-xs text-neutral-600">{form.materials}</p></div>}
+              {form.origin && <div><p className="text-[9px] font-bold text-neutral-400 mb-0.5">Origin</p><p className="text-xs text-neutral-600">{form.origin}</p></div>}
+              {form.marks && <div><p className="text-[9px] font-bold text-neutral-400 mb-0.5">Marks</p><p className="text-xs text-neutral-600">{form.marks}</p></div>}
+            </div>
+          </CollapsibleRow>
+        )}
+        {form.provenance && (
+          <CollapsibleRow title="Provenance" defaultOpen={false}>
+            <p className="text-xs text-neutral-500 leading-relaxed">{form.provenance}</p>
+          </CollapsibleRow>
+        )}
+        {form.condition_notes && (
+          <CollapsibleRow title="Condition Report" defaultOpen={false}>
+            <p className="text-xs text-neutral-500 leading-relaxed">{form.condition_notes}</p>
+          </CollapsibleRow>
+        )}
+        {form.shipping_notes && (
+          <CollapsibleRow title="Shipping" defaultOpen={false}>
+            <p className="text-xs text-neutral-500 leading-relaxed">{form.shipping_notes}</p>
+          </CollapsibleRow>
+        )}
+        {form.customer_location && (
+          <div className="border-t border-neutral-100 pt-3 flex items-center gap-1.5 text-xs text-neutral-400">
+            <MapPin className="w-3 h-3" /> {form.customer_location}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -197,25 +220,26 @@ function MobilePreview({ form }) {
 // ── Search card preview ───────────────────────────────────────────────────────
 function CardPreview({ form }) {
   const hasImages = form.images?.length > 0;
+  const categoryLabel = CATEGORY_LABELS[form.category] || form.category?.replace(/_/g, " ");
   return (
-    <div className="max-w-[260px] mx-auto bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden text-sm">
+    <div className="max-w-[240px] mx-auto bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden text-sm">
       <div className="bg-neutral-100 aspect-[4/3] flex items-center justify-center overflow-hidden">
         {hasImages
           ? <img src={form.images[0]} alt="" className="w-full h-full object-cover" />
-          : <Gem className="w-6 h-6 text-neutral-300" />
+          : <LayoutGrid className="w-6 h-6 text-neutral-300" />
         }
       </div>
-      <div className="p-4">
-        <div className="flex items-center gap-1.5 mb-2">
+      <div className="p-3 space-y-1.5">
+        {categoryLabel && (
           <span className="text-[9px] font-bold uppercase tracking-widest text-primary bg-primary/8 px-1.5 py-0.5 rounded">
-            {form.category?.replace(/_/g, " ") || "Category"}
+            {categoryLabel}
           </span>
-        </div>
+        )}
         <p className="font-serif text-sm font-semibold text-neutral-900 leading-snug line-clamp-2">
-          {form.title || <PlaceholderText text="Item title" />}
+          {form.title || <Placeholder text="Item title" />}
         </p>
-        {form.maker && <p className="text-[11px] text-neutral-400 mt-0.5">{form.maker}</p>}
-        <div className="flex items-center justify-between mt-3">
+        {form.maker && <p className="text-[11px] text-neutral-400">{form.maker}</p>}
+        <div className="flex items-end justify-between pt-1">
           <div>
             <p className="text-[9px] text-neutral-400 uppercase tracking-widest">Starting</p>
             <p className="font-price text-base font-bold text-neutral-900">
@@ -238,6 +262,43 @@ function CardPreview({ form }) {
   );
 }
 
+// ── Mobile preview ────────────────────────────────────────────────────────────
+function MobilePreview({ form }) {
+  const hasImages = form.images?.length > 0;
+  return (
+    <div className="max-w-[300px] mx-auto bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden text-sm">
+      <div className="bg-neutral-100 aspect-square flex items-center justify-center overflow-hidden">
+        {hasImages
+          ? <img src={form.images[0]} alt="" className="w-full h-full object-cover" />
+          : <LayoutGrid className="w-8 h-8 text-neutral-300" />
+        }
+      </div>
+      <div className="p-4 space-y-3">
+        <div>
+          <span className="text-[9px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-1.5 py-0.5 rounded">1stBid$™ Preview</span>
+        </div>
+        <h2 className="font-serif text-base font-semibold text-neutral-950 leading-tight">
+          {form.title || <Placeholder text="Item title" />}
+        </h2>
+        {form.maker && <p className="text-xs text-neutral-400">{form.maker}</p>}
+        <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-neutral-400">Starting at</p>
+          <p className="font-price text-xl font-bold text-neutral-900 mt-0.5">
+            {form.prisometer_start_price ? `$${Number(form.prisometer_start_price).toLocaleString()}` : "—"}
+          </p>
+        </div>
+        <button disabled className="w-full h-10 bg-primary text-white text-xs font-bold opacity-30 rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5">
+          <ShoppingBag className="w-3.5 h-3.5" /> Make It Mine™
+        </button>
+        <button disabled className="w-full h-10 border border-neutral-200 text-neutral-500 text-xs font-bold opacity-30 rounded-xl cursor-not-allowed">
+          Place Bid
+        </button>
+        <p className="text-[9px] text-neutral-300 text-center">Buttons disabled in builder</p>
+      </div>
+    </div>
+  );
+}
+
 const TABS = [
   { id: "full", label: "Full Listing", icon: Monitor },
   { id: "mobile", label: "Mobile", icon: Smartphone },
@@ -249,16 +310,13 @@ export default function ListingPreview({ form }) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Tab bar */}
       <div className="flex gap-1 mb-4 bg-neutral-100 rounded-xl p-1 shrink-0">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-[11px] font-semibold transition-all ${
-              activeTab === id
-                ? "bg-white shadow-sm text-neutral-900"
-                : "text-neutral-400 hover:text-neutral-600"
+              activeTab === id ? "bg-white shadow-sm text-neutral-900" : "text-neutral-400 hover:text-neutral-600"
             }`}
           >
             <Icon className="w-3.5 h-3.5" />
@@ -266,8 +324,6 @@ export default function ListingPreview({ form }) {
           </button>
         ))}
       </div>
-
-      {/* Preview content */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === "full" && <FullPreview form={form} />}
         {activeTab === "mobile" && <MobilePreview form={form} />}
