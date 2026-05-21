@@ -130,6 +130,27 @@ function Pill({ active, onClick, children }) {
   );
 }
 
+function TipBox({ color = "green", title, tips }) {
+  const colors = {
+    green: "bg-green-50 border-green-100 text-green-800",
+    amber: "bg-amber-50 border-amber-100 text-amber-800",
+    blue: "bg-blue-50 border-blue-100 text-blue-800",
+  };
+  return (
+    <div className={`border px-5 py-4 space-y-2 ${colors[color]}`}>
+      <p className="text-xs font-bold tracking-[0.15em] uppercase">{title}</p>
+      <ul className="space-y-1">
+        {tips.map((t, i) => (
+          <li key={i} className="flex items-start gap-2 text-xs leading-relaxed opacity-90">
+            <span className="mt-1.5 w-1 h-1 rounded-full bg-current shrink-0 opacity-60" />
+            {t}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function DropZone({ onFiles }) {
   const [dragging, setDragging] = useState(false);
   const onDrop = useCallback((e) => {
@@ -523,6 +544,13 @@ export default function ListingStudio() {
 
           {/* 01 · Photos */}
           <Section number="01" title="Photos" subtitle="First photo becomes the cover image">
+            <TipBox color="green" title="Tips for Great Photos" tips={[
+              "Recommended size: 2000 × 2000 px minimum — square crops work best",
+              "Use natural, diffused light — avoid harsh flash or deep shadows",
+              "Shoot on a clean, neutral background (white, grey, or linen)",
+              "Include detail shots: signatures, hallmarks, damage, texture",
+              "First photo becomes the cover — make it your strongest image",
+            ]} />
             <DropZone onFiles={handleImageUpload} />
             {uploadingImages && (
               <div className="flex items-center gap-2 text-sm text-neutral-400">
@@ -589,6 +617,12 @@ export default function ListingStudio() {
                 onChange={e => set("title", e.target.value)}
               />
             </Field>
+            <TipBox color="amber" title="Tips for a Great Title" tips={[
+              'Lead with Artist / Maker name if known (e.g. "Henri Matisse — ...")',
+              "Include medium or material (Oil on canvas, Bronze, Sterling Silver…)",
+              'Add date or period ("circa 1920s", "Art Deco, 1935")',
+              "Keep it under 80 characters for best search visibility",
+            ]} />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <Field label="Category" required>
@@ -631,6 +665,13 @@ export default function ListingStudio() {
 
           {/* 03 · Description */}
           <Section number="03" title="Description & Presentation">
+            <TipBox color="blue" title="Tips for a Great Description" tips={[
+              "Open with the most important facts: maker, date, medium, subject",
+              "Describe what makes this piece significant — rarity, exhibition history, style",
+              "Include all physical details: dimensions, materials, technique, origin",
+              "Mention provenance if known: previous owners, purchase receipts, auction records",
+              "Close with context that helps a buyer imagine it in their home or collection",
+            ]} />
             <Field label="Short Summary" hint="shown in search results">
               <LineTextarea
                 rows={2}
@@ -677,6 +718,12 @@ export default function ListingStudio() {
 
           {/* 04 · Pricing */}
           <Section number="04" title="Pricing & Auction" locked={isLive} badge="Auction Config">
+            <TipBox color="green" title="Pricing Tips" tips={[
+              "Set the Prisometer™ price at or slightly below your low estimate to attract early bids",
+              "Use the hidden reserve to protect yourself — it's never disclosed to buyers",
+              "A lower opening price often creates more bidding activity and a higher final result",
+              "The floor price (reserve minus drop allowance) is the lowest you'll accept",
+            ]} />
             <div className="grid grid-cols-2 gap-8">
               <Field label="Estimate Low">
                 <PriceInput placeholder="8,000" value={form.estimated_low} onChange={e => set("estimated_low", e.target.value)} />
