@@ -42,7 +42,7 @@ function Section({ number, title, subtitle, children, locked, badge }) {
     <div
       id={`section-${number}`}
       className={cn(
-        "bg-white border border-neutral-200/70 shadow-sm px-10 py-10",
+        "bg-white border border-neutral-200/70 shadow-sm px-10 py-10 rounded-lg",
         locked && "opacity-50 pointer-events-none"
       )}
     >
@@ -132,7 +132,7 @@ function Pill({ active, onClick, children }) {
 
 function TipBox({ color = "green", title, tips, image }) {
   return (
-    <div className="border border-neutral-200/80 bg-[#f7f5f2] overflow-hidden">
+    <div className="border border-neutral-200/80 bg-[#f7f5f2] overflow-hidden rounded-md">
       <div className="flex gap-0">
         {image && (
           <div className="w-48 shrink-0 hidden sm:block">
@@ -169,7 +169,7 @@ function DropZone({ onFiles }) {
       onDragLeave={() => setDragging(false)}
       onDrop={onDrop}
       className={cn(
-        "flex flex-col items-center justify-center border border-dashed cursor-pointer transition-all duration-200 py-14",
+        "flex flex-col items-center justify-center border border-dashed cursor-pointer transition-all duration-200 py-14 rounded-md",
         dragging ? "border-neutral-500 bg-neutral-50" : "border-neutral-300 hover:border-neutral-500 hover:bg-neutral-50/30"
       )}
     >
