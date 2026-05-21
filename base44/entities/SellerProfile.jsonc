@@ -176,6 +176,22 @@
           }
         }
       }
+    },
+    "listing_studio_theme": {
+      "type": "string",
+      "enum": [
+        "minimal",
+        "warm",
+        "modern",
+        "classic"
+      ],
+      "default": "minimal",
+      "description": "Seller's chosen theme for ListingStudio workspace"
+    },
+    "listing_studio_dark_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable dark mode in ListingStudio"
     }
   },
   "required": [

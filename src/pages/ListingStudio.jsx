@@ -12,39 +12,51 @@ import CustomFieldsEditor from "../components/listing/CustomFieldsEditor";
 import DimensionsInput from "../components/listing/DimensionsInput";
 import CategoryPickerModal from "../components/listing/CategoryPickerModal";
 import AIListingAssistant from "../components/listing/AIListingAssistant";
+import ThemeCustomizer from "../components/listing/ThemeCustomizer";
 import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
+
+const THEMES = {
+  minimal: { light: { bg: "#faf9f7", text: "#1a1a1a", primary: "#d63859" }, dark: { bg: "#0f0e0d", text: "#f5f5f5", primary: "#ff4081" } },
+  warm: { light: { bg: "#fef5f1", text: "#3a2520", primary: "#c85a54" }, dark: { bg: "#1a0f0a", text: "#fbe8e0", primary: "#e8956a" } },
+  modern: { light: { bg: "#f0f4f8", text: "#1a2a3a", primary: "#0066cc" }, dark: { bg: "#0a1628", text: "#e8f0ff", primary: "#4d94ff" } },
+  classic: { light: { bg: "#fffbf5", text: "#2c2c2c", primary: "#8b5a3c" }, dark: { bg: "#1a1410", text: "#f5f1ec", primary: "#d4a574" } }
+};
 
 const LIVE_STATUSES = ["first_bids", "prisometer", "pending_review"];
 const CONDITIONS = ["excellent", "very_good", "good", "fair", "as_is"];
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
-function SectionHeader({ number, title, subtitle, locked, badge }) {
+function SectionHeader({ number, title, subtitle, locked, badge, darkMode }) {
   return (
     <div className="mb-8 flex items-start gap-5">
-      <span className="font-serif text-[64px] leading-none text-neutral-150 select-none tabular-nums" style={{color:'#e8e4df'}}>{number}</span>
+      <span className="font-serif text-[64px] leading-none select-none tabular-nums" style={{color: darkMode ? '#444' : '#e8e4df'}}>{number}</span>
       <div className="pt-3">
         <div className="flex items-center gap-3">
-          {locked && <Lock className="w-3.5 h-3.5 text-neutral-300" />}
-          <h2 className="text-base font-bold tracking-[0.15em] uppercase text-neutral-800">{title}</h2>
+          {locked && <Lock className="w-3.5 h-3.5" style={{color: darkMode ? '#666' : '#999'}} />}
+          <h2 className="text-base font-bold tracking-[0.15em] uppercase" style={{color: darkMode ? '#e8e8e8' : '#222'}}>{title}</h2>
           {badge && (
-            <span className="text-[10px] tracking-[0.12em] uppercase border border-neutral-200 text-neutral-400 px-2.5 py-1">{badge}</span>
+            <span className="text-[10px] tracking-[0.12em] uppercase border px-2.5 py-1" style={{borderColor: darkMode ? '#555' : '#ddd', color: darkMode ? '#aaa' : '#666'}}>{badge}</span>
           )}
         </div>
-        {subtitle && <p className="text-sm text-neutral-400 mt-1 leading-snug">{subtitle}</p>}
+        {subtitle && <p className="text-sm mt-1 leading-snug" style={{color: darkMode ? '#aaa' : '#999'}}>{subtitle}</p>}
       </div>
     </div>
   );
 }
 
-function Section({ number, title, subtitle, children, locked, badge }) {
+function Section({ number, title, subtitle, children, locked, badge, themeColors, darkMode }) {
   return (
     <div
       id={`section-${number}`}
       className={cn(
-        "bg-white border border-neutral-200/70 shadow-sm px-10 py-10 rounded-lg",
+        "border shadow-sm px-10 py-10 rounded-lg",
         locked && "opacity-50 pointer-events-none"
       )}
+      style={{
+        backgroundColor: darkMode ? "#1a1a1a" : "#ffffff",
+        borderColor: darkMode ? "#333" : "#ddd"
+      }}
     >
       <SectionHeader number={number} title={title} subtitle={subtitle} locked={locked} badge={badge} />
       <div className="space-y-8">{children}</div>
@@ -202,6 +214,8 @@ export default function ListingStudio() {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [theme, setTheme] = useState("minimal");
+  const [darkMode, setDarkMode] = useState(false);
 
   const isLive = LIVE_STATUSES.includes(itemStatus);
   const isUnsold = itemStatus === "unsold";
@@ -237,6 +251,8 @@ export default function ListingStudio() {
       ]);
       const profile = profiles[0] || null;
       setSellerProfile(profile);
+      setTheme(profile?.listing_studio_theme || "minimal");
+      setDarkMode(profile?.listing_studio_dark_mode || false);
       if (item) {
         setItemStatus(item.status || "draft");
         const template = profile?.listing_custom_fields_template || [];
@@ -451,6 +467,20 @@ export default function ListingStudio() {
     saveFieldTemplate(fields);
   };
 
+  const handleThemeChange = async (newTheme) => {
+    setTheme(newTheme);
+    if (sellerProfile?.id) {
+      await base44.entities.SellerProfile.update(sellerProfile.id, { listing_studio_theme: newTheme });
+    }
+  };
+
+  const handleDarkModeChange = async (newDarkMode) => {
+    setDarkMode(newDarkMode);
+    if (sellerProfile?.id) {
+      await base44.entities.SellerProfile.update(sellerProfile.id, { listing_studio_dark_mode: newDarkMode });
+    }
+  };
+
   const floorPrice = form.reserve_price && form.below_reserve_percent
     ? (form.reserve_price * (1 - form.below_reserve_percent / 100)).toFixed(0)
     : null;
@@ -464,12 +494,13 @@ export default function ListingStudio() {
   }
 
   const statusLabel = isLive ? "Live" : isUnsold ? "Unsold" : isEditMode ? "Draft" : "New";
+  const themeColors = THEMES[theme][darkMode ? "dark" : "light"];
 
   return (
-    <div className="min-h-screen bg-[#faf9f7] font-sans">
+    <div className="min-h-screen font-sans" style={{ backgroundColor: themeColors.bg, color: themeColors.text }}>
 
       {/* ── Top Bar ─────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-[#faf9f7]/95 backdrop-blur-sm border-b border-neutral-200/60">
+      <header className="sticky top-0 z-30 backdrop-blur-sm border-b" style={{ backgroundColor: `${themeColors.bg}95`, borderColor: darkMode ? "#444" : "#ddd" }}>
         <div className="w-full px-6 md:px-10 h-13 flex items-center gap-4">
           <Link
             to={fromConsignorId ? `/seller/consignor/${fromConsignorId}` : "/seller"}
@@ -499,6 +530,13 @@ export default function ListingStudio() {
           </span>
 
           <div className="flex-1" />
+
+          <ThemeCustomizer 
+            theme={theme} 
+            darkMode={darkMode}
+            onThemeChange={handleThemeChange}
+            onDarkModeChange={handleDarkModeChange}
+          />
 
           <div className="flex items-center gap-5 shrink-0">
             {editId && (
@@ -596,7 +634,7 @@ export default function ListingStudio() {
       )}
 
       {/* ── Main Layout ──────────────────────────────────────────────────── */}
-      <div className="w-full px-6 md:px-10 py-10 grid grid-cols-1 xl:grid-cols-[160px_1fr_400px] gap-8">
+      <div className="w-full px-6 md:px-10 py-10 grid grid-cols-1 xl:grid-cols-[160px_1fr_400px] gap-8 pe-[80px]">
 
         {/* ── Section Navigator ─────────────────────────────────────────── */}
         <div className="hidden xl:block">
@@ -635,7 +673,7 @@ export default function ListingStudio() {
         <div className="space-y-5 min-w-0">
 
           {/* 01 · Photos */}
-          <Section number="01" title="Photos" subtitle="First photo becomes the cover image">
+          <Section number="01" title="Photos" subtitle="First photo becomes the cover image" themeColors={themeColors} darkMode={darkMode}>
             <DropZone onFiles={handleImageUpload} />
             <TipBox title="Tips for Great Photos"
               image="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80"
@@ -700,7 +738,7 @@ export default function ListingStudio() {
           </Section>
 
           {/* 02 · Item Details */}
-          <Section number="02" title="Item Details" locked={isLive}>
+          <Section number="02" title="Item Details" locked={isLive} themeColors={themeColors} darkMode={darkMode}>
             <Field label="Title" required>
               <LineInput
                 large
@@ -757,7 +795,7 @@ export default function ListingStudio() {
           </Section>
 
           {/* 03 · Description */}
-          <Section number="03" title="Description & Presentation">
+          <Section number="03" title="Description & Presentation" themeColors={themeColors} darkMode={darkMode}>
             <TipBox title="Tips for a Great Description"
               image="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"
               tips={[
@@ -814,7 +852,7 @@ export default function ListingStudio() {
           </Section>
 
           {/* 04 · Pricing */}
-          <Section number="04" title="Pricing & Auction" locked={isLive} badge="Auction Config">
+          <Section number="04" title="Pricing & Auction" locked={isLive} badge="Auction Config" themeColors={themeColors} darkMode={darkMode}>
             <TipBox title="Pricing Tips" tips={[
               "Set the PRI$OMETER starting price near the high end of what a serious buyer might pay",
               "The reserve should protect the seller, but still leave room for bidding activity and price movement",
@@ -880,7 +918,7 @@ export default function ListingStudio() {
           </Section>
 
           {/* 05 · Logistics */}
-          <Section number="05" title="Inventory & Logistics">
+          <Section number="05" title="Inventory & Logistics" themeColors={themeColors} darkMode={darkMode}>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               <Field label="Inventory No." visibility="private">
                 <LineInput placeholder="EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
@@ -966,7 +1004,7 @@ export default function ListingStudio() {
           </Section>
 
           {/* 06 · Custom Fields */}
-          <Section number="06" title="Custom Tracking Fields" subtitle="Internal fields saved to your profile template">
+          <Section number="06" title="Custom Tracking Fields" subtitle="Internal fields saved to your profile template" themeColors={themeColors} darkMode={darkMode}>
             <CustomFieldsEditor fields={form.custom_fields} onChange={handleCustomFieldsChange} />
           </Section>
 
@@ -974,7 +1012,7 @@ export default function ListingStudio() {
 
         {/* ── RIGHT: AI Assistant ────────────────────────────────────────── */}
         <div className="hidden xl:flex flex-col">
-          <div className="sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-hide pb-4 bg-white border border-neutral-200/70 shadow-sm">
+          <div className="sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-hide pb-4 border shadow-sm" style={{backgroundColor: darkMode ? '#1a1a1a' : '#ffffff', borderColor: darkMode ? '#333' : '#ddd'}}>
             <AIListingAssistant form={form} onApply={(field, value) => set(field, value)} />
           </div>
         </div>
