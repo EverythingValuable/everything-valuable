@@ -1,7 +1,126 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Sparkles, CheckCircle2, Circle, AlertCircle, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { Sparkles, CheckCircle2, Circle, AlertCircle, RefreshCw, ChevronDown, ChevronUp, Lightbulb, Camera, Type, AlignLeft, DollarSign, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// ── Tips Section ──────────────────────────────────────────────────────────────
+const TIPS = [
+  {
+    id: "photos",
+    icon: Camera,
+    title: "Photo Tips",
+    tips: [
+      "Shoot in natural light — avoid flash, which flattens texture and detail.",
+      "First photo is the cover: use a clean, well-lit front-facing shot against a neutral background.",
+      "Include 5–10 photos minimum: front, back, sides, close-ups of marks/signatures, and any damage.",
+      "Capture marks, stamps, labels, and signatures in sharp close-up.",
+      "For art, photograph the frame, stretcher bar, and any labels on the reverse.",
+      "Show scale with a ruler or common object for furniture and large items.",
+    ],
+  },
+  {
+    id: "title",
+    icon: Type,
+    title: "Title Tips",
+    tips: [
+      "Lead with the maker or artist name if known — it's the first thing buyers search.",
+      "Include medium or material: e.g. 'Oil on Canvas', 'Sterling Silver', 'Carved Walnut'.",
+      "Add period or date when known: 'circa 1920s', 'Victorian', 'Mid-Century'.",
+      "Keep it under 80 characters so it displays fully in search results.",
+      "Avoid vague words like 'antique' or 'vintage' without further detail.",
+    ],
+  },
+  {
+    id: "description",
+    icon: AlignLeft,
+    title: "Description Tips",
+    tips: [
+      "Open with the most important facts: maker, date, medium, subject or form.",
+      "Describe what makes this piece significant — exhibition history, rarity, style.",
+      "Include all physical details: dimensions, materials, technique, origin.",
+      "Be specific about condition — buyers trust honest, detailed reporting.",
+      "Mention provenance if known: previous owners, purchase receipts, auction records.",
+      "Close with context that helps a buyer imagine the piece in their home or collection.",
+    ],
+  },
+  {
+    id: "pricing",
+    icon: DollarSign,
+    title: "Pricing Tips",
+    tips: [
+      "Set the Prisometer™ price at or slightly below your low estimate to attract early bids.",
+      "Use the hidden reserve to protect yourself — it's never disclosed to buyers.",
+      "The floor price (reserve minus drop allowance) is the lowest you'll accept.",
+      "Comparable sales at auction are the best guide — search recent results.",
+      "A lower opening price often creates more bidding activity and a higher final result.",
+    ],
+  },
+  {
+    id: "condition",
+    icon: Star,
+    title: "Condition Tips",
+    tips: [
+      "Be precise: 'hairline crack to rim, approx 1 inch' beats 'minor damage'.",
+      "Mention any restoration, cleaning, relining, or re-gilding — buyers will inspect.",
+      "For jewelry, note any missing stones, replaced clasps, or re-sizing.",
+      "For watches, state if serviced, running condition, and original/replacement parts.",
+      "Honest condition reports reduce disputes and build long-term buyer trust.",
+    ],
+  },
+];
+
+function TipsAccordion() {
+  const [openId, setOpenId] = useState(null);
+  return (
+    <div className="border-t border-neutral-100">
+      <button
+        className="w-full px-5 py-4 flex items-center justify-between hover:bg-neutral-50 transition-colors"
+        onClick={() => setOpenId(openId === "__tips__" ? null : "__tips__")}
+      >
+        <div className="flex items-center gap-2">
+          <Lightbulb className="w-3.5 h-3.5 text-neutral-500" />
+          <span className="text-xs font-bold tracking-[0.18em] uppercase text-neutral-600">Listing Tips</span>
+        </div>
+        {openId === "__tips__"
+          ? <ChevronUp className="w-4 h-4 text-neutral-400" />
+          : <ChevronDown className="w-4 h-4 text-neutral-400" />
+        }
+      </button>
+
+      {openId === "__tips__" && (
+        <div className="pb-2">
+          {TIPS.map(({ id, icon: Icon, title, tips }) => (
+            <div key={id} className="border-t border-neutral-50">
+              <button
+                className="w-full px-5 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors"
+                onClick={() => setOpenId(openId === id ? "__tips__" : id)}
+              >
+                <div className="flex items-center gap-2">
+                  <Icon className="w-3.5 h-3.5 text-neutral-400" />
+                  <span className="text-xs font-semibold tracking-[0.12em] uppercase text-neutral-500">{title}</span>
+                </div>
+                {openId === id
+                  ? <ChevronUp className="w-3.5 h-3.5 text-neutral-300" />
+                  : <ChevronDown className="w-3.5 h-3.5 text-neutral-300" />
+                }
+              </button>
+              {openId === id && (
+                <ul className="px-5 pb-4 space-y-2.5">
+                  {tips.map((tip, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="mt-1.5 w-1 h-1 rounded-full bg-neutral-300 shrink-0" />
+                      <span className="text-xs text-neutral-500 leading-relaxed">{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Listing Strength Score ────────────────────────────────────────────────────
 function ListingStrength({ form }) {
@@ -229,6 +348,7 @@ export default function AIListingAssistant({ form, onApply }) {
       </div>
       <ListingStrength form={form} />
       <BuyerConfidence form={form} />
+      <TipsAccordion />
       <SmartSuggestions form={form} onApply={onApply} />
     </div>
   );
