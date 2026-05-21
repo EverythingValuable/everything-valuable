@@ -56,9 +56,9 @@ function MeasurementSet({ set, onChange, onRemove, showRemove, unit: globalUnit,
         )}
       </div>
 
-      {/* W × H × D */}
+      {/* H × W × D */}
       <div className="grid grid-cols-3 gap-3">
-        {[["w", "Width"], ["h", "Height"], ["d", "Depth"]].map(([key, label]) => (
+        {[["h", "Height"], ["w", "Width"], ["d", "Depth"]].map(([key, label]) => (
           <div key={key} className="space-y-1">
             <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">{label}</label>
             <div className="relative">
