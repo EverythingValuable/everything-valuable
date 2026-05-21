@@ -201,6 +201,7 @@ export default function ListingStudio() {
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const isLive = LIVE_STATUSES.includes(itemStatus);
   const isUnsold = itemStatus === "unsold";
@@ -390,7 +391,8 @@ export default function ListingStudio() {
       await base44.entities.Item.create(buildPayload({ seller_email: user.email, seller_name: user.full_name, status: "draft" }));
     }
     setSaving(false);
-    navigate("/seller");
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   const relistNow = async () => {
@@ -518,9 +520,9 @@ export default function ListingStudio() {
               </button>
             )}
             <button onClick={saveDraft} disabled={saving}
-              className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-800 transition-colors">
+              className={cn("hidden sm:flex items-center gap-1.5 text-xs transition-colors", saved ? "text-emerald-600" : "text-neutral-500 hover:text-neutral-800")}>
               <Save className="w-3.5 h-3.5" />
-              {saving ? "Saving…" : "Save Draft"}
+              {saving ? "Saving…" : saved ? "Saved!" : "Save Draft"}
             </button>
             {!isLive && (
               <button
