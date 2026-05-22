@@ -18,15 +18,15 @@ export default function Home() {
   const { data: liveItems = [], isLoading: loadingLive } = useQuery({
     queryKey: ["items-live"],
     queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 8),
-    refetchInterval: 5 * 60 * 1000,
-    staleTime: 3 * 60 * 1000,
+    refetchInterval: 60000,
+    staleTime: 30000,
   });
 
   const { data: previewItems = [], isLoading: loadingPreview } = useQuery({
     queryKey: ["items-preview"],
     queryFn: () => base44.entities.Item.filter({ status: "first_bids" }, "-created_date", 10),
-    refetchInterval: 5 * 60 * 1000,
-    staleTime: 3 * 60 * 1000,
+    refetchInterval: 60000,
+    staleTime: 30000,
   });
 
   const allFeatured = [...(liveItems || []), ...(previewItems || [])].slice(0, 16);
