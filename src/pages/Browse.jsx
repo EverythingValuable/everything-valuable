@@ -204,7 +204,7 @@ export default function Browse() {
     <div className="min-h-screen">
       {/* Header */}
       <div className="border-b border-border bg-card/50">
-        <div className="px-4 md:px-6 py-8 md:py-10">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-8 md:py-10">
           <h1 className="font-serif text-3xl md:text-4xl font-semibold text-foreground">
             {activeLabel ? activeLabel : "Browse the Marketplace"}
           </h1>
@@ -214,7 +214,7 @@ export default function Browse() {
         </div>
       </div>
 
-      <div className="px-4 md:px-6 py-8">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-8">
         {/* Top filter bar */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <div className="relative flex-1 min-w-[200px] max-w-md">

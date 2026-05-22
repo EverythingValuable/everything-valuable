@@ -82,7 +82,7 @@ export default function Home() {
 
       {/* Editorial / Trust block */}
       <section className="py-20 md:py-28 bg-foreground text-background">
-        <div className="px-4 md:px-6">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
