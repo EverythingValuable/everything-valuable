@@ -85,9 +85,6 @@ export default function Home() {
       {/* Sellers Section */}
       <SellersSection />
 
-      {/* How it works */}
-      <HowItWorksPreview />
-
       {/* CTA */}
       <section className="py-20 md:py-28 text-center">
         <div className="max-w-2xl mx-auto px-6">
