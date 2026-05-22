@@ -6,6 +6,8 @@ import FeaturedItems from "../components/home/FeaturedItems";
 import CategoryCircles from "../components/home/CategoryCircles";
 import HowItWorksPreview from "../components/home/HowItWorksPreview";
 import RecentlyViewed from "../components/home/RecentlyViewed";
+import PrisometerExplainer from "../components/home/PrisometerExplainer";
+import SellersSection from "../components/home/SellersSection";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Search } from "lucide-react";
@@ -76,6 +78,12 @@ export default function Home() {
         subtitle=""
         isLoading={featuredLoading}
       />
+
+      {/* Prisometer Explainer */}
+      <PrisometerExplainer />
+
+      {/* Sellers Section */}
+      <SellersSection />
 
       {/* How it works */}
       <HowItWorksPreview />
