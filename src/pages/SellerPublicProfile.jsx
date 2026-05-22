@@ -30,7 +30,13 @@ export default function SellerPublicProfile() {
 
   const { data: items = [], isLoading: loadingItems } = useQuery({
     queryKey: ["seller-items", sellerEmail],
-    queryFn: () => base44.entities.Item.filter({ seller_email: sellerEmail, status: ["first_bids", "prisometer"] }),
+    queryFn: async () => {
+      const [firstBids, prisometer] = await Promise.all([
+        base44.entities.Item.filter({ seller_email: sellerEmail, status: "first_bids" }),
+        base44.entities.Item.filter({ seller_email: sellerEmail, status: "prisometer" }),
+      ]);
+      return [...firstBids, ...prisometer];
+    },
     enabled: !!sellerEmail,
   });
 
