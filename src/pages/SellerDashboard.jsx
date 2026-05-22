@@ -195,9 +195,11 @@ function SellerDashboardInner() {
 
   return (
     <div className="flex min-h-screen bg-[hsl(40,22%,96%)]">
-      <DashboardSidebar />
+      <div className="sticky top-0 h-screen shrink-0 overflow-y-auto">
+        <DashboardSidebar />
+      </div>
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 min-w-0">
         {/* Top bar */}
         <div className="sticky top-0 z-10 flex items-start justify-between border-b border-border/60 bg-[hsl(40,22%,96%)]/95 px-5 py-4 backdrop-blur lg:px-8">
           <div>
