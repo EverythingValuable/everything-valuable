@@ -18,6 +18,7 @@ import SimilarLots from "@/components/product/SimilarLots";
 import SetPriceAlertModal from "@/components/product/SetPriceAlertModal";
 import ContactSupportModal from "@/components/shared/ContactSupportModal";
 import LocationFlag from "@/components/shared/LocationFlag";
+import SellerStorefront from "@/components/product/SellerStorefront";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // Small live price display for the sticky mobile bar
@@ -420,6 +421,7 @@ export default function ProductDetailContent({ itemId }) {
               </div>
 
               <div className="px-0">
+              <SellerStorefront item={item} sellerProfile={sellerProfile} />
               <SimilarLots item={item} />
               </div>
 
