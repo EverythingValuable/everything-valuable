@@ -80,23 +80,24 @@ export default function ProductDrawer({ itemId, onClose }) {
     );
   }
 
-  // Desktop: side panel
+  // Desktop: near-full-page centered modal
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
         <motion.div
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
         />
         <motion.div
-          className="relative ml-auto w-full max-w-4xl h-full bg-background shadow-2xl flex flex-col overflow-hidden"
-          initial={{ x: "100%" }}
-          animate={{ x: 0 }}
-          exit={{ x: "100%" }}
-          transition={{ type: "spring", damping: 30, stiffness: 300 }}
+          className="relative w-full bg-background shadow-2xl flex flex-col overflow-hidden rounded-lg"
+          style={{ maxWidth: "1100px", height: "92vh" }}
+          initial={{ opacity: 0, scale: 0.97, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.97, y: 16 }}
+          transition={{ type: "spring", damping: 32, stiffness: 320 }}
         >
           <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0 bg-background/95 backdrop-blur-sm z-10">
             <Link
