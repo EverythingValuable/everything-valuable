@@ -79,11 +79,11 @@ export default function Home() {
         isLoading={featuredLoading}
       />
 
-      {/* Prisometer Explainer */}
-      <PrisometerExplainer />
-
       {/* Sellers Section */}
       <SellersSection />
+
+      {/* Prisometer Explainer */}
+      <PrisometerExplainer />
 
 
     </div>
