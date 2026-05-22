@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ChevronDown, ChevronUp, Lock, Unlock, UserCheck } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Lock, Unlock, UserCheck, Mail } from "lucide-react";
 
 const ROLE_COLORS = {
   buyer: "bg-blue-50 text-blue-700 border-blue-200",
@@ -41,6 +41,18 @@ function UserRow({ user: u, currentUser }) {
 
   const isSelf = u.email === currentUser?.email;
   const canEditRole = currentUser?.role === "super_admin" && !isSelf;
+  const isSeller = u.role === "seller";
+
+  const resendMutation = useMutation({
+    mutationFn: async () => {
+      const apps = await base44.entities.SellerApplication.filter({ user_email: u.email });
+      const approved = apps.find(a => a.application_status === "approved");
+      if (!approved) throw new Error("No approved application found for this seller.");
+      return base44.functions.invoke("resendWelcomeEmail", { application_id: approved.id });
+    },
+    onSuccess: () => alert("Welcome email resent successfully!"),
+    onError: (err) => alert(err.message || "Failed to resend email."),
+  });
 
   return (
     <div className="border border-border rounded-2xl bg-card overflow-hidden">
@@ -111,6 +123,11 @@ function UserRow({ user: u, currentUser }) {
             {!isSelf && u.account_status === "suspended" && (
               <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => updateMutation.mutate({ account_status: "active" })} disabled={updateMutation.isPending}>
                 <Unlock className="w-3.5 h-3.5 mr-1" /> Restore
+              </Button>
+            )}
+            {isSeller && (
+              <Button size="sm" variant="outline" onClick={() => resendMutation.mutate()} disabled={resendMutation.isPending}>
+                <Mail className="w-3.5 h-3.5 mr-1" /> {resendMutation.isPending ? "Sending…" : "Resend Welcome Email"}
               </Button>
             )}
             {canEditRole && (
