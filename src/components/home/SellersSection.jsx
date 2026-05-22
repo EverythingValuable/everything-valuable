@@ -5,8 +5,16 @@ import { ArrowRight } from "lucide-react";
 
 export default function SellersSection() {
   return (
-    <section className="py-16 md:py-24 bg-foreground text-background">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-16 md:py-24 bg-foreground text-background relative overflow-hidden">
+      {/* Background image with low opacity */}
+      <div className="absolute inset-0 opacity-15 pointer-events-none">
+        <img
+          src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/4df491702_Banner5.jpg"
+          alt=""
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left: Text Content */}
           <div>
@@ -27,8 +35,7 @@ export default function SellersSection() {
               </Link>
               <Link to="/browse">
                 <Button
-                  variant="outline"
-                  className="border-background/30 text-background hover:bg-background/10 gap-2 rounded-full h-12 px-6 whitespace-nowrap"
+                  className="bg-background text-foreground hover:bg-background/90 gap-2 rounded-full h-12 px-6 whitespace-nowrap"
                 >
                   Explore the Marketplace <ArrowRight className="w-4 h-4" />
                 </Button>
