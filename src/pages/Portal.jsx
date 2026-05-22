@@ -94,6 +94,11 @@ export default function Portal() {
 
 
 
+        {/* Left red divider */}
+        <div className="absolute left-6 top-0 bottom-0 w-1 bg-primary md:left-10 lg:left-16 lg:w-1.5" />
+        {/* Right red divider */}
+        <div className="absolute right-6 top-0 bottom-0 w-1 bg-primary md:right-10 lg:right-16 lg:w-1.5" />
+
         <motion.div
           variants={stagger}
           initial="hidden"
