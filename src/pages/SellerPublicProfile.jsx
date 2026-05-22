@@ -213,8 +213,8 @@ export default function SellerPublicProfile() {
           </p>
         ) : (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {filtered.map(item => (
-              <ItemCard key={item.id} item={item} />
+            {filtered.map((item, i) => (
+              <ItemCard key={item.id} item={item} index={i} sellerProfileOverride={profile} />
             ))}
           </div>
         )}

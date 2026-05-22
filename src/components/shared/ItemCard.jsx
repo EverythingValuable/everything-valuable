@@ -77,7 +77,7 @@ function useCountdown(endDateStr) {
   return timeLeft;
 }
 
-export default function ItemCard({ item, index = 0 }) {
+export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
   const status = statusConfig[item.status] || {};
   const livePrice = useLivePrice(item);
   const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
@@ -86,12 +86,14 @@ export default function ItemCard({ item, index = 0 }) {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
 
-  const { data: sellerProfile } = useQuery({
+  const { data: fetchedSellerProfile } = useQuery({
     queryKey: ["seller-profile-card", item.seller_email],
     queryFn: () => base44.entities.SellerProfile.filter({ user_email: item.seller_email }).then(r => r[0]),
-    enabled: !!item.seller_email,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    enabled: !!item.seller_email && !sellerProfileOverride,
+    staleTime: 1000 * 60 * 15,
+    gcTime: 1000 * 60 * 30,
   });
+  const sellerProfile = sellerProfileOverride || fetchedSellerProfile;
   const [watchlistEntry, setWatchlistEntry] = useState(null);
 
   useEffect(() => {
@@ -100,10 +102,13 @@ export default function ItemCard({ item, index = 0 }) {
 
   useEffect(() => {
     if (!user?.email) return;
+    // Stagger watchlist checks by index to avoid simultaneous bursts
+    const delay = 200 + (index % 10) * 150;
     const timeout = setTimeout(() => {
       base44.entities.WatchlistItem.filter({ item_id: item.id, user_email: user.email })
-        .then(r => setWatchlistEntry(r[0] || null));
-    }, 50);
+        .then(r => setWatchlistEntry(r[0] || null))
+        .catch(() => {});
+    }, delay);
     return () => clearTimeout(timeout);
   }, [user?.email, item.id]);
 
