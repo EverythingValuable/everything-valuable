@@ -368,155 +368,228 @@ export default function InventoryTable({ items, view, limit }) {
         </div>
       )}
 
-      {/* ── Rows ── */}
+      {/* ── Table ── */}
       {displayed.length > 0 && (
-        <div className="divide-y divide-border/40 border border-border bg-white">
-          {displayed.map(item => {
-            const price = itemPriceDisplay(item);
-            const status = STATUS_CONFIG[item.status] || STATUS_CONFIG.draft;
-            const isLive = ["first_bids", "prisometer", "pending_review"].includes(item.status);
-            const isConsignment = item.ownership_type === "consignment";
-            const hasDesc = !!item.description;
-            const descOpen = expandedDesc.has(item.id);
+        <div className="rounded-xl border border-border overflow-hidden bg-white shadow-sm">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border bg-[hsl(40,15%,97%)]">
+                <th className="px-4 py-3 w-10">
+                  <input type="checkbox" className="rounded" checked={selected.size === displayed.length && displayed.length > 0} onChange={toggleAll} />
+                </th>
+                <th className="text-left px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase">Item</th>
+                <th className="text-left px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden lg:table-cell whitespace-nowrap">Inv #</th>
+                <th className="text-left px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden md:table-cell">Category</th>
+                <th className="text-left px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase">Status</th>
+                <th className="text-right px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden lg:table-cell">Price / Reserve</th>
+                <th className="text-right px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden xl:table-cell">Bids</th>
+                <th className="text-center px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden xl:table-cell">Insights</th>
+                <th className="text-left px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase hidden xl:table-cell">Timer</th>
+                <th className="px-4 py-3 w-28 text-[10px] font-bold tracking-[0.12em] text-muted-foreground/50 uppercase text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/50">
+              {displayed.map(item => {
+                const price = itemPriceDisplay(item);
+                const status = STATUS_CONFIG[item.status] || STATUS_CONFIG.draft;
+                const isLive = ["first_bids", "prisometer", "pending_review"].includes(item.status);
+                const isConsignment = item.ownership_type === "consignment";
 
-            // Timer
-            let timerEl = null;
-            if (item.status === "first_bids" && item.first_bids_end) {
-              timerEl = (
-                <span className="text-[10px] text-blue-600 flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {isPast(new Date(item.first_bids_end)) ? "Ended" : formatDistanceToNow(new Date(item.first_bids_end), { addSuffix: true })}
-                </span>
-              );
-            } else if (item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours) {
-              const end = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000);
-              timerEl = (
-                <span className={`text-[10px] flex items-center gap-1 ${isPast(end) ? "text-muted-foreground/50" : "text-red-600"}`}>
-                  <Clock className="w-3 h-3" />
-                  {isPast(end) ? "Expired" : formatDistanceToNow(end, { addSuffix: true })}
-                </span>
-              );
-            }
+                const hasDesc = !!item.description;
+                const descOpen = expandedDesc.has(item.id);
 
-            return (
-              <React.Fragment key={item.id}>
-                <div className={`flex items-center gap-4 px-5 py-4 hover:bg-neutral-50/60 transition-colors group ${selected.has(item.id) ? "bg-primary/3" : ""}`}>
-                  {/* Checkbox */}
-                  <input type="checkbox" className="rounded shrink-0" checked={selected.has(item.id)} onChange={() => toggleSelect(item.id)} />
-
-                  {/* Thumbnail */}
-                  {item.images?.[0] ? (
-                    <button
-                      onClick={() => setLightbox({ images: item.images, startIndex: 0 })}
-                      className="relative shrink-0 w-14 h-14 overflow-hidden border border-border/40 group/img focus:outline-none"
-                    >
-                      <img src={item.images[0]} alt="" className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-200" />
-                      {item.images.length > 1 && (
-                        <span className="absolute bottom-0.5 right-0.5 bg-black/60 text-white text-[9px] font-bold px-1 leading-tight">+{item.images.length - 1}</span>
+                return (
+                  <React.Fragment key={item.id}>
+                  <tr className={`transition-colors hover:bg-[hsl(40,20%,99%)] ${selected.has(item.id) ? "bg-primary/3" : ""}`}>
+                    <td className="px-4 py-3.5">
+                      <input type="checkbox" className="rounded" checked={selected.has(item.id)} onChange={() => toggleSelect(item.id)} />
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-3">
+                        {item.images?.[0]
+                          ? (
+                            <button
+                              onClick={() => setLightbox({ images: item.images, startIndex: 0 })}
+                              className="relative shrink-0 w-14 h-14 rounded-lg overflow-hidden border border-border/50 shadow-sm group focus:outline-none"
+                            >
+                              <img src={item.images[0]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                <ZoomIn className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </div>
+                              {item.images.length > 1 && (
+                                <span className="absolute bottom-0.5 right-0.5 bg-black/60 text-white text-[9px] font-bold px-1 rounded leading-tight">
+                                  +{item.images.length - 1}
+                                </span>
+                              )}
+                            </button>
+                          )
+                          : <div className="w-14 h-14 rounded-lg bg-secondary shrink-0 flex items-center justify-center text-muted-foreground/40 text-[10px]">No img</div>
+                        }
+                        <div className="min-w-0 flex-1">
+                          <p className="font-serif text-[14px] font-semibold text-foreground line-clamp-2 leading-snug">{item.title}</p>
+                          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                            {item.maker && <span className="text-[11px] text-muted-foreground/70">{item.maker}</span>}
+                            {item.period && <span className="text-[11px] text-muted-foreground/40">· {item.period}</span>}
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                            {isConsignment && (
+                              <span className="inline-flex items-center gap-1 text-[10px] bg-violet-50 text-violet-700 border border-violet-100 px-1.5 py-0.5 rounded font-semibold">
+                                <Handshake className="w-2.5 h-2.5" /> Consignment
+                              </span>
+                            )}
+                            {item.lot_number && (
+                              <span className="text-[10px] bg-secondary text-muted-foreground border border-border px-1.5 py-0.5 rounded font-mono">
+                                Lot #{item.lot_number}
+                              </span>
+                            )}
+                            {hasDesc && (
+                              <button
+                                onClick={() => toggleDesc(item.id)}
+                                className="text-[10px] text-primary/70 hover:text-primary underline underline-offset-2 transition-colors"
+                              >
+                                {descOpen ? "Hide description" : "Show description"}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5 hidden lg:table-cell">
+                      {item.inventory_number
+                        ? <span className="font-mono text-[12px] font-semibold text-foreground">{item.inventory_number}</span>
+                        : <span className="text-[11px] text-muted-foreground/30">—</span>
+                      }
+                    </td>
+                    <td className="px-4 py-3.5 hidden md:table-cell">
+                      <span className="capitalize text-[11px] text-muted-foreground">{item.category?.replace(/_/g, " ") || "—"}</span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-semibold border ${status.cls}`}>
+                        {item.status === "prisometer" && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse inline-block" />
+                        )}
+                        {status.label}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 hidden lg:table-cell text-right">
+                      <p className={`font-price text-sm font-bold ${price.green ? "text-emerald-700" : "text-foreground"}`}>{price.value}</p>
+                      {item.reserve_price > 0 && (
+                        <div className="flex items-center justify-end gap-1 mt-1">
+                          <ShieldCheck className="w-3 h-3 text-muted-foreground/40" />
+                          <span className="text-[10px] text-muted-foreground/50">Reserve: ${item.reserve_price.toLocaleString()}</span>
+                        </div>
                       )}
-                    </button>
-                  ) : (
-                    <div className="w-14 h-14 bg-neutral-100 shrink-0" />
+                    </td>
+                    <td className="px-4 py-3.5 hidden xl:table-cell text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <Gavel className="w-3.5 h-3.5 text-muted-foreground/40" />
+                        <span className="font-price text-sm font-semibold text-foreground">{item.bid_count || 0}</span>
+                      </div>
+                      {item.highest_bid > 0 && (
+                        <p className="text-[10px] text-muted-foreground/50 mt-0.5">High: ${item.highest_bid.toLocaleString()}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-3.5 hidden xl:table-cell">
+                      <div className="flex flex-col gap-1 items-center">
+                        <div className="flex items-center gap-1">
+                          <Eye className="w-3 h-3 text-muted-foreground/40" />
+                          <span className="text-[11px] font-semibold text-foreground">{item.view_count || 0}</span>
+                          <span className="text-[10px] text-muted-foreground/50">views</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Heart className="w-3 h-3 text-rose-300" />
+                          <span className="text-[11px] font-semibold text-foreground">{item.watcher_count || 0}</span>
+                          <span className="text-[10px] text-muted-foreground/50">watching</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5 hidden xl:table-cell">
+                      {item.status === "first_bids" && item.first_bids_end && (
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                          <div>
+                            <p className="text-[11px] font-medium text-blue-700">
+                              {isPast(new Date(item.first_bids_end)) ? "Ended" : formatDistanceToNow(new Date(item.first_bids_end), { addSuffix: true })}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground/50">1stBid$ ends</p>
+                          </div>
+                        </div>
+                      )}
+                      {item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours && (() => {
+                        const end = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000);
+                        return (
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                            <div>
+                              <p className={`text-[11px] font-medium ${isPast(end) ? "text-muted-foreground" : "text-red-700"}`}>
+                                {isPast(end) ? "Expired" : formatDistanceToNow(end, { addSuffix: true })}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground/50">PRI$OMETER ends</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                      {!["first_bids", "prisometer"].includes(item.status) && (
+                        <span className="text-[11px] text-muted-foreground/40">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                        {item.status === "pending_review" ? (
+                          <>
+                            <Button
+                              size="sm"
+                              className="text-[11px] font-semibold h-7 px-2.5 gap-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                              onClick={() => handleAcceptOffer(item)}
+                              disabled={processingOffer === item.id}
+                            >
+                              {processingOffer === item.id
+                                ? <Loader2 className="w-3 h-3 animate-spin" />
+                                : <CheckCircle2 className="w-3 h-3" />
+                              }
+                              Accept
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-[11px] font-semibold h-7 px-2.5 gap-1 border-amber-400 text-amber-800 hover:bg-amber-50"
+                              onClick={() => handleDeclineOffer(item)}
+                              disabled={processingOffer === item.id}
+                            >
+                              <XCircle className="w-3 h-3" />
+                              Decline
+                            </Button>
+                          </>
+                        ) : item.status !== "sold" ? (
+                          <Link to={`/seller/studio?edit=${item.id}`}>
+                            <Button variant="outline" size="sm" className="text-[11px] font-semibold h-7 px-3 border-border/60">
+                              {isLive ? "Manage" : item.status === "unsold" ? "Relist" : "Edit"}
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Link to={`/item/${item.id}`}>
+                            <Button variant="outline" size="sm" className="text-[11px] font-semibold h-7 px-3 border-border/60">View</Button>
+                          </Link>
+                        )}
+                        <ItemRowMenu item={item} />
+                      </div>
+                    </td>
+                  </tr>
+                  {descOpen && hasDesc && (
+                    <tr className="bg-secondary/30">
+                      <td colSpan={10} className="px-6 pb-4 pt-2">
+                        <div className="pl-[4.25rem]">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-1">Description</p>
+                          <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap max-w-3xl">{item.description}</p>
+                        </div>
+                      </td>
+                    </tr>
                   )}
-
-                  {/* Title + meta */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-serif font-semibold text-foreground truncate leading-snug">{item.title}</p>
-                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                      {item.inventory_number && <span className="font-mono text-[10px] text-muted-foreground/60">{item.inventory_number}</span>}
-                      {item.inventory_number && <span className="text-muted-foreground/30 text-[10px]">·</span>}
-                      <span className="text-[11px] text-muted-foreground/60 capitalize">{item.category?.replace(/_/g, " ") || "—"}</span>
-                      {isConsignment && (
-                        <span className="inline-flex items-center gap-1 text-[9px] bg-violet-50 text-violet-600 border border-violet-100 px-1.5 py-0.5 font-bold tracking-wide uppercase">
-                          <Handshake className="w-2.5 h-2.5" /> Consignment
-                        </span>
-                      )}
-                    </div>
-                    {hasDesc && (
-                      <button
-                        onClick={() => toggleDesc(item.id)}
-                        className="text-[10px] text-primary/60 hover:text-primary underline underline-offset-2 transition-colors mt-0.5"
-                      >
-                        {descOpen ? "Hide description" : "Show description"}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Price block */}
-                  <div className="hidden sm:block text-right shrink-0 w-28">
-                    <p className={`font-price text-sm font-bold tabular-nums ${price.green ? "text-emerald-700" : "text-foreground"}`}>{price.value}</p>
-                    {item.reserve_price > 0 && (
-                      <p className="text-[10px] text-muted-foreground/50 mt-0.5 flex items-center justify-end gap-0.5">
-                        <ShieldCheck className="w-2.5 h-2.5" /> ${item.reserve_price.toLocaleString()}
-                      </p>
-                    )}
-                    {timerEl && <div className="mt-1">{timerEl}</div>}
-                  </div>
-
-                  {/* Status */}
-                  <div className="hidden md:block shrink-0 w-28 text-center">
-                    <span className={`inline-flex items-center px-2 py-1 text-[9px] font-bold tracking-wide uppercase border ${status.cls}`}>
-                      {item.status === "prisometer" && <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5 animate-pulse inline-block" />}
-                      {status.label}
-                    </span>
-                  </div>
-
-                  {/* Insights: bids / views / saves */}
-                  <div className="hidden lg:flex flex-col gap-1 shrink-0 w-24">
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
-                      <Gavel className="w-3 h-3 text-muted-foreground/40" />
-                      <span className="font-semibold text-foreground tabular-nums">{item.bid_count || 0}</span>
-                      <span className="text-[10px]">bids</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
-                      <Eye className="w-3 h-3 text-muted-foreground/40" />
-                      <span className="font-semibold text-foreground tabular-nums">{item.view_count || 0}</span>
-                      <span className="text-[10px]">views</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
-                      <Heart className="w-3 h-3 text-rose-300" />
-                      <span className="font-semibold text-foreground tabular-nums">{item.watcher_count || 0}</span>
-                      <span className="text-[10px]">saves</span>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    {item.status === "pending_review" ? (
-                      <>
-                        <Button size="sm" className="text-[11px] h-7 px-2.5 gap-1 bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => handleAcceptOffer(item)} disabled={processingOffer === item.id}>
-                          {processingOffer === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
-                          Accept
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-[11px] h-7 px-2.5 gap-1 border-amber-400 text-amber-800 hover:bg-amber-50" onClick={() => handleDeclineOffer(item)} disabled={processingOffer === item.id}>
-                          <XCircle className="w-3 h-3" /> Decline
-                        </Button>
-                      </>
-                    ) : item.status !== "sold" ? (
-                      <Link to={`/seller/studio?edit=${item.id}`}>
-                        <Button variant="outline" size="sm" className="text-[11px] font-semibold h-7 px-3 border-border/60">
-                          {isLive ? "Manage" : item.status === "unsold" ? "Relist" : "Edit"}
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Link to={`/item/${item.id}`}>
-                        <Button variant="outline" size="sm" className="text-[11px] font-semibold h-7 px-3 border-border/60">View</Button>
-                      </Link>
-                    )}
-                    <ItemRowMenu item={item} />
-                  </div>
-                </div>
-
-                {/* Description expansion */}
-                {descOpen && hasDesc && (
-                  <div className="bg-neutral-50/60 px-5 pb-4 pt-2 pl-[5.5rem]">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 mb-1">Description</p>
-                    <p className="text-sm text-foreground/70 leading-relaxed max-w-3xl">{item.description}</p>
-                  </div>
-                )}
-              </React.Fragment>
-            );
-          })}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
