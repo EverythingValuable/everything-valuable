@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { cn } from "@/lib/utils";
 import {
   ChevronLeft, Upload, X, GripVertical, Lock,
-  XCircle, Save, Eye, EyeOff, Globe, Info, ArrowLeft, Trash2, Wand2, Loader2, Pencil
+  XCircle, Save, Eye, EyeOff, Globe, Info, ArrowLeft, Trash2, Wand2, Loader2, Pencil, Calendar, Clock
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryFields from "../components/listing/CategoryFields";
@@ -219,6 +219,9 @@ export default function ListingStudio() {
   const [autoBgRemoval, setAutoBgRemoval] = useState(false);
   const [editingImageIndex, setEditingImageIndex] = useState(null);
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [scheduledTime, setScheduledTime] = useState("09:00");
   const [saved, setSaved] = useState(false);
   const [theme, setTheme] = useState("minimal");
   const [darkMode, setDarkMode] = useState(false);
@@ -515,6 +518,27 @@ export default function ListingStudio() {
     navigate("/seller");
   };
 
+  const schedulePublish = async () => {
+    setSaving(true);
+    const launchAt = new Date(`${scheduledDate}T${scheduledTime}:00`);
+    const firstBidsEnd = new Date(launchAt.getTime() + form.first_bids_duration_hours * 3600000);
+    const schedFields = {
+      status: "scheduled",
+      first_bids_start: launchAt.toISOString(),
+      first_bids_end: firstBidsEnd.toISOString(),
+      highest_bid: 0, bid_count: 0,
+    };
+    if (isEditMode) {
+      await base44.entities.Item.update(editId, buildPayload(schedFields));
+    } else {
+      const user = await base44.auth.me();
+      await base44.entities.Item.create(buildPayload({ seller_email: user.email, seller_name: user.full_name, ...schedFields }));
+    }
+    setSaving(false);
+    setScheduleModalOpen(false);
+    navigate("/seller");
+  };
+
   const saveFieldTemplate = async (fields) => {
     if (!sellerProfile?.id) return;
     const template = fields.map(({ label, type }) => ({ label, type }));
@@ -622,6 +646,15 @@ export default function ListingStudio() {
               <Save className="w-3.5 h-3.5" />
               {saving ? "Saving…" : saved ? "Saved!" : "Save Draft"}
             </button>
+            {!isLive && !isUnsold && (
+              <button
+                onClick={() => setScheduleModalOpen(true)}
+                disabled={saving || !form.title || !form.prisometer_start_price}
+                className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-800 transition-colors disabled:opacity-30"
+              >
+                <Calendar className="w-3.5 h-3.5" /> Schedule
+              </button>
+            )}
             {!isLive && (
               <button
                 onClick={isUnsold ? relistNow : publishNow}
@@ -702,6 +735,61 @@ export default function ListingStudio() {
               <button onClick={() => setCancelConfirm(false)}
                 className="flex-1 border border-neutral-200 text-xs font-bold tracking-[0.15em] uppercase py-3.5 text-neutral-600 hover:border-neutral-500 transition-colors">
                 Keep Listing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Schedule Modal */}
+      {scheduleModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setScheduleModalOpen(false)}>
+          <div className="bg-white p-10 max-w-sm w-full mx-4 space-y-7 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div>
+              <h3 className="text-base font-bold tracking-wide mb-1.5">Schedule Listing</h3>
+              <p className="text-sm text-neutral-500 leading-relaxed">Choose a date and time for the 1stBids™ preview to go live automatically.</p>
+            </div>
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-xs font-bold tracking-[0.18em] uppercase text-neutral-500 flex items-center gap-2">
+                  <Calendar className="w-3.5 h-3.5" /> Launch Date
+                </label>
+                <input
+                  type="date"
+                  min={new Date().toISOString().split("T")[0]}
+                  value={scheduledDate}
+                  onChange={e => setScheduledDate(e.target.value)}
+                  className="w-full h-11 border-0 border-b border-neutral-200 bg-transparent text-base text-neutral-800 focus:outline-none focus:border-neutral-700 transition-colors"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold tracking-[0.18em] uppercase text-neutral-500 flex items-center gap-2">
+                  <Clock className="w-3.5 h-3.5" /> Launch Time
+                </label>
+                <input
+                  type="time"
+                  value={scheduledTime}
+                  onChange={e => setScheduledTime(e.target.value)}
+                  className="w-full h-11 border-0 border-b border-neutral-200 bg-transparent text-base text-neutral-800 focus:outline-none focus:border-neutral-700 transition-colors"
+                />
+              </div>
+              {scheduledDate && (
+                <p className="text-xs text-neutral-400 border-l-2 border-neutral-200 pl-3">
+                  Will go live on <strong className="text-neutral-600">{new Date(`${scheduledDate}T${scheduledTime}:00`).toLocaleString(undefined, { dateStyle: "long", timeStyle: "short" })}</strong>
+                </p>
+              )}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={schedulePublish}
+                disabled={saving || !scheduledDate}
+                className="flex-1 bg-neutral-900 text-white text-xs font-bold tracking-[0.15em] uppercase py-3.5 hover:bg-black transition-colors disabled:opacity-30"
+              >
+                {saving ? "Scheduling…" : "Confirm Schedule"}
+              </button>
+              <button onClick={() => setScheduleModalOpen(false)}
+                className="flex-1 border border-neutral-200 text-xs font-bold tracking-[0.15em] uppercase py-3.5 text-neutral-600 hover:border-neutral-500 transition-colors">
+                Cancel
               </button>
             </div>
           </div>
@@ -1158,6 +1246,15 @@ export default function ListingStudio() {
                 <Save className="w-3.5 h-3.5" />
                 {saving ? "Saving…" : saved ? "Saved!" : "Save Draft"}
               </button>
+              {!isLive && !isUnsold && (
+                <button
+                  onClick={() => setScheduleModalOpen(true)}
+                  disabled={saving || !form.title || !form.prisometer_start_price}
+                  className="flex items-center gap-1.5 text-xs border border-neutral-300 text-neutral-600 hover:border-neutral-600 hover:text-neutral-900 px-4 h-9 transition-colors disabled:opacity-30"
+                >
+                  <Calendar className="w-3.5 h-3.5" /> Schedule
+                </button>
+              )}
               {!isLive && (
                 <button
                   onClick={isUnsold ? relistNow : publishNow}
