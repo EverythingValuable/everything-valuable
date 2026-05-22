@@ -74,7 +74,7 @@ export default function PrisometerExplainer() {
               <img
                 src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/5de356bd3_IMG_2529.jpg"
                 alt="Piaget Automatic watch"
-                className="max-w-xs h-auto object-contain"
+                className="max-w-[280px] h-auto object-contain"
               />
             </div>
 
