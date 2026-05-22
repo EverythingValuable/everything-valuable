@@ -1008,6 +1008,35 @@ export default function ListingStudio() {
             <CustomFieldsEditor fields={form.custom_fields} onChange={handleCustomFieldsChange} />
           </Section>
 
+          {/* ── Bottom Action Bar ── */}
+          <div className="border-t border-neutral-200 pt-6 pb-10 flex items-center justify-between gap-4">
+            <p className="text-xs text-neutral-400">
+              {saved ? "✓ All changes saved" : "Unsaved changes"}
+            </p>
+            <div className="flex items-center gap-3">
+              <button onClick={saveDraft} disabled={saving}
+                className={cn("flex items-center gap-1.5 text-xs transition-colors px-4 h-9 border", saved ? "border-emerald-300 text-emerald-600" : "border-neutral-300 text-neutral-600 hover:border-neutral-600 hover:text-neutral-900")}>
+                <Save className="w-3.5 h-3.5" />
+                {saving ? "Saving…" : saved ? "Saved!" : "Save Draft"}
+              </button>
+              {!isLive && (
+                <button
+                  onClick={isUnsold ? relistNow : publishNow}
+                  disabled={saving || !form.title || !form.prisometer_start_price}
+                  className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-xs font-semibold tracking-wide px-5 h-9 transition-colors disabled:opacity-30"
+                >
+                  {saving ? "Publishing…" : isUnsold ? "Relist Listing" : "Publish Listing"}
+                </button>
+              )}
+              {isLive && (
+                <button onClick={saveDraft} disabled={saving}
+                  className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-xs font-semibold tracking-wide px-5 h-9 transition-colors">
+                  {saving ? "Saving…" : "Save Changes"}
+                </button>
+              )}
+            </div>
+          </div>
+
         </div>
 
         {/* ── RIGHT: AI Assistant ────────────────────────────────────────── */}
