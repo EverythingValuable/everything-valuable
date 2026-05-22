@@ -15,41 +15,30 @@ export default function SellersSection() {
         />
       </div>
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Text Content */}
-          <div>
-            <p className="text-accent font-bold text-sm tracking-widest mb-4">
-              FOR SELLERS
-            </p>
-            <h2 className="font-serif text-4xl md:text-5xl font-semibold text-background mb-6 leading-tight">
-              Bring Exceptional Property to a Better Market
-            </h2>
-            <p className="text-background/80 leading-relaxed mb-8 text-lg">
-              Everything Valuable gives galleries, dealers, collectors, and estates a more controlled, transparent, and cost-effective way to present and sell important personal property online.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/sell">
-                <Button className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2 rounded-full h-12 px-6 whitespace-nowrap">
-                  Apply to Sell <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-              <Link to="/browse">
-                <Button
-                  className="bg-background text-foreground hover:bg-background/90 gap-2 rounded-full h-12 px-6 whitespace-nowrap"
-                >
-                  Explore the Marketplace <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          {/* Right: Image */}
-          <div className="relative">
-            <img
-              src="https://images.unsplash.com/photo-1578301978162-7aae4d755744?w=500&h=400&q=80&fit=crop"
-              alt="Classical painting"
-              className="w-full h-auto object-cover rounded-lg shadow-xl"
-            />
+        <div>
+          {/* Text Content */}
+          <p className="text-accent font-bold text-sm tracking-widest mb-4">
+            FOR SELLERS
+          </p>
+          <h2 className="font-serif text-4xl md:text-5xl font-semibold text-background mb-6 leading-tight">
+            Bring Exceptional Property to a Better Market
+          </h2>
+          <p className="text-background/80 leading-relaxed mb-8 text-lg">
+            Everything Valuable gives galleries, dealers, collectors, and estates a more controlled, transparent, and cost-effective way to present and sell important personal property online.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link to="/sell">
+              <Button className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2 rounded-full h-12 px-6 whitespace-nowrap">
+                Apply to Sell <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Link to="/browse">
+              <Button
+                className="bg-background text-foreground hover:bg-background/90 gap-2 rounded-full h-12 px-6 whitespace-nowrap"
+              >
+                Explore the Marketplace <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
