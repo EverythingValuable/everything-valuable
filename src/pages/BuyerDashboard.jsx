@@ -55,6 +55,9 @@ function SavedItemCard({ itemId, watchlistId }) {
     refetchWatchlist();
   };
 
+  // Hide inactive listings
+  if (item && ["sold", "unsold", "declined", "draft"].includes(item.status)) return null;
+
   const status = savedStatusConfig[item?.status];
   const displayPrice = item?.status === "prisometer" && item?.current_price
     ? item.current_price
