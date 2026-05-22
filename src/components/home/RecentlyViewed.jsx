@@ -42,15 +42,16 @@ export default function RecentlyViewed() {
     queryKey: ["recently-viewed-items", recentIds.join(",")],
     queryFn: async () => {
       if (recentIds.length === 0) return [];
-      const results = await Promise.all(
-        recentIds.map(id =>
-          base44.entities.Item.filter({ id }).then(r => r[0]).catch(() => null)
-        )
+      // Fetch all active items in one request, then filter client-side
+      const allActive = await base44.entities.Item.filter(
+        { $or: [{ status: "first_bids" }, { status: "prisometer" }] },
+        "-updated_date",
+        100
       );
-      return results.filter(item => item && ["first_bids", "prisometer"].includes(item.status));
+      return allActive.filter(item => recentIds.includes(item.id));
     },
     enabled: recentIds.length > 0,
-    staleTime: 60000,
+    staleTime: 5 * 60 * 1000,
   });
 
   if (items.length === 0) return null;
