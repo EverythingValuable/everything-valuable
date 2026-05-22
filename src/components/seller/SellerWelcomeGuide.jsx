@@ -59,7 +59,7 @@ const SETUP_STEPS = [
     href: "/how-it-works",
     linkLabel: "Full How It Works →",
     items: [
-      { label: "Draft → Review", detail: "Complete your listing and submit it for review. Our team checks it before it goes live." },
+      { label: "Draft → 1stBids™", detail: "Publish your listing directly into the 1stBids™ preview phase — no review required." },
       { label: "1stBids™ Preview Phase", detail: "Buyers can watch, follow, and submit opening bids. No price is visible — just interest. This builds an audience before your item goes live." },
       { label: "PRI$OMETER™ Live Phase", detail: "The live auction clock starts. Buyers bid openly. The price moves in real-time based on your increment tiers." },
       { label: "Make It Mine™", detail: "At any point, a buyer can purchase at your asking price — always on by default." },
@@ -100,7 +100,7 @@ const SETUP_STEPS = [
 const FAQ = [
   {
     q: "When does my item become visible to buyers?",
-    a: "After you submit it for review and our team approves it, it enters the 1stBids™ preview phase. Buyers can watch it and submit opening bids, but no price is shown. It becomes fully live in PRI$OMETER™ mode after the preview period ends.",
+    a: "As soon as you publish a listing, it enters the 1stBids™ preview phase. Buyers can watch it and submit opening bids, but no price is shown. It becomes fully live in PRI$OMETER™ mode after the preview period ends.",
   },
   {
     q: "What is the hidden reserve and how does it work?",
