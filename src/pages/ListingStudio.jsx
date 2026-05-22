@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { cn } from "@/lib/utils";
 import {
   ChevronLeft, Upload, X, GripVertical, Lock,
-  XCircle, Save, Rocket, Eye, EyeOff, Globe, Info, ArrowLeft, Trash2, Wand2, Loader2
+  XCircle, Save, Eye, EyeOff, Globe, Info, ArrowLeft, Trash2, Wand2, Loader2, Pencil
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryFields from "../components/listing/CategoryFields";
@@ -13,6 +13,7 @@ import DimensionsInput from "../components/listing/DimensionsInput";
 import CategoryPickerModal from "../components/listing/CategoryPickerModal";
 import AIListingAssistant from "../components/listing/AIListingAssistant";
 import ThemeCustomizer from "../components/listing/ThemeCustomizer";
+import ImageEditorModal from "../components/listing/ImageEditorModal";
 import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
 
 const THEMES = {
@@ -216,6 +217,7 @@ export default function ListingStudio() {
   const [uploadQueue, setUploadQueue] = useState([]);
   const [removingBgIndexes, setRemovingBgIndexes] = useState(new Set());
   const [autoBgRemoval, setAutoBgRemoval] = useState(false);
+  const [editingImageIndex, setEditingImageIndex] = useState(null);
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [theme, setTheme] = useState("minimal");
@@ -670,6 +672,21 @@ export default function ListingStudio() {
         </div>
       )}
 
+      {editingImageIndex !== null && (
+        <ImageEditorModal
+          url={form.images[editingImageIndex]}
+          onSave={(newUrl) => {
+            setForm(f => {
+              const updated = [...f.images];
+              updated[editingImageIndex] = newUrl;
+              return { ...f, images: updated };
+            });
+            setEditingImageIndex(null);
+          }}
+          onClose={() => setEditingImageIndex(null)}
+        />
+      )}
+
       {cancelConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setCancelConfirm(false)}>
           <div className="bg-white p-10 max-w-sm w-full mx-4 space-y-6 shadow-2xl" onClick={e => e.stopPropagation()}>
@@ -746,9 +763,13 @@ export default function ListingStudio() {
               <button
                 type="button"
                 onClick={() => setAutoBgRemoval(v => !v)}
-                className={cn("relative w-10 h-5.5 rounded-full transition-colors shrink-0 h-6 w-11", autoBgRemoval ? "bg-violet-600" : "bg-neutral-300")}
+                style={{ width: 44, height: 24, borderRadius: 12, position: "relative", flexShrink: 0, transition: "background 0.2s", background: autoBgRemoval ? "#7c3aed" : "#d1d5db", border: "none", cursor: "pointer" }}
               >
-                <span className={cn("absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform", autoBgRemoval ? "translate-x-5" : "translate-x-0.5")} />
+                <span style={{
+                  position: "absolute", top: 2, left: autoBgRemoval ? 22 : 2,
+                  width: 20, height: 20, borderRadius: "50%", background: "#fff",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.2)", transition: "left 0.2s"
+                }} />
               </button>
             </div>
 
@@ -826,8 +847,11 @@ export default function ListingStudio() {
                                     <span className="text-[8px] text-violet-600 font-bold tracking-wide uppercase">BG</span>
                                   </div>
                                 )}
-                                <button onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-white/90 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-neutral-900 hover:text-white text-neutral-600 transition-colors">
+                                <button onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-white/90 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-neutral-900 hover:text-white text-neutral-600">
                                   <X className="w-2.5 h-2.5" />
+                                </button>
+                                <button onClick={e => { e.stopPropagation(); setEditingImageIndex(i); }} className="absolute top-1 left-8 bg-white/90 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-neutral-900 hover:text-white text-neutral-600">
+                                  <Pencil className="w-2.5 h-2.5" />
                                 </button>
                                 {!removingBgIndexes.has(i) && (
                                   <button
