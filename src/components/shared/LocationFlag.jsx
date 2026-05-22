@@ -42,6 +42,19 @@ const COUNTRY_FLAGS = {
   "india": "🇮🇳",
   "singapore": "🇸🇬",
   "hong kong": "🇭🇰",
+  "hungary": "🇭🇺",
+  "poland": "🇵🇱",
+  "czech": "🇨🇿",
+  "romania": "🇷🇴",
+  "greece": "🇬🇷",
+  "turkey": "🇹🇷",
+  "russia": "🇷🇺",
+  "ukraine": "🇺🇦",
+  "south korea": "🇰🇷",
+  "argentina": "🇦🇷",
+  "chile": "🇨🇱",
+  "colombia": "🇨🇴",
+  "south africa": "🇿🇦",
 };
 
 function detectFlag(location) {
@@ -56,18 +69,20 @@ function detectFlag(location) {
 }
 
 export default function LocationFlag({ location, className = "" }) {
+  if (!location) return null;
   const flag = detectFlag(location);
-  if (!flag || !location) return null;
 
   return (
     <span className={`inline-flex items-center gap-1.5 ${className}`}>
-      <span
-        className="inline-flex items-center justify-center w-5 h-5 rounded-full overflow-hidden text-sm leading-none border border-border/50 bg-white shadow-sm"
-        title={location}
-        style={{ fontSize: "14px", lineHeight: "20px" }}
-      >
-        {flag}
-      </span>
+      {flag && (
+        <span
+          className="inline-flex items-center justify-center w-5 h-5 rounded-full overflow-hidden text-sm leading-none border border-border/50 bg-white shadow-sm"
+          title={location}
+          style={{ fontSize: "14px", lineHeight: "20px" }}
+        >
+          {flag}
+        </span>
+      )}
       <span>{location}</span>
     </span>
   );
