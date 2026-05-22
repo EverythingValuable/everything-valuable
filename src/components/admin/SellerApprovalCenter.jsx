@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle, XCircle, AlertCircle, Clock, ChevronDown, ChevronUp } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle, Clock, ChevronDown, ChevronUp, Mail } from "lucide-react";
 
 const STATUS_COLORS = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
@@ -35,6 +35,13 @@ function ApplicationRow({ app }) {
   });
 
   const isPending = ["pending", "needs_more_info"].includes(app.application_status);
+  const isApproved = app.application_status === "approved";
+
+  const resendMutation = useMutation({
+    mutationFn: () => base44.functions.invoke("resendWelcomeEmail", { application_id: app.id }),
+    onSuccess: () => alert("Welcome email resent successfully!"),
+    onError: () => alert("Failed to resend email. Please try again."),
+  });
 
   return (
     <div className="border border-border rounded-2xl bg-card overflow-hidden">
@@ -126,6 +133,22 @@ function ApplicationRow({ app }) {
                   <AlertCircle className="w-3.5 h-3.5 mr-1" /> Need More Info
                 </Button>
               </div>
+            </div>
+          )}
+          {isApproved && (
+            <div className="pt-2 flex items-center gap-3 flex-wrap">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={resendMutation.isPending}
+                onClick={() => resendMutation.mutate()}
+              >
+                <Mail className="w-3.5 h-3.5 mr-1" />
+                {resendMutation.isPending ? "Sending…" : "Resend Welcome Email"}
+              </Button>
+              {resendMutation.isSuccess && (
+                <span className="text-xs text-green-600 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Sent!</span>
+              )}
             </div>
           )}
           {!isPending && app.admin_notes && (
