@@ -410,12 +410,12 @@ export default function ProductDetailContent({ itemId }) {
               </Button>
               <DeliveryOptions item={item} />
               <ItemMessaging item={item} user={user} />
-              <button onClick={() => setSupportOpen(true)} className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1 text-center underline underline-offset-2">
-                Contact Support about this lot
-              </button>
               {sellerProfile?.terms_and_conditions && (
                 <TermsAndConditions terms={sellerProfile.terms_and_conditions} defaultOpen={false} />
               )}
+              <button onClick={() => setSupportOpen(true)} className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1 text-center underline underline-offset-2">
+                Contact Support about this lot
+              </button>
               </div>
               </div>
               </div>
