@@ -43,36 +43,13 @@ export default function SellersSection() {
             </div>
           </div>
 
-          {/* Right: Image Gallery */}
+          {/* Right: Image */}
           <div className="relative">
-            <div className="grid grid-cols-2 gap-4">
-              {/* Large sculpture image */}
-              <div className="col-span-1 row-span-2">
-                <img
-                  src="https://images.unsplash.com/photo-1578500494198-246f612d03b3?w=400&h=600&q=80&fit=crop"
-                  alt="Marble sculpture"
-                  className="w-full h-full object-cover rounded-lg shadow-xl"
-                />
-              </div>
-
-              {/* Smaller painting image */}
-              <div className="col-span-1 h-64">
-                <img
-                  src="https://images.unsplash.com/photo-1578301978162-7aae4d755744?w=400&h=300&q=80&fit=crop"
-                  alt="Classical painting"
-                  className="w-full h-full object-cover rounded-lg shadow-xl"
-                />
-              </div>
-
-              {/* Bottom right - decorative space */}
-              <div className="col-span-1 bg-background/10 rounded-lg flex items-center justify-center h-64">
-                <div className="text-center">
-                  <p className="text-background/60 text-sm font-semibold">
-                    Premium Artwork
-                  </p>
-                </div>
-              </div>
-            </div>
+            <img
+              src="https://images.unsplash.com/photo-1578301978162-7aae4d755744?w=500&h=400&q=80&fit=crop"
+              alt="Classical painting"
+              className="w-full h-auto object-cover rounded-lg shadow-xl"
+            />
           </div>
         </div>
       </div>
