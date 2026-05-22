@@ -13,18 +13,16 @@ import { Save } from "lucide-react";
 export default function SellerSettings() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [formData, setFormData] = useState({});
   const [isDirty, setIsDirty] = useState(false);
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const currentUser = await base44.auth.me();
-      setUser(currentUser);
-    };
-    loadUser();
-  }, []);
+  const { data: user } = useQuery({
+    queryKey: ["me"],
+    queryFn: () => base44.auth.me(),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
 
   const { data: sellerProfile, isLoading } = useQuery({
     queryKey: ["sellerProfile", user?.email],
