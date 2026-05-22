@@ -225,13 +225,6 @@ export default function Dealers() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3 shrink-0">
-            <Button
-              variant="outline"
-              className="border-background/30 text-background hover:bg-background hover:text-foreground gap-2"
-              onClick={() => document.getElementById("dealer-grid")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              Browse Dealers <ArrowRight className="w-4 h-4" />
-            </Button>
             <Link to="/sell">
               <Button className="bg-primary hover:bg-primary/90 gap-2">
                 Apply to Sell <ArrowRight className="w-4 h-4" />
