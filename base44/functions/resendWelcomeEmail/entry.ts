@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
 <p>We wanted to reach out and officially welcome you to <strong>Everything Valuable</strong>!</p>
 <p>Your seller account is <strong>active and ready to go</strong>. Here's how to get started:</p>
 <ul>
-  <li><strong>Log in</strong> to your account at everythingvaluable.com</li>
+  <li><strong>Log in</strong> to your account at <a href="https://evaluable.base44.app">evaluable.base44.app</a></li>
   <li>Visit your <strong>Seller Dashboard</strong> to manage your inventory</li>
   <li>Use the <strong>Listing Studio</strong> to create your first listing</li>
   <li>Review your <strong>Seller Settings</strong> to add your profile, payment info, and default terms</li>
