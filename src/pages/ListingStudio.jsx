@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { cn } from "@/lib/utils";
 import {
   ChevronLeft, Upload, X, GripVertical, Lock,
-  XCircle, Save, Rocket, Eye, EyeOff, Globe, Info, ArrowLeft, Trash2
+  XCircle, Save, Rocket, Eye, EyeOff, Globe, Info, ArrowLeft, Trash2, Wand2, Loader2
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CategoryFields from "../components/listing/CategoryFields";
@@ -212,6 +212,8 @@ export default function ListingStudio() {
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [removingBgIndexes, setRemovingBgIndexes] = useState(new Set());
+  const [autoBgRemoval, setAutoBgRemoval] = useState(false);
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [theme, setTheme] = useState("minimal");
@@ -310,13 +312,57 @@ export default function ListingStudio() {
     loadData();
   }, [editId]);
 
+  const removeBackground = async (imageUrl) => {
+    const result = await base44.integrations.Core.GenerateImage({
+      prompt: "Remove the background from this product photo. Keep the subject (object/item) perfectly intact with clean, precise edges. Output on a pure white background. Do not change, alter, or add anything to the item itself.",
+      existing_image_urls: [imageUrl],
+    });
+    return result.url;
+  };
+
   const handleImageUpload = async (files) => {
     setUploadingImages(true);
     for (const file of Array.from(files)) {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setForm(f => ({ ...f, images: [...f.images, file_url] }));
+      if (autoBgRemoval) {
+        // Add original first, then replace with bg-removed version
+        setForm(f => ({ ...f, images: [...f.images, file_url] }));
+        setForm(f => {
+          const idx = f.images.length; // index it will have (length before adding = new index)
+          return f;
+        });
+        // Track which index is being processed
+        setForm(f => {
+          const newIdx = f.images.length - 1;
+          setRemovingBgIndexes(prev => new Set([...prev, newIdx]));
+          return f;
+        });
+        const cleanUrl = await removeBackground(file_url);
+        setForm(f => {
+          const idx = f.images.indexOf(file_url);
+          if (idx === -1) return f;
+          const updated = [...f.images];
+          updated[idx] = cleanUrl;
+          setRemovingBgIndexes(prev => { const n = new Set(prev); n.delete(idx); return n; });
+          return { ...f, images: updated };
+        });
+      } else {
+        setForm(f => ({ ...f, images: [...f.images, file_url] }));
+      }
     }
     setUploadingImages(false);
+  };
+
+  const handleRemoveBgSingle = async (idx) => {
+    const url = form.images[idx];
+    setRemovingBgIndexes(prev => new Set([...prev, idx]));
+    const cleanUrl = await removeBackground(url);
+    setForm(f => {
+      const updated = [...f.images];
+      updated[idx] = cleanUrl;
+      return { ...f, images: updated };
+    });
+    setRemovingBgIndexes(prev => { const n = new Set(prev); n.delete(idx); return n; });
   };
 
   const removeImage = (idx) => setForm(f => ({ ...f, images: f.images.filter((_, i) => i !== idx) }));
@@ -675,6 +721,25 @@ export default function ListingStudio() {
           {/* 01 · Photos */}
           <Section number="01" title="Photos" subtitle="First photo becomes the cover image" themeColors={themeColors} darkMode={darkMode}>
             <DropZone onFiles={handleImageUpload} />
+
+            {/* AI Background Removal Toggle */}
+            <div className={cn("flex items-center justify-between px-4 py-3 border rounded-md", autoBgRemoval ? "border-violet-200 bg-violet-50" : "border-neutral-200 bg-neutral-50")}>
+              <div className="flex items-center gap-3">
+                <Wand2 className={cn("w-4 h-4 shrink-0", autoBgRemoval ? "text-violet-600" : "text-neutral-400")} />
+                <div>
+                  <p className={cn("text-xs font-bold tracking-[0.12em] uppercase", autoBgRemoval ? "text-violet-700" : "text-neutral-600")}>AI Background Removal</p>
+                  <p className="text-[11px] text-neutral-400 mt-0.5">Automatically remove backgrounds on upload for clean, studio-style images</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAutoBgRemoval(v => !v)}
+                className={cn("relative w-10 h-5.5 rounded-full transition-colors shrink-0 h-6 w-11", autoBgRemoval ? "bg-violet-600" : "bg-neutral-300")}
+              >
+                <span className={cn("absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform", autoBgRemoval ? "translate-x-5" : "translate-x-0.5")} />
+              </button>
+            </div>
+
             <TipBox title="Tips for Great Photos"
               image="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80"
               tips={[
@@ -721,9 +786,24 @@ export default function ListingStudio() {
                                   <GripVertical className="w-2.5 h-2.5 text-neutral-600" />
                                 </div>
                                 {i === 0 && <div className="absolute bottom-0 left-0 right-0 bg-neutral-900 text-white text-[8px] text-center py-0.5 tracking-[0.15em] uppercase">Cover</div>}
+                                {removingBgIndexes.has(i) && (
+                                  <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                                    <Loader2 className="w-4 h-4 text-violet-600 animate-spin" />
+                                  </div>
+                                )}
                                 <button onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-white/90 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-neutral-900 hover:text-white text-neutral-600 transition-colors">
                                   <X className="w-2.5 h-2.5" />
                                 </button>
+                                {!removingBgIndexes.has(i) && (
+                                  <button
+                                    onClick={e => { e.stopPropagation(); handleRemoveBgSingle(i); }}
+                                    title="Remove background"
+                                    className="absolute bottom-0 left-0 right-0 bg-violet-600/90 text-white text-[8px] text-center py-0.5 tracking-[0.1em] uppercase opacity-0 group-hover:opacity-100 transition-opacity hover:bg-violet-700 flex items-center justify-center gap-1"
+                                    style={i === 0 ? {bottom: "16px"} : {}}
+                                  >
+                                    <Wand2 className="w-2 h-2" /> BG
+                                  </button>
+                                )}
                               </div>
                             )}
                           </Draggable>
