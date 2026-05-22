@@ -212,6 +212,8 @@ export default function ListingStudio() {
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
+  // uploadQueue: array of { id, name, status: 'uploading'|'removing_bg'|'done'|'error' }
+  const [uploadQueue, setUploadQueue] = useState([]);
   const [removingBgIndexes, setRemovingBgIndexes] = useState(new Set());
   const [autoBgRemoval, setAutoBgRemoval] = useState(false);
   const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
@@ -314,42 +316,52 @@ export default function ListingStudio() {
 
   const removeBackground = async (imageUrl) => {
     const result = await base44.integrations.Core.GenerateImage({
-      prompt: "Remove the background from this product photo. Keep the subject (object/item) perfectly intact with clean, precise edges. Output on a pure white background. Do not change, alter, or add anything to the item itself.",
+      prompt: "Remove the background completely from this product photo. Keep the subject perfectly intact with clean edges. Place the subject on a pure white background. Do not modify the item itself in any way.",
       existing_image_urls: [imageUrl],
     });
     return result.url;
   };
 
   const handleImageUpload = async (files) => {
+    const fileArray = Array.from(files);
     setUploadingImages(true);
-    for (const file of Array.from(files)) {
+
+    // Process all files in parallel
+    await Promise.all(fileArray.map(async (file) => {
+      const queueId = `${file.name}-${Date.now()}-${Math.random()}`;
+
+      // Add to queue as uploading
+      setUploadQueue(q => [...q, { id: queueId, name: file.name, status: "uploading" }]);
+
+      // Upload the file
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
       if (autoBgRemoval) {
-        // Add original first, then replace with bg-removed version
+        // Update queue status to removing_bg and add placeholder image
+        setUploadQueue(q => q.map(item => item.id === queueId ? { ...item, status: "removing_bg" } : item));
+        // Add a placeholder URL so the thumbnail slot appears
         setForm(f => ({ ...f, images: [...f.images, file_url] }));
-        setForm(f => {
-          const idx = f.images.length; // index it will have (length before adding = new index)
-          return f;
-        });
-        // Track which index is being processed
-        setForm(f => {
-          const newIdx = f.images.length - 1;
-          setRemovingBgIndexes(prev => new Set([...prev, newIdx]));
-          return f;
-        });
+
+        // Remove background
         const cleanUrl = await removeBackground(file_url);
+
+        // Replace the placeholder with the clean URL
         setForm(f => {
           const idx = f.images.indexOf(file_url);
-          if (idx === -1) return f;
+          if (idx === -1) return { ...f, images: [...f.images, cleanUrl] };
           const updated = [...f.images];
           updated[idx] = cleanUrl;
-          setRemovingBgIndexes(prev => { const n = new Set(prev); n.delete(idx); return n; });
           return { ...f, images: updated };
         });
       } else {
         setForm(f => ({ ...f, images: [...f.images, file_url] }));
       }
-    }
+
+      // Mark done and remove from queue after a short delay
+      setUploadQueue(q => q.map(item => item.id === queueId ? { ...item, status: "done" } : item));
+      setTimeout(() => setUploadQueue(q => q.filter(item => item.id !== queueId)), 1500);
+    }));
+
     setUploadingImages(false);
   };
 
@@ -748,10 +760,32 @@ export default function ListingStudio() {
               "Include detail shots: signatures, hallmarks, condition",
               "First photo becomes the cover — make it your strongest image",
             ]} />
-            {uploadingImages && (
-              <div className="flex items-center gap-2 text-sm text-neutral-400">
-                <div className="w-4 h-4 border border-neutral-200 border-t-neutral-500 rounded-full animate-spin" />
-                Uploading…
+            {/* Upload Progress Queue */}
+            {uploadQueue.length > 0 && (
+              <div className="space-y-2">
+                {uploadQueue.map(item => (
+                  <div key={item.id} className="flex items-center gap-3 px-3 py-2.5 border border-neutral-200 bg-neutral-50 rounded-md">
+                    <Loader2 className={cn("w-3.5 h-3.5 shrink-0 animate-spin", item.status === "done" ? "text-emerald-500" : item.status === "removing_bg" ? "text-violet-500" : "text-neutral-400")} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-neutral-700 truncate">{item.name}</p>
+                      <div className="mt-1.5 h-1 bg-neutral-200 rounded-full overflow-hidden">
+                        <div className={cn(
+                          "h-full rounded-full transition-all duration-500",
+                          item.status === "uploading" ? "w-1/3 bg-neutral-400" :
+                          item.status === "removing_bg" ? "w-2/3 bg-violet-500 animate-pulse" :
+                          "w-full bg-emerald-500"
+                        )} />
+                      </div>
+                    </div>
+                    <span className={cn("text-[10px] font-semibold tracking-wide uppercase shrink-0",
+                      item.status === "done" ? "text-emerald-500" :
+                      item.status === "removing_bg" ? "text-violet-500" :
+                      "text-neutral-400"
+                    )}>
+                      {item.status === "uploading" ? "Uploading" : item.status === "removing_bg" ? "Removing BG…" : "Done"}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
             {form.images.length > 0 && (
@@ -787,8 +821,9 @@ export default function ListingStudio() {
                                 </div>
                                 {i === 0 && <div className="absolute bottom-0 left-0 right-0 bg-neutral-900 text-white text-[8px] text-center py-0.5 tracking-[0.15em] uppercase">Cover</div>}
                                 {removingBgIndexes.has(i) && (
-                                  <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                                  <div className="absolute inset-0 bg-white/85 flex flex-col items-center justify-center gap-1">
                                     <Loader2 className="w-4 h-4 text-violet-600 animate-spin" />
+                                    <span className="text-[8px] text-violet-600 font-bold tracking-wide uppercase">BG</span>
                                   </div>
                                 )}
                                 <button onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-white/90 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-neutral-900 hover:text-white text-neutral-600 transition-colors">
