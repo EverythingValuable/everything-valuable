@@ -21,14 +21,14 @@ export default function SellersSection() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/sell">
-                <Button className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2 rounded-full h-12 px-8">
+                <Button className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2 rounded-full h-12 px-6 whitespace-nowrap">
                   Apply to Sell <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
               <Link to="/browse">
                 <Button
                   variant="outline"
-                  className="border-background/30 text-background hover:bg-background/10 gap-2 rounded-full h-12 px-8"
+                  className="border-background/30 text-background hover:bg-background/10 gap-2 rounded-full h-12 px-6 whitespace-nowrap"
                 >
                   Explore the Marketplace <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -49,7 +49,7 @@ export default function SellersSection() {
               </div>
 
               {/* Smaller painting image */}
-              <div className="col-span-1">
+              <div className="col-span-1 h-64">
                 <img
                   src="https://images.unsplash.com/photo-1578301978162-7aae4d755744?w=400&h=300&q=80&fit=crop"
                   alt="Classical painting"
@@ -57,8 +57,8 @@ export default function SellersSection() {
                 />
               </div>
 
-              {/* Decorative space */}
-              <div className="col-span-1 bg-background/10 rounded-lg flex items-center justify-center min-h-[140px]">
+              {/* Bottom right - decorative space */}
+              <div className="col-span-1 bg-background/10 rounded-lg flex items-center justify-center h-64">
                 <div className="text-center">
                   <p className="text-background/60 text-sm font-semibold">
                     Premium Artwork

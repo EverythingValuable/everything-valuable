@@ -72,9 +72,9 @@ export default function PrisometerExplainer() {
             {/* Watch Image */}
             <div className="flex justify-center">
               <img
-                src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&q=80"
-                alt="Vintage chronograph watch"
-                className="max-w-xs h-auto object-cover rounded-lg shadow-lg"
+                src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/5de356bd3_IMG_2529.jpg"
+                alt="Piaget Automatic watch"
+                className="max-w-xs h-auto object-contain rounded-lg shadow-lg"
               />
             </div>
 
