@@ -67,26 +67,28 @@ export default function PrisometerExplainer() {
             </div>
           </div>
 
-          {/* Right: Visual Example */}
-          <div className="flex flex-col gap-6">
+          {/* Right: Card Example */}
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden p-8 space-y-6">
             {/* Watch Image */}
             <div className="flex justify-center">
               <img
                 src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/5de356bd3_IMG_2529.jpg"
                 alt="Piaget Automatic watch"
-                className="max-w-xs h-auto object-contain rounded-lg shadow-lg"
+                className="max-w-xs h-auto object-contain"
               />
             </div>
 
             {/* Price Timeline */}
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <p className="text-xs font-bold tracking-widest text-accent mb-2">
-                EXAMPLE: VINTAGE CHRONOGRAPH
-              </p>
-              <p className="text-sm text-muted-foreground mb-4">Starting Price</p>
-              <p className="font-serif text-4xl font-semibold text-foreground mb-8">
-                $4,800
-              </p>
+            <div className="space-y-6">
+              <div>
+                <p className="text-xs font-bold tracking-widest text-accent mb-2">
+                  EXAMPLE: VINTAGE CHRONOGRAPH
+                </p>
+                <p className="text-sm text-muted-foreground mb-2">Starting Price</p>
+                <p className="font-serif text-4xl font-semibold text-foreground">
+                  $4,800
+                </p>
+              </div>
 
               {/* Price Points */}
               <div className="space-y-4">
@@ -118,10 +120,7 @@ export default function PrisometerExplainer() {
 
                 <div className="flex items-center gap-4">
                   <div className="w-2.5 h-2.5 rounded-full bg-border shrink-0"></div>
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-foreground"></p>
-                    <p className="text-sm text-muted-foreground"></p>
-                  </div>
+                  <div className="flex-1"></div>
                   <p className="text-sm font-semibold text-foreground whitespace-nowrap">
                     $3,900
                   </p>
@@ -137,13 +136,13 @@ export default function PrisometerExplainer() {
                       Price meets highest qualified bid
                     </p>
                   </div>
-                  <p className="text-sm font-bold text-accent whitespace-nowrap">
-                    $3,600<br />
-                    <span className="text-xs">SOLD</span>
-                  </p>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-accent">$3,600</p>
+                    <p className="text-xs font-bold tracking-widest text-accent">SOLD</p>
+                  </div>
                 </div>
 
-                <div className="pt-2 border-t border-border flex items-start gap-4">
+                <div className="pt-4 border-t border-border flex items-start gap-4">
                   <div className="w-8 h-8 border-2 border-primary rounded-full flex items-center justify-center text-xs text-primary font-bold shrink-0">
                     ?
                   </div>
@@ -156,21 +155,15 @@ export default function PrisometerExplainer() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <input
-                      type="checkbox"
-                      className="w-5 h-5"
-                      disabled
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Instant Purchase<br />Transparent Fee
-                    </p>
+                    <p className="text-xs text-muted-foreground">Instant Purchase</p>
+                    <p className="text-xs text-muted-foreground">Transparent Fee</p>
                   </div>
                 </div>
               </div>
 
               {/* Bottom note */}
-              <div className="mt-6 pt-4 border-t border-border flex items-start gap-2">
-                <span className="text-xs text-primary font-bold">→</span>
+              <div className="pt-4 border-t border-border flex items-start gap-2">
+                <span className="text-xs text-primary font-bold shrink-0">→</span>
                 <p className="text-xs text-muted-foreground">
                   Secure. Transparent. Fair. Built for collectors. Powered by innovation.
                 </p>
