@@ -16,14 +16,16 @@ import { Button } from "@/components/ui/button";
 import { Plus, Boxes, ClipboardCheck, DollarSign, AlertTriangle, Upload, ArrowRight, SearchCheck } from "lucide-react";
 import { format } from "date-fns";
 import BelowReserveAlert from "@/components/seller/BelowReserveAlert";
+import SellerWelcomeGuide from "@/components/seller/SellerWelcomeGuide";
 
 const VIEW_LABELS = {
+  welcome: "Getting Started",
   listings: "Inventory", draft: "Drafts", first_bids: "1stBid$ Preview",
   prisometer: "PRI$OMETER Live", pending_review: "Under Review",
   sold: "Sold Items", unsold: "Unsold Items", consignors: "Consignors",
 };
 
-const PANEL_VIEWS = ["profile", "settings", "messages", "analytics", "invoices", "consignors"];
+const PANEL_VIEWS = ["profile", "settings", "messages", "analytics", "invoices", "consignors", "welcome"];
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -252,6 +254,7 @@ function SellerDashboardInner() {
           {view === "analytics" && <SellerAnalytics user={user} />}
           {view === "invoices"   && <InvoiceBuilder user={user} />}
           {view === "consignors" && <ConsignorsPanel user={user} />}
+          {view === "welcome"    && <SellerWelcomeGuide />}
 
           {/* Inventory table — shown for overview + listing views */}
           {!isPanel && (

@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Plus, Upload, Package, FileText,
   Gavel, Activity, Clock, CheckCircle2, XCircle,
   MessageSquare, BarChart2, User, Settings, ChevronLeft,
-  Tag, Layers, HeadphonesIcon, Users
+  Tag, Layers, HeadphonesIcon, Users, BookOpen
 } from "lucide-react";
 import ContactSupportModal from "@/components/shared/ContactSupportModal";
 
@@ -15,6 +15,7 @@ const navGroups = [
   {
     items: [
       { label: "Overview", icon: LayoutDashboard, href: "/seller", exact: true },
+      { label: "Getting Started", icon: BookOpen, href: "/seller?view=welcome" },
     ]
   },
   {
