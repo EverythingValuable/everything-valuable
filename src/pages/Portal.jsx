@@ -158,6 +158,39 @@ export default function Portal() {
         </motion.div>
       </section>
 
+      {/* ── VALUE PROPOSITION ─────────────────────────────────────────────── */}
+      <section className="border-b border-neutral-100 bg-white py-16 md:py-20">
+        <div className="mx-auto max-w-[1320px] px-6 md:px-10">
+          <motion.p
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mb-10 max-w-2xl text-base leading-8 text-neutral-600"
+          >
+            A new way to buy and sell valuable personal property. Everything Valuable combines curated listings, seller-friendly fees, and our patented <strong className="text-neutral-900">PRI$OMETER™</strong> pricing system to create a more transparent marketplace for art, antiques, design, jewelry, and rare objects.
+          </motion.p>
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid gap-8 md:grid-cols-3"
+          >
+            {[
+              { label: "For Buyers", copy: "Discover valuable items through a more interactive pricing experience. Watch the price move in real time, place a bid, or claim the item at the current price." },
+              { label: "For Sellers", copy: "Reach serious buyers without the excessive costs of traditional auction platforms. Transparent fees, no buyer's premium, and tools built for the modern dealer." },
+              { label: "For Dealers", copy: "Turn dormant inventory into active opportunities. List once, reach a curated audience, and let the PRI$OMETER™ do the work of finding the right price." },
+            ].map(({ label, copy }) => (
+              <motion.div key={label} variants={fadeUp} className="space-y-3 border-l-2 border-primary/20 pl-5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">{label}</p>
+                <p className="text-sm leading-7 text-neutral-500">{copy}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── ABOUT ─────────────────────────────────────────────────────────── */}
       <section className="border-b border-neutral-200 bg-white py-20 md:py-28">
         <div className="mx-auto grid max-w-[1320px] items-center gap-12 px-6 md:px-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
@@ -239,6 +272,54 @@ export default function Portal() {
             {categoryCards.map((card, i) => (
               <CategoryCard key={card.title} {...card} delay={i * 0.1} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── PRI$OMETER EXPLAINER ──────────────────────────────────────────── */}
+      <section className="bg-neutral-950 py-20 md:py-28">
+        <div className="mx-auto max-w-[1320px] px-6 md:px-10">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+            className="mb-12"
+          >
+            <motion.p variants={fadeUp} className="mb-3 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+              What Makes Everything Valuable Different
+            </motion.p>
+            <motion.h2 variants={fadeUp} className="font-serif text-3xl font-semibold leading-tight text-white md:text-4xl">
+              The PRI$OMETER™ — a smarter way to price.
+            </motion.h2>
+          </motion.div>
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {[
+              { num: "01", title: "The price moves.", body: "The PRI$OMETER starts high and gradually descends over time — creating urgency without the chaos of a live auction room." },
+              { num: "02", title: "Buyers can claim the item.", body: "At any point, a buyer can purchase at the current PRI$OMETER price. First to act wins." },
+              { num: "03", title: "Bids create pressure.", body: "Buyers can place bids below the current price. A strong bid signals real intent and influences how the market responds." },
+              { num: "04", title: "The market decides.", body: "When the descending price meets the highest acceptable bid, the item can sell — transparently, with no hidden reserve games." },
+            ].map(({ num, title, body }, i) => (
+              <motion.div key={num} variants={fadeUp} className="border-t border-white/15 pt-6 space-y-3">
+                <span className="text-[11px] font-bold tracking-[0.18em] text-white/25">{num}</span>
+                <h4 className="font-semibold text-base text-white">{title}</h4>
+                <p className="text-sm leading-relaxed text-white/55">{body}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+          <div className="mt-12">
+            <Link
+              to="/how-it-works"
+              className="inline-flex h-11 items-center justify-center gap-2 bg-primary px-7 text-sm font-bold text-white transition-colors hover:bg-primary/90"
+            >
+              See the Full Walkthrough <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>

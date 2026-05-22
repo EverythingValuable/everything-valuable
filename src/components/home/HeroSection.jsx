@@ -49,8 +49,8 @@ export default function HeroSection() {
           </h1>
 
           {/* Subhead */}
-          <p className="font-sans text-sm md:text-base text-muted-foreground leading-relaxed max-w-[440px] mb-8">
-            A new way to buy and sell valuable personal property. Everything Valuable combines curated listings, seller-friendly fees, and our patented <span className="font-semibold text-foreground">PRI$OMETER™</span> pricing system to create a more transparent marketplace for art, antiques, design, jewelry, and rare objects.
+          <p className="font-sans text-sm md:text-base text-muted-foreground leading-relaxed max-w-[420px] mb-8">
+            Discover exceptional objects through a marketplace reimagined for transparency. Every lot begins in our exclusive <span className="font-semibold text-foreground">1stBid$™</span> preview phase, then enters live <span className="font-semibold text-foreground">PRI$OMETER™</span> pricing for a more dynamic and engaging path to purchase.
           </p>
 
           {/* CTAs */}
