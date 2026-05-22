@@ -28,7 +28,7 @@ const steps = [
 export default function HowItWorksPreview() {
   return (
     <section className="py-20 md:py-28 bg-muted/50">
-      <div className="max-w-7xl mx-auto px-6 md:px-8">
+      <div className="px-6 md:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Our Innovation</span>
           <h2 className="font-serif text-3xl md:text-5xl font-semibold mt-3 text-foreground">
