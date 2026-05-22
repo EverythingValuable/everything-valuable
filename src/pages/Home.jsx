@@ -85,30 +85,7 @@ export default function Home() {
       {/* Sellers Section */}
       <SellersSection />
 
-      {/* CTA */}
-      <section className="py-20 md:py-28 text-center">
-        <div className="max-w-2xl mx-auto px-6">
-          <h2 className="font-serif text-3xl md:text-5xl font-semibold text-foreground">
-            Sell With Everything Valuable
-          </h2>
-          <p className="text-muted-foreground mt-4 mb-8 leading-relaxed">
-            Join thousands of galleries, dealers, and collectors using Everything Valuable 
-            to reach a global audience of discerning buyers.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Link to="/sell">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 rounded-full h-12 px-8">
-                Become a Seller <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
-            <Link to="/browse">
-              <Button size="lg" variant="outline" className="gap-2 rounded-full h-12 px-8">
-                Browse the Market
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+
     </div>
   );
 }
