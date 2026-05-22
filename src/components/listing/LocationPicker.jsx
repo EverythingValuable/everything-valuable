@@ -307,16 +307,21 @@ export default function LocationPicker({ value, onChange, className }) {
         </div>
       )}
 
-      {state && cities.length > 0 && (
+      {state && (
         <div className="relative">
-          <select
+          <input
+            type="text"
+            placeholder="Enter city…"
             value={city}
             onChange={e => handleCity(e.target.value)}
+            list="city-suggestions"
             className={selectClass}
-          >
-            <option value="">Select city…</option>
-            {cities.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          />
+          {cities.length > 0 && (
+            <datalist id="city-suggestions">
+              {cities.map(c => <option key={c} value={c} />)}
+            </datalist>
+          )}
         </div>
       )}
 
