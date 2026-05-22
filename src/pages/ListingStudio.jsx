@@ -13,6 +13,7 @@ import DimensionsInput from "../components/listing/DimensionsInput";
 import CategoryPickerModal from "../components/listing/CategoryPickerModal";
 import AIListingAssistant from "../components/listing/AIListingAssistant";
 import ThemeCustomizer from "../components/listing/ThemeCustomizer";
+import LocationPicker from "../components/listing/LocationPicker";
 import ImageEditorModal from "../components/listing/ImageEditorModal";
 import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
 
@@ -1153,9 +1154,11 @@ export default function ListingStudio() {
               <Field label="Storage Location" visibility="private">
                 <LineInput placeholder="Warehouse B, Shelf 3" value={form.location} onChange={e => set("location", e.target.value)} />
               </Field>
-              <Field label="Item Location" hint="shown to buyers" visibility="public">
-                <LineInput placeholder="New York, NY" value={form.customer_location} onChange={e => set("customer_location", e.target.value)} />
-              </Field>
+              <div className="sm:col-span-1">
+                <Field label="Item Location" hint="shown to buyers" visibility="public">
+                  <LocationPicker value={form.customer_location} onChange={v => set("customer_location", v)} />
+                </Field>
+              </div>
             </div>
             <Field label="Shipping Notes" visibility="public">
               <LineTextarea
