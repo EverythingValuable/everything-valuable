@@ -257,7 +257,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             {/* Price row */}
             <div className="flex items-baseline gap-1 min-w-0">
               <span className="text-[10px] md:text-xs text-muted-foreground font-medium whitespace-nowrap">
-                {item.status === "prisometer" ? "Pri$ometer" : "Start"}
+                {item.status === "prisometer" ? "Pri$ometer" : "Pri$ometer Start"}
               </span>
               <span className="font-price text-sm md:text-base font-bold text-foreground">
                 ${Math.floor(livePrice).toLocaleString("en-US")}
