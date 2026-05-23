@@ -185,14 +185,21 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
           {/* Info area — fixed height so all cards are uniform */}
           <div className="px-3 pt-3 pb-3 flex flex-col gap-1.5" style={{ minHeight: "130px" }}>
-            {/* Status badge */}
-            <div className="h-5">
-              {status.label && (
-                <Badge variant="outline" className={`${status.color} text-xs font-medium`}>
-                  {item.status === "prisometer" && <TrendingDown className="w-3 h-3 mr-1" />}
-                  {item.status === "first_bids" && <Clock className="w-3 h-3 mr-1" />}
-                  {status.label}
-                </Badge>
+            {/* Status badge and countdown row */}
+            <div className="h-5 flex items-center justify-between">
+              <div>
+                {status.label && (
+                  <Badge variant="outline" className={`${status.color} text-xs font-medium`}>
+                    {item.status === "prisometer" && <TrendingDown className="w-3 h-3 mr-1" />}
+                    {item.status === "first_bids" && <Clock className="w-3 h-3 mr-1" />}
+                    {status.label}
+                  </Badge>
+                )}
+              </div>
+              {item.status === "first_bids" && countdown && (
+                <div className="flex items-center gap-1 text-xs text-primary font-medium">
+                  <span className="font-price">{countdown}</span>
+                </div>
               )}
             </div>
 
@@ -216,15 +223,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               )}
             </div>
 
-            {/* Always reserve space for countdown row */}
-            <div className="flex items-center gap-1 text-xs text-primary font-medium h-4">
-              {item.status === "first_bids" && countdown ? (
-                <>
-                  <Clock className="w-3 h-3" />
-                  <span className="font-price">{countdown}</span>
-                </>
-              ) : null}
-            </div>
+
           </div>
         </div>
       </div>
