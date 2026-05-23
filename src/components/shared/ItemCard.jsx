@@ -210,11 +210,19 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
             <div className="space-y-2">
               {item.status === "first_bids" && (
-                <div>
-                  <p className="text-xs text-muted-foreground font-medium">High Bid</p>
-                  <p className="font-price font-bold text-lg text-foreground">
-                    ${Math.floor(livePrice).toLocaleString("en-US")}
-                  </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">High Bid</p>
+                    <p className="font-price font-bold text-lg text-foreground">
+                      ${Math.floor(livePrice).toLocaleString("en-US")}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">PRISOMETER Starts At</p>
+                    <p className="font-price font-bold text-lg text-foreground">
+                      ${Math.floor(item.prisometer_start_price).toLocaleString("en-US")}
+                    </p>
+                  </div>
                 </div>
               )}
               {item.status === "prisometer" && (
