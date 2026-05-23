@@ -298,13 +298,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                 <p className="text-foreground text-xs">{item.dimensions}</p>
               </div>
             )}
-            {item.condition && (
-              <div>
-                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Condition</p>
-                <p className="text-foreground text-xs capitalize">{item.condition.replace("_", " ")}</p>
-                {item.condition_notes && <p className="text-muted-foreground text-xs mt-0.5">{item.condition_notes}</p>}
-              </div>
-            )}
+
             {item.materials && (
               <div>
                 <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Materials</p>
