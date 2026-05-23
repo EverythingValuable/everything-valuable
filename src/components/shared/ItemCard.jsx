@@ -186,13 +186,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-white"}`} />
             </button>
 
-            {/* Flip / Info button */}
-            <button
-              className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-10"
-              onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
-            >
-              <Info className="w-4 h-4 text-white" />
-            </button>
+
 
             {/* Bid count pill — top left */}
             {(item.bid_count > 0 || item.highest_bid > 0) && (
@@ -222,7 +216,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
           </div>
 
           {/* Info area — status + price, compact but prominent */}
-          <div className="px-3 pt-2.5 pb-3 flex flex-col gap-2">
+          <div className="px-3 pt-2.5 pb-3 flex flex-col gap-2 relative">
             {/* Status badge + countdown on same row */}
             <div className="flex items-center justify-between">
               {status.label ? (
@@ -236,6 +230,14 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                 <span className="font-price text-xs font-bold text-primary tracking-wide">{countdown}</span>
               )}
             </div>
+
+            {/* Info / flip button */}
+            <button
+              className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-muted flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-border z-10"
+              onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
+            >
+              <Info className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
 
             {/* Price row */}
             <div className="flex items-baseline gap-1">
