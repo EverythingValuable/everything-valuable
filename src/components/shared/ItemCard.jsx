@@ -183,26 +183,26 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             )}
           </div>
 
-          {/* Info area — inside the card */}
-          <div className="px-3 py-3 space-y-1.5">
+          {/* Info area — fixed height so all cards are uniform */}
+          <div className="px-3 pt-3 pb-3 flex flex-col gap-1.5" style={{ minHeight: "130px" }}>
             {/* Status badge */}
-            {status.label && (
-              <div>
+            <div className="h-5">
+              {status.label && (
                 <Badge variant="outline" className={`${status.color} text-xs font-medium`}>
                   {item.status === "prisometer" && <TrendingDown className="w-3 h-3 mr-1" />}
                   {item.status === "first_bids" && <Clock className="w-3 h-3 mr-1" />}
                   {status.label}
                 </Badge>
-              </div>
-            )}
+              )}
+            </div>
 
-            <h3 className="font-serif text-sm font-medium leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2">
+            <h3 className="font-serif text-sm font-medium leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 flex-1">
               {item.title}
             </h3>
 
-            {(sellerProfile?.display_name || item.seller_name) && (
-              <p className="text-xs text-muted-foreground">{sellerProfile?.display_name || item.seller_name}</p>
-            )}
+            <p className="text-xs text-muted-foreground truncate">
+              {sellerProfile?.display_name || item.seller_name || "\u00a0"}
+            </p>
 
             <div className="text-xs text-muted-foreground">
               Pri$ometer Start:{" "}
@@ -216,12 +216,15 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               )}
             </div>
 
-            {item.status === "first_bids" && countdown && (
-              <div className="flex items-center gap-1 text-xs text-primary font-medium">
-                <Clock className="w-3 h-3" />
-                <span className="font-price">{countdown}</span>
-              </div>
-            )}
+            {/* Always reserve space for countdown row */}
+            <div className="flex items-center gap-1 text-xs text-primary font-medium h-4">
+              {item.status === "first_bids" && countdown ? (
+                <>
+                  <Clock className="w-3 h-3" />
+                  <span className="font-price">{countdown}</span>
+                </>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
