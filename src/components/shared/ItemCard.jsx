@@ -216,38 +216,37 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
           </div>
 
           {/* Info area — status + price, compact but prominent */}
-          <div className="px-3 pt-2.5 pb-3 flex flex-col gap-2 relative">
-            {/* Status badge + countdown on same row */}
-            <div className="flex items-center justify-between">
+          <div className="px-2.5 pt-2 pb-2.5 flex flex-col gap-1.5">
+            {/* Status badge + countdown + info button on same row */}
+            <div className="flex items-center gap-1 min-w-0">
               {status.label ? (
-                <Badge variant="outline" className={`${status.color} text-xs font-semibold px-2 py-0.5`}>
-                  {item.status === "prisometer" && <TrendingDown className="w-3 h-3 mr-1" />}
-                  {item.status === "first_bids" && <Clock className="w-3 h-3 mr-1" />}
+                <Badge variant="outline" className={`${status.color} text-[10px] font-semibold px-1.5 py-0 leading-5 whitespace-nowrap shrink-0`}>
+                  {item.status === "prisometer" && <TrendingDown className="w-2.5 h-2.5 mr-0.5 shrink-0" />}
+                  {item.status === "first_bids" && <Clock className="w-2.5 h-2.5 mr-0.5 shrink-0" />}
                   {status.label}
                 </Badge>
-              ) : <div />}
+              ) : <div className="flex-1" />}
               {item.status === "first_bids" && countdown && (
-                <span className="font-price text-xs font-bold text-primary tracking-wide">{countdown}</span>
+                <span className="font-price text-[10px] font-bold text-primary tracking-wide whitespace-nowrap">{countdown}</span>
               )}
+              <div className="flex-1" />
+              <button
+                className="w-6 h-6 rounded-full bg-muted flex items-center justify-center hover:bg-border transition-colors shrink-0"
+                onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
+              >
+                <Info className="w-3 h-3 text-muted-foreground" />
+              </button>
             </div>
 
-            {/* Info / flip button */}
-            <button
-              className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-muted flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-border z-10"
-              onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
-            >
-              <Info className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
-
             {/* Price row */}
-            <div className="flex items-baseline gap-1">
-              <span className="text-xs text-muted-foreground font-medium">
-                {item.status === "prisometer" ? "Pri$ometer" : "Pri$ometer Start"}
+            <div className="flex items-baseline gap-1 min-w-0">
+              <span className="text-[10px] text-muted-foreground font-medium whitespace-nowrap">
+                {item.status === "prisometer" ? "Pri$ometer" : "Start"}
               </span>
-              <span className="font-price text-base font-bold text-foreground">
+              <span className="font-price text-sm font-bold text-foreground truncate">
                 ${Math.floor(livePrice).toLocaleString("en-US")}
                 {item.status === "prisometer" && !item.make_it_mine_active && (
-                  <span className="text-sm text-red-500 animate-price-tick">
+                  <span className="text-xs text-red-500 animate-price-tick">
                     .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
                   </span>
                 )}
