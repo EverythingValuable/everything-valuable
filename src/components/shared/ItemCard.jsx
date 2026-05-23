@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Heart, Clock, TrendingDown } from "lucide-react";
+import { Heart, Clock, TrendingDown, Info, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
@@ -112,6 +112,8 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
     return () => clearTimeout(timeout);
   }, [user?.email, item.id]);
 
+  const [flipped, setFlipped] = useState(false);
+
   const isSaved = !!watchlistEntry;
   const handleWatchlist = async (e) => {
     e.preventDefault();
@@ -135,9 +137,23 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
-      <div onClick={() => setDrawerOpen(true)} className="group block cursor-pointer">
-        {/* Unified card with rounded corners and shadow */}
-        <div className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-card border border-border/40">
+      <div className="group block cursor-pointer" style={{ perspective: "1200px" }}>
+        {/* Flip container */}
+        <div
+          style={{
+            transformStyle: "preserve-3d",
+            transition: "transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1)",
+            transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+            position: "relative",
+          }}
+        >
+
+        {/* FRONT */}
+        <div
+          onClick={() => setDrawerOpen(true)}
+          style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+          className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-card border border-border/40"
+        >
 
           {/* Image area — movie poster style with title overlay */}
           <div className="relative aspect-[4/5] overflow-hidden bg-muted">
@@ -168,6 +184,14 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               onClick={handleWatchlist}
             >
               <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-white"}`} />
+            </button>
+
+            {/* Flip / Info button */}
+            <button
+              className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-10"
+              onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
+            >
+              <Info className="w-4 h-4 text-white" />
             </button>
 
             {/* Bid count pill — top left */}
@@ -229,6 +253,79 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             </div>
           </div>
         </div>
+
+        {/* BACK */}
+        <div
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            position: "absolute",
+            inset: 0,
+          }}
+          className="rounded-2xl overflow-hidden shadow-md bg-card border border-border/40 flex flex-col"
+        >
+          {/* Back header */}
+          <div className="bg-foreground px-4 py-3 flex items-center justify-between shrink-0">
+            <h3 className="font-serif text-sm font-semibold text-background line-clamp-1 flex-1 mr-2">{item.title}</h3>
+            <button
+              onClick={(e) => { e.stopPropagation(); setFlipped(false); }}
+              className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors shrink-0"
+            >
+              <X className="w-3.5 h-3.5 text-white" />
+            </button>
+          </div>
+
+          {/* Back content */}
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm">
+            {item.description && (
+              <div>
+                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Description</p>
+                <p className="text-foreground leading-relaxed text-xs line-clamp-6">{item.description}</p>
+              </div>
+            )}
+            {(item.maker || item.period || item.origin) && (
+              <div>
+                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Maker / Origin</p>
+                <p className="text-foreground text-xs">{[item.maker, item.period, item.origin].filter(Boolean).join(" · ")}</p>
+              </div>
+            )}
+            {item.dimensions && (
+              <div>
+                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Dimensions</p>
+                <p className="text-foreground text-xs">{item.dimensions}</p>
+              </div>
+            )}
+            {item.condition && (
+              <div>
+                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Condition</p>
+                <p className="text-foreground text-xs capitalize">{item.condition.replace("_", " ")}</p>
+                {item.condition_notes && <p className="text-muted-foreground text-xs mt-0.5">{item.condition_notes}</p>}
+              </div>
+            )}
+            {item.materials && (
+              <div>
+                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Materials</p>
+                <p className="text-foreground text-xs">{item.materials}</p>
+              </div>
+            )}
+            {!item.description && !item.maker && !item.dimensions && !item.condition && (
+              <p className="text-muted-foreground text-xs italic">No additional details available.</p>
+            )}
+          </div>
+
+          {/* Back footer — view full listing */}
+          <div className="px-4 py-2.5 border-t border-border shrink-0">
+            <button
+              onClick={(e) => { e.stopPropagation(); setFlipped(false); setDrawerOpen(true); }}
+              className="w-full text-xs font-semibold text-primary hover:text-primary/80 transition-colors text-center"
+            >
+              View Full Listing →
+            </button>
+          </div>
+        </div>
+
+        </div>{/* end flip container */}
       </div>
     </motion.div>
     </>
