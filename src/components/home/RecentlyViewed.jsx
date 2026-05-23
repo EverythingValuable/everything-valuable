@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const categoryLabels = {
@@ -81,62 +80,49 @@ export default function RecentlyViewed() {
         <div className="relative">
           <div
             id="recent-scroll"
-            className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
+            className="flex flex-col gap-2.5 overflow-y-auto max-h-[340px] scrollbar-hide pb-1 md:flex-row md:overflow-x-auto md:overflow-y-hidden md:max-h-none md:pb-2"
           >
             {items.map((item) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
-                className="flex-shrink-0 w-64"
+                className="flex-shrink-0 w-full md:w-72"
               >
-                <Link to={`/item/${item.id}`} className="group block">
-                  <div className="relative aspect-square rounded-lg overflow-hidden bg-muted mb-2">
+                <Link to={`/item/${item.id}`} className="group flex items-center gap-3 bg-card border border-border/50 rounded-2xl px-3 py-2.5 hover:border-primary/30 hover:shadow-sm transition-all duration-200">
+                  {/* Thumbnail */}
+                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-muted flex-shrink-0">
                     {item.images?.[0] ? (
                       <img
                         src={item.images[0]}
                         alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
-                        <span className="font-serif text-4xl">EV</span>
+                        <span className="font-serif text-base">EV</span>
                       </div>
                     )}
-                    <button className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background">
-                      <Heart className="w-3.5 h-3.5 text-muted-foreground hover:fill-red-500 hover:text-red-500 transition-all" />
-                    </button>
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                    {categoryLabels[item.category] || item.category || ""}
-                  </p>
-                  <h4 className="font-serif text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                    {item.title}
-                  </h4>
-
+                  {/* Text */}
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-serif text-xs font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1 leading-snug">
+                      {item.title}
+                    </h4>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
+                      {categoryLabels[item.category] || item.category || ""}
+                      {item.prisometer_start_price ? ` · $${item.prisometer_start_price.toLocaleString("en-US")}` : ""}
+                    </p>
+                  </div>
+                  {/* Status dot */}
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status === "prisometer" ? "bg-red-500" : "bg-primary"}`} />
                 </Link>
               </motion.div>
             ))}
           </div>
 
-          {/* Scroll buttons */}
-          {items.length > 3 && (
-            <>
-              <button
-                onClick={() => scrollContainer("left")}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4 text-foreground" />
-              </button>
-              <button
-                onClick={() => scrollContainer("right")}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center hover:bg-muted transition-colors"
-              >
-                <ChevronRight className="w-4 h-4 text-foreground" />
-              </button>
-            </>
-          )}
+
         </div>
       </div>
     </section>
