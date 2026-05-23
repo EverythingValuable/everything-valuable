@@ -139,7 +139,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
         {/* Unified card with rounded corners and shadow */}
         <div className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-card border border-border/40">
 
-          {/* Image area */}
+          {/* Image area — movie poster style with title overlay */}
           <div className="relative aspect-[4/5] overflow-hidden bg-muted">
             {item.images?.[0] ? (
               <>
@@ -164,66 +164,69 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
             {/* Watchlist button */}
             <button
-              className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background ${isSaved ? "!opacity-100" : ""}`}
+              className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60 ${isSaved ? "!opacity-100" : ""}`}
               onClick={handleWatchlist}
             >
-              <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
+              <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-white"}`} />
             </button>
 
-            {/* Bid count overlay */}
+            {/* Bid count pill — top left */}
             {(item.bid_count > 0 || item.highest_bid > 0) && (
-              <div className="absolute bottom-2 left-2">
-                <div className="px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
+              <div className="absolute top-3 left-3">
+                <div className="px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-sm text-xs font-medium text-white">
                   {item.bid_count > 0 && (
                     <>{item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}{item.highest_bid > 0 && " · "}</>
                   )}
-                  {item.highest_bid > 0 && <>High bid ${item.highest_bid.toLocaleString("en-US")}</>}
+                  {item.highest_bid > 0 && <>High ${item.highest_bid.toLocaleString("en-US")}</>}
                 </div>
               </div>
             )}
+
+            {/* Bottom gradient + title overlay */}
+            <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none" />
+            <div className="absolute inset-x-0 bottom-0 px-3 pb-3">
+              <h3 className="font-serif text-sm font-semibold leading-snug text-white drop-shadow-lg line-clamp-2"
+                style={{ textShadow: "0 1px 6px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6)" }}>
+                {item.title}
+              </h3>
+              {(sellerProfile?.display_name || item.seller_name) && (
+                <p className="text-xs text-white/70 truncate mt-0.5" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
+                  {sellerProfile?.display_name || item.seller_name}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Info area — fixed height so all cards are uniform */}
-          <div className="px-3 pt-3 pb-3 flex flex-col gap-1.5" style={{ minHeight: "130px" }}>
-            {/* Status badge and countdown row */}
-            <div className="h-5 flex items-center justify-between">
-              <div>
-                {status.label && (
-                  <Badge variant="outline" className={`${status.color} text-xs font-medium`}>
-                    {item.status === "prisometer" && <TrendingDown className="w-3 h-3 mr-1" />}
-                    {item.status === "first_bids" && <Clock className="w-3 h-3 mr-1" />}
-                    {status.label}
-                  </Badge>
-                )}
-              </div>
+          {/* Info area — status + price, compact but prominent */}
+          <div className="px-3 pt-2.5 pb-3 flex flex-col gap-2">
+            {/* Status badge + countdown on same row */}
+            <div className="flex items-center justify-between">
+              {status.label ? (
+                <Badge variant="outline" className={`${status.color} text-xs font-semibold px-2 py-0.5`}>
+                  {item.status === "prisometer" && <TrendingDown className="w-3 h-3 mr-1" />}
+                  {item.status === "first_bids" && <Clock className="w-3 h-3 mr-1" />}
+                  {status.label}
+                </Badge>
+              ) : <div />}
               {item.status === "first_bids" && countdown && (
-                <div className="flex items-center gap-1 text-xs text-primary font-medium">
-                  <span className="font-price">{countdown}</span>
-                </div>
+                <span className="font-price text-xs font-bold text-primary tracking-wide">{countdown}</span>
               )}
             </div>
 
-            <h3 className="font-serif text-sm font-medium leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 flex-1">
-              {item.title}
-            </h3>
-
-            <p className="text-xs text-muted-foreground truncate">
-              {sellerProfile?.display_name || item.seller_name || "\u00a0"}
-            </p>
-
-            <div className="text-xs text-muted-foreground">
-              {item.status === "prisometer" ? "Pri$ometer" : "Pri$ometer Start"}:{" "}
-              <span className="font-price font-semibold text-foreground">
-                ${Math.floor(livePrice).toLocaleString("en-US")}
+            {/* Price row */}
+            <div className="flex items-baseline gap-1">
+              <span className="text-xs text-muted-foreground font-medium">
+                {item.status === "prisometer" ? "Pri$ometer" : "Pri$ometer Start"}
               </span>
-              {item.status === "prisometer" && !item.make_it_mine_active && (
-                <span className="text-xs text-red-400 animate-price-tick">
-                  .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
-                </span>
-              )}
+              <span className="font-price text-base font-bold text-foreground">
+                ${Math.floor(livePrice).toLocaleString("en-US")}
+                {item.status === "prisometer" && !item.make_it_mine_active && (
+                  <span className="text-sm text-red-500 animate-price-tick">
+                    .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
+                  </span>
+                )}
+              </span>
             </div>
-
-
           </div>
         </div>
       </div>
