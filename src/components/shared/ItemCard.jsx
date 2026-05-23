@@ -188,7 +188,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
             {/* Flip / Info button */}
             <button
-              className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-10"
+              className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-10"
               onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
             >
               <Info className="w-4 h-4 text-white" />
