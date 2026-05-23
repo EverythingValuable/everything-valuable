@@ -212,7 +212,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             </p>
 
             <div className="text-xs text-muted-foreground">
-              Pri$ometer Start:{" "}
+              {item.status === "prisometer" ? "Pri$ometer" : "Pri$ometer Start"}:{" "}
               <span className="font-price font-semibold text-foreground">
                 ${Math.floor(livePrice).toLocaleString("en-US")}
               </span>
