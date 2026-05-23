@@ -83,6 +83,16 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
   const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  // Swipe-to-flip
+  const touchStartX = useRef(null);
+  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(dx) > 40) { setFlipped(f => !f); }
+    touchStartX.current = null;
+  };
+
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
 
@@ -137,7 +147,12 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
-      <div className="group block cursor-pointer" style={{ perspective: "1200px" }}>
+      <div
+        className="group block cursor-pointer"
+        style={{ perspective: "1200px" }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {/* Flip container */}
         <div
           style={{
@@ -217,7 +232,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
           {/* Info area — status + price, compact but prominent */}
           <div className="px-2.5 pt-2 pb-2.5 flex flex-col gap-1.5">
-            {/* Status badge + countdown + info button on same row */}
+            {/* Status badge + countdown on same row */}
             <div className="flex items-center gap-1 min-w-0">
               {status.label ? (
                 <Badge variant="outline" className={`${status.color} text-[10px] font-semibold px-1.5 py-0 leading-5 whitespace-nowrap shrink-0`}>
@@ -230,8 +245,9 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                 <span className="font-price text-[10px] font-bold text-primary tracking-wide whitespace-nowrap">{countdown}</span>
               )}
               <div className="flex-1" />
+              {/* Desktop-only info button — on mobile, swipe to flip */}
               <button
-                className="w-6 h-6 rounded-full bg-muted flex items-center justify-center hover:bg-border transition-colors shrink-0"
+                className="w-6 h-6 rounded-full bg-muted items-center justify-center hover:bg-border transition-colors shrink-0 hidden md:flex"
                 onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
               >
                 <Info className="w-3 h-3 text-muted-foreground" />
