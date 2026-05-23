@@ -73,9 +73,9 @@ export default function Home() {
 
       {/* Featured items */}
       <FeaturedItems
-        items={allFeatured}
+        liveItems={liveItems}
+        previewItems={previewItems}
         title="Featured Live Sales"
-        subtitle=""
         isLoading={featuredLoading}
       />
 
