@@ -61,8 +61,9 @@ export default function PriceAlertsTab({ userEmail }) {
     enabled: alerts.length > 0,
   });
 
-  const activeAlerts = alerts.filter(a => a.status === "active");
-  const triggeredAlerts = alerts.filter(a => a.status === "triggered");
+  const INACTIVE_STATUSES = ["sold", "unsold", "declined", "draft"];
+  const activeAlerts = alerts.filter(a => a.status === "active" && !INACTIVE_STATUSES.includes(itemsMap[a.item_id]?.status));
+  const triggeredAlerts = alerts.filter(a => a.status === "triggered" && !INACTIVE_STATUSES.includes(itemsMap[a.item_id]?.status));
 
   if (alerts.length === 0) {
     return (

@@ -62,6 +62,8 @@ export default function ActiveBidRow({ bid, currentUser }) {
   const myBidAmount = bid.amount;
   const currentHighest = item?.highest_bid || 0;
   const isActive = item?.status === "first_bids" || item?.status === "prisometer";
+  const INACTIVE_STATUSES = ["sold", "unsold", "declined"];
+  const isInactive = item && INACTIVE_STATUSES.includes(item.status);
 
   const placeBidMutation = useMutation({
     mutationFn: async () => {
@@ -85,6 +87,8 @@ export default function ActiveBidRow({ bid, currentUser }) {
       toast({ title: "Bid failed", description: err.message, variant: "destructive" });
     },
   });
+
+  if (isInactive) return null;
 
   return (
     <div className={`rounded-xl border bg-card overflow-hidden transition-all ${isOutbid ? "border-orange-300" : "border-border"}`}>
