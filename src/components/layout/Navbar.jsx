@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Search, Heart, User, Menu, X, ChevronDown, Bookmark, Trophy, LayoutDashboard, LogOut, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -61,6 +61,17 @@ export default function Navbar() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/browse?search=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery("");
+    }
+  };
 
   const isSeller = user?.role === "seller" || user?.role === "admin" || user?.role === "super_admin";
   const isAdmin = user?.role === "admin" || user?.role === "super_admin";
@@ -201,9 +212,19 @@ export default function Navbar() {
 
         {/* Right side actions */}
         <div className="flex items-center gap-2 md:gap-3">
-          <Link to="/browse" className={iconLinkClass} aria-label="Search">
-            <Search className="w-4 h-4" />
-          </Link>
+          {/* Search bar — desktop only, hidden on landing */}
+          {!isLanding && (
+            <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 bg-muted border border-border rounded-lg px-3 h-9 w-56 lg:w-72 focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all">
+              <Search className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Search Everything Valuable…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+              />
+            </form>
+          )}
           <Link to="/buyer" className={iconLinkClass} aria-label="Watchlist">
             <Heart className="w-4 h-4" />
           </Link>

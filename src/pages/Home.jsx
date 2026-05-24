@@ -10,11 +10,10 @@ import PrisometerExplainer from "../components/home/PrisometerExplainer";
 import SellersSection from "../components/home/SellersSection";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   const { data: liveItems = [], isLoading: loadingLive } = useQuery({
@@ -34,42 +33,11 @@ export default function Home() {
   const allFeatured = [...(liveItems || []), ...(previewItems || [])].slice(0, 16);
   const featuredLoading = loadingLive || loadingPreview;
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/browse?search=${encodeURIComponent(searchQuery)}`);
-    }
-  };
-
   return (
     <div>
       <HeroSection />
       <CategoryCircles />
       <RecentlyViewed />
-
-      {/* Search Bar */}
-      <section className="py-2 md:py-3 bg-background">
-        <div className="max-w-3xl mx-auto px-4 md:px-6">
-          <form onSubmit={handleSearch} className="relative">
-            <div className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 md:py-4 shadow-sm hover:border-primary/40 transition-colors focus-within:ring-1 focus-within:ring-primary">
-              <Search className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search Everything Valuable"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm md:text-base"
-              />
-              <Button
-                type="submit"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 h-9 shrink-0 rounded-lg"
-              >
-                Search
-              </Button>
-            </div>
-          </form>
-        </div>
-      </section>
 
       {/* Featured items */}
       <FeaturedItems
