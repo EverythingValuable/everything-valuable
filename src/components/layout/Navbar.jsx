@@ -1,22 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Heart, User, Menu, X, ChevronDown, Bookmark, Trophy, LayoutDashboard, LogOut, ShieldCheck, Moon, Sun } from "lucide-react";
+import { Search, Heart, User, Menu, X, ChevronDown, ChevronRight, Bookmark, Trophy, LayoutDashboard, LogOut, ShieldCheck, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-
-const categories = [
-  { label: "Fine Art", path: "/browse?category=fine_art" },
-  { label: "Jewelry", path: "/browse?category=jewelry" },
-  { label: "Watches", path: "/browse?category=watches" },
-  { label: "Furniture", path: "/browse?category=furniture" },
-  { label: "Decorative Arts", path: "/browse?category=decorative_arts" },
-  { label: "Design", path: "/browse?category=design" },
-  { label: "Antiques", path: "/browse?category=antiques" },
-  { label: "Collectibles", path: "/browse?category=collectibles" },
-  { label: "Luxury Goods", path: "/browse?category=luxury_goods" },
-];
+import { MAIN_CATEGORIES, SUBCATEGORIES } from "@/lib/categoryConfig";
 
 export default function Navbar() {
   const location = useLocation();
@@ -171,46 +160,12 @@ export default function Navbar() {
             )}
 
             {showMarketplaceLinks && (
-              <div
-                className="relative"
-                onMouseEnter={() => setCategoriesOpen(true)}
-                onMouseLeave={() => setCategoriesOpen(false)}
-              >
-                <button className={`flex items-center gap-1 ${navLinkClass(false)}`}>
-                  Categories <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-                <AnimatePresence>
-                  {categoriesOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute top-full left-0 mt-2 w-56 bg-card border border-border rounded-lg shadow-xl py-2 z-50"
-                    >
-                      {categories.map((cat) => (
-                        <Link
-                          key={cat.path}
-                          to={cat.path}
-                          className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                          onClick={() => setCategoriesOpen(false)}
-                        >
-                          {cat.label}
-                        </Link>
-                      ))}
-                      <div className="border-t border-border mt-1 pt-1">
-                        <Link
-                          to="/browse"
-                          className="block px-4 py-2.5 text-sm font-medium text-primary hover:bg-muted transition-colors"
-                          onClick={() => setCategoriesOpen(false)}
-                        >
-                          View All
-                        </Link>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+              <CategoriesMegaMenu
+                isLanding={isLanding}
+                navLinkClass={navLinkClass}
+                categoriesOpen={categoriesOpen}
+                setCategoriesOpen={setCategoriesOpen}
+              />
             )}
 
             {showMarketplaceLinks && (
@@ -418,6 +373,88 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </header>
+  );
+}
+
+function CategoriesMegaMenu({ isLanding, navLinkClass, categoriesOpen, setCategoriesOpen }) {
+  const [hoveredCat, setHoveredCat] = useState(MAIN_CATEGORIES[0].value);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setCategoriesOpen(true)}
+      onMouseLeave={() => setCategoriesOpen(false)}
+    >
+      <button className={`flex items-center gap-1 ${navLinkClass(false)}`}>
+        Categories <ChevronDown className="w-3.5 h-3.5" />
+      </button>
+      <AnimatePresence>
+        {categoriesOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 mt-2 bg-card border border-border rounded-xl shadow-2xl z-50 flex"
+            style={{ minWidth: 520 }}
+          >
+            {/* Left: category list */}
+            <div className="w-52 border-r border-border py-2 shrink-0">
+              {MAIN_CATEGORIES.map((cat) => (
+                <Link
+                  key={cat.value}
+                  to={`/browse?category=${cat.value}`}
+                  onMouseEnter={() => setHoveredCat(cat.value)}
+                  onClick={() => setCategoriesOpen(false)}
+                  className={`flex items-center justify-between px-4 py-2.5 text-sm transition-colors group ${
+                    hoveredCat === cat.value
+                      ? "bg-muted text-foreground font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  {cat.label}
+                  {SUBCATEGORIES[cat.value] && <ChevronRight className="w-3.5 h-3.5 opacity-40 group-hover:opacity-70" />}
+                </Link>
+              ))}
+              <div className="border-t border-border mt-1 pt-1">
+                <Link
+                  to="/browse"
+                  className="block px-4 py-2.5 text-sm font-semibold text-primary hover:bg-muted transition-colors"
+                  onClick={() => setCategoriesOpen(false)}
+                >
+                  View All Categories
+                </Link>
+              </div>
+            </div>
+
+            {/* Right: subcategories */}
+            <div className="flex-1 py-4 px-4 min-w-0">
+              {hoveredCat && SUBCATEGORIES[hoveredCat] ? (
+                <>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-3 px-1">
+                    {MAIN_CATEGORIES.find(c => c.value === hoveredCat)?.label}
+                  </p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                    {SUBCATEGORIES[hoveredCat].map((sub) => (
+                      <Link
+                        key={sub}
+                        to={`/browse?category=${hoveredCat}&subcategory=${encodeURIComponent(sub)}`}
+                        onClick={() => setCategoriesOpen(false)}
+                        className="block px-1 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted/50 rounded transition-colors truncate"
+                      >
+                        {sub}
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground/50 p-2">Hover a category to see subcategories</p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
