@@ -17,6 +17,7 @@ import { Plus, Boxes, ClipboardCheck, DollarSign, AlertTriangle, Upload, ArrowRi
 import { format } from "date-fns";
 import BelowReserveAlert from "@/components/seller/BelowReserveAlert";
 import SellerWelcomeGuide from "@/components/seller/SellerWelcomeGuide";
+import MobileSellerNav from "@/components/seller/MobileSellerNav";
 
 const VIEW_LABELS = {
   welcome: "Getting Started",
@@ -195,9 +196,13 @@ function SellerDashboardInner() {
 
   return (
     <div className="flex min-h-screen bg-[hsl(40,22%,96%)]">
-      <div className="sticky top-0 h-screen shrink-0 overflow-y-auto">
+      {/* Sidebar — desktop only */}
+      <div className="hidden md:block sticky top-0 h-screen shrink-0 overflow-y-auto">
         <DashboardSidebar />
       </div>
+
+      {/* Mobile bottom nav */}
+      <MobileSellerNav user={user} />
 
       <main className="flex-1 min-w-0">
         {/* Top bar */}
@@ -230,7 +235,7 @@ function SellerDashboardInner() {
           </Link>
         </div>
 
-        <div className="space-y-6 p-5 lg:p-8">
+        <div className="space-y-6 p-5 lg:p-8 pb-24 md:pb-8">
 
           {/* Overview-only sections */}
           {view === "overview" && (
