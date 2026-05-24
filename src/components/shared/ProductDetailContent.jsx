@@ -20,6 +20,7 @@ import ContactSupportModal from "@/components/shared/ContactSupportModal";
 import LocationFlag from "@/components/shared/LocationFlag";
 import SellerStorefront from "@/components/product/SellerStorefront";
 import { useIsMobile } from "@/hooks/use-mobile";
+import WinCelebration from "@/components/product/WinCelebration";
 
 // Small live price display for the sticky mobile bar
 function MobileStickyPrice({ item }) {
@@ -165,6 +166,8 @@ export default function ProductDetailContent({ itemId }) {
   const [user, setUser] = useState(null);
   const [priceAlertOpen, setPriceAlertOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [showWinCelebration, setShowWinCelebration] = useState(false);
+  const prevStatusRef = useRef(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -179,6 +182,17 @@ export default function ProductDetailContent({ itemId }) {
     queryFn: () => base44.entities.Item.filter({ id: itemId }).then(items => items[0]),
     enabled: !!itemId,
   });
+
+  // Watch for convergence → trigger celebration for the winner
+  useEffect(() => {
+    if (!item || !user) return;
+    const wasActive = prevStatusRef.current === "prisometer" || prevStatusRef.current === "first_bids";
+    const justSold = item.status === "sold" && wasActive;
+    if (justSold && item.sold_to_email === user.email) {
+      setShowWinCelebration(true);
+    }
+    prevStatusRef.current = item.status;
+  }, [item?.status, item?.sold_to_email, user?.email]);
 
   const { data: existingAgreement } = useQuery({
     queryKey: ["terms-agreement", itemId, user?.email],
@@ -425,6 +439,9 @@ export default function ProductDetailContent({ itemId }) {
               <SimilarLots item={item} />
               </div>
 
+              {showWinCelebration && (
+                <WinCelebration item={item} onDismiss={() => setShowWinCelebration(false)} />
+              )}
               <ContactSupportModal open={supportOpen} onClose={() => setSupportOpen(false)} user={user} item={item} />
               <SetPriceAlertModal
               isOpen={priceAlertOpen}
