@@ -357,6 +357,17 @@ export default function Navbar() {
             className={`md:hidden overflow-hidden border-t ${isLanding ? "border-white/20 bg-black/80 backdrop-blur-md" : "border-border bg-background"}`}
           >
             <nav className="px-6 py-4 space-y-1">
+              {/* Mobile search */}
+              <form onSubmit={(e) => { handleSearch(e); setMobileOpen(false); }} className="flex items-center gap-2 bg-muted border border-border rounded-lg px-3 h-10 mb-3 focus-within:ring-1 focus-within:ring-primary">
+                <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search Everything Valuable…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+                />
+              </form>
               <Link to="/personal-property" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50"}`} onClick={() => setMobileOpen(false)}>Personal Property</Link>
               <Link to="/real-property" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50"}`} onClick={() => setMobileOpen(false)}>Real Property</Link>
               <Link to="/browse?status=prisometer" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50 text-primary"}`} onClick={() => setMobileOpen(false)}>Live Now</Link>
