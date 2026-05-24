@@ -65,7 +65,7 @@ function SavedItemCard({ itemId, watchlistId }) {
 
   return (
     <Link to={`/item/${itemId}`} className="group block relative">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted">
         {item?.images?.[0] ? (
           <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
@@ -73,42 +73,35 @@ function SavedItemCard({ itemId, watchlistId }) {
             <span className="font-serif text-4xl">EV</span>
           </div>
         )}
+        
+        {/* Status badge — top left */}
         {status && (
           <div className="absolute top-2.5 left-2.5">
-            <Badge variant="outline" className={`${status.color} text-xs font-medium backdrop-blur-sm`}>{status.label}</Badge>
+            <Badge variant="outline" className={`${status.color} text-xs font-medium`}>{status.label}</Badge>
           </div>
         )}
+        
+        {/* Remove from watchlist button — top right */}
         <button
           onClick={handleRemove}
           disabled={removing}
-          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-background/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
         >
           <Heart className="w-3.5 h-3.5 fill-red-500 text-red-500" />
         </button>
-      </div>
-      <div className="mt-2.5 space-y-0.5">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{categoryLabels[item?.category] || item?.category || ""}</p>
-        <h3 className="font-serif text-sm font-medium leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2">
-          {item?.title || "Loading…"}
-        </h3>
-        {(sellerProfile?.display_name || item?.seller_name) && (
-          <p className="text-[11px] text-muted-foreground">{sellerProfile?.display_name || item?.seller_name}</p>
-        )}
-        {item && (
-          <div className="pt-1">
-            {item.highest_bid > 0 && (
-              <p className="text-[11px] text-muted-foreground">
-                High bid: <span className="font-semibold text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
-                {item.bid_count > 0 && <span> · {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}</span>}
-              </p>
-            )}
-            {displayPrice && (
-              <span className="font-sans text-sm font-semibold text-foreground">
-                ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-              </span>
-            )}
-          </div>
-        )}
+        
+        {/* Bottom overlay with info */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent pt-12 px-3 pb-3 rounded-b-2xl">
+          <p className="text-[10px] text-white/80 uppercase tracking-wider mb-1">{categoryLabels[item?.category] || item?.category || ""}</p>
+          <h3 className="font-serif text-xs font-medium leading-tight text-white line-clamp-2 mb-1">
+            {item?.title || "Loading…"}
+          </h3>
+          {displayPrice && (
+            <span className="font-sans text-sm font-bold text-white">
+              ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );

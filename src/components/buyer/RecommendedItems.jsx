@@ -40,8 +40,8 @@ function RecommendedCard({ item }) {
 
   return (
     <Link to={`/item/${item.id}`} className="group block">
-      {/* Image — fixed aspect ratio so all cards align */}
-      <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-muted">
+      {/* Image — fixed aspect ratio with overlaid content */}
+      <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-muted">
         {item.images?.[0] ? (
           <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
@@ -49,54 +49,35 @@ function RecommendedCard({ item }) {
             <span className="font-serif text-3xl">EV</span>
           </div>
         )}
-        {/* Status badge */}
+        
+        {/* Status badge — top left */}
         {(isFirstBids || isPrisometer) && (
-          <div className="absolute top-2.5 left-2.5 right-2.5">
+          <div className="absolute top-2.5 left-2.5">
             {isFirstBids && (
-              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[10px] font-semibold backdrop-blur-sm">
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[10px] font-semibold">
               1stBid$ Live
               </Badge>
-              )}
-              {isPrisometer && (
-              <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-[10px] font-semibold backdrop-blur-sm">
+            )}
+            {isPrisometer && (
+              <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-[10px] font-semibold">
               PRI$OMETER™ Active
               </Badge>
             )}
           </div>
         )}
-        {/* Countdown pill — always bottom left */}
-        {countdown && countdown !== "Ended" && (
-          <div className="absolute bottom-2.5 left-2.5 bg-background/85 backdrop-blur-sm rounded-full px-2 py-0.5 flex items-center gap-1">
-            <Clock className="w-2.5 h-2.5 text-muted-foreground" />
-            <span className="text-[10px] font-medium text-foreground">{countdown}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Info */}
-      <div className="mt-3 space-y-1">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-          {categoryLabels[item.category] || item.category || ""}
-        </p>
-        <h3 className="font-serif text-sm font-medium leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2">
-          {item.title}
-        </h3>
-        {displayPrice && (
-          <p className="font-sans text-sm font-bold text-foreground">
-            ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+        
+        {/* Bottom overlay with info */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent pt-10 px-3 pb-3 rounded-b-2xl">
+          <h3 className="font-serif text-xs font-medium leading-tight text-white line-clamp-2 mb-1">
+            {item.title}
+          </h3>
+          <p className="text-[10px] text-white/80 mb-2">
+            {categoryLabels[item.category] || item.category || ""}
           </p>
-        )}
-        <div className="flex items-center gap-3 pt-0.5">
-          {item.highest_bid > 0 && (
-            <span className="text-[11px] text-muted-foreground">
-              High: <span className="font-semibold text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
-            </span>
-          )}
-          {item.bid_count > 0 && (
-            <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground">
-              <Gavel className="w-2.5 h-2.5" />
-              {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
-            </span>
+          {displayPrice && (
+            <p className="font-sans text-sm font-bold text-white">
+              ${displayPrice.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            </p>
           )}
         </div>
       </div>
