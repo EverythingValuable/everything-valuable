@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Search, Heart, User, Menu, X, ChevronDown, Bookmark, Trophy, LayoutDashboard, LogOut, ShieldCheck } from "lucide-react";
+import { Search, Heart, User, Menu, X, ChevronDown, Bookmark, Trophy, LayoutDashboard, LogOut, ShieldCheck, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
@@ -72,6 +72,20 @@ export default function Navbar() {
       setSearchQuery("");
     }
   };
+
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("ev-dark-mode") === "true" || document.documentElement.classList.contains("dark");
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("ev-dark-mode", "true");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("ev-dark-mode", "false");
+    }
+  }, [darkMode]);
 
   const isSeller = user?.role === "seller" || user?.role === "admin" || user?.role === "super_admin";
   const isAdmin = user?.role === "admin" || user?.role === "super_admin";
@@ -315,6 +329,14 @@ export default function Navbar() {
                           </div>
                         </>
                       )}
+                      <div className="border-t border-border my-1" />
+                      <button
+                        onClick={() => setDarkMode((d) => !d)}
+                        className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                      >
+                        {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                        {darkMode ? "Light Mode" : "Dark Mode"}
+                      </button>
                       <div className="border-t border-border my-1" />
                       <button
                         onClick={() => { base44.auth.logout(); setProfileOpen(false); }}
