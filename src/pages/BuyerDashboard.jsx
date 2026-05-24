@@ -186,14 +186,47 @@ export default function BuyerDashboard() {
     initialData: [],
   });
 
-  const activeBids = bids.filter(b => b.status !== "lost");
-  const outbidCount = bids.filter(b => b.status === "outbid").length;
+  // Fetch items for all bid item IDs so we can filter out inactive ones for accurate counts
+  const bidItemIds = bids.map(b => b.item_id);
+  const { data: bidItems = [] } = useQuery({
+    queryKey: ["bid-items", bidItemIds.join(",")],
+    queryFn: async () => {
+      if (!bidItemIds.length) return [];
+      const results = await Promise.all(bidItemIds.map(id => base44.entities.Item.filter({ id }).then(r => r[0])));
+      return results.filter(Boolean);
+    },
+    enabled: bidItemIds.length > 0,
+    staleTime: 30000,
+  });
+
+  const INACTIVE = ["sold", "unsold", "declined"];
+  const activeItemIds = new Set(bidItems.filter(i => !INACTIVE.includes(i.status)).map(i => i.id));
+
+  const activeBids = bids.filter(b => activeItemIds.has(b.item_id));
+  const outbidCount = activeBids.filter(b => {
+    const item = bidItems.find(i => i.id === b.item_id);
+    return item && item.highest_bidder_email && item.highest_bidder_email !== user?.email;
+  }).length;
   const needsActionCount = purchases.filter(p => ["sent"].includes(p.status)).length;
+
+  // Watchlist: fetch items to get accurate visible count
+  const watchlistItemIds = watchlist.map(w => w.item_id);
+  const { data: watchlistItems = [] } = useQuery({
+    queryKey: ["watchlist-items", watchlistItemIds.join(",")],
+    queryFn: async () => {
+      if (!watchlistItemIds.length) return [];
+      const results = await Promise.all(watchlistItemIds.map(id => base44.entities.Item.filter({ id }).then(r => r[0])));
+      return results.filter(Boolean);
+    },
+    enabled: watchlistItemIds.length > 0,
+    staleTime: 60000,
+  });
+  const activeWatchCount = watchlistItems.filter(i => !["sold", "unsold", "declined", "draft"].includes(i.status)).length;
 
   const pendingPurchases = purchases.filter(p => !["paid", "shipped", "delivered"].includes(p.status));
   const completedPurchases = purchases.filter(p => ["paid", "shipped", "delivered"].includes(p.status));
 
-  const statCards = STAT_CARDS(watchlist, activeBids, outbidCount, needsActionCount);
+  const statCards = STAT_CARDS({ length: activeWatchCount }, activeBids, outbidCount, needsActionCount);
 
   return (
     <div className="min-h-screen bg-[hsl(40,20%,97%)]">
