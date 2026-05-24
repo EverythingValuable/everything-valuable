@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { TrendingDown, Clock, Eye, ArrowRight } from "lucide-react";
 
 const categoryLabels = {
   fine_art: "Fine Art",
@@ -20,20 +21,43 @@ const categoryLabels = {
   other: "Other"
 };
 
+function StatusBadge({ item }) {
+  if (item.status === "prisometer") {
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200">
+        <TrendingDown className="w-2.5 h-2.5" />
+        Price Dropping
+      </span>
+    );
+  }
+  if (item.status === "first_bids") {
+    if (item.bid_count > 0) {
+      return (
+        <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+          {item.bid_count} Bid{item.bid_count !== 1 ? "s" : ""}
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+        <Clock className="w-2.5 h-2.5" />
+        Live
+      </span>
+    );
+  }
+  return null;
+}
+
 export default function RecentlyViewed() {
   const [recentIds, setRecentIds] = useState([]);
-  const [scrollPosition, setScrollPosition] = useState(0);
 
-  // Load recently viewed from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("recentlyViewed");
     if (stored) {
       try {
         const ids = JSON.parse(stored).slice(0, 12);
         setRecentIds(ids);
-      } catch (e) {
-        // Ignore parse errors
-      }
+      } catch (e) {}
     }
   }, []);
 
@@ -54,79 +78,82 @@ export default function RecentlyViewed() {
 
   if (items.length === 0) return null;
 
-  const scrollContainer = (direction) => {
-    const container = document.getElementById("recent-scroll");
-    if (!container) return;
-    const amount = 320; // width of card + gap
-    container.scrollBy({
-      left: direction === "right" ? amount : -amount,
-      behavior: "smooth"
-    });
-  };
-
   return (
     <section className="py-10 md:py-14 bg-background border-b border-border/40">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-primary/70 mb-1">Recently Viewed</p>
-            <h3 className="font-display text-xl md:text-2xl font-bold text-foreground">Still Thinking About These?</h3>
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary/70 mb-1 flex items-center gap-1.5">
+              <Eye className="w-3 h-3" /> Recently Viewed
+            </p>
+            <h3 className="font-display text-xl md:text-2xl font-bold text-foreground">Still Considering These?</h3>
           </div>
           <Link to="/browse" className="text-xs text-primary font-medium hover:underline whitespace-nowrap ml-4">
-            View all →
+            Browse all →
           </Link>
         </div>
 
-        <div className="relative">
-          <div
-            id="recent-scroll"
-            className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
-          >
-            {items.map((item) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-                className="flex-shrink-0 w-72"
+        <div
+          id="recent-scroll"
+          className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
+        >
+          {items.map((item, i) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.05 }}
+              className="flex-shrink-0 w-80"
+            >
+              <Link
+                to={`/item/${item.id}`}
+                className="group flex items-stretch gap-0 bg-card border border-border/60 rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-200"
               >
-                <Link to={`/item/${item.id}`} className="group flex items-center gap-3 bg-card border border-border/50 rounded-2xl px-3 py-3 hover:border-primary/30 hover:shadow-md transition-all duration-200">
-                  {/* 16:9 Thumbnail */}
-                  <div className="w-28 flex-shrink-0 rounded-xl overflow-hidden bg-muted" style={{ aspectRatio: "16/9" }}>
-                    {item.images?.[0] ? (
-                      <img
-                        src={item.images[0]}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
-                        <span className="font-serif text-base">EV</span>
-                      </div>
-                    )}
-                  </div>
-                  {/* Text */}
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-serif text-xs font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                {/* Thumbnail — 120px wide, full height */}
+                <div className="w-[120px] flex-shrink-0 relative overflow-hidden bg-muted">
+                  {item.images?.[0] ? (
+                    <img
+                      src={item.images[0]}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
+                      <span className="font-serif text-xl">EV</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0 px-3.5 py-3 flex flex-col justify-between">
+                  <div>
+                    {/* Category */}
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
+                      {categoryLabels[item.category] || item.category || "Item"}
+                    </p>
+                    {/* Title */}
+                    <h4 className="font-serif text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                       {item.title}
                     </h4>
-                    <p className="text-[10px] text-muted-foreground mt-1 truncate">
-                      {categoryLabels[item.category] || item.category || ""}
-                    </p>
-                    {item.prisometer_start_price && (
-                      <p className="text-[11px] font-semibold text-foreground mt-0.5">
-                        ${item.prisometer_start_price.toLocaleString("en-US")}
-                      </p>
-                    )}
                   </div>
-                  {/* Status dot */}
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 self-start mt-1 ${item.status === "prisometer" ? "bg-red-500" : "bg-primary"}`} />
-                </Link>
-              </motion.div>
-            ))}
-          </div>
 
-
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <div className="flex flex-col gap-1">
+                      <StatusBadge item={item} />
+                      {item.prisometer_start_price && (
+                        <p className="text-xs font-bold text-foreground font-price">
+                          ${item.prisometer_start_price.toLocaleString("en-US")}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-[11px] font-semibold text-primary flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      View Again <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
