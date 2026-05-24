@@ -288,7 +288,7 @@ export default function BuyerDashboard() {
                 <p className="text-sm text-muted-foreground/70 mt-1">Start bidding on items in the marketplace.</p>
               </CardContent></Card>
             ) : (
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {activeBids.map(bid => (
                   <ActiveBidRow key={bid.id} bid={bid} currentUser={user} />
                 ))}

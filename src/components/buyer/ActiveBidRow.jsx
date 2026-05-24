@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { AlertTriangle, Crown, ChevronDown, ChevronUp } from "lucide-react";
+import { AlertTriangle, Crown, Gavel, Zap, Clock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -13,8 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-
-const phaseLabel = { first_bids: "1stBid$™", prisometer: "PRI$OMETER™" };
 
 function getIncrements(sellerTiers, currentHighest) {
   if (!sellerTiers?.length) return 50;
@@ -28,8 +26,7 @@ function generateOptions(currentHighest, sellerTiers) {
     const tier = sellerTiers?.find(t => price >= t.min && price <= t.max);
     return tier?.increment ?? 50;
   };
-  const increment = getTierIncrement(currentHighest);
-  let val = currentHighest > 0 ? currentHighest + increment : 100;
+  let val = currentHighest > 0 ? currentHighest + getTierIncrement(currentHighest) : 100;
   while (options.length < 50) {
     options.push(val);
     val += getTierIncrement(val);
@@ -37,10 +34,26 @@ function generateOptions(currentHighest, sellerTiers) {
   return options;
 }
 
+function useCountdown(endTime) {
+  const [now, setNow] = React.useState(Date.now());
+  React.useEffect(() => {
+    if (!endTime) return;
+    const t = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, [endTime]);
+  if (!endTime) return null;
+  const diff = new Date(endTime) - now;
+  if (diff <= 0) return "Ended";
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  if (h > 48) return `${Math.floor(h / 24)}d left`;
+  if (h > 0) return `${h}h ${m}m left`;
+  return `${m}m left`;
+}
+
 export default function ActiveBidRow({ bid, currentUser }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const [showBid, setShowBid] = useState(false);
   const [bidAmount, setBidAmount] = useState("");
 
   const { data: item } = useQuery({
@@ -61,9 +74,17 @@ export default function ActiveBidRow({ bid, currentUser }) {
   const isHighBidder = item && item.highest_bidder_email === currentUser?.email;
   const myBidAmount = bid.amount;
   const currentHighest = item?.highest_bid || 0;
-  const isActive = item?.status === "first_bids" || item?.status === "prisometer";
+  const isFirstBids = item?.status === "first_bids";
+  const isPrisometer = item?.status === "prisometer";
+  const isActive = isFirstBids || isPrisometer;
   const INACTIVE_STATUSES = ["sold", "unsold", "declined"];
   const isInactive = item && INACTIVE_STATUSES.includes(item.status);
+
+  const countdown = useCountdown(isFirstBids ? item?.first_bids_end : isPrisometer ? item?.prisometer_activated_at : null);
+
+  const makeitMinePrice = isPrisometer && item?.current_price
+    ? item.current_price
+    : item?.prisometer_start_price;
 
   const placeBidMutation = useMutation({
     mutationFn: async () => {
@@ -80,7 +101,6 @@ export default function ActiveBidRow({ bid, currentUser }) {
       queryClient.invalidateQueries({ queryKey: ["item-mini", bid.item_id] });
       queryClient.invalidateQueries({ queryKey: ["buyer-bids"] });
       setBidAmount("");
-      setShowBid(false);
       toast({ title: "Bid placed!", description: `Your bid of $${parseFloat(bidAmount).toLocaleString()} has been placed.` });
     },
     onError: (err) => {
@@ -88,95 +108,142 @@ export default function ActiveBidRow({ bid, currentUser }) {
     },
   });
 
+  const makeItMineMutation = useMutation({
+    mutationFn: async () => {
+      const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      await base44.entities.Item.update(item.id, {
+        make_it_mine_active: true,
+        make_it_mine_buyer: currentUser?.email,
+        make_it_mine_expires: expires,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["item-mini", bid.item_id] });
+      toast({ title: "Make It Mine request sent!", description: "The seller has been notified." });
+    },
+    onError: (err) => {
+      toast({ title: "Failed", description: err.message, variant: "destructive" });
+    },
+  });
+
   if (isInactive) return null;
 
   return (
-    <div className={`rounded-xl border bg-card overflow-hidden transition-all ${isOutbid ? "border-orange-300" : "border-border"}`}>
+    <div className={`rounded-2xl border bg-card overflow-hidden transition-all ${isOutbid ? "border-orange-300" : isHighBidder ? "border-green-200" : "border-border"}`}>
       {/* Outbid banner */}
       {isOutbid && isActive && (
         <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 border-b border-orange-200">
-          <AlertTriangle className="w-4 h-4 text-orange-500 shrink-0" />
-          <span className="text-xs font-semibold text-orange-700">You've been outbid — current high bid is ${currentHighest.toLocaleString()}</span>
+          <AlertTriangle className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+          <span className="text-xs font-semibold text-orange-700">You've been outbid — current high: ${currentHighest.toLocaleString()}</span>
+        </div>
+      )}
+      {isHighBidder && isActive && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border-b border-green-200">
+          <Crown className="w-3.5 h-3.5 text-green-600 shrink-0" />
+          <span className="text-xs font-semibold text-green-700">You're the high bidder!</span>
         </div>
       )}
 
-      <div className="flex items-center gap-4 p-4">
-        {/* Thumbnail */}
-        <Link to={`/item/${bid.item_id}`} className="w-16 h-16 rounded-lg overflow-hidden bg-muted shrink-0 hover:opacity-90 transition-opacity">
+      <div className="flex gap-4 p-4">
+        {/* Image */}
+        <Link to={`/item/${bid.item_id}`} className="relative w-24 h-28 rounded-xl overflow-hidden bg-muted shrink-0 hover:opacity-90 transition-opacity">
           {item?.images?.[0]
             ? <img src={item.images[0]} alt={item?.title} className="w-full h-full object-cover" />
             : <div className="w-full h-full bg-muted" />
           }
+          {/* Status badge overlaid */}
+          {isFirstBids && (
+            <div className="absolute top-1.5 left-1.5">
+              <span className="text-[9px] font-bold bg-primary/90 text-white px-1.5 py-0.5 rounded">1stBid$</span>
+            </div>
+          )}
+          {isPrisometer && (
+            <div className="absolute top-1.5 left-1.5">
+              <span className="text-[9px] font-bold bg-red-600/90 text-white px-1.5 py-0.5 rounded">PRI$OMETER™</span>
+            </div>
+          )}
+          {countdown && countdown !== "Ended" && (
+            <div className="absolute bottom-1.5 left-1.5 right-1.5 bg-black/60 rounded px-1 py-0.5 flex items-center gap-1">
+              <Clock className="w-2 h-2 text-white/80" />
+              <span className="text-[9px] text-white font-medium truncate">{countdown}</span>
+            </div>
+          )}
         </Link>
 
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <Link to={`/item/${bid.item_id}`} className="hover:underline">
-            <p className="font-medium text-sm text-foreground truncate">{item?.title || `Item #${bid.item_id?.slice(-8)}`}</p>
-          </Link>
-          <div className="flex items-center gap-2 mt-1 flex-wrap">
-            <span className="text-xs text-muted-foreground">Your bid: <span className="font-semibold text-foreground">${myBidAmount?.toLocaleString()}</span></span>
-            {item?.status && (
-              <>
-                <span className="text-muted-foreground text-xs">·</span>
-                <span className="text-xs text-muted-foreground">{phaseLabel[item.status] || item.status}</span>
-              </>
-            )}
+        {/* Content */}
+        <div className="flex-1 min-w-0 flex flex-col justify-between gap-3">
+          <div>
+            <Link to={`/item/${bid.item_id}`} className="font-serif text-sm font-medium text-foreground hover:text-primary transition-colors line-clamp-2 leading-snug">
+              {item?.title || `Item #${bid.item_id?.slice(-8)}`}
+            </Link>
+            <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+              <span className="text-xs text-muted-foreground">
+                Your bid: <span className="font-bold text-foreground">${myBidAmount?.toLocaleString()}</span>
+              </span>
+              {currentHighest > myBidAmount && (
+                <span className="text-xs text-muted-foreground">
+                  Current high: <span className="font-bold text-foreground">${currentHighest.toLocaleString()}</span>
+                </span>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Status badge + bid toggle */}
-        <div className="flex items-center gap-2 shrink-0">
-          {isHighBidder && (
-            <Badge className="bg-green-50 text-green-700 border-green-200 border text-xs gap-1">
-              <Crown className="w-3 h-3" /> High Bidder
-            </Badge>
+          {/* Action area */}
+          {isActive && isOutbid && (
+            <div className="flex flex-col sm:flex-row gap-2">
+              {/* Bid again */}
+              <div className="flex gap-2 flex-1">
+                <Select value={bidAmount} onValueChange={setBidAmount}>
+                  <SelectTrigger className="flex-1 h-8 text-xs">
+                    <SelectValue placeholder={`From $${(currentHighest + getIncrements(sellerProfile?.bid_increment_tiers, currentHighest)).toLocaleString()}`} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-56">
+                    {generateOptions(currentHighest, sellerProfile?.bid_increment_tiers).map(opt => (
+                      <SelectItem key={opt} value={opt.toString()}>${opt.toLocaleString()}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  size="sm"
+                  onClick={() => placeBidMutation.mutate()}
+                  disabled={!bidAmount || placeBidMutation.isPending}
+                  className="h-8 px-3 text-xs gap-1 bg-foreground text-background hover:bg-foreground/90 shrink-0"
+                >
+                  <Gavel className="w-3 h-3" />
+                  {placeBidMutation.isPending ? "…" : "Bid"}
+                </Button>
+              </div>
+
+              {/* Make It Mine */}
+              {isPrisometer && makeitMinePrice && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => makeItMineMutation.mutate()}
+                  disabled={makeItMineMutation.isPending || item?.make_it_mine_active}
+                  className="h-8 px-3 text-xs gap-1 border-primary/40 text-primary hover:bg-primary hover:text-white shrink-0"
+                >
+                  <Zap className="w-3 h-3" />
+                  {item?.make_it_mine_active ? "Requested" : `Make It Mine · $${makeitMinePrice.toLocaleString()}`}
+                </Button>
+              )}
+            </div>
           )}
-          {isOutbid && isActive && (
+
+          {isActive && isHighBidder && isPrisometer && makeitMinePrice && (
             <Button
               size="sm"
-              onClick={() => setShowBid(v => !v)}
-              className="h-8 px-3 text-xs bg-orange-500 hover:bg-orange-600 text-white gap-1"
+              variant="outline"
+              onClick={() => makeItMineMutation.mutate()}
+              disabled={makeItMineMutation.isPending || item?.make_it_mine_active}
+              className="h-8 px-3 text-xs gap-1 border-primary/40 text-primary hover:bg-primary hover:text-white self-start"
             >
-              Bid Again {showBid ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              <Zap className="w-3 h-3" />
+              {item?.make_it_mine_active ? "Requested" : `Make It Mine · $${makeitMinePrice.toLocaleString()}`}
             </Button>
-          )}
-          {!isActive && (
-            <Badge variant="outline" className="text-xs text-muted-foreground">Ended</Badge>
           )}
         </div>
       </div>
-
-      {/* Inline bid panel */}
-      {showBid && isOutbid && isActive && (
-        <div className="px-4 pb-4 border-t border-border bg-muted/20">
-          <div className="flex gap-2 mt-3">
-            <Select value={bidAmount} onValueChange={setBidAmount}>
-              <SelectTrigger className="flex-1 h-9 text-sm">
-                <SelectValue placeholder={`Min: $${(currentHighest + getIncrements(sellerProfile?.bid_increment_tiers, currentHighest)).toLocaleString()}`} />
-              </SelectTrigger>
-              <SelectContent className="max-h-56">
-                {generateOptions(currentHighest, sellerProfile?.bid_increment_tiers).map(opt => (
-                  <SelectItem key={opt} value={opt.toString()}>${opt.toLocaleString()}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              onClick={() => placeBidMutation.mutate()}
-              disabled={!bidAmount || placeBidMutation.isPending}
-              className="h-9 px-4 text-sm bg-foreground text-background hover:bg-foreground/90"
-            >
-              {placeBidMutation.isPending ? "Placing…" : "Place Bid"}
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Current high bid: <span className="font-semibold">${currentHighest.toLocaleString()}</span>
-            {item?.first_bids_end && item.status === "first_bids" && (
-              <> · Preview ends {new Date(item.first_bids_end).toLocaleDateString()}</>
-            )}
-          </p>
-        </div>
-      )}
     </div>
   );
 }
