@@ -3,10 +3,10 @@ import FeeBreakdownDisplay from "./FeeBreakdownDisplay";
 
 export default function BidConfirmModal({ amount, onConfirm, onCancel, isPending }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm" onClick={onCancel}>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onCancel}>
       <div
-        className="w-full max-w-lg bg-card rounded-2xl shadow-2xl flex flex-col"
-        style={{ maxHeight: "85dvh" }}
+        className="w-full max-w-lg bg-card rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col"
+        style={{ maxHeight: "70dvh" }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
