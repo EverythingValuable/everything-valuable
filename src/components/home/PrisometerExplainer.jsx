@@ -26,46 +26,39 @@ const timelineSteps = [
 
 export default function PrisometerExplainer() {
   return (
-    <section className="py-12 md:py-16 bg-[#f5f0ed]">
-      <div className="max-w-4xl mx-auto px-6">
+    <section className="py-10 md:py-14 bg-[#f5f0ed]">
+      <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
-        <div className="mb-10">
-          <p className="text-accent font-bold text-sm tracking-widest mb-3">
+        <div className="mb-8 max-w-2xl">
+          <p className="text-accent font-bold text-sm tracking-widest mb-2">
             OUR INNOVATION
           </p>
           <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground mb-4 leading-tight">
             A New Way to Discover Market Value
           </h2>
-          <div className="w-12 h-1 bg-primary mb-6"></div>
-          <p className="text-foreground leading-relaxed text-base">
+          <div className="w-12 h-1 bg-primary mb-4"></div>
+          <p className="text-foreground leading-relaxed text-sm">
             Every item moves through a transparent two-phase sale process. Early demand is captured first, then the PRISOMETER™ activates and lets price meet the market in real time.
           </p>
         </div>
 
-        {/* Timeline Steps in Card */}
-        <div className="bg-foreground/5 border border-foreground/10 rounded-2xl p-8 md:p-10 backdrop-blur-sm">
-          <div className="space-y-6">
-            {timelineSteps.map((step, idx) => (
-              <div key={step.number} className="flex gap-4">
-                <div className="flex flex-col items-center shrink-0">
-                  <div className="w-8 h-8 rounded-full border-2 border-primary flex items-center justify-center text-xs font-bold text-primary">
-                    {step.number}
-                  </div>
-                  {idx < timelineSteps.length - 1 && (
-                    <div className="w-0.5 h-12 bg-border mt-2"></div>
-                  )}
+        {/* 4 Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {timelineSteps.map((step) => (
+            <div key={step.number} className="bg-white/40 border border-foreground/10 rounded-xl p-5 backdrop-blur-sm hover:bg-white/60 transition-colors">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-7 h-7 rounded-full border-2 border-primary flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                  {step.number}
                 </div>
-                <div className="pt-1">
-                  <p className="font-bold text-xs tracking-widest text-accent mb-1">
-                    {step.title}
-                  </p>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
+                <p className="font-bold text-xs tracking-widest text-accent">
+                  {step.title}
+                </p>
               </div>
-            ))}
-          </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {step.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
