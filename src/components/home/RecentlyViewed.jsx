@@ -89,10 +89,10 @@ function RecentCard({ item, index }) {
     >
       <Link
         to={`/item/${item.id}`}
-        className="group flex items-stretch bg-card border border-border/60 rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-200 h-[110px]"
+        className="group flex items-stretch bg-card border border-border/60 rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-200 h-[130px]"
       >
         {/* Thumbnail */}
-        <div className="w-[110px] h-[110px] flex-shrink-0 relative overflow-hidden bg-muted">
+        <div className="w-[130px] h-[130px] flex-shrink-0 relative overflow-hidden bg-muted">
           {item.images?.[0] ? (
             <img
               src={item.images[0]}
@@ -139,7 +139,7 @@ function RecentCard({ item, index }) {
               )}
             </div>
 
-            {/* Price row */}
+            {/* Price row — static, no bid count here */}
             <div className="flex items-baseline gap-1.5">
               <span className="text-[10px] text-muted-foreground font-medium">
                 {item.status === "prisometer" ? "Now" : "Start"}
@@ -152,18 +152,20 @@ function RecentCard({ item, index }) {
                   </span>
                 )}
               </span>
-              {item.bid_count > 0 && (
-                <span className="text-[10px] text-muted-foreground">· {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}</span>
-              )}
             </div>
 
-            {/* High bid — own line, more prominent */}
-            {item.highest_bid > 0 && (
-              <div className="flex items-baseline gap-1">
-                <span className="text-[10px] text-muted-foreground font-medium">High Bid</span>
-                <span className="font-price text-sm font-bold text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
-              </div>
-            )}
+            {/* High bid + bid count — own line */}
+            <div className="flex items-baseline gap-2 min-h-[16px]">
+              {item.highest_bid > 0 && (
+                <>
+                  <span className="text-[10px] text-muted-foreground font-medium">High Bid</span>
+                  <span className="font-price text-sm font-bold text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
+                </>
+              )}
+              {item.bid_count > 0 && (
+                <span className="text-[10px] text-muted-foreground">{item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}</span>
+              )}
+            </div>
           </div>
         </div>
       </Link>
