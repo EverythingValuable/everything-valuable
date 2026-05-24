@@ -26,7 +26,7 @@ export default function BidConfirmModal({ amount, onConfirm, onCancel, isPending
         </div>
 
         {/* Sticky footer with buttons */}
-        <div className="shrink-0 border-t border-border px-5 py-4 space-y-3 bg-card">
+        <div className="shrink-0 border-t border-border px-5 py-4 space-y-3 bg-card safe-area-bottom">
           <p className="text-xs text-muted-foreground">Your credit card on file will be charged automatically if successful for service fee only.</p>
           <div className="flex gap-3">
             <button
