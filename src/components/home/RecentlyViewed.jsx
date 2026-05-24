@@ -89,10 +89,10 @@ function RecentCard({ item, index }) {
     >
       <Link
         to={`/item/${item.id}`}
-        className="group flex items-stretch bg-card border border-border/60 rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-200"
+        className="group flex items-stretch bg-card border border-border/60 rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-200 h-[110px]"
       >
         {/* Thumbnail */}
-        <div className="w-[110px] flex-shrink-0 relative overflow-hidden bg-muted">
+        <div className="w-[110px] h-[110px] flex-shrink-0 relative overflow-hidden bg-muted">
           {item.images?.[0] ? (
             <img
               src={item.images[0]}
@@ -107,21 +107,21 @@ function RecentCard({ item, index }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0 px-3.5 py-3 flex flex-col justify-between gap-2">
+        <div className="flex-1 min-w-0 px-3.5 py-2.5 flex flex-col justify-between">
           {/* Top: category + title */}
           <div>
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-0.5">
               {categoryLabels[item.category] || item.category || "Item"}
             </p>
-            <h4 className="font-serif text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+            <h4 className="font-serif text-xs font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
               {item.title}
             </h4>
           </div>
 
-          {/* Bottom: status badge + price row */}
-          <div className="flex flex-col gap-1.5">
-            {/* Status badge + countdown */}
-            <div className="flex items-center gap-2 flex-wrap">
+          {/* Bottom: status + price */}
+          <div className="flex flex-col gap-1">
+            {/* Status badge + countdown on same row */}
+            <div className="flex items-center gap-2">
               {item.status === "prisometer" && (
                 <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-[10px] px-1.5 py-0 font-semibold">
                   <TrendingDown className="w-2.5 h-2.5 mr-0.5" />
@@ -139,32 +139,31 @@ function RecentCard({ item, index }) {
               )}
             </div>
 
-            {/* Price + bids */}
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <div className="flex items-baseline gap-0.5">
-                <span className="text-[10px] text-muted-foreground font-medium mr-1">
-                  {item.status === "prisometer" ? "Now" : "Start"}
-                </span>
-                <span className="font-price text-sm font-bold text-foreground">
-                  ${Math.floor(livePrice).toLocaleString("en-US")}
-                  {item.status === "prisometer" && !item.make_it_mine_active && (
-                    <span className="text-xs text-red-500 animate-price-tick">
-                      .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
-                    </span>
-                  )}
-                </span>
-              </div>
-              {item.highest_bid > 0 && (
-                <span className="text-[10px] text-muted-foreground">
-                  High ${item.highest_bid.toLocaleString("en-US")}
-                </span>
-              )}
+            {/* Price row */}
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-[10px] text-muted-foreground font-medium">
+                {item.status === "prisometer" ? "Now" : "Start"}
+              </span>
+              <span className="font-price text-sm font-bold text-foreground">
+                ${Math.floor(livePrice).toLocaleString("en-US")}
+                {item.status === "prisometer" && !item.make_it_mine_active && (
+                  <span className="text-xs text-red-500 animate-price-tick">
+                    .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
+                  </span>
+                )}
+              </span>
               {item.bid_count > 0 && (
-                <span className="text-[10px] text-muted-foreground">
-                  · {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
-                </span>
+                <span className="text-[10px] text-muted-foreground">· {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}</span>
               )}
             </div>
+
+            {/* High bid — own line, more prominent */}
+            {item.highest_bid > 0 && (
+              <div className="flex items-baseline gap-1">
+                <span className="text-[10px] text-muted-foreground font-medium">High Bid</span>
+                <span className="font-price text-sm font-bold text-foreground">${item.highest_bid.toLocaleString("en-US")}</span>
+              </div>
+            )}
           </div>
         </div>
       </Link>
