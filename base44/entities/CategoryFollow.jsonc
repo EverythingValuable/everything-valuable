@@ -1,0 +1,22 @@
+{
+  "name": "CategoryFollow",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user following the category"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category key (e.g. fine_art, jewelry)"
+    },
+    "category_label": {
+      "type": "string",
+      "description": "Human-readable category label"
+    }
+  },
+  "required": [
+    "user_email",
+    "category"
+  ]
+}
