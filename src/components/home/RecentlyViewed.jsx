@@ -80,7 +80,7 @@ export default function RecentlyViewed() {
         <div className="relative">
           <div
             id="recent-scroll"
-            className="flex flex-col gap-2.5 overflow-y-auto max-h-[340px] scrollbar-hide pb-1 md:flex-row md:overflow-x-auto md:overflow-y-hidden md:max-h-none md:pb-2"
+            className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
           >
             {items.map((item) => (
               <motion.div
@@ -88,11 +88,11 @@ export default function RecentlyViewed() {
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
-                className="flex-shrink-0 w-full md:w-72"
+                className="flex-shrink-0 w-72"
               >
-                <Link to={`/item/${item.id}`} className="group flex items-center gap-3 bg-card border border-border/50 rounded-2xl px-3 py-2.5 hover:border-primary/30 hover:shadow-sm transition-all duration-200">
-                  {/* Thumbnail */}
-                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-muted flex-shrink-0">
+                <Link to={`/item/${item.id}`} className="group flex items-center gap-3 bg-card border border-border/50 rounded-2xl px-3 py-3 hover:border-primary/30 hover:shadow-md transition-all duration-200">
+                  {/* 16:9 Thumbnail */}
+                  <div className="w-28 flex-shrink-0 rounded-xl overflow-hidden bg-muted" style={{ aspectRatio: "16/9" }}>
                     {item.images?.[0] ? (
                       <img
                         src={item.images[0]}
@@ -107,16 +107,20 @@ export default function RecentlyViewed() {
                   </div>
                   {/* Text */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-serif text-xs font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1 leading-snug">
+                    <h4 className="font-serif text-xs font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                       {item.title}
                     </h4>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
+                    <p className="text-[10px] text-muted-foreground mt-1 truncate">
                       {categoryLabels[item.category] || item.category || ""}
-                      {item.prisometer_start_price ? ` · $${item.prisometer_start_price.toLocaleString("en-US")}` : ""}
                     </p>
+                    {item.prisometer_start_price && (
+                      <p className="text-[11px] font-semibold text-foreground mt-0.5">
+                        ${item.prisometer_start_price.toLocaleString("en-US")}
+                      </p>
+                    )}
                   </div>
                   {/* Status dot */}
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.status === "prisometer" ? "bg-red-500" : "bg-primary"}`} />
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 self-start mt-1 ${item.status === "prisometer" ? "bg-red-500" : "bg-primary"}`} />
                 </Link>
               </motion.div>
             ))}
