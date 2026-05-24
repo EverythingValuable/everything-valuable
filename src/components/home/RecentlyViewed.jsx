@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { TrendingDown, Clock, Eye, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const categoryLabels = {
   fine_art: "Fine Art",
@@ -21,31 +22,154 @@ const categoryLabels = {
   other: "Other"
 };
 
-function StatusBadge({ item }) {
-  if (item.status === "prisometer") {
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200">
-        <TrendingDown className="w-2.5 h-2.5" />
-        Price Dropping
-      </span>
-    );
-  }
-  if (item.status === "first_bids") {
-    if (item.bid_count > 0) {
-      return (
-        <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-          {item.bid_count} Bid{item.bid_count !== 1 ? "s" : ""}
-        </span>
-      );
+function useLivePrice(item) {
+  const [livePrice, setLivePrice] = useState(item.current_price || item.prisometer_start_price);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    const isActive = item.status === "prisometer" && !item.make_it_mine_active && item.prisometer_activated_at && item.prisometer_duration_hours;
+    if (!isActive) {
+      setLivePrice(item.current_price || item.prisometer_start_price);
+      return;
     }
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-        <Clock className="w-2.5 h-2.5" />
-        Live
-      </span>
-    );
-  }
-  return null;
+    const startTime = new Date(item.prisometer_activated_at).getTime();
+    const startPrice = item.prisometer_start_price;
+    const reservePrice = item.reserve_price || startPrice * 0.5;
+    const belowPercent = item.below_reserve_percent || 10;
+    const floorPrice = reservePrice * (1 - belowPercent / 100);
+    const durationMs = item.prisometer_duration_hours * 3600000;
+
+    const update = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      setLivePrice(Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice));
+    };
+    update();
+    intervalRef.current = setInterval(update, 800);
+    return () => clearInterval(intervalRef.current);
+  }, [item]);
+
+  return livePrice;
+}
+
+function useCountdown(endDateStr) {
+  const [timeLeft, setTimeLeft] = useState("");
+  useEffect(() => {
+    if (!endDateStr) return;
+    const update = () => {
+      const diff = new Date(endDateStr) - Date.now();
+      if (diff <= 0) { setTimeLeft("Ended"); return; }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      if (h >= 24) {
+        const d = Math.floor(h / 24);
+        setTimeLeft(`${d}d ${h % 24}h`);
+      } else {
+        setTimeLeft(`${h}h ${m.toString().padStart(2, "0")}m ${s.toString().padStart(2, "0")}s`);
+      }
+    };
+    update();
+    const t = setInterval(update, 1000);
+    return () => clearInterval(t);
+  }, [endDateStr]);
+  return timeLeft;
+}
+
+function RecentCard({ item, index }) {
+  const livePrice = useLivePrice(item);
+  const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      className="flex-shrink-0 w-80"
+    >
+      <Link
+        to={`/item/${item.id}`}
+        className="group flex items-stretch bg-card border border-border/60 rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-200"
+      >
+        {/* Thumbnail */}
+        <div className="w-[110px] flex-shrink-0 relative overflow-hidden bg-muted">
+          {item.images?.[0] ? (
+            <img
+              src={item.images[0]}
+              alt={item.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
+              <span className="font-serif text-xl">EV</span>
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0 px-3.5 py-3 flex flex-col justify-between gap-2">
+          {/* Top: category + title */}
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-0.5">
+              {categoryLabels[item.category] || item.category || "Item"}
+            </p>
+            <h4 className="font-serif text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+              {item.title}
+            </h4>
+          </div>
+
+          {/* Bottom: status badge + price row */}
+          <div className="flex flex-col gap-1.5">
+            {/* Status badge + countdown */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {item.status === "prisometer" && (
+                <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-[10px] px-1.5 py-0 font-semibold">
+                  <TrendingDown className="w-2.5 h-2.5 mr-0.5" />
+                  PRI$OMETER Active
+                </Badge>
+              )}
+              {item.status === "first_bids" && (
+                <Badge variant="outline" className="bg-white text-primary border-primary/40 text-[10px] px-1.5 py-0 font-semibold">
+                  <Clock className="w-2.5 h-2.5 mr-0.5" />
+                  1stBid$ Live
+                </Badge>
+              )}
+              {item.status === "first_bids" && countdown && (
+                <span className="font-price text-[10px] font-bold text-primary tracking-wide">{countdown}</span>
+              )}
+            </div>
+
+            {/* Price + bids */}
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-[10px] text-muted-foreground font-medium mr-1">
+                  {item.status === "prisometer" ? "Now" : "Start"}
+                </span>
+                <span className="font-price text-sm font-bold text-foreground">
+                  ${Math.floor(livePrice).toLocaleString("en-US")}
+                  {item.status === "prisometer" && !item.make_it_mine_active && (
+                    <span className="text-xs text-red-500 animate-price-tick">
+                      .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
+                    </span>
+                  )}
+                </span>
+              </div>
+              {item.highest_bid > 0 && (
+                <span className="text-[10px] text-muted-foreground">
+                  High ${item.highest_bid.toLocaleString("en-US")}
+                </span>
+              )}
+              {item.bid_count > 0 && (
+                <span className="text-[10px] text-muted-foreground">
+                  · {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
 }
 
 export default function RecentlyViewed() {
@@ -98,61 +222,7 @@ export default function RecentlyViewed() {
           className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
         >
           {items.map((item, i) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="flex-shrink-0 w-80"
-            >
-              <Link
-                to={`/item/${item.id}`}
-                className="group flex items-stretch gap-0 bg-card border border-border/60 rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-200"
-              >
-                {/* Thumbnail — 120px wide, full height */}
-                <div className="w-[120px] flex-shrink-0 relative overflow-hidden bg-muted">
-                  {item.images?.[0] ? (
-                    <img
-                      src={item.images[0]}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
-                      <span className="font-serif text-xl">EV</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0 px-3.5 py-3 flex flex-col justify-between">
-                  <div>
-                    {/* Category */}
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
-                      {categoryLabels[item.category] || item.category || "Item"}
-                    </p>
-                    {/* Title */}
-                    <h4 className="font-serif text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                      {item.title}
-                    </h4>
-                  </div>
-
-                  <div className="mt-2 flex items-center justify-between gap-2">
-                    <div className="flex flex-col gap-1">
-                      <StatusBadge item={item} />
-                      {item.prisometer_start_price && (
-                        <p className="text-xs font-bold text-foreground font-price">
-                          ${item.prisometer_start_price.toLocaleString("en-US")}
-                        </p>
-                      )}
-                    </div>
-                    <span className="text-[11px] font-semibold text-primary flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      View Again <ArrowRight className="w-3 h-3" />
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
+            <RecentCard key={item.id} item={item} index={i} />
           ))}
         </div>
       </div>
