@@ -7,8 +7,8 @@ import ItemCard from "../shared/ItemCard";
 export default function FeaturedItems({ liveItems = [], previewItems = [], title = "Featured Live Sales", subtitle, isLoading }) {
   const [activeTab, setActiveTab] = useState("all");
 
-  const allItems = [...liveItems, ...previewItems];
-  const displayItems = activeTab === "prisometer" ? liveItems : activeTab === "first_bids" ? previewItems : allItems;
+  const allItems = [...liveItems, ...previewItems].slice(0, 10);
+  const displayItems = (activeTab === "prisometer" ? liveItems : activeTab === "first_bids" ? previewItems : allItems).slice(0, 10);
 
   if (!isLoading && !allItems.length) return null;
 
