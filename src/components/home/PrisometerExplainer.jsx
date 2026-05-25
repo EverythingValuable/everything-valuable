@@ -42,23 +42,13 @@ export default function PrisometerExplainer() {
           </p>
         </div>
 
-        {/* 4 Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {timelineSteps.map((step) => (
-            <div key={step.number} className="bg-white/40 border border-foreground/10 rounded-xl p-5 backdrop-blur-sm hover:bg-white/60 transition-colors">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-7 h-7 rounded-full border-2 border-primary flex items-center justify-center text-xs font-bold text-primary shrink-0">
-                  {step.number}
-                </div>
-                <p className="font-bold text-xs tracking-widest text-accent">
-                  {step.title}
-                </p>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {step.description}
-              </p>
-            </div>
-          ))}
+        {/* Visual Mobile Mockup */}
+        <div className="flex justify-center">
+          <img 
+            src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/485f64f2c_680F99DC-F429-4F97-91AE-A2AB2C37AF08.png" 
+            alt="Prisometer Mobile Experience" 
+            className="max-w-full h-auto rounded-xl shadow-lg"
+          />
         </div>
       </div>
     </section>
