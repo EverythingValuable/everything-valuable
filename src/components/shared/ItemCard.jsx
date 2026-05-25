@@ -178,14 +178,20 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                   src={item.images[0]}
                   alt={item.title}
                   className={`w-full h-full object-cover transition-opacity duration-1000 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
+                  draggable="false"
+                  onContextMenu={e => e.preventDefault()}
                 />
                 {item.images[1] && (
                   <img
                     src={item.images[1]}
                     alt={item.title}
                     className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
+                    draggable="false"
+                    onContextMenu={e => e.preventDefault()}
                   />
                 )}
+                {/* Transparent overlay to block right-click / drag saving */}
+                <div className="absolute inset-0 z-10" onContextMenu={e => e.preventDefault()} draggable="false" />
               </>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">

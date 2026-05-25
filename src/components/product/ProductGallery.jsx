@@ -33,9 +33,18 @@ export default function ProductGallery({ images = [] }) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="w-full h-full object-contain cursor-zoom-in"
-              onClick={() => setFullscreen(true)}
+              draggable="false"
+              onContextMenu={e => e.preventDefault()}
             />
           </AnimatePresence>
+          {/* Transparent overlay to block right-click / drag saving */}
+          <div
+            className="absolute inset-0 z-10"
+            onContextMenu={e => e.preventDefault()}
+            draggable="false"
+            onClick={() => setFullscreen(true)}
+            style={{ cursor: "zoom-in" }}
+          />
 
           {images.length > 1 && (
             <>
@@ -73,7 +82,7 @@ export default function ProductGallery({ images = [] }) {
                   i === activeIndex ? "border-primary" : "border-transparent hover:border-border"
                 }`}
               >
-                <img src={img} alt="" className="w-full h-full object-cover" />
+                <img src={img} alt="" className="w-full h-full object-cover" draggable="false" onContextMenu={e => e.preventDefault()} />
               </button>
             ))}
           </div>
@@ -93,12 +102,16 @@ export default function ProductGallery({ images = [] }) {
             <button className="absolute top-6 right-6 w-10 h-10 rounded-full bg-background/10 flex items-center justify-center text-background hover:bg-background/20">
               <X className="w-5 h-5" />
             </button>
-            <img
-              src={images[activeIndex]}
-              alt="Full size"
-              className="max-w-[90vw] max-h-[90vh] object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
+            <div className="relative" onClick={e => e.stopPropagation()}>
+              <img
+                src={images[activeIndex]}
+                alt="Full size"
+                className="max-w-[90vw] max-h-[90vh] object-contain"
+                draggable="false"
+                onContextMenu={e => e.preventDefault()}
+              />
+              <div className="absolute inset-0" onContextMenu={e => e.preventDefault()} draggable="false" />
+            </div>
             {images.length > 1 && (
               <>
                 <button
