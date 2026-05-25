@@ -77,10 +77,10 @@ export default function FeaturedItems({ liveItems = [], previewItems = [], title
           </div>
         )}
 
-        <div className="mt-8 text-center md:hidden">
+        <div className="mt-10 text-center">
           <Link to="/browse">
-            <Button variant="outline" className="gap-2 rounded-full">
-              View All <ArrowRight className="w-4 h-4" />
+            <Button variant="outline" className="gap-2 px-8 py-5 text-sm font-semibold border-border hover:border-foreground hover:bg-foreground hover:text-background transition-colors">
+              View More <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
         </div>
