@@ -18,7 +18,7 @@ export default function Home() {
 
   const { data: liveItems = [], isLoading: loadingLive } = useQuery({
     queryKey: ["items-live"],
-    queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 8),
+    queryFn: () => base44.entities.Item.filter({ status: "prisometer" }, "-created_date", 10),
     refetchInterval: 60000,
     staleTime: 30000,
   });
@@ -30,7 +30,7 @@ export default function Home() {
     staleTime: 30000,
   });
 
-  const allFeatured = [...(liveItems || []), ...(previewItems || [])].slice(0, 16);
+  const allFeatured = [...(liveItems || []), ...(previewItems || [])].slice(0, 10);
   const featuredLoading = loadingLive || loadingPreview;
 
   return (
