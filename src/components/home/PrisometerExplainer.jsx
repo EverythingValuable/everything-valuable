@@ -48,7 +48,7 @@ export default function PrisometerExplainer() {
             <img 
               src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/485f64f2c_680F99DC-F429-4F97-91AE-A2AB2C37AF08.png" 
               alt="Prisometer Mobile Experience" 
-              className="max-w-full h-auto rounded-xl shadow-lg w-full lg:max-w-sm"
+              className="max-w-full h-auto rounded-xl w-full lg:max-w-sm"
             />
           </div>
         </div>
