@@ -30,6 +30,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import ConsignorDetail from './pages/ConsignorDetail';
 import SellerAccess from './pages/SellerAccess';
 import Dealers from './pages/Dealers';
+import ItemsNearMe from './pages/ItemsNearMe';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -77,6 +78,7 @@ const AuthenticatedApp = () => {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/seller-access" element={<SellerAccess />} />
         <Route path="/dealers" element={<Dealers />} />
+        <Route path="/items-near-me" element={<ItemsNearMe />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

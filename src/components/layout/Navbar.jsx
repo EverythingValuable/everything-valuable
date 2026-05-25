@@ -176,6 +176,15 @@ export default function Navbar() {
                 Dealers
               </Link>
             )}
+
+            {showMarketplaceLinks && (
+              <Link
+                to="/items-near-me"
+                className={navLinkClass(location.pathname === "/items-near-me")}
+              >
+                Near Me
+              </Link>
+            )}
           </nav>
         </div>
 
@@ -349,6 +358,7 @@ export default function Navbar() {
               <Link to="/real-property" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50"}`} onClick={() => setMobileOpen(false)}>Real Property</Link>
               <Link to="/browse?status=prisometer" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50 text-primary"}`} onClick={() => setMobileOpen(false)}>Live Now</Link>
               <Link to="/dealers" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50"}`} onClick={() => setMobileOpen(false)}>Dealers</Link>
+              <Link to="/items-near-me" className={`block py-3 text-sm font-semibold border-b ${isLanding ? "border-white/15 text-white" : "border-border/50"}`} onClick={() => setMobileOpen(false)}>Near Me</Link>
               <div className={`pt-3 border-t space-y-2 ${isLanding ? "border-white/15" : "border-border/50"}`}>
                 <Link to="/how-it-works" className={`block py-2 text-sm ${isLanding ? "text-white/70" : "text-muted-foreground"}`} onClick={() => setMobileOpen(false)}>How It Works</Link>
                 <Link to="/pricing" className={`block py-2 text-sm ${isLanding ? "text-white/70" : "text-muted-foreground"}`} onClick={() => setMobileOpen(false)}>Pricing &amp; Fees</Link>
