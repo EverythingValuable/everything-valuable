@@ -130,7 +130,6 @@ function ListingStrength({ form }) {
     { label: "Title complete",    done: !!form.title?.trim(),                           weight: 15 },
     { label: "Pricing set",       done: !!form.prisometer_start_price,                  weight: 15 },
     { label: "Full description",  done: (form.description?.trim()?.length || 0) > 80,  weight: 15 },
-    { label: "Short summary",     done: !!form.short_description?.trim(),               weight: 10 },
     { label: "Condition set",     done: !!form.condition,                               weight: 10 },
     { label: "Category selected", done: !!form.category,                               weight: 10 },
     { label: "Item location",     done: !!form.customer_location?.trim(),               weight: 5  },
