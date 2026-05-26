@@ -386,7 +386,7 @@ export default function InventoryTable({ items, view, limit }) {
 
                 {/* ── ZONE 1: Item Identity ── */}
                 <div className="flex-1 min-w-0 px-5 py-4">
-                  <p className="text-[14px] font-semibold text-neutral-900 leading-snug mb-1 line-clamp-2">{item.title}</p>
+                  <p className="text-[14px] font-semibold text-neutral-900 leading-tight mb-2 line-clamp-3 h-[3.5rem]">{item.title}</p>
                   {/* Meta line */}
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-0 text-[11px] text-neutral-400 mb-2.5">
                     {item.category && <span className="capitalize">{item.category.replace(/_/g, " ")}</span>}
@@ -430,16 +430,16 @@ export default function InventoryTable({ items, view, limit }) {
                 </div>
 
                 {/* ── ZONE 2: Price Block ── */}
-                <div className="shrink-0 w-[170px] px-5 py-4 border-l border-neutral-100">
-                  <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-1">{priceLabel}</p>
-                  <p className="font-price text-[24px] font-bold text-neutral-900 leading-none tabular-nums">{price.value}</p>
+                <div className="shrink-0 w-[200px] px-5 py-4 border-l border-neutral-100 flex flex-col justify-center">
+                  <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-2">{priceLabel}</p>
+                  <p className="font-price text-[28px] font-bold text-neutral-900 leading-none tabular-nums">{price.value}</p>
                   {item.reserve_price > 0 && item.status !== "prisometer" && item.status !== "first_bids" && (
-                    <p className="text-[11px] text-neutral-400 mt-1.5">Reserve ${item.reserve_price.toLocaleString()}</p>
+                    <p className="text-[10px] text-neutral-500 mt-2">Reserve ${item.reserve_price.toLocaleString()}</p>
                   )}
                 </div>
 
                 {/* ── ZONE 3: Activity ── */}
-                <div className="shrink-0 w-[140px] px-4 py-4 border-l border-neutral-100 space-y-1">
+                <div className="shrink-0 w-[160px] px-4 py-4 border-l border-neutral-100 flex flex-col justify-center space-y-1">
                   <div className="flex items-center gap-2 text-[11px] text-neutral-500">
                     <Eye className="w-3.5 h-3.5 text-neutral-300 shrink-0" />
                     <span className="tabular-nums font-medium text-neutral-700">{item.view_count || 0}</span>
