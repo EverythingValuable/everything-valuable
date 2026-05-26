@@ -198,8 +198,7 @@ Deno.serve(async (req) => {
 
     let rowAlt = false;
     drawRow(invoice.item_title || 'Item', 'Item', invoice.item_price, false, rowAlt); rowAlt = !rowAlt;
-    if (invoice.service_fee > 0) { drawRow('Platform Service Fee Paid at Close (informational — not included in total)', 'Info', invoice.service_fee, true, rowAlt); rowAlt = !rowAlt; }
-    if (invoice.fee_credit > 0)  { drawRow('Fee Credit Applied to Invoice', 'Credit', invoice.fee_credit, true, rowAlt);  rowAlt = !rowAlt; }
+    if (invoice.fee_credit > 0)  { drawRow('Seller Credit Applied to Item Balance', 'Credit', invoice.fee_credit, true, rowAlt);  rowAlt = !rowAlt; }
     for (const li of (invoice.additional_line_items || [])) {
       drawRow(li.description || '', li.type ? (li.type.charAt(0).toUpperCase() + li.type.slice(1)) : '', li.amount, li.type === 'discount', rowAlt);
       rowAlt = !rowAlt;
@@ -216,7 +215,7 @@ Deno.serve(async (req) => {
     ensureSpace(90);
 
     doc.setFont('helvetica', 'normal'); doc.setFontSize(10); setTxt(...C.mid);
-    doc.text('Final Invoice Total', lblX, y);
+    doc.text('Invoice Total', lblX, y);
     doc.setFont('helvetica', 'bold'); setTxt(...C.dark);
     doc.text(fmt(invoice.total_amount ?? invoice.item_price), amtX, y, { align: 'right' });
     y += 18;
@@ -261,6 +260,17 @@ Deno.serve(async (req) => {
       doc.text('BALANCE DUE NOW', lblX, y + 14);
       doc.setFontSize(12); doc.text(fmt(balanceDue), amtX, y + 14, { align: 'right' });
       y += 46;
+    }
+
+    // ─── SELLER CREDIT DISCLOSURE NOTE ───────────────────────────────────────
+    if (invoice.fee_credit > 0) {
+      ensureSpace(32);
+      y += 8;
+      const noteText = `A seller credit of ${fmt(invoice.fee_credit)} has been applied to this invoice. Any platform service fee paid through Everything Valuable was processed separately and is not part of this invoice.`;
+      const noteLines = doc.splitTextToSize(noteText, contentW);
+      doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); setTxt(...C.light);
+      doc.text(noteLines, margin, y);
+      y += noteLines.length * 11 + 10;
     }
 
     // ─── PAYMENT INSTRUCTIONS ─────────────────────────────────────────────────

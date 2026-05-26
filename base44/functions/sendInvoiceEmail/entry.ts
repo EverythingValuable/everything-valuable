@@ -28,6 +28,9 @@ Deno.serve(async (req) => {
 
     const totalFormatted = `$${Number(invoice.total_amount ?? invoice.item_price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
     const balanceFormatted = `$${balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+    const creditNoteHtml = invoice.fee_credit > 0
+      ? `<tr><td style="padding:12px 0 0;"><p style="margin:0;font-size:12px;color:#9ca3af;line-height:1.6;font-style:italic;">A seller credit of $${Number(invoice.fee_credit).toLocaleString('en-US', { minimumFractionDigits: 2 })} has been applied to this invoice. Any platform service fee paid through Everything Valuable was processed separately and is not part of this invoice.</p></td></tr>`
+      : '';
 
     const paymentInstructionsHtml = invoice.payment_instructions
       ? `<tr><td style="padding:24px 0 0;">
@@ -89,6 +92,8 @@ Deno.serve(async (req) => {
                 </tr>
               </table>
             </td></tr>
+
+            ${creditNoteHtml}
 
             ${paymentInstructionsHtml}
             ${notesHtml}
