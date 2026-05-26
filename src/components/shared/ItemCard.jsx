@@ -183,11 +183,11 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               {item.status === "prisometer" ? (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-foreground text-white text-[10px] font-semibold">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                  LIVE
+                  PRI$OMETER Live
                 </div>
               ) : item.status === "first_bids" ? (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-foreground/30 text-foreground text-[10px] font-semibold">
-                  PREVIEW
+                  1stBid$ Preview
                 </div>
               ) : null}
             </div>
@@ -216,7 +216,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             </div>
 
             {/* Structured sale data — always 4 rows for consistent height */}
-            <div className="space-y-2 border-t border-border pt-3">
+            <div className="space-y-1.5 border-t border-border pt-2.5">
               {item.status === "prisometer" ? (
                 <>
                   <div className="flex items-baseline justify-between">
