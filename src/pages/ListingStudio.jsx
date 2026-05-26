@@ -1204,7 +1204,7 @@ export default function ListingStudio() {
               </div>
             )}
 
-            <Field label="Below-Reserve Drop Allowance" infoTip="The maximum percentage below your hidden reserve that you'll allow the PRI$OMETER price to drop. For example, at 10% on a $10,000 reserve, the price floor is $9,000. This gives serious buyers a path to purchase even if bids land just under reserve.">
+            <Field label="Below-Reserve Drop Allowance" infoTip="Sets how far below your hidden reserve the PRI$OMETER™ price is allowed to fall. For example, with a $10,000 reserve and a 10% allowance, the price floor would be $9,000. If bidding meets the PRI$OMETER™ price at or above reserve, the item sells automatically. If bidding meets the price below reserve, the seller is notified and may choose whether to accept.">
               <div className="flex gap-2 pt-1">
                 {[10, 15, 20].map(pct => (
                   <Pill key={pct} active={form.below_reserve_percent === pct} onClick={() => set("below_reserve_percent", pct)}>{pct}%</Pill>
