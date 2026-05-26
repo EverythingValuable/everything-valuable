@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { generateTitle } from "@/lib/listingTaxonomy";
 import { RefreshCw, Pencil, AlertTriangle } from "lucide-react";
 
-const MAX_CHARS = 65;
+const MAX_CHARS = 120;
 
 export default function GeneratedTitlePanel({ form, set, category }) {
   const [editMode, setEditMode] = useState(false);
@@ -38,7 +38,7 @@ export default function GeneratedTitlePanel({ form, set, category }) {
   const strength = charCount === 0 ? "empty"
     : isOverLimit ? "too_long"
     : charCount < 30 ? "weak"
-    : charCount < 50 ? "good"
+    : charCount < 70 ? "good"
     : "strong";
 
   const strengthConfig = {
@@ -90,7 +90,7 @@ export default function GeneratedTitlePanel({ form, set, category }) {
             autoFocus
             value={manualTitle}
             onChange={e => handleManualChange(e.target.value)}
-            maxLength={80}
+            maxLength={120}
             className={cn(
               "w-full text-lg font-bold text-neutral-900 bg-transparent border-0 border-b pb-1 focus:outline-none transition-colors",
               isOverLimit ? "border-red-300 focus:border-red-500" : "border-neutral-300 focus:border-neutral-700"
