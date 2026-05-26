@@ -1213,7 +1213,7 @@ export default function ListingStudio() {
             </Field>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-2 border-t border-neutral-50">
-              <Field label="1stBids™ Preview Duration" infoTip="How long your listing stays in the 1stBids™ preview phase, where serious buyers can register intent and place non-binding bids before the PRI$OMETER goes live. Longer durations build more buyer interest before the countdown begins.">
+              <Field label="1stBids™ Preview Duration" infoTip="Choose how long the 1stBid$ preview period runs before the PRI$OMETER™ begins. During this preview, buyers can place early bids to show interest and establish demand. If the highest preview bid meets or exceeds the PRI$OMETER™ starting price, the item can sell before the declining-price phase begins. If not, the PRI$OMETER™ goes live and the price begins to drop.">
                 <div className="flex gap-2 pt-1">
                   {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 720, label: "30 days" }].map(({ h, label }) => (
                     <Pill key={h} active={form.first_bids_duration_hours === h} onClick={() => set("first_bids_duration_hours", h)}>{label}</Pill>
