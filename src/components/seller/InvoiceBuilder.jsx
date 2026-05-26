@@ -221,6 +221,13 @@ export default function InvoiceBuilder({ user }) {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      // Guard against duplicates: if creating a new invoice for an item that already has one, block it
+      if (!editingId && form.item_id) {
+        const existing = invoices.filter(inv => inv.item_id === form.item_id);
+        if (existing.length > 0) {
+          throw new Error("An invoice already exists for this item. Edit the existing one instead.");
+        }
+      }
       const { fee, credit, total } = computeInvoice(form.item_price, form.additional_line_items);
       const payload = {
         item_id: form.item_id || undefined,
@@ -256,6 +263,9 @@ export default function InvoiceBuilder({ user }) {
       setForm(defaultForm());
       setBuyerProfileWarning(false);
       toast({ title: editingId ? "Invoice updated" : "Invoice created" });
+    },
+    onError: (err) => {
+      toast({ title: err.message || "Failed to save invoice", variant: "destructive" });
     },
   });
 
