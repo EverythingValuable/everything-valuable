@@ -140,10 +140,10 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
         {/* Premium auction catalog card */}
         <div
           onClick={() => setDrawerOpen(true)}
-          className="rounded-lg overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-96"
+          className="rounded-lg overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full"
         >
           {/* Image area — artwork is the hero */}
-          <div className="relative w-full flex-1 overflow-hidden bg-muted shrink-0">
+          <div className="relative aspect-[3/4] overflow-hidden bg-muted shrink-0">
             {item.images?.[0] ? (
               <>
                 <img
