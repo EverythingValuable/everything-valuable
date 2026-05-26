@@ -315,7 +315,7 @@ function SellerControl() {
     "Set a hidden reserve that is never disclosed to buyers",
     "Choose the 1stBid$ preview duration",
     "Choose the PRI$OMETER™ live duration",
-    "Set a below-reserve drop allowance (10%, 15%, or 20%)",
+    "Set a below-reserve drop allowance",
     "Review and accept or decline below-reserve outcomes",
     "Add provenance, condition notes, and shipping information",
     "Track interest, bids, and watchers from the seller dashboard",
