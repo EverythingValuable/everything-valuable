@@ -51,7 +51,9 @@ export default function PrisometerWidget({ item, compact = false }) {
       const updatePrice = () => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / durationMs, 1);
-        const currentPrice = Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
+        const calculatedPrice = Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
+        // Use server's current_price if available and lower than calculated, otherwise use calculated
+        const currentPrice = item.current_price && item.current_price < calculatedPrice ? item.current_price : calculatedPrice;
         setDisplayPrice(currentPrice);
         // Derive cents from the actual fractional price so they drop in order
         setCents(Math.floor((currentPrice % 1) * 100));
