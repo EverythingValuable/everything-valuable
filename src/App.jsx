@@ -55,27 +55,30 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
+      {/* Seller workspace — no shared Navbar/Footer */}
+      <Route path="/seller" element={<SellerDashboard />} />
+      <Route path="/seller/onboarding" element={<SellerOnboarding />} />
+      <Route path="/seller/studio" element={<ListingStudio />} />
+      <Route path="/seller/settings" element={<SellerSettings />} />
+      <Route path="/seller/profile" element={<SellerPublicProfile />} />
+      <Route path="/seller/bulk-upload" element={<BulkUpload />} />
+      <Route path="/seller/consignor/:id" element={<ConsignorDetail />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+
+      {/* Public site — with shared Navbar/Footer */}
       <Route element={<AppLayout />}>
         <Route path="/" element={<Portal />} />
         <Route path="/personal-property" element={<Home />} />
         <Route path="/browse" element={<Browse />} />
         <Route path="/item/:id" element={<ProductDetail />} />
-        <Route path="/seller" element={<SellerDashboard />} />
         <Route path="/buyer" element={<BuyerDashboard />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/about" element={<About />} />
         <Route path="/sell" element={<SellWithUs />} />
-        <Route path="/seller/onboarding" element={<SellerOnboarding />} />
-        <Route path="/seller/studio" element={<ListingStudio />} />
-        <Route path="/seller/settings" element={<SellerSettings />} />
-        <Route path="/seller/profile" element={<SellerPublicProfile />} />
         <Route path="/real-property" element={<RealEstateHome />} />
         <Route path="/real-property/listing/:id" element={<RealEstateDetail />} />
         <Route path="/hotspot-manager" element={<HotspotManager />} />
-        <Route path="/seller/bulk-upload" element={<BulkUpload />} />
-        <Route path="/seller/consignor/:id" element={<ConsignorDetail />} />
-        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/seller-access" element={<SellerAccess />} />
         <Route path="/dealers" element={<Dealers />} />
         <Route path="/items-near-me" element={<ItemsNearMe />} />
