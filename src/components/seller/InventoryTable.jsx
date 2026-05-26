@@ -62,14 +62,15 @@ const CATEGORIES = [
   "fashion_accessories","watches_clocks","furniture","collectibles","other"
 ];
 const STATUSES = [
+  { value: "active", label: "Active (excl. Sold)" },
   { value: "", label: "All Statuses" },
-  { value: "draft", label: "Draft" },
-  { value: "first_bids", label: "1stBid$ Preview" },
   { value: "prisometer", label: "PRI$OMETER Live" },
+  { value: "first_bids", label: "1stBid$ Preview" },
   { value: "pending_review", label: "Under Review" },
-  { value: "sold", label: "Sold" },
-  { value: "unsold", label: "Unsold" },
+  { value: "draft", label: "Draft" },
   { value: "scheduled", label: "Scheduled" },
+  { value: "unsold", label: "Unsold" },
+  { value: "sold", label: "Sold" },
 ];
 const PAGE_SIZES = [10, 25, 50];
 
@@ -139,7 +140,7 @@ export default function InventoryTable({ items, view, limit }) {
   const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("active");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState({});
   const [page, setPage] = useState(1);
@@ -196,7 +197,7 @@ export default function InventoryTable({ items, view, limit }) {
       item.consignor_name?.toLowerCase().includes(q)
     );
     const matchCat = !categoryFilter || categoryFilter === "All Categories" || item.category === categoryFilter;
-    const matchStatus = !statusFilter || item.status === statusFilter;
+    const matchStatus = !statusFilter || (statusFilter === "active" ? item.status !== "sold" : item.status === statusFilter);
     const af = advancedFilters;
     const price = item.current_price || item.highest_bid || item.prisometer_start_price || 0;
     const matchPriceMin = !af.priceMin || price >= Number(af.priceMin);
