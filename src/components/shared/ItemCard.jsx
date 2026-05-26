@@ -143,7 +143,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
           className="rounded-lg overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full"
         >
           {/* Image area — artwork is the hero */}
-          <div className="relative aspect-[2.5/3.5] overflow-hidden bg-muted shrink-0">
+          <div className="relative aspect-[3/4] overflow-hidden bg-muted shrink-0">
             {item.images?.[0] ? (
               <>
                 <img
