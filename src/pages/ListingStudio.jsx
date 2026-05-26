@@ -1187,10 +1187,10 @@ export default function ListingStudio() {
             ]} />
             <div className="grid grid-cols-1 gap-8">
               <Field label="Prisometer™ Price" required hint="shown to buyers" infoTip="This is the publicly visible asking price buyers see. Set it near the high end of what a serious buyer might pay — it signals value and creates urgency. The price can drop below reserve if bids come in under your threshold.">
-                <PriceInput placeholder="5,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
+                <PriceInput placeholder="9,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
               </Field>
               <Field label="Hidden Reserve" hint="never disclosed to buyers" infoTip="Your true minimum acceptable price — never shown to buyers. If the highest bid is below this amount, the item won't sell unless you choose to accept below reserve. A hidden reserve protects you without discouraging bidding.">
-                <PriceInput placeholder="9,000" value={form.reserve_price} onChange={e => set("reserve_price", e.target.value)} />
+                <PriceInput placeholder="5,000" value={form.reserve_price} onChange={e => set("reserve_price", e.target.value)} />
               </Field>
             </div>
 
