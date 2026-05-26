@@ -18,6 +18,18 @@ Deno.serve(async (req) => {
 
     const [sellerProfile] = await base44.asServiceRole.entities.SellerProfile.filter({ user_email: invoice.seller_email });
 
+    // Always recompute fee_credit and total_amount from item_price to ensure correctness
+    const itemPrice = Number(invoice.item_price) || 0;
+    const serviceFee = Math.round((itemPrice * 0.10 + 30) * 100) / 100;
+    const feeCredit  = Math.round(serviceFee * 0.50 * 100) / 100;
+    const extraTotal = (invoice.additional_line_items || []).reduce((s, li) => {
+      const amt = Number(li.amount) || 0;
+      return li.type === 'discount' ? s - amt : s + amt;
+    }, 0);
+    const totalAmount = itemPrice - feeCredit + extraTotal;
+    // Patch invoice object with fresh values (do not overwrite DB here — PDF generation only)
+    invoice = { ...invoice, fee_credit: feeCredit, total_amount: totalAmount };
+
     // Try to get item image
     let itemImageBase64 = null;
     let itemImageFormat = 'JPEG';
