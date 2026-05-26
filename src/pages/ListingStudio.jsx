@@ -6,6 +6,7 @@ import {
   Upload, X, GripVertical, Lock,
   XCircle, Save, Eye, EyeOff, Globe, Info, ArrowLeft, Trash2, Wand2, Loader2, Pencil, Calendar, Clock
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import CustomFieldsEditor from "../components/listing/CustomFieldsEditor";
 import DimensionsInput from "../components/listing/DimensionsInput";
@@ -69,7 +70,7 @@ function Section({ number, id, title, subtitle, children, locked, badge, themeCo
   );
 }
 
-function Field({ label, hint, required, children, visibility }) {
+function Field({ label, hint, required, children, visibility, infoTip }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 flex-wrap">
@@ -77,6 +78,7 @@ function Field({ label, hint, required, children, visibility }) {
           {label}{required && <span className="text-neutral-800 ml-0.5">*</span>}
         </label>
         {hint && <span className="text-xs text-neutral-400">/ {hint}</span>}
+        {infoTip && <InfoTip text={infoTip} />}
         {visibility === "public" && (
           <span className="flex items-center gap-1 text-[10px] tracking-[0.12em] uppercase text-neutral-400 ml-auto">
             <Globe className="w-3 h-3" /> Public
@@ -144,6 +146,23 @@ function Pill({ active, onClick, children }) {
     >
       {children}
     </button>
+  );
+}
+
+function InfoTip({ text }) {
+  return (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button type="button" className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-neutral-300 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600 transition-colors shrink-0">
+            <Info className="w-2.5 h-2.5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
+          {text}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
@@ -1167,10 +1186,10 @@ export default function ListingStudio() {
               "Overpricing can reduce early interest — a strong starting price should create urgency, not scare buyers away",
             ]} />
             <div className="grid grid-cols-1 gap-8">
-              <Field label="Prisometer™ Price" required hint="shown to buyers">
+              <Field label="Prisometer™ Price" required hint="shown to buyers" infoTip="This is the publicly visible asking price buyers see. Set it near the high end of what a serious buyer might pay — it signals value and creates urgency. The price can drop below reserve if bids come in under your threshold.">
                 <PriceInput placeholder="5,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
               </Field>
-              <Field label="Hidden Reserve" hint="never disclosed to buyers">
+              <Field label="Hidden Reserve" hint="never disclosed to buyers" infoTip="Your true minimum acceptable price — never shown to buyers. If the highest bid is below this amount, the item won't sell unless you choose to accept below reserve. A hidden reserve protects you without discouraging bidding.">
                 <PriceInput placeholder="9,000" value={form.reserve_price} onChange={e => set("reserve_price", e.target.value)} />
               </Field>
             </div>
@@ -1185,7 +1204,7 @@ export default function ListingStudio() {
               </div>
             )}
 
-            <Field label="Below-Reserve Drop Allowance">
+            <Field label="Below-Reserve Drop Allowance" infoTip="The maximum percentage below your hidden reserve that you'll allow the PRI$OMETER price to drop. For example, at 10% on a $10,000 reserve, the price floor is $9,000. This gives serious buyers a path to purchase even if bids land just under reserve.">
               <div className="flex gap-2 pt-1">
                 {[10, 15, 20].map(pct => (
                   <Pill key={pct} active={form.below_reserve_percent === pct} onClick={() => set("below_reserve_percent", pct)}>{pct}%</Pill>
@@ -1194,14 +1213,14 @@ export default function ListingStudio() {
             </Field>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-2 border-t border-neutral-50">
-              <Field label="1stBids™ Preview Duration">
+              <Field label="1stBids™ Preview Duration" infoTip="How long your listing stays in the 1stBids™ preview phase, where serious buyers can register intent and place non-binding bids before the PRI$OMETER goes live. Longer durations build more buyer interest before the countdown begins.">
                 <div className="flex gap-2 pt-1">
                   {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 720, label: "30 days" }].map(({ h, label }) => (
                     <Pill key={h} active={form.first_bids_duration_hours === h} onClick={() => set("first_bids_duration_hours", h)}>{label}</Pill>
                   ))}
                 </div>
               </Field>
-              <Field label="Prisometer™ Live Duration">
+              <Field label="Prisometer™ Live Duration" infoTip="How long the PRI$OMETER countdown runs once it goes live. The price holds steady until a bid comes in, then the clock begins. When time expires, the highest bidder wins — or the item goes unsold if no bids meet the floor.">
                 <div className="flex gap-2 pt-1">
                   {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 504, label: "21 days" }].map(({ h, label }) => (
                     <Pill key={h} active={form.prisometer_duration_hours === h} onClick={() => set("prisometer_duration_hours", h)}>{label}</Pill>
