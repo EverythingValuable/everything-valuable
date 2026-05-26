@@ -423,13 +423,14 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
 
   return (
     <div className="space-y-4 w-full min-w-0">
-      {/* You're the highest bidder banner */}
+      {/* You're the highest bidder banner — restrained neutral success state */}
       {isHighestBidder && currentHighestBid > 0 && (
-        <div className="rounded-xl border border-green-200 bg-green-50 p-4 flex items-center gap-3">
-          <Crown className="w-5 h-5 text-green-600 shrink-0" />
+        <div className="rounded-xl border border-border bg-white/60 p-4 flex items-center gap-3 relative overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-emerald-600" />
+          <CheckCircle2 className="w-5 h-5 text-foreground shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-green-700">You're the Highest Bidder</p>
-            <p className="text-xs text-green-600">Your current bid: ${currentHighestBid.toLocaleString("en-US")}</p>
+            <p className="text-sm font-semibold text-foreground">You're the Highest Bidder</p>
+            <p className="text-xs text-muted-foreground">Your current bid: ${currentHighestBid.toLocaleString("en-US")}</p>
           </div>
         </div>
       )}
