@@ -235,6 +235,7 @@ export default function ListingStudio() {
   const [itemStatus, setItemStatus] = useState("draft");
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [publishErrors, setPublishErrors] = useState(null);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [activeStep, setActiveStep] = useState(1); // 1=Category, 2=Photos, 3=Details, etc.
   // uploadQueue: array of { id, name, status: 'uploading'|'removing_bg'|'done'|'error' }
@@ -596,6 +597,31 @@ export default function ListingStudio() {
     navigate(fromConsignorId ? `/seller/consignor/${fromConsignorId}` : "/seller");
   };
 
+  const PUBLISH_REQUIRED = [
+    { key: "category",              label: "Category",          pass: (f) => !!f.category },
+    { key: "images",                label: "At least 1 photo",  pass: (f) => f.images?.length > 0 },
+    { key: "title",                 label: "Item title",        pass: (f) => f.title?.trim()?.length > 0 },
+    { key: "description",           label: "Full description",  pass: (f) => (f.description?.trim()?.length || 0) > 30 },
+    { key: "condition",             label: "Condition grade",   pass: (f) => !!f.condition },
+    { key: "prisometer_start_price",label: "PRI$OMETER price",  pass: (f) => !!f.prisometer_start_price && +f.prisometer_start_price > 0 },
+  ];
+
+  const validateForPublish = () => {
+    const errors = PUBLISH_REQUIRED.filter(r => !r.pass(form)).map(r => r.label);
+    return errors;
+  };
+
+  const handlePublishClick = (action) => {
+    const errors = validateForPublish();
+    if (errors.length > 0) {
+      setPublishErrors({ errors, action });
+    } else {
+      if (action === "schedule") setScheduleModalOpen(true);
+      else if (action === "relist") relistNow();
+      else publishNow();
+    }
+  };
+
   const publishNow = async () => {
     setSaving(true);
     const now = new Date();
@@ -741,8 +767,8 @@ export default function ListingStudio() {
             </button>
             {!isLive && !isUnsold && (
               <button
-                onClick={() => setScheduleModalOpen(true)}
-                disabled={saving || !form.title || !form.prisometer_start_price}
+                onClick={() => handlePublishClick("schedule")}
+                disabled={saving}
                 className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-800 transition-colors disabled:opacity-30"
               >
                 <Calendar className="w-3.5 h-3.5" /> Schedule
@@ -750,8 +776,8 @@ export default function ListingStudio() {
             )}
             {!isLive && (
               <button
-                onClick={isUnsold ? relistNow : publishNow}
-                disabled={saving || !form.title || !form.prisometer_start_price}
+                onClick={() => handlePublishClick(isUnsold ? "relist" : "publish")}
+                disabled={saving}
                 className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-xs font-semibold tracking-wide px-5 h-9 transition-colors disabled:opacity-30"
               >
                 {saving ? "Publishing…" : isUnsold ? "Relist Listing" : "Publish Listing"}
@@ -821,6 +847,32 @@ export default function ListingStudio() {
                 Keep Listing
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Publish Validation Modal */}
+      {publishErrors && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setPublishErrors(null)}>
+          <div className="bg-white p-10 max-w-sm w-full mx-4 space-y-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div>
+              <h3 className="text-base font-bold tracking-wide mb-2">Complete before publishing</h3>
+              <p className="text-sm text-neutral-500 leading-relaxed">The following required fields must be filled in before this listing can go live:</p>
+            </div>
+            <ul className="space-y-2.5">
+              {publishErrors.errors.map(err => (
+                <li key={err} className="flex items-center gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  <span className="text-sm text-neutral-700 font-medium">{err}</span>
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={() => setPublishErrors(null)}
+              className="w-full bg-neutral-900 text-white text-xs font-bold tracking-[0.15em] uppercase py-3.5 hover:bg-black transition-colors"
+            >
+              Go Back & Complete
+            </button>
           </div>
         </div>
       )}
@@ -1354,8 +1406,8 @@ export default function ListingStudio() {
               )}
               {!isLive && !isUnsold && (
                 <button
-                  onClick={() => setScheduleModalOpen(true)}
-                  disabled={saving || !form.title || !form.prisometer_start_price}
+                  onClick={() => handlePublishClick("schedule")}
+                  disabled={saving}
                   className="flex items-center gap-1.5 text-xs border border-neutral-300 text-neutral-600 hover:border-neutral-600 hover:text-neutral-900 px-4 h-9 transition-colors disabled:opacity-30"
                 >
                   <Calendar className="w-3.5 h-3.5" /> Schedule
@@ -1363,8 +1415,8 @@ export default function ListingStudio() {
               )}
               {!isLive && (
                 <button
-                  onClick={isUnsold ? relistNow : publishNow}
-                  disabled={saving || !form.title || !form.prisometer_start_price}
+                  onClick={() => handlePublishClick(isUnsold ? "relist" : "publish")}
+                  disabled={saving}
                   className="flex items-center gap-2 bg-neutral-900 hover:bg-black text-white text-xs font-semibold tracking-wide px-5 h-9 transition-colors disabled:opacity-30"
                 >
                   {saving ? "Publishing…" : isUnsold ? "Relist Listing" : "Publish Listing"}
