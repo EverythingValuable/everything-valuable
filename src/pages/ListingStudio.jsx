@@ -1342,6 +1342,16 @@ export default function ListingStudio() {
                 <Save className="w-3.5 h-3.5" />
                 {saving ? "Saving…" : saved ? "Saved!" : "Save Draft"}
               </button>
+              {editId && (
+                <a
+                  href={`/item/${editId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs border border-neutral-300 text-neutral-600 hover:border-neutral-600 hover:text-neutral-900 px-4 h-9 transition-colors"
+                >
+                  <Eye className="w-3.5 h-3.5" /> Preview Listing
+                </a>
+              )}
               {!isLive && !isUnsold && (
                 <button
                   onClick={() => setScheduleModalOpen(true)}
