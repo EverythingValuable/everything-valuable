@@ -13,7 +13,7 @@ import SellerAnalytics from "@/components/seller/SellerAnalytics";
 import InvoiceBuilder from "@/components/seller/InvoiceBuilder";
 import ConsignorsPanel from "@/components/seller/ConsignorsPanel";
 import { Button } from "@/components/ui/button";
-import { Plus, Boxes, ClipboardCheck, DollarSign, AlertTriangle, Upload, ArrowRight, SearchCheck } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { format } from "date-fns";
 import BelowReserveAlert from "@/components/seller/BelowReserveAlert";
 import SellerWelcomeGuide from "@/components/seller/SellerWelcomeGuide";
@@ -48,91 +48,92 @@ function getInventoryIssues(item) {
   return issues;
 }
 
-function StatTile({ icon: Icon, label, value, subtext, tone = "default" }) {
-  const toneClass = {
-    default: "bg-white text-foreground",
-    green: "bg-emerald-50 text-emerald-800 border-emerald-100",
-    amber: "bg-amber-50 text-amber-800 border-amber-100",
-    blue: "bg-sky-50 text-sky-800 border-sky-100",
-  }[tone];
-
+function MetricCard({ label, value, subtext, urgent }) {
   return (
-    <div className={`rounded-lg border border-border p-4 shadow-sm ${toneClass}`}>
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-[11px] font-bold uppercase tracking-[0.12em] opacity-65">{label}</p>
-        <Icon className="h-4 w-4 opacity-55" />
+    <div className="bg-white border border-neutral-200 px-5 py-4">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400">{label}</p>
+        {urgent && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
       </div>
-      <p className="mt-3 font-display text-2xl font-extrabold leading-none">{value}</p>
-      <p className="mt-1.5 text-[12px] leading-snug opacity-70">{subtext}</p>
+      <p className="text-2xl font-bold text-neutral-900 leading-none tabular-nums">{value}</p>
+      {subtext && <p className="text-[10px] text-neutral-400 mt-1.5 leading-snug">{subtext}</p>}
     </div>
   );
 }
 
-function WorkflowStrip({ stats, totalItems }) {
-  const steps = [
-    { label: "Draft", value: stats.drafts, href: "/seller?view=draft" },
-    { label: "Review", value: stats.pending, href: "/seller?view=pending_review" },
-    { label: "Preview", value: stats.first_bids, href: "/seller?view=first_bids" },
-    { label: "Live", value: stats.prisometer, href: "/seller?view=prisometer" },
-    { label: "Sold", value: stats.sold, href: "/seller?view=sold" },
+function SellerIntelligencePanel({ stats, items, issueCount }) {
+  const draftsMissingPhotos = items.filter(i => i.status === "draft" && !i.images?.length).length;
+  const draftsMissingPricing = items.filter(i => i.status === "draft" && !i.prisometer_start_price).length;
+  const lowViewActive = items.filter(i => ["first_bids", "prisometer"].includes(i.status) && (i.view_count || 0) < 3).length;
+
+  const healthItems = [
+    { label: "Photos", score: items.length ? Math.round((items.filter(i => i.images?.length >= 3).length / items.length) * 100) : 100 },
+    { label: "Titles", score: items.length ? Math.round((items.filter(i => i.title && i.title.length > 20).length / items.length) * 100) : 100 },
+    { label: "Condition", score: items.length ? Math.round((items.filter(i => i.condition_notes).length / items.length) * 100) : 100 },
+    { label: "Pricing", score: items.length ? Math.round((items.filter(i => i.prisometer_start_price && i.reserve_price).length / items.length) * 100) : 100 },
+    { label: "Logistics", score: items.length ? Math.round((items.filter(i => i.customer_location).length / items.length) * 100) : 100 },
   ];
+  const portfolioScore = healthItems.length ? Math.round(healthItems.reduce((s, h) => s + h.score, 0) / healthItems.length) : 0;
+
+  const actions = [
+    stats.pending > 0 && { text: `${stats.pending} item${stats.pending !== 1 ? "s" : ""} under review`, urgent: true },
+    draftsMissingPhotos > 0 && { text: `${draftsMissingPhotos} draft${draftsMissingPhotos !== 1 ? "s" : ""} missing photos`, urgent: true },
+    draftsMissingPricing > 0 && { text: `${draftsMissingPricing} draft${draftsMissingPricing !== 1 ? "s" : ""} missing pricing`, urgent: false },
+    lowViewActive > 0 && { text: `${lowViewActive} live item${lowViewActive !== 1 ? "s" : ""} with low views`, urgent: false },
+  ].filter(Boolean);
 
   return (
-    <div className="rounded-lg border border-border bg-white p-4 shadow-sm">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <p className="font-display text-sm font-bold">Listing Workflow</p>
-          <p className="text-[12px] text-muted-foreground">Follow each item from draft to sale without guessing where it sits.</p>
-        </div>
-        <Link to="/seller?view=listings" className="hidden items-center gap-1 text-[12px] font-semibold text-muted-foreground hover:text-foreground sm:flex">
-          Full inventory <ArrowRight className="h-3.5 w-3.5" />
-        </Link>
-      </div>
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
-        {steps.map((step, index) => {
-          const percent = totalItems ? Math.round((step.value / totalItems) * 100) : 0;
-          return (
-            <Link key={step.label} to={step.href} className="group rounded-lg border border-border/70 bg-[hsl(40,25%,98%)] p-3 transition-colors hover:border-primary/30 hover:bg-white">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground">{step.label}</span>
-                <span className="font-price text-sm font-bold">{step.value}</span>
+    <div className="border border-neutral-200 bg-white divide-y divide-neutral-100">
+      <div className="px-5 py-4">
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-3">Action Needed</p>
+        {actions.length === 0 ? (
+          <p className="text-xs text-neutral-400 italic">No immediate actions required.</p>
+        ) : (
+          <div className="space-y-2">
+            {actions.map((a, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${a.urgent ? "bg-primary" : "bg-neutral-300"}`} />
+                <p className="text-[11px] text-neutral-600 leading-snug">{a.text}</p>
               </div>
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-secondary">
-                <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${Math.max(percent, step.value > 0 ? 8 : 0)}%` }} />
-              </div>
-              <p className="mt-2 text-[11px] text-muted-foreground">{percent}% of inventory</p>
-              {index < steps.length - 1 && <span className="sr-only">Next step</span>}
-            </Link>
-          );
-        })}
+            ))}
+          </div>
+        )}
       </div>
-    </div>
-  );
-}
 
-function InventoryCommandBar({ activeItems, activeValue, issueCount }) {
-  return (
-    <div className="rounded-lg border border-border bg-white p-4 shadow-sm">
-      <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
-        <div>
-          <p className="font-display text-sm font-bold">Today&apos;s Inventory Focus</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {activeItems.length > 0
-              ? `${activeItems.length} live item${activeItems.length !== 1 ? "s" : ""} are carrying ${money(activeValue)} in active value.`
-              : "No live items yet. Move completed drafts into review when they are ready."}
-            {issueCount > 0 ? ` ${issueCount} item${issueCount !== 1 ? "s" : ""} could use cleanup before buyers see them.` : " Your active inventory looks complete."}
-          </p>
+      <div className="px-5 py-4">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400">Portfolio Health</p>
+          <span className="text-sm font-bold text-neutral-900">{portfolioScore}/100</span>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link to="/seller/studio">
-            <Button className="h-9 gap-2 rounded-lg"><Plus className="h-4 w-4" /> Add item</Button>
-          </Link>
-          <Link to="/seller/bulk-upload">
-            <Button variant="outline" className="h-9 gap-2 rounded-lg"><Upload className="h-4 w-4" /> Bulk import</Button>
-          </Link>
-          <Link to="/seller?view=listings">
-            <Button variant="ghost" className="h-9 gap-2 rounded-lg"><SearchCheck className="h-4 w-4" /> Audit inventory</Button>
-          </Link>
+        <div className="h-1 bg-neutral-100 mb-4">
+          <div className="h-full bg-neutral-800 transition-all" style={{ width: `${portfolioScore}%` }} />
+        </div>
+        <div className="space-y-2">
+          {healthItems.map(h => (
+            <div key={h.label} className="flex items-center gap-3">
+              <span className="text-[10px] text-neutral-500 w-16 shrink-0">{h.label}</span>
+              <div className="flex-1 h-1 bg-neutral-100">
+                <div className={`h-full transition-all ${h.score >= 70 ? "bg-neutral-700" : h.score >= 40 ? "bg-neutral-400" : "bg-primary"}`} style={{ width: `${h.score}%` }} />
+              </div>
+              <span className="text-[10px] font-mono text-neutral-400 w-8 text-right">{h.score}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="px-5 py-4">
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-3">Suggestions</p>
+        <div className="space-y-2">
+          {[
+            "Add condition reports to active listings",
+            "Ensure 3+ photos on all live items",
+            "Set reserve prices on unprotected lots",
+            "Review items with low engagement",
+          ].map((s, i) => (
+            <p key={i} className="text-[11px] text-neutral-500 leading-snug flex items-start gap-1.5">
+              <span className="text-neutral-300 mt-0.5">—</span> {s}
+            </p>
+          ))}
         </div>
       </div>
     </div>
@@ -194,81 +195,104 @@ function SellerDashboardInner() {
   const isPanel = PANEL_VIEWS.includes(view);
   const sellerName = profile?.display_name || user?.full_name || "Seller";
 
+  const unpaidInvoices = 0; // placeholder — InvoiceBuilder has the real count
+
   return (
-    <div className="flex min-h-screen bg-[hsl(40,22%,96%)]">
-      {/* Sidebar — desktop only */}
+    <div className="flex min-h-screen bg-[#faf9f7]">
+      {/* Sidebar */}
       <div className="hidden md:block sticky top-0 h-screen shrink-0 overflow-y-auto">
         <DashboardSidebar />
       </div>
 
-      {/* Mobile bottom nav */}
       <MobileSellerNav user={user} />
 
       <main className="flex-1 min-w-0">
-        {/* Top bar */}
-        <div className="sticky top-0 z-10 flex items-start justify-between border-b border-border/60 bg-[hsl(40,22%,96%)]/95 px-5 py-4 backdrop-blur lg:px-8">
-          <div>
-            {view === "overview" ? (
-              <>
-                <h1 className="font-display text-2xl font-extrabold text-foreground leading-tight">
-                  {getGreeting()}, {sellerName}
-                </h1>
-                <p className="text-[13px] text-muted-foreground mt-1">
-                  {activeItems.length > 0
-                    ? `${activeItems.length} active listing${activeItems.length !== 1 ? "s" : ""}`
-                    : `${format(new Date(), "EEEE, MMMM d, yyyy")} · No active listings yet`}
+        {/* Header */}
+        <div className="sticky top-0 z-10 border-b border-neutral-200 bg-[#faf9f7]/95 backdrop-blur px-6 py-4 lg:px-10">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-1">{sellerName}</p>
+              <h1 className="text-lg font-bold text-neutral-900 leading-tight">
+                {view === "overview" ? "Seller Dashboard" : (VIEW_LABELS[view] || view)}
+              </h1>
+              {view === "overview" && (
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  {stats.total > 0
+                    ? `${activeItems.length} active · ${stats.total} total · ${stats.pending > 0 ? `${stats.pending} awaiting action` : "no pending actions"}`
+                    : "No listings yet"}
                 </p>
-              </>
-            ) : (
-              <>
-                <h1 className="font-display text-xl font-extrabold text-foreground leading-tight">
-                  {VIEW_LABELS[view] || view.charAt(0).toUpperCase() + view.slice(1)}
-                </h1>
-                <p className="text-[13px] text-muted-foreground mt-0.5">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
-              </>
-            )}
+              )}
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Link to="/seller/bulk-upload">
+                <button className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-800 border border-neutral-200 px-4 h-9 transition-colors">
+                  <Upload className="w-3.5 h-3.5" /> Bulk Import
+                </button>
+              </Link>
+              <Link to="/seller/studio">
+                <button className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold tracking-wide px-5 h-9 transition-colors">
+                  <Plus className="w-3.5 h-3.5" /> Add Listing
+                </button>
+              </Link>
+            </div>
           </div>
-          <Link to="/seller/studio">
-            <Button className="gap-2 h-10 px-5 font-semibold shadow-sm rounded-lg">
-              <Plus className="w-4 h-4" /> Add Listing
-            </Button>
-          </Link>
         </div>
 
-        <div className="space-y-6 p-5 lg:p-8 pb-24 md:pb-8">
+        <div className="p-6 lg:p-10 pb-24 md:pb-10 space-y-6">
 
-          {/* Overview-only sections */}
+          {/* Metric Cards — overview only */}
           {view === "overview" && (
-            <>
-              <BelowReserveAlert user={user} />
-            </>
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+              <MetricCard label="Active Listings" value={activeItems.length} subtext="1stBid$ + PRI$OMETER" />
+              <MetricCard label="In Preview" value={stats.first_bids} subtext="1stBid$ phase" />
+              <MetricCard label="PRI$OMETER Live" value={stats.prisometer} subtext="Price declining" />
+              <MetricCard label="Under Review" value={stats.pending} subtext="Awaiting decision" urgent={stats.pending > 0} />
+              <MetricCard label="Sold" value={stats.sold} subtext={stats.revenue > 0 ? `$${stats.revenue.toLocaleString()} revenue` : "No sales yet"} />
+              <MetricCard label="Drafts" value={stats.drafts} subtext="Not yet published" />
+            </div>
           )}
 
+          {/* Below reserve alert */}
+          {view === "overview" && <BelowReserveAlert user={user} />}
+
           {/* Sub-panel views */}
-          {view === "profile"   && <ProfileEditor />}
-          {view === "settings"  && <SellerSettings />}
-          {view === "messages"  && <SellerMessages user={user} />}
-          {view === "analytics" && <SellerAnalytics user={user} />}
+          {view === "profile"    && <ProfileEditor />}
+          {view === "settings"   && <SellerSettings />}
+          {view === "messages"   && <SellerMessages user={user} />}
+          {view === "analytics"  && <SellerAnalytics user={user} />}
           {view === "invoices"   && <InvoiceBuilder user={user} />}
           {view === "consignors" && <ConsignorsPanel user={user} />}
           {view === "welcome"    && <SellerWelcomeGuide />}
 
-          {/* Inventory table — shown for overview + listing views */}
+          {/* Inventory + Intelligence */}
           {!isPanel && (
-            <div>
-              {view === "overview" && items.length > 0 && (
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-6 items-start">
+              <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-display text-base font-bold text-foreground">Recent Inventory</h2>
-                  <Link to="/seller?view=listings" className="text-[12px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
-                    View all inventory →
-                  </Link>
+                  <div>
+                    <h2 className="text-sm font-bold text-neutral-900">Inventory Overview</h2>
+                    <p className="text-[11px] text-neutral-400 mt-0.5">Track drafts, live listings, bids, reserves, and activity.</p>
+                  </div>
+                  {view === "overview" && items.length > 0 && (
+                    <Link to="/seller?view=listings" className="text-[11px] text-neutral-400 hover:text-neutral-700 transition-colors">
+                      View all →
+                    </Link>
+                  )}
+                </div>
+                <InventoryTable
+                  items={filteredItems}
+                  view={view}
+                  limit={view === "overview" ? 10 : undefined}
+                />
+              </div>
+
+              {/* Right Intelligence Panel — overview only on desktop */}
+              {view === "overview" && (
+                <div className="hidden xl:block sticky top-24">
+                  <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-3">Seller Intelligence</p>
+                  <SellerIntelligencePanel stats={stats} items={items} issueCount={issueCount} />
                 </div>
               )}
-              <InventoryTable
-                items={filteredItems}
-                view={view}
-                limit={view === "overview" ? 8 : undefined}
-              />
             </div>
           )}
         </div>

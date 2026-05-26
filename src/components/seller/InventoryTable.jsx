@@ -48,14 +48,14 @@ function ImageLightbox({ images, startIndex, onClose }) {
 }
 
 const STATUS_CONFIG = {
-  draft:          { label: "Draft",           dot: "bg-gray-300",    text: "text-gray-500",   bg: "bg-gray-50",     border: "border-gray-200" },
-  first_bids:     { label: "1stBid$ Preview", dot: "bg-blue-400",    text: "text-blue-700",   bg: "bg-blue-50",     border: "border-blue-200" },
-  prisometer:     { label: "PRI$OMETER Live", dot: "bg-red-500",     text: "text-red-700",    bg: "bg-red-50",      border: "border-red-300" },
-  sold:           { label: "Sold",            dot: "bg-emerald-400", text: "text-emerald-700",bg: "bg-emerald-50",  border: "border-emerald-200" },
-  pending_review: { label: "Under Review",    dot: "bg-amber-400",   text: "text-amber-700",  bg: "bg-amber-50",    border: "border-amber-200" },
-  unsold:         { label: "Unsold",          dot: "bg-gray-300",    text: "text-gray-500",   bg: "bg-gray-50",     border: "border-gray-200" },
-  scheduled:      { label: "Scheduled",       dot: "bg-purple-400",  text: "text-purple-700", bg: "bg-purple-50",   border: "border-purple-200" },
-  declined:       { label: "Declined",        dot: "bg-rose-400",    text: "text-rose-700",   bg: "bg-rose-50",     border: "border-rose-200" },
+  draft:          { label: "Draft",           dot: "bg-neutral-300",  text: "text-neutral-500",  bg: "bg-neutral-50",  border: "border-neutral-200" },
+  first_bids:     { label: "1stBid$ Preview", dot: "bg-neutral-700",  text: "text-neutral-700",  bg: "bg-white",       border: "border-neutral-400" },
+  prisometer:     { label: "PRI$OMETER Live", dot: "bg-primary",      text: "text-neutral-900",  bg: "bg-neutral-900", border: "border-neutral-900", textOverride: "text-white" },
+  sold:           { label: "Sold",            dot: "bg-neutral-500",  text: "text-neutral-700",  bg: "bg-white",       border: "border-neutral-300" },
+  pending_review: { label: "Under Review",    dot: "bg-primary",      text: "text-neutral-700",  bg: "bg-white",       border: "border-neutral-300" },
+  unsold:         { label: "Unsold",          dot: "bg-neutral-300",  text: "text-neutral-400",  bg: "bg-neutral-50",  border: "border-neutral-200" },
+  scheduled:      { label: "Scheduled",       dot: "bg-neutral-500",  text: "text-neutral-600",  bg: "bg-neutral-50",  border: "border-neutral-300" },
+  declined:       { label: "Declined",        dot: "bg-primary",      text: "text-neutral-600",  bg: "bg-neutral-50",  border: "border-neutral-300" },
 };
 
 const CATEGORIES = [
@@ -116,10 +116,10 @@ function SummaryStrip({ items }) {
 }
 
 // ─── Status Badge ────────────────────────────────────────────────────────────
-function StatusBadge({ status, live }) {
+function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.draft;
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold border ${cfg.text} ${cfg.bg} ${cfg.border}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold border ${cfg.textOverride || cfg.text} ${cfg.bg} ${cfg.border}`}>
       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot} ${status === "prisometer" ? "animate-pulse" : ""}`} />
       {cfg.label}
     </span>
@@ -315,7 +315,7 @@ export default function InventoryTable({ items, view, limit }) {
           {/* Header */}
           <table className="w-full border-collapse">
             <thead>
-              <tr style={{background: "hsl(35,20%,96%)"}}>
+              <tr style={{background: "#f5f4f2"}}>
                 <th className="w-10 px-4 py-3 border-b border-border">
                   <input type="checkbox" checked={selected.size === displayed.length && displayed.length > 0} onChange={toggleAll} />
                 </th>
@@ -403,7 +403,7 @@ export default function InventoryTable({ items, view, limit }) {
                         </div>
                         <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                           {isConsignment && (
-                            <span className="inline-flex items-center gap-1 text-[9px] font-bold tracking-wide uppercase bg-violet-50 text-violet-700 border border-violet-200 px-1.5 py-0.5">
+                            <span className="inline-flex items-center gap-1 text-[9px] font-bold tracking-wide uppercase bg-neutral-100 text-neutral-500 border border-neutral-200 px-1.5 py-0.5">
                               <Handshake className="w-2.5 h-2.5" /> Consignment
                             </span>
                           )}
@@ -440,7 +440,7 @@ export default function InventoryTable({ items, view, limit }) {
 
                       {/* Price */}
                       <td className="px-4 py-3 w-36 text-right hidden lg:table-cell">
-                        <p className={`font-price text-[15px] font-bold leading-none ${price.green ? "text-emerald-700" : "text-foreground"}`}>{price.value}</p>
+                        <p className="font-price text-[15px] font-bold leading-none text-neutral-900">{price.value}</p>
                         <p className="text-[10px] text-muted-foreground/50 mt-1">{price.label}</p>
                         {item.reserve_price > 0 && (
                           <div className="flex items-center justify-end gap-1 mt-1">
@@ -482,12 +482,12 @@ export default function InventoryTable({ items, view, limit }) {
                         <div className="flex items-center justify-end gap-1.5">
                           {item.status === "pending_review" ? (
                             <>
-                              <Button size="sm" className="text-[11px] h-7 px-2.5 gap-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                              <Button size="sm" className="text-[11px] h-7 px-2.5 gap-1 bg-neutral-900 hover:bg-black text-white"
                                 onClick={() => handleAcceptOffer(item)} disabled={processingOffer === item.id}>
                                 {processingOffer === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
                                 Accept
                               </Button>
-                              <Button size="sm" variant="outline" className="text-[11px] h-7 px-2.5 gap-1 border-amber-300 text-amber-800 hover:bg-amber-50"
+                              <Button size="sm" variant="outline" className="text-[11px] h-7 px-2.5 gap-1 border-neutral-300 text-neutral-600 hover:bg-neutral-50"
                                 onClick={() => handleDeclineOffer(item)} disabled={processingOffer === item.id}>
                                 <XCircle className="w-3 h-3" /> Decline
                               </Button>
