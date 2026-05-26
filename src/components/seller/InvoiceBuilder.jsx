@@ -351,13 +351,18 @@ export default function InvoiceBuilder({ user }) {
 
   const handleGeneratePdf = async (invoiceId) => {
     setGeneratingPdf(invoiceId);
-    const res = await base44.functions.invoke("generateInvoicePDF", { invoiceId });
-    setGeneratingPdf(null);
-    if (res.data?.pdf_url) {
-      queryClient.invalidateQueries({ queryKey: ["seller-invoices", user?.email] });
-      window.open(res.data.pdf_url, "_blank");
-    } else {
-      toast({ title: "PDF generation failed", variant: "destructive" });
+    try {
+      const res = await base44.functions.invoke("generateInvoicePDF", { invoiceId });
+      if (res.data?.pdf_url) {
+        queryClient.invalidateQueries({ queryKey: ["seller-invoices", user?.email] });
+        window.open(res.data.pdf_url, "_blank");
+      } else {
+        toast({ title: res.data?.error || "PDF generation failed", variant: "destructive" });
+      }
+    } catch (err) {
+      toast({ title: "PDF generation failed", description: err.message, variant: "destructive" });
+    } finally {
+      setGeneratingPdf(null);
     }
   };
 
