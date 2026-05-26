@@ -208,7 +208,7 @@ export default function Navbar() {
           </Link>
 
           {/* Sell With Us */}
-          <Link to={isSeller ? "/seller" : "/seller-access"} className="hidden md:inline-flex">
+          <Link to={isSeller ? "/seller" : "/sell"} className="hidden md:inline-flex">
             <Button
               variant="outline"
               size="sm"
@@ -362,7 +362,7 @@ export default function Navbar() {
               <div className={`pt-3 border-t space-y-2 ${isLanding ? "border-white/15" : "border-border/50"}`}>
                 <Link to="/how-it-works" className={`block py-2 text-sm ${isLanding ? "text-white/70" : "text-muted-foreground"}`} onClick={() => setMobileOpen(false)}>How It Works</Link>
                 <Link to="/pricing" className={`block py-2 text-sm ${isLanding ? "text-white/70" : "text-muted-foreground"}`} onClick={() => setMobileOpen(false)}>Pricing &amp; Fees</Link>
-                <Link to={isSeller ? "/seller" : "/seller-access"} className={`block py-2 text-sm font-semibold ${isLanding ? "text-primary" : "text-primary"}`} onClick={() => setMobileOpen(false)}>
+                <Link to={isSeller ? "/seller" : "/sell"} className={`block py-2 text-sm font-semibold ${isLanding ? "text-primary" : "text-primary"}`} onClick={() => setMobileOpen(false)}>
                   {isSeller ? "Seller Dashboard" : "Sell With Us"}
                 </Link>
                 <Link to="/buyer?view=saves" className={`block py-2 text-sm ${isLanding ? "text-white/70" : "text-muted-foreground"}`} onClick={() => setMobileOpen(false)}>My Saves</Link>
