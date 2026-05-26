@@ -48,17 +48,20 @@ function getInventoryIssues(item) {
   return issues;
 }
 
-function MetricCard({ label, value, subtext, urgent }) {
-  return (
-    <div className="bg-white border border-neutral-200 px-5 py-4">
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400">{label}</p>
-        {urgent && <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
+function MetricCard({ label, value, subtext, urgent, href }) {
+  const inner = (
+    <div className={`bg-white border px-5 pt-4 pb-5 group transition-colors ${urgent ? "border-neutral-300 hover:border-neutral-400" : "border-neutral-200 hover:border-neutral-300"}`}>
+      <div className="flex items-start justify-between mb-3">
+        <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 leading-tight">{label}</p>
+        {urgent && <span className="w-2 h-2 rounded-full bg-primary shrink-0 mt-0.5" />}
       </div>
-      <p className="text-2xl font-bold text-neutral-900 leading-none tabular-nums">{value}</p>
-      {subtext && <p className="text-[10px] text-neutral-400 mt-1.5 leading-snug">{subtext}</p>}
+      <p className="text-[32px] font-bold text-neutral-900 leading-none tabular-nums mb-2">{value}</p>
+      <div className="h-px bg-neutral-100 mb-2" />
+      {subtext && <p className="text-[10px] text-neutral-400 leading-snug">{subtext}</p>}
     </div>
   );
+  if (href) return <Link to={href}>{inner}</Link>;
+  return inner;
 }
 
 function SellerIntelligencePanel({ stats, items, issueCount }) {
@@ -121,20 +124,47 @@ function SellerIntelligencePanel({ stats, items, issueCount }) {
         </div>
       </div>
 
+      {/* Next Best Action */}
       <div className="px-5 py-4">
-        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-3">Suggestions</p>
-        <div className="space-y-2">
-          {[
-            "Add condition reports to active listings",
-            "Ensure 3+ photos on all live items",
-            "Set reserve prices on unprotected lots",
-            "Review items with low engagement",
-          ].map((s, i) => (
-            <p key={i} className="text-[11px] text-neutral-500 leading-snug flex items-start gap-1.5">
-              <span className="text-neutral-300 mt-0.5">—</span> {s}
-            </p>
-          ))}
-        </div>
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-3">Next Best Action</p>
+        {(() => {
+          const missingCondition = items.filter(i => ["first_bids","prisometer"].includes(i.status) && !i.condition_notes).length;
+          const missingPhotos = items.filter(i => i.status === "draft" && !i.images?.length).length;
+          const missingReserve = items.filter(i => ["first_bids","prisometer","draft"].includes(i.status) && !i.reserve_price).length;
+          const lowBids = items.filter(i => ["first_bids","prisometer"].includes(i.status) && (i.bid_count || 0) === 0).length;
+
+          let action = null;
+          let href = "/seller?view=listings";
+
+          if (missingCondition > 0) {
+            action = `Add condition reports to ${missingCondition} active listing${missingCondition !== 1 ? "s" : ""}`;
+            href = "/seller?view=first_bids";
+          } else if (missingPhotos > 0) {
+            action = `Upload photos to ${missingPhotos} draft${missingPhotos !== 1 ? "s" : ""}`;
+            href = "/seller?view=draft";
+          } else if (missingReserve > 0) {
+            action = `Set reserve prices on ${missingReserve} unprotected lot${missingReserve !== 1 ? "s" : ""}`;
+            href = "/seller?view=listings";
+          } else if (lowBids > 0) {
+            action = `Review ${lowBids} live item${lowBids !== 1 ? "s" : ""} with no bids yet`;
+            href = "/seller?view=prisometer";
+          }
+
+          if (!action) {
+            return <p className="text-[11px] text-neutral-400 italic">Your inventory looks healthy. Keep it up.</p>;
+          }
+
+          return (
+            <div className="space-y-3">
+              <p className="text-[12px] text-neutral-800 font-semibold leading-snug">{action}</p>
+              <Link to={href}>
+                <button className="w-full text-[11px] font-bold tracking-[0.12em] uppercase border border-neutral-300 text-neutral-700 hover:border-neutral-700 hover:text-neutral-900 py-2.5 transition-colors">
+                  Review Issues →
+                </button>
+              </Link>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
@@ -217,9 +247,7 @@ function SellerDashboardInner() {
               </h1>
               {view === "overview" && (
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  {stats.total > 0
-                    ? `${activeItems.length} active · ${stats.total} total · ${stats.pending > 0 ? `${stats.pending} awaiting action` : "no pending actions"}`
-                    : "No listings yet"}
+                  Manage listings, live pricing events, bids, invoices, and seller activity.
                 </p>
               )}
             </div>
@@ -242,13 +270,13 @@ function SellerDashboardInner() {
 
           {/* Metric Cards — overview only */}
           {view === "overview" && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
-              <MetricCard label="Active Listings" value={activeItems.length} subtext="1stBid$ + PRI$OMETER" />
-              <MetricCard label="In Preview" value={stats.first_bids} subtext="1stBid$ phase" />
-              <MetricCard label="PRI$OMETER Live" value={stats.prisometer} subtext="Price declining" />
-              <MetricCard label="Under Review" value={stats.pending} subtext="Awaiting decision" urgent={stats.pending > 0} />
-              <MetricCard label="Sold" value={stats.sold} subtext={stats.revenue > 0 ? `$${stats.revenue.toLocaleString()} revenue` : "No sales yet"} />
-              <MetricCard label="Drafts" value={stats.drafts} subtext="Not yet published" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-px bg-neutral-200">
+              <MetricCard label="Active Listings" value={activeItems.length} subtext="1stBid$ + PRI$OMETER" href="/seller?view=listings" />
+              <MetricCard label="In Preview" value={stats.first_bids} subtext="Early buyer interest" href="/seller?view=first_bids" />
+              <MetricCard label="PRI$OMETER Live" value={stats.prisometer} subtext="Price declining now" href="/seller?view=prisometer" />
+              <MetricCard label="Under Review" value={stats.pending} subtext={stats.pending > 0 ? "Action needed" : "Nothing pending"} urgent={stats.pending > 0} href="/seller?view=pending_review" />
+              <MetricCard label="Sold" value={stats.sold} subtext={stats.revenue > 0 ? `$${stats.revenue.toLocaleString()} revenue` : "No sales yet"} href="/seller?view=sold" />
+              <MetricCard label="Drafts" value={stats.drafts} subtext="Not yet published" href="/seller?view=draft" />
             </div>
           )}
 
@@ -270,8 +298,8 @@ function SellerDashboardInner() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-neutral-900">Inventory Overview</h2>
-                    <p className="text-[11px] text-neutral-400 mt-0.5">Track drafts, live listings, bids, reserves, and activity.</p>
+                    <h2 className="text-sm font-bold text-neutral-900">Inventory Command Center</h2>
+                    <p className="text-[11px] text-neutral-400 mt-0.5">Track drafts, live events, reserves, bids, invoices, and seller activity.</p>
                   </div>
                   {view === "overview" && items.length > 0 && (
                     <Link to="/seller?view=listings" className="text-[11px] text-neutral-400 hover:text-neutral-700 transition-colors">

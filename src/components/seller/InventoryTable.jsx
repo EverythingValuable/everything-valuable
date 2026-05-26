@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Plus, Package, Trash2, Clock, Gavel, ShieldCheck,
-  Eye, Heart, Search, Handshake, Download,
-  SlidersHorizontal, ChevronLeft, ChevronRight, Activity,
-  Package2, DollarSign, CheckCircle2, AlertCircle, X, ZoomIn,
+  Eye, Search, Handshake, Download,
+  SlidersHorizontal, ChevronLeft, ChevronRight,
+  CheckCircle2, X, ZoomIn,
   Loader2, XCircle
 } from "lucide-react";
 import { formatDistanceToNow, isPast, subDays } from "date-fns";
@@ -48,14 +48,14 @@ function ImageLightbox({ images, startIndex, onClose }) {
 }
 
 const STATUS_CONFIG = {
-  draft:          { label: "Draft",           dot: "bg-neutral-300",  text: "text-neutral-500",  bg: "bg-neutral-50",  border: "border-neutral-200" },
-  first_bids:     { label: "1stBid$ Preview", dot: "bg-neutral-700",  text: "text-neutral-700",  bg: "bg-white",       border: "border-neutral-400" },
-  prisometer:     { label: "PRI$OMETER Live", dot: "bg-primary",      text: "text-neutral-900",  bg: "bg-neutral-900", border: "border-neutral-900", textOverride: "text-white" },
-  sold:           { label: "Sold",            dot: "bg-neutral-500",  text: "text-neutral-700",  bg: "bg-white",       border: "border-neutral-300" },
-  pending_review: { label: "Under Review",    dot: "bg-primary",      text: "text-neutral-700",  bg: "bg-white",       border: "border-neutral-300" },
-  unsold:         { label: "Unsold",          dot: "bg-neutral-300",  text: "text-neutral-400",  bg: "bg-neutral-50",  border: "border-neutral-200" },
-  scheduled:      { label: "Scheduled",       dot: "bg-neutral-500",  text: "text-neutral-600",  bg: "bg-neutral-50",  border: "border-neutral-300" },
-  declined:       { label: "Declined",        dot: "bg-primary",      text: "text-neutral-600",  bg: "bg-neutral-50",  border: "border-neutral-300" },
+  draft:          { label: "Draft",           dot: "bg-neutral-300",  text: "text-neutral-400",  bg: "bg-neutral-50",   border: "border-neutral-200", style: "muted" },
+  first_bids:     { label: "1stBid$ Preview", dot: "bg-neutral-800",  text: "text-neutral-800",  bg: "bg-white",        border: "border-neutral-700", style: "outlined" },
+  prisometer:     { label: "PRI$OMETER Live", dot: "bg-primary",      text: "text-white",        bg: "bg-neutral-900",  border: "border-neutral-900", style: "dark" },
+  sold:           { label: "Sold",            dot: null,              text: "text-neutral-700",  bg: "bg-white",        border: "border-neutral-700", style: "sold" },
+  pending_review: { label: "Under Review",    dot: "bg-primary",      text: "text-neutral-700",  bg: "bg-white",        border: "border-neutral-300", style: "review" },
+  unsold:         { label: "Unsold",          dot: "bg-neutral-300",  text: "text-neutral-400",  bg: "bg-neutral-50",   border: "border-neutral-200", style: "muted" },
+  scheduled:      { label: "Scheduled",       dot: "bg-neutral-500",  text: "text-neutral-600",  bg: "bg-neutral-50",   border: "border-neutral-300", style: "muted" },
+  declined:       { label: "Declined",        dot: "bg-primary",      text: "text-neutral-500",  bg: "bg-neutral-50",   border: "border-neutral-200", style: "muted" },
 };
 
 const CATEGORIES = [
@@ -118,9 +118,17 @@ function SummaryStrip({ items }) {
 // ─── Status Badge ────────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.draft;
+  if (cfg.style === "sold") {
+    return (
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold border ${cfg.text} ${cfg.bg} ${cfg.border}`}>
+        <svg className="w-2.5 h-2.5 shrink-0" viewBox="0 0 10 10" fill="none"><path d="M1.5 5.5L3.5 7.5L8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        Sold
+      </span>
+    );
+  }
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold border ${cfg.textOverride || cfg.text} ${cfg.bg} ${cfg.border}`}>
-      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot} ${status === "prisometer" ? "animate-pulse" : ""}`} />
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold border ${cfg.text} ${cfg.bg} ${cfg.border}`}>
+      {cfg.dot && <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot} ${status === "prisometer" ? "animate-pulse" : ""}`} />}
       {cfg.label}
     </span>
   );
@@ -138,7 +146,7 @@ export default function InventoryTable({ items, view, limit }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [lightbox, setLightbox] = useState(null);
-  const [expandedDesc, setExpandedDesc] = useState(new Set());
+
   const [processingOffer, setProcessingOffer] = useState(null);
   const queryClient = useQueryClient();
 
@@ -178,10 +186,6 @@ export default function InventoryTable({ items, view, limit }) {
     queryClient.invalidateQueries({ queryKey: ["seller-items"] });
     setProcessingOffer(null);
   };
-
-  const toggleDesc = (id) => setExpandedDesc(prev => {
-    const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next;
-  });
 
   const q = search.toLowerCase().trim();
   const filtered = items.filter(item => {
@@ -309,221 +313,174 @@ export default function InventoryTable({ items, view, limit }) {
         </div>
       )}
 
-      {/* ── Table ── */}
+      {/* ── Inventory Records ── */}
       {displayed.length > 0 && (
-        <div className="bg-white border border-border overflow-hidden" style={{boxShadow: "0 1px 4px 0 rgba(0,0,0,0.04)"}}>
-          {/* Header */}
-          <table className="w-full border-collapse">
-            <thead>
-              <tr style={{background: "#f5f4f2"}}>
-                <th className="w-10 px-4 py-3 border-b border-border">
-                  <input type="checkbox" checked={selected.size === displayed.length && displayed.length > 0} onChange={toggleAll} />
-                </th>
-                <th className="w-20 px-3 py-3 border-b border-border text-left">
-                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50">Image</span>
-                </th>
-                <th className="px-4 py-3 border-b border-border text-left">
-                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50">Title</span>
-                </th>
-                <th className="w-28 px-4 py-3 border-b border-border text-left hidden lg:table-cell">
-                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50">Inv #</span>
-                </th>
-                <th className="w-36 px-4 py-3 border-b border-border text-left hidden md:table-cell">
-                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50">Status</span>
-                </th>
-                <th className="w-36 px-4 py-3 border-b border-border text-right hidden lg:table-cell">
-                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50">Price</span>
-                </th>
-                <th className="w-24 px-4 py-3 border-b border-border text-center hidden xl:table-cell">
-                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50">Insights</span>
-                </th>
-                <th className="w-20 px-4 py-3 border-b border-border text-center hidden xl:table-cell">
-                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50">Bids</span>
-                </th>
-                <th className="w-32 px-4 py-3 border-b border-border text-right">
-                  <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground/50">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayed.map((item, rowIdx) => {
-                const price = itemPriceDisplay(item);
-                const isLive = ["first_bids", "prisometer", "pending_review"].includes(item.status);
-                const isConsignment = item.ownership_type === "consignment";
-                const hasDesc = !!item.description;
-                const descOpen = expandedDesc.has(item.id);
+        <div className="border border-neutral-200 bg-white overflow-hidden">
 
-                let timerText = null;
-                if (item.status === "first_bids" && item.first_bids_end) {
-                  const ended = isPast(new Date(item.first_bids_end));
-                  timerText = { text: ended ? "Preview ended" : `Ends ${formatDistanceToNow(new Date(item.first_bids_end), { addSuffix: true })}`, color: ended ? "text-muted-foreground/40" : "text-blue-600" };
-                } else if (item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours) {
-                  const end = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000);
-                  const ended = isPast(end);
-                  timerText = { text: ended ? "Expired" : `Ends ${formatDistanceToNow(end, { addSuffix: true })}`, color: ended ? "text-muted-foreground/40" : "text-red-600" };
-                }
+          {/* Column header */}
+          <div className="grid items-center border-b border-neutral-200 px-5 py-2.5" style={{background:"#f5f4f2", gridTemplateColumns:"auto 1fr 160px 140px 100px 140px"}}>
+            <div className="w-8 pr-3">
+              <input type="checkbox" checked={selected.size === displayed.length && displayed.length > 0} onChange={toggleAll} className="accent-neutral-700" />
+            </div>
+            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400">Item</span>
+            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 text-left hidden md:block">Status</span>
+            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 text-right hidden lg:block">Pricing</span>
+            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 text-center hidden xl:block">Engagement</span>
+            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 text-right">Action</span>
+          </div>
 
-                return (
-                  <React.Fragment key={item.id}>
-                    <tr
-                      className={`border-b border-border/60 transition-colors ${selected.has(item.id) ? "bg-primary/[0.02]" : rowIdx % 2 === 0 ? "bg-white" : "bg-[hsl(35,25%,99%)]"} hover:bg-[hsl(35,30%,98%)]`}
+          {/* Rows */}
+          <div className="divide-y divide-neutral-100">
+            {displayed.map((item) => {
+              const price = itemPriceDisplay(item);
+              const isLive = ["first_bids", "prisometer", "pending_review"].includes(item.status);
+              const isConsignment = item.ownership_type === "consignment";
+
+              let timerText = null;
+              if (item.status === "first_bids" && item.first_bids_end) {
+                const ended = isPast(new Date(item.first_bids_end));
+                timerText = { text: ended ? "Preview ended" : `Ends ${formatDistanceToNow(new Date(item.first_bids_end), { addSuffix: true })}`, ended };
+              } else if (item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours) {
+                const end = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000);
+                const ended = isPast(end);
+                timerText = { text: ended ? "Expired" : `Ends ${formatDistanceToNow(end, { addSuffix: true })}`, ended };
+              }
+
+              return (
+                <div
+                  key={item.id}
+                  className={`grid items-center px-5 py-4 transition-colors hover:bg-neutral-50 ${selected.has(item.id) ? "bg-neutral-50" : "bg-white"}`}
+                  style={{gridTemplateColumns:"auto 1fr 160px 140px 100px 140px"}}
+                >
+                  {/* Checkbox */}
+                  <div className="w-8 pr-3 self-start pt-1">
+                    <input type="checkbox" checked={selected.has(item.id)} onChange={() => toggleSelect(item.id)} className="accent-neutral-700" />
+                  </div>
+
+                  {/* Item column: thumbnail + metadata */}
+                  <div className="flex items-start gap-4 min-w-0">
+                    {/* Thumbnail */}
+                    <button
+                      onClick={() => item.images?.[0] && setLightbox({ images: item.images, startIndex: 0 })}
+                      className="relative shrink-0 w-20 h-20 overflow-hidden border border-neutral-200 group focus:outline-none bg-neutral-50"
                     >
-                      {/* Checkbox */}
-                      <td className="px-4 py-0 w-10">
-                        <input type="checkbox" checked={selected.has(item.id)} onChange={() => toggleSelect(item.id)} />
-                      </td>
-
-                      {/* Image */}
-                      <td className="px-3 py-3 w-20">
-                        {item.images?.[0] ? (
-                          <button onClick={() => setLightbox({ images: item.images, startIndex: 0 })}
-                            className="relative w-16 h-16 overflow-hidden group focus:outline-none border border-border/30 shrink-0 block">
-                            <img src={item.images[0]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors flex items-center justify-center">
-                              <ZoomIn className="w-3.5 h-3.5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                            {item.images.length > 1 && (
-                              <span className="absolute bottom-0.5 right-0.5 bg-black/55 text-white text-[8px] font-bold px-1 leading-tight">+{item.images.length - 1}</span>
-                            )}
-                          </button>
-                        ) : (
-                          <div className="w-16 h-16 bg-[hsl(35,20%,94%)] border border-border/30 flex items-center justify-center">
-                            <Package className="w-5 h-5 text-muted-foreground/20" />
+                      {item.images?.[0] ? (
+                        <>
+                          <img src={item.images[0]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <ZoomIn className="w-3.5 h-3.5 text-white opacity-0 group-hover:opacity-100" />
                           </div>
+                          {item.images.length > 1 && (
+                            <span className="absolute bottom-0.5 right-0.5 bg-black/60 text-white text-[8px] font-bold px-1">+{item.images.length - 1}</span>
+                          )}
+                        </>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package className="w-5 h-5 text-neutral-300" />
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Text metadata */}
+                    <div className="min-w-0 flex-1 py-0.5">
+                      <p className="text-[13px] font-semibold text-neutral-900 leading-snug line-clamp-2 mb-1.5">{item.title}</p>
+
+                      {/* Meta row 1: category · maker · period */}
+                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] text-neutral-400 mb-1.5">
+                        {item.category && <span className="capitalize">{item.category.replace(/_/g, " ")}</span>}
+                        {item.maker && <><span className="text-neutral-300">·</span><span>{item.maker}</span></>}
+                        {item.period && <><span className="text-neutral-300">·</span><span>{item.period}</span></>}
+                        {item.inventory_number && <><span className="text-neutral-300">·</span><span className="font-mono">{item.inventory_number}</span></>}
+                        {item.lot_number && <><span className="text-neutral-300">·</span><span className="font-mono">Lot #{item.lot_number}</span></>}
+                      </div>
+
+                      {/* Meta row 2: tags */}
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {isConsignment && (
+                          <span className="inline-flex items-center gap-1 text-[9px] font-bold tracking-wide uppercase bg-neutral-100 text-neutral-500 border border-neutral-200 px-1.5 py-0.5">
+                            <Handshake className="w-2 h-2" /> Consignment
+                          </span>
                         )}
-                      </td>
-
-                      {/* Title */}
-                      <td className="px-4 py-3">
-                        <p className="font-serif text-[14px] font-semibold text-foreground leading-snug line-clamp-2 mb-1">{item.title}</p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                          {item.maker && <span className="text-[11px] text-muted-foreground/70">{item.maker}</span>}
-                          {item.period && <span className="text-[11px] text-muted-foreground/40">{item.period}</span>}
-                          {item.category && <span className="text-[10px] text-muted-foreground/40 capitalize">{item.category.replace(/_/g, " ")}</span>}
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                          {isConsignment && (
-                            <span className="inline-flex items-center gap-1 text-[9px] font-bold tracking-wide uppercase bg-neutral-100 text-neutral-500 border border-neutral-200 px-1.5 py-0.5">
-                              <Handshake className="w-2.5 h-2.5" /> Consignment
-                            </span>
-                          )}
-                          {item.lot_number && (
-                            <span className="text-[10px] font-mono text-muted-foreground/60 border border-border/50 bg-secondary/50 px-1.5 py-0.5">
-                              Lot #{item.lot_number}
-                            </span>
-                          )}
-                          {timerText && (
-                            <span className={`flex items-center gap-1 text-[10px] font-medium ${timerText.color}`}>
-                              <Clock className="w-3 h-3 shrink-0" /> {timerText.text}
-                            </span>
-                          )}
-                          {hasDesc && (
-                            <button onClick={() => toggleDesc(item.id)}
-                              className="text-[10px] text-primary/60 hover:text-primary underline underline-offset-2">
-                              {descOpen ? "Hide" : "Details"}
-                            </button>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Inv # */}
-                      <td className="px-4 py-3 w-28 hidden lg:table-cell">
-                        {item.inventory_number
-                          ? <span className="font-mono text-[11px] font-semibold text-foreground/80">{item.inventory_number}</span>
-                          : <span className="text-muted-foreground/25 select-none">—</span>}
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-4 py-3 w-36 hidden md:table-cell">
-                        <StatusBadge status={item.status} />
-                      </td>
-
-                      {/* Price */}
-                      <td className="px-4 py-3 w-36 text-right hidden lg:table-cell">
-                        <p className="font-price text-[15px] font-bold leading-none text-neutral-900">{price.value}</p>
-                        <p className="text-[10px] text-muted-foreground/50 mt-1">{price.label}</p>
-                        {item.reserve_price > 0 && (
-                          <div className="flex items-center justify-end gap-1 mt-1">
-                            <ShieldCheck className="w-2.5 h-2.5 text-muted-foreground/30" />
-                            <span className="text-[9px] text-muted-foreground/40">Reserve ${item.reserve_price.toLocaleString()}</span>
-                          </div>
+                        {timerText && (
+                          <span className={`text-[10px] font-medium flex items-center gap-1 ${timerText.ended ? "text-neutral-400" : "text-neutral-600"}`}>
+                            <Clock className="w-2.5 h-2.5 shrink-0" /> {timerText.text}
+                          </span>
                         )}
-                      </td>
+                      </div>
+                    </div>
+                  </div>
 
-                      {/* Insights */}
-                      <td className="px-4 py-3 w-24 hidden xl:table-cell">
-                        <div className="flex flex-col items-center gap-1.5">
-                          <div className="flex items-center gap-1">
-                            <Eye className="w-3 h-3 text-muted-foreground/35" />
-                            <span className="text-[11px] font-semibold tabular-nums">{item.view_count || 0}</span>
-                            <span className="text-[10px] text-muted-foreground/40">views</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Heart className="w-3 h-3 text-rose-300" />
-                            <span className="text-[11px] font-semibold tabular-nums">{item.watcher_count || 0}</span>
-                            <span className="text-[10px] text-muted-foreground/40">watching</span>
-                          </div>
-                        </div>
-                      </td>
+                  {/* Status */}
+                  <div className="hidden md:flex items-center">
+                    <StatusBadge status={item.status} />
+                  </div>
 
-                      {/* Bids */}
-                      <td className="px-4 py-3 w-20 hidden xl:table-cell text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <Gavel className="w-3.5 h-3.5 text-muted-foreground/35" />
-                          <span className="font-price text-base font-bold tabular-nums">{item.bid_count || 0}</span>
-                        </div>
-                        {item.highest_bid > 0 && (
-                          <p className="text-[9px] text-muted-foreground/40 mt-0.5 tabular-nums">High ${item.highest_bid.toLocaleString()}</p>
-                        )}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="px-4 py-3 w-32 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {item.status === "pending_review" ? (
-                            <>
-                              <Button size="sm" className="text-[11px] h-7 px-2.5 gap-1 bg-neutral-900 hover:bg-black text-white"
-                                onClick={() => handleAcceptOffer(item)} disabled={processingOffer === item.id}>
-                                {processingOffer === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
-                                Accept
-                              </Button>
-                              <Button size="sm" variant="outline" className="text-[11px] h-7 px-2.5 gap-1 border-neutral-300 text-neutral-600 hover:bg-neutral-50"
-                                onClick={() => handleDeclineOffer(item)} disabled={processingOffer === item.id}>
-                                <XCircle className="w-3 h-3" /> Decline
-                              </Button>
-                            </>
-                          ) : item.status !== "sold" ? (
-                            <Link to={`/seller/studio?edit=${item.id}`}>
-                              <Button variant="outline" size="sm" className="text-[11px] font-semibold h-7 px-3 border-border/70 hover:bg-secondary/80">
-                                {isLive ? "Manage" : item.status === "unsold" ? "Relist" : "Edit"}
-                              </Button>
-                            </Link>
-                          ) : (
-                            <Link to={`/item/${item.id}`}>
-                              <Button variant="outline" size="sm" className="text-[11px] font-semibold h-7 px-3 border-border/70">View</Button>
-                            </Link>
-                          )}
-                          <ItemRowMenu item={item} />
-                        </div>
-                      </td>
-                    </tr>
-
-                    {/* Description expand */}
-                    {descOpen && hasDesc && (
-                      <tr className="border-b border-border/40">
-                        <td colSpan={9} className="px-4 py-4 bg-[hsl(35,20%,98%)]">
-                          <div className="pl-[calc(16px+80px+16px)]">
-                            <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-muted-foreground/40 mb-2">Description</p>
-                            <p className="text-sm text-foreground/75 leading-relaxed max-w-3xl">{item.description}</p>
-                          </div>
-                        </td>
-                      </tr>
+                  {/* Pricing */}
+                  <div className="hidden lg:block text-right">
+                    <p className="font-price text-base font-bold text-neutral-900 leading-none tabular-nums">{price.value}</p>
+                    <p className="text-[10px] text-neutral-400 mt-1">{price.label}</p>
+                    {item.reserve_price > 0 && (
+                      <p className="text-[9px] text-neutral-400 mt-0.5 flex items-center justify-end gap-1">
+                        <ShieldCheck className="w-2.5 h-2.5 text-neutral-300" />
+                        Reserve ${item.reserve_price.toLocaleString()}
+                      </p>
                     )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
+                  </div>
+
+                  {/* Engagement */}
+                  <div className="hidden xl:flex flex-col items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 text-[11px] text-neutral-500">
+                      <Eye className="w-3 h-3 text-neutral-300 shrink-0" />
+                      <span className="tabular-nums font-semibold text-neutral-700">{item.view_count || 0}</span>
+                      <span className="text-neutral-400">views</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] text-neutral-500">
+                      <Gavel className="w-3 h-3 text-neutral-300 shrink-0" />
+                      <span className="tabular-nums font-semibold text-neutral-700">{item.bid_count || 0}</span>
+                      <span className="text-neutral-400">bids</span>
+                    </div>
+                    {item.highest_bid > 0 && (
+                      <p className="text-[9px] text-neutral-400 tabular-nums">High ${item.highest_bid.toLocaleString()}</p>
+                    )}
+                  </div>
+
+                  {/* Action */}
+                  <div className="flex items-center justify-end gap-1.5">
+                    {item.status === "pending_review" ? (
+                      <>
+                        <button
+                          onClick={() => handleAcceptOffer(item)} disabled={processingOffer === item.id}
+                          className="text-[11px] font-bold px-3 h-8 bg-neutral-900 hover:bg-black text-white transition-colors disabled:opacity-50 flex items-center gap-1"
+                        >
+                          {processingOffer === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                          Accept
+                        </button>
+                        <button
+                          onClick={() => handleDeclineOffer(item)} disabled={processingOffer === item.id}
+                          className="text-[11px] font-bold px-3 h-8 border border-neutral-300 text-neutral-600 hover:border-neutral-500 transition-colors disabled:opacity-50"
+                        >
+                          Decline
+                        </button>
+                      </>
+                    ) : item.status !== "sold" ? (
+                      <Link to={`/seller/studio?edit=${item.id}`}>
+                        <button className="text-[11px] font-bold px-4 h-8 border border-neutral-300 text-neutral-700 hover:border-neutral-700 hover:text-neutral-900 transition-colors">
+                          {isLive ? "Manage" : item.status === "unsold" ? "Relist" : "Edit"}
+                        </button>
+                      </Link>
+                    ) : (
+                      <Link to={`/item/${item.id}`}>
+                        <button className="text-[11px] font-bold px-4 h-8 border border-neutral-300 text-neutral-700 hover:border-neutral-700 hover:text-neutral-900 transition-colors">
+                          View
+                        </button>
+                      </Link>
+                    )}
+                    <ItemRowMenu item={item} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
