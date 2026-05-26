@@ -215,7 +215,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               )}
             </div>
 
-            {/* Structured sale data */}
+            {/* Structured sale data — always 4 rows for consistent height */}
             <div className="space-y-2 border-t border-border pt-3">
               {item.status === "prisometer" ? (
                 <>
@@ -232,43 +232,37 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                       )}
                     </div>
                   </div>
-                  {item.highest_bid > 0 && (
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">High Bid</span>
-                      <span className="font-price text-base font-bold text-foreground">
-                        ${item.highest_bid.toLocaleString("en-US")}
-                      </span>
-                    </div>
-                  )}
-                  {countdown && (
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Ends In</span>
-                      <span className="font-price text-base font-bold text-foreground">{countdown}</span>
-                    </div>
-                  )}
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">High Bid</span>
+                    <span className="font-price text-base font-bold text-foreground">
+                      {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Ends In</span>
+                    <span className="font-price text-base font-bold text-foreground">{countdown || "—"}</span>
+                  </div>
+                  <div className="h-5" />
                 </>
               ) : (
                 <>
-                  {item.highest_bid > 0 && (
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview High Bid</span>
-                      <span className="font-price text-base font-bold text-foreground">
-                        ${item.highest_bid.toLocaleString("en-US")}
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview High Bid</span>
+                    <span className="font-price text-base font-bold text-foreground">
+                      {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
+                    </span>
+                  </div>
                   <div className="flex items-baseline justify-between">
                     <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">PRI$OMETER Start</span>
                     <span className="font-price text-base font-bold text-foreground">
                       ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
                     </span>
                   </div>
-                  {countdown && (
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview Ends</span>
-                      <span className="font-price text-base font-bold text-foreground">{countdown}</span>
-                    </div>
-                  )}
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview Ends</span>
+                    <span className="font-price text-base font-bold text-foreground">{countdown || "—"}</span>
+                  </div>
+                  <div className="h-5" />
                 </>
               )}
             </div>
