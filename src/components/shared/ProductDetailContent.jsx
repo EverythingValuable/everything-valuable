@@ -21,6 +21,7 @@ import LocationFlag from "@/components/shared/LocationFlag";
 import SellerStorefront from "@/components/product/SellerStorefront";
 import { useIsMobile } from "@/hooks/use-mobile";
 import WinCelebration from "@/components/product/WinCelebration";
+import { formatDimensions } from "@/lib/dimensionsParser";
 
 // Small live price display for the sticky mobile bar
 function MobileStickyPrice({ item }) {
@@ -340,7 +341,7 @@ export default function ProductDetailContent({ itemId }) {
               )}
               {item.dimensions && (
                 <CollapsibleSection title="Dimensions" defaultOpen={true}>
-                  <div className="text-sm text-muted-foreground">{item.dimensions}</div>
+                  <div className="text-sm text-muted-foreground">{formatDimensions(item.dimensions)}</div>
                 </CollapsibleSection>
               )}
               {item.condition && (
