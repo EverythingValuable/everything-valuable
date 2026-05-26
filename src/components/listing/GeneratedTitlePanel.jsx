@@ -8,23 +8,36 @@ const MAX_CHARS = 120;
 export default function GeneratedTitlePanel({ form, set, category }) {
   const [editMode, setEditMode] = useState(false);
   const [manualTitle, setManualTitle] = useState(form.title || "");
+  const [isManual, setIsManual] = useState(false);
 
   const generated = generateTitle(form, category);
 
-  // Auto-update title from fields when not in manual mode
+  // Auto-update title from fields only when user hasn't manually overridden
   useEffect(() => {
-    if (!editMode && generated) {
+    if (!isManual && generated) {
       set("title", generated);
       setManualTitle(generated);
     }
-  }, [generated, editMode]);
+  }, [generated, isManual]);
 
   const handleManualChange = (val) => {
     setManualTitle(val);
     set("title", val);
   };
 
+  const handleEditToggle = () => {
+    if (!editMode) {
+      // Entering edit mode — mark as manual
+      setIsManual(true);
+      setEditMode(true);
+    } else {
+      // Locking — keep the manual title as-is
+      setEditMode(false);
+    }
+  };
+
   const handleRegenerate = () => {
+    setIsManual(false);
     setEditMode(false);
     set("title", generated);
     setManualTitle(generated);
@@ -75,7 +88,7 @@ export default function GeneratedTitlePanel({ form, set, category }) {
           </button>
           <button
             type="button"
-            onClick={() => setEditMode(v => !v)}
+            onClick={handleEditToggle}
             className="flex items-center gap-1 text-[10px] font-semibold tracking-wide text-neutral-400 hover:text-neutral-700 transition-colors"
           >
             <Pencil className="w-3 h-3" /> {editMode ? "Lock Title" : "Edit Manually"}
