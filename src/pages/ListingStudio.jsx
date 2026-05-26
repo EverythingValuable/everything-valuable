@@ -18,6 +18,7 @@ import ObjectTypePicker from "../components/listing/ObjectTypePicker";
 import TaxonomyFields from "../components/listing/TaxonomyFields";
 import GeneratedTitlePanel from "../components/listing/GeneratedTitlePanel";
 import ListingIntelligencePanel from "../components/listing/ListingIntelligencePanel";
+import ProvenanceDocUpload from "../components/listing/ProvenanceDocUpload";
 
 const THEMES = {
   minimal: { light: { bg: "#faf9f7", text: "#1a1a1a", primary: "#d63859" }, dark: { bg: "#0f0e0d", text: "#f5f5f5", primary: "#ff4081" } },
@@ -260,6 +261,7 @@ export default function ListingStudio() {
     consignor_name: "", consignor_email: "", consignor_phone: "",
     consignor_address: "", consignor_commission_percent: "",
     consignor_notes: "", customer_location: "",
+    provenance_docs: [],
   });
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
@@ -339,6 +341,7 @@ export default function ListingStudio() {
           consignor_phone: item.consignor_phone || "", consignor_address: item.consignor_address || "",
           consignor_commission_percent: item.consignor_commission_percent || "",
           consignor_notes: item.consignor_notes || "", customer_location: item.customer_location || "",
+          provenance_docs: item.provenance_docs || [],
         });
         if (item.category) setActiveStep(3);
       } else {
@@ -489,6 +492,7 @@ export default function ListingStudio() {
     consignor_address: form.ownership_type === "consignment" ? form.consignor_address : undefined,
     consignor_commission_percent: form.ownership_type === "consignment" ? (+form.consignor_commission_percent || undefined) : undefined,
     consignor_notes: form.ownership_type === "consignment" ? form.consignor_notes : undefined,
+    provenance_docs: form.provenance_docs?.length ? form.provenance_docs : undefined,
     ...extraFields,
   });
 
@@ -1119,6 +1123,10 @@ export default function ListingStudio() {
                 placeholder="e.g. Private collection, Paris; acquired directly from the artist in 1974…"
                 value={form.provenance}
                 onChange={e => set("provenance", e.target.value)}
+              />
+              <ProvenanceDocUpload
+                docs={form.provenance_docs || []}
+                onChange={docs => set("provenance_docs", docs)}
               />
             </Field>
             <Field label="Terms & Conditions" hint="optional — overrides your default">

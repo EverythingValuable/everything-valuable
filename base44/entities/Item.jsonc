@@ -49,6 +49,21 @@
     "provenance": {
       "type": "string"
     },
+    "provenance_docs": {
+      "type": "array",
+      "description": "Uploaded provenance documents (JPG or PDF)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "condition_notes": {
       "type": "string"
     },
@@ -89,32 +104,25 @@
       "description": "Whether the seller owns the item outright or is selling on consignment"
     },
     "consignor_name": {
-      "type": "string",
-      "description": "Full name of the consignor (owner)"
+      "type": "string"
     },
     "consignor_email": {
-      "type": "string",
-      "description": "Consignor email"
+      "type": "string"
     },
     "consignor_phone": {
-      "type": "string",
-      "description": "Consignor phone"
+      "type": "string"
     },
     "consignor_address": {
-      "type": "string",
-      "description": "Consignor mailing address"
+      "type": "string"
     },
     "consignor_commission_percent": {
-      "type": "number",
-      "description": "Commission % the seller keeps from the sale"
+      "type": "number"
     },
     "consignor_payout_amount": {
-      "type": "number",
-      "description": "Calculated payout due to the consignor after sale"
+      "type": "number"
     },
     "consignor_notes": {
-      "type": "string",
-      "description": "Additional consignment agreement notes"
+      "type": "string"
     },
     "status": {
       "type": "string",
