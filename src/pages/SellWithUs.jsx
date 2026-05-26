@@ -191,10 +191,6 @@ function HowItWorks() {
       title: "Sale Or Seller Review",
       body: "If the price meets the highest bid at or above reserve, the item sells automatically. If the result is below reserve, the seller can review and decide whether to accept.",
     },
-    {
-      title: "Settlement",
-      body: "After the transaction is completed, the seller receives settlement according to the platform terms. Invoicing is handled directly through the seller dashboard.",
-    },
   ];
 
   return (
