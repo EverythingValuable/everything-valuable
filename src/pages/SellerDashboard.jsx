@@ -241,16 +241,6 @@ function SellerDashboardInner() {
           {view === "overview" && (
             <>
               <BelowReserveAlert user={user} />
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                <StatTile icon={Boxes} label="Total Inventory" value={stats.total} subtext={`${activeItems.length} currently live or previewing`} tone="blue" />
-                <StatTile icon={DollarSign} label="Active Value" value={money(activeValue)} subtext={`${money(averageValue)} average tracked item value`} tone="green" />
-                <StatTile icon={ClipboardCheck} label="Sold Revenue" value={money(stats.revenue)} subtext={`${stats.sold} completed sale${stats.sold !== 1 ? "s" : ""}`} />
-                <StatTile icon={AlertTriangle} label="Needs Updates" value={issueCount} subtext="Missing photos, pricing, condition, or copy" tone="amber" />
-              </div>
-              <InventoryCommandBar activeItems={activeItems} activeValue={activeValue} issueCount={issueCount} />
-              <WorkflowStrip stats={stats} totalItems={items.length} />
-              <PortfolioCards stats={stats} />
-              <NextBestActions />
             </>
           )}
 
