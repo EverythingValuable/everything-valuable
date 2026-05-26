@@ -36,16 +36,21 @@ function computeServiceFee(itemPrice) {
   return Math.round((base * 0.10 + 30) * 100) / 100;
 }
 
-function computeTotal(itemPrice, _unused, feeCredit, extras) {
+// New logic:
+// service_fee = item_price * 10% + $30  (informational only, NOT in total)
+// fee_credit  = service_fee * 50%        (applied against item price)
+// final_invoice_total = item_price - fee_credit + extras
+// net_due_seller = final_invoice_total (no additional deductions yet)
+function computeInvoice(itemPrice, extras) {
   const base = Number(itemPrice) || 0;
   const fee = computeServiceFee(base);
-  const credit = Number(feeCredit) || 0;
+  const credit = Math.round(fee * 0.50 * 100) / 100;
   const extra = (extras || []).reduce((s, li) => {
     const amt = Number(li.amount) || 0;
     return li.type === "discount" ? s - amt : s + amt;
   }, 0);
-  // final_invoice_total = item_price + service_fee - credit + extras
-  return { fee, total: base + fee - credit + extra };
+  const total = base - credit + extra;
+  return { fee, credit, total, netDueSeller: total };
 }
 
 const PAYMENT_METHODS = [
@@ -68,8 +73,6 @@ function defaultForm(profileDefaults = {}) {
     buyer_phone: "",
     buyer_address: "",
     item_price: "",
-    service_fee_pct: 10,
-    fee_credit: "",
     additional_line_items: [],
     payment_instructions: profileDefaults.payment_instructions || "",
     terms_and_conditions: profileDefaults.terms_and_conditions || "",
@@ -160,8 +163,6 @@ export default function InvoiceBuilder({ user }) {
       buyerProfile = results[0] || null;
     }
 
-    const computedFee = computeServiceFee(soldPrice);
-    const feeCredit = item.fee_credit || computedFee * 0.50;
     const purchaseMethod = item.sold_via || "bid";
 
     const buyerAddress = buyerProfile
@@ -175,8 +176,6 @@ export default function InvoiceBuilder({ user }) {
       item_id: itemId,
       item_title: item.title || "",
       item_price: soldPrice,
-      service_fee_pct: 10,
-      fee_credit: feeCredit,
       purchase_method: purchaseMethod,
       buyer_email: buyerEmail,
       buyer_name: buyerProfile?.full_name || f.buyer_name,
@@ -222,7 +221,7 @@ export default function InvoiceBuilder({ user }) {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const { fee, total } = computeTotal(form.item_price, form.service_fee_pct, form.fee_credit, form.additional_line_items);
+      const { fee, credit, total } = computeInvoice(form.item_price, form.additional_line_items);
       const payload = {
         item_id: form.item_id || undefined,
         item_title: form.item_title,
@@ -233,7 +232,7 @@ export default function InvoiceBuilder({ user }) {
         seller_email: user.email,
         item_price: Number(form.item_price) || 0,
         service_fee: fee,
-        fee_credit: Number(form.fee_credit) || 0,
+        fee_credit: credit,
         additional_line_items: form.additional_line_items.map(li => ({ ...li, amount: Number(li.amount) || 0 })),
         total_amount: total,
         purchase_method: form.purchase_method || "manual",
@@ -290,8 +289,6 @@ export default function InvoiceBuilder({ user }) {
       buyer_phone: inv.buyer_phone || "",
       buyer_address: inv.buyer_address || "",
       item_price: inv.item_price ?? "",
-      service_fee_pct: 10,
-      fee_credit: inv.fee_credit ?? "",
       additional_line_items: inv.additional_line_items || [],
       payment_instructions: inv.payment_instructions || profile?.payment_instructions || "",
       terms_and_conditions: inv.terms_and_conditions || profile?.terms_and_conditions || "",
@@ -366,7 +363,7 @@ export default function InvoiceBuilder({ user }) {
     }
   };
 
-  const { fee: liveServiceFee, total: liveTotal } = computeTotal(form.item_price, form.service_fee_pct, form.fee_credit, form.additional_line_items);
+  const { fee: liveServiceFee, credit: liveFeeCredit, total: liveTotal, netDueSeller: liveNetDueSeller } = computeInvoice(form.item_price, form.additional_line_items);
 
   return (
     <div className="max-w-4xl space-y-6">
@@ -463,7 +460,7 @@ export default function InvoiceBuilder({ user }) {
           {/* Line Items */}
           <Section title="Line Items">
             <div className="space-y-3">
-              {/* Base price */}
+              {/* Base price — editable */}
               <div className="flex items-center gap-3 bg-secondary/30 rounded-lg px-4 py-3">
                 <div className="flex-1 text-sm font-medium">{form.item_title || "Item"}</div>
                 <span className="text-xs text-muted-foreground w-20 text-center">Item</span>
@@ -476,32 +473,15 @@ export default function InvoiceBuilder({ user }) {
                 />
               </div>
 
-              {/* Service fee row */}
-              <div className="flex items-center gap-3 bg-secondary/20 rounded-lg px-4 py-3">
-                <div className="flex-1 text-sm text-muted-foreground">
-                  Platform Service Fee Paid at Close
-                  <span className="text-xs ml-1 text-muted-foreground/70">(10% + $30)</span>
-                </div>
-                <span className="text-xs text-muted-foreground w-20 text-center">Fee</span>
-                <span className="w-32 text-right text-sm font-medium">
-                  ${liveServiceFee.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                </span>
-              </div>
-
-              {/* Fee credit row */}
+              {/* Fee credit row — read-only, auto-calculated */}
               <div className="flex items-center gap-3 px-4 py-2">
-                <div className="flex-1 text-sm text-muted-foreground">Fee Credit Applied to Invoice</div>
-                <span className="text-xs text-muted-foreground w-20 text-center">Credit</span>
-                <div className="w-32 flex items-center gap-1">
-                  <span className="text-sm text-muted-foreground">−$</span>
-                  <Input
-                    type="number" min="0"
-                    value={form.fee_credit}
-                    onChange={e => set("fee_credit", e.target.value)}
-                    placeholder="0.00"
-                    className="text-right flex-1"
-                  />
+                <div className="flex-1 text-sm text-muted-foreground">Fee Credit Applied to Invoice
+                  <span className="text-xs ml-1 text-muted-foreground/60">(50% of platform fee)</span>
                 </div>
+                <span className="text-xs text-muted-foreground w-20 text-center">Credit</span>
+                <span className="w-32 text-right text-sm font-medium text-emerald-700">
+                  −${liveFeeCredit.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </span>
               </div>
 
               {/* Additional line items */}
@@ -537,7 +517,7 @@ export default function InvoiceBuilder({ user }) {
                 <Plus className="w-3 h-3" /> Add Line Item
               </Button>
 
-              {/* Total */}
+              {/* Totals */}
               <div className="border-t border-border pt-3 mt-2 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-sm">Final Invoice Total</span>
@@ -545,19 +525,26 @@ export default function InvoiceBuilder({ user }) {
                     ${liveTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Less Amount Already Paid</span>
-                  <span>
-                    −${liveServiceFee.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                  </span>
-                </div>
                 <div className="flex items-center justify-between bg-secondary/40 rounded-lg px-3 py-2">
-                  <span className="font-bold text-sm">Balance Due Now</span>
+                  <span className="font-bold text-sm">Net Due Seller</span>
                   <span className="font-sans text-xl font-bold text-primary">
-                    ${Math.max(0, liveTotal - liveServiceFee).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    ${liveNetDueSeller.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
               </div>
+
+              {/* Platform fee — informational only */}
+              {form.item_price > 0 && (
+                <div className="border border-dashed border-border rounded-lg px-4 py-3 bg-muted/30 space-y-1">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Platform Service Fee Paid at Close</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">10% of sale price + $30 (not included in invoice total)</span>
+                    <span className="text-sm font-semibold text-muted-foreground">
+                      ${liveServiceFee.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </Section>
 
