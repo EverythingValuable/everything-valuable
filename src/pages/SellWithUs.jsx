@@ -37,8 +37,8 @@ function OutlineBtn({ children, href, to, onClick }) {
 function Hero() {
   return (
     <section id="top" className="bg-neutral-900 text-white pt-20 pb-24 px-6">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div className="space-y-7">
+      <div className="max-w-6xl mx-auto">
+        <div className="space-y-7 max-w-3xl">
           <Label>Everything Valuable — Seller Platform</Label>
           <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">
             A Smarter Way For Dealers<br />& Galleries To Sell
@@ -55,43 +55,6 @@ function Hero() {
           <p className="text-xs text-neutral-500 leading-relaxed max-w-sm">
             Built for professional sellers — galleries, dealers, and auction houses — who want more control, stronger buyer engagement, and a modern alternative to traditional selling.
           </p>
-        </div>
-
-        {/* Right side: simplified PRI$OMETER mockup */}
-        <div className="hidden lg:block">
-          <div className="border border-white/10 bg-white/5 p-8 space-y-5">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <div>
-                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-500">PRI$OMETER™ Live</p>
-                <p className="text-lg font-bold text-white mt-1">Signed French Impressionist Oil On Canvas</p>
-              </div>
-              <span className="text-[10px] font-bold tracking-widest uppercase border border-green-500/40 text-green-400 px-2.5 py-1">Active</span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-neutral-400">
-                <span>Start Price</span>
-                <span className="font-mono text-white font-bold">$12,000</span>
-              </div>
-              <div className="h-2 bg-white/10 w-full overflow-hidden">
-                <div className="h-full bg-primary w-2/3 transition-all" />
-              </div>
-              <div className="flex items-center justify-between text-xs text-neutral-400">
-                <span>Current Price</span>
-                <span className="font-mono text-primary font-bold text-lg">$8,400</span>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-3 border-t border-white/10 pt-4">
-              {[["14", "Bids"], ["3", "Watchers"], ["7d", "Remaining"]].map(([val, lbl]) => (
-                <div key={lbl} className="text-center">
-                  <p className="text-lg font-bold text-white">{val}</p>
-                  <p className="text-[10px] text-neutral-500 uppercase tracking-wider">{lbl}</p>
-                </div>
-              ))}
-            </div>
-            <div className="bg-white/5 border border-white/10 px-4 py-3 text-xs text-neutral-400 leading-relaxed">
-              Hidden reserve active. Seller review required if sale is below reserve.
-            </div>
-          </div>
         </div>
       </div>
 
