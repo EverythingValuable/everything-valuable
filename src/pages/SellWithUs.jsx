@@ -41,10 +41,10 @@ function Hero() {
         <div className="space-y-7">
           <Label>Everything Valuable — Seller Platform</Label>
           <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">
-            A Smarter Way To Sell<br />Valuable Personal Property
+            A Smarter Way For Dealers<br />& Galleries To Sell
           </h1>
           <p className="text-neutral-300 text-lg leading-relaxed max-w-lg">
-            Everything Valuable gives sellers a more transparent, more engaging way to bring art, antiques, design, jewelry, and other valuable objects to market through our 1stBid$ preview and PRI$OMETER™ selling system.
+            Everything Valuable is a curated platform for galleries, dealers, and auction houses to bring art, antiques, design, jewelry, and other valuable objects to market through our 1stBid$ preview and PRI$OMETER™ selling system.
           </p>
           <div className="flex flex-wrap gap-3 pt-1">
             <PrimaryBtn href="#apply">Start Selling <ChevronRight className="w-3.5 h-3.5" /></PrimaryBtn>
@@ -53,7 +53,7 @@ function Hero() {
             </a>
           </div>
           <p className="text-xs text-neutral-500 leading-relaxed max-w-sm">
-            Built for sellers who want more control, stronger buyer engagement, and a modern alternative to traditional auction selling.
+            Built for professional sellers — galleries, dealers, and auction houses — who want more control, stronger buyer engagement, and a modern alternative to traditional selling.
           </p>
         </div>
 
@@ -489,7 +489,6 @@ function ComparisonSection() {
 
 // ─── Section: Sign-Up Form ────────────────────────────────────────────────────
 const SELLER_TYPES = [
-  { value: "individual", label: "Individual" },
   { value: "gallery", label: "Gallery" },
   { value: "dealer", label: "Dealer" },
   { value: "auction_house", label: "Auction House" },
