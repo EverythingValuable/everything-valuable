@@ -78,20 +78,9 @@ function useCountdown(endDateStr) {
 }
 
 export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
-  const status = statusConfig[item.status] || {};
   const livePrice = useLivePrice(item);
-  const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
+  const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : item.status === "prisometer" ? new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000) : null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-  // Swipe-to-flip
-  const touchStartX = useRef(null);
-  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
-  const handleTouchEnd = (e) => {
-    if (touchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) > 40) { setFlipped(f => !f); }
-    touchStartX.current = null;
-  };
 
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
@@ -147,31 +136,14 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
-      <div
-        className="group block cursor-pointer"
-        style={{ perspective: "1200px" }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Flip container */}
-        <div
-          style={{
-            transformStyle: "preserve-3d",
-            transition: "transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1)",
-            transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-            position: "relative",
-          }}
-        >
-
-        {/* FRONT */}
+      <div className="group block cursor-pointer">
+        {/* Premium auction catalog card */}
         <div
           onClick={() => setDrawerOpen(true)}
-          style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
-          className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-card border border-border/40 flex flex-col h-full"
+          className="rounded-lg overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full"
         >
-
-          {/* Image area — movie poster style with title overlay */}
-          <div className="relative aspect-[4/5] overflow-hidden bg-muted shrink-0">
+          {/* Image area — artwork is the hero */}
+          <div className="relative aspect-[3/4] overflow-hidden bg-muted shrink-0">
             {item.images?.[0] ? (
               <>
                 <img
@@ -190,181 +162,126 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                     onContextMenu={e => e.preventDefault()}
                   />
                 )}
-                {/* Transparent overlay to block right-click / drag saving */}
                 <div className="absolute inset-0 z-10" onContextMenu={e => e.preventDefault()} draggable="false" />
               </>
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
                 <span className="font-serif text-4xl">EV</span>
               </div>
             )}
 
-            {/* Watchlist button */}
+            {/* Watchlist button — top right, subtle */}
             <button
-              className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60 ${isSaved ? "!opacity-100" : ""}`}
+              className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white border border-border/40 ${isSaved ? "!opacity-100" : ""}`}
               onClick={handleWatchlist}
             >
-              <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-white"}`} />
+              <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-foreground"}`} />
             </button>
 
-            {/* Auction phase badge — top left, prominent */}
+            {/* Status pill — top left, minimal */}
             <div className="absolute top-3 left-3 z-20">
-              <Badge className={`${item.status === "prisometer" ? "bg-red-600 hover:bg-red-700" : "bg-primary hover:bg-primary/90"} text-white text-[10px] md:text-xs font-bold px-2 md:px-2.5 py-1 gap-1.5`}>
-                {item.status === "prisometer" && <TrendingDown className="w-3 h-3" />}
-                {item.status === "first_bids" && <Clock className="w-3 h-3" />}
-                {item.status === "prisometer" ? "PRI$OMETER™" : "1stBid$™"}
-              </Badge>
+              {item.status === "prisometer" ? (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-foreground text-white text-[10px] font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  LIVE
+                </div>
+              ) : item.status === "first_bids" ? (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-foreground/30 text-foreground text-[10px] font-semibold">
+                  PREVIEW
+                </div>
+              ) : null}
             </div>
 
-            {/* Urgency indicator + countdown — top right */}
-            {item.status === "first_bids" && countdown && (
-              <div className="absolute top-3 right-12 z-20">
-                <div className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm text-xs font-bold text-white flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {countdown}
-                </div>
-              </div>
-            )}
+            {/* Subtle bottom fade */}
+            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
+          </div>
 
-            {/* Bid activity indicator */}
-            {item.bid_count > 0 && (
-              <div className="absolute bottom-16 left-3 z-20">
-                <div className="px-2.5 py-1 rounded-full bg-green-600/80 backdrop-blur-sm text-xs font-bold text-white flex items-center gap-1">
-                  🔥 {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
-                </div>
-              </div>
-            )}
-
-            {/* Bottom gradient + title overlay */}
-            <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none" />
-            <div className="absolute inset-x-0 bottom-0 px-3 pb-3">
-              <h3 className="font-serif text-sm font-semibold leading-snug text-white drop-shadow-lg line-clamp-2"
-                style={{ textShadow: "0 1px 6px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.6)" }}>
+          {/* Information area — clean white section */}
+          <div className="flex-1 px-4 py-4 flex flex-col gap-4 justify-between">
+            {/* Category, Title, Seller */}
+            <div>
+              {item.category && (
+                <p className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase mb-1.5">
+                  {item.category.replace(/_/g, " ")}
+                </p>
+              )}
+              <h3 className="font-serif text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-1.5">
                 {item.title}
               </h3>
               {(sellerProfile?.display_name || item.seller_name) && (
-                <p className="text-xs text-white/70 truncate mt-0.5" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>
+                <p className="text-xs text-muted-foreground">
                   {sellerProfile?.display_name || item.seller_name}
                 </p>
               )}
             </div>
-          </div>
 
-          {/* Info section — price, buyer opportunity, CTA */}
-          <div className="flex-1 px-3 py-3 flex flex-col gap-2.5 justify-between">
-            {/* Current price section */}
-            <div className="space-y-1.5">
-              <span className="text-[10px] md:text-xs text-muted-foreground font-medium tracking-wide">CURRENT PRICE</span>
-              <div className="flex items-baseline gap-0.5">
-                <span className="font-price text-lg md:text-xl font-bold text-foreground">
-                  ${Math.floor(livePrice).toLocaleString("en-US")}
-                </span>
-                {item.status === "prisometer" && !item.make_it_mine_active && (
-                  <span className="font-price text-base md:text-lg font-bold text-red-500 animate-price-tick tabular-nums">
-                    .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Buyer opportunity messaging */}
-            <div className="space-y-1.5 text-[10px] md:text-xs">
-              {item.status === "prisometer" && item.highest_bid === 0 && (
-                <div className="bg-amber-50 border border-amber-200 rounded px-2 py-1.5">
-                  <p className="font-semibold text-amber-900">First bid opportunity</p>
-                  <p className="text-amber-800">Price dropping in real-time</p>
-                </div>
-              )}
-              {item.status === "prisometer" && item.highest_bid > 0 && (
-                <div className="bg-blue-50 border border-blue-200 rounded px-2 py-1.5">
-                  <p className="font-semibold text-blue-900">Active bidding</p>
-                  <p className="text-blue-800">High bid ${item.highest_bid.toLocaleString()}</p>
-                </div>
-              )}
-              {item.status === "first_bids" && (
-                <div className="bg-purple-50 border border-purple-200 rounded px-2 py-1.5">
-                  <p className="font-semibold text-purple-900">Auction preview</p>
-                  <p className="text-purple-800">Place early bids before PRI$OMETER</p>
-                </div>
+            {/* Structured sale data */}
+            <div className="space-y-2 border-t border-border pt-3">
+              {item.status === "prisometer" ? (
+                <>
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Current Price</span>
+                    <div className="flex items-baseline gap-0.5 font-price">
+                      <span className="text-base font-bold text-foreground">
+                        ${Math.floor(livePrice).toLocaleString("en-US")}
+                      </span>
+                      {!item.make_it_mine_active && (
+                        <span className="text-sm font-bold text-red-600 animate-price-tick tabular-nums">
+                          .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {item.highest_bid > 0 && (
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">High Bid</span>
+                      <span className="font-price text-base font-bold text-foreground">
+                        ${item.highest_bid.toLocaleString("en-US")}
+                      </span>
+                    </div>
+                  )}
+                  {countdown && (
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Ends In</span>
+                      <span className="font-price text-base font-bold text-foreground">{countdown}</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {item.highest_bid > 0 && (
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview High Bid</span>
+                      <span className="font-price text-base font-bold text-foreground">
+                        ${item.highest_bid.toLocaleString("en-US")}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">PRI$OMETER Start</span>
+                    <span className="font-price text-base font-bold text-foreground">
+                      ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
+                    </span>
+                  </div>
+                  {countdown && (
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview Ends</span>
+                      <span className="font-price text-base font-bold text-foreground">{countdown}</span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
             {/* Action button */}
             <button
               onClick={() => setDrawerOpen(true)}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs md:text-sm font-semibold py-2 px-3 rounded-lg transition-colors mt-auto"
+              className="w-full text-foreground border border-foreground/40 hover:border-foreground hover:bg-foreground hover:text-background text-xs font-semibold py-2.5 px-3 rounded transition-colors"
             >
-              {item.status === "prisometer" ? "Place Bid" : "View & Bid"}
+              View Lot
             </button>
           </div>
         </div>
-
-        {/* BACK */}
-        <div
-          style={{
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
-            position: "absolute",
-            inset: 0,
-          }}
-          className="rounded-2xl overflow-hidden shadow-md bg-card border border-border/40 flex flex-col"
-        >
-          {/* Back header */}
-          <div className="bg-foreground px-4 py-3 flex items-center justify-between shrink-0">
-            <h3 className="font-serif text-sm font-semibold text-background line-clamp-1 flex-1 mr-2">{item.title}</h3>
-            <button
-              onClick={(e) => { e.stopPropagation(); setFlipped(false); }}
-              className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors shrink-0"
-            >
-              <X className="w-3.5 h-3.5 text-white" />
-            </button>
-          </div>
-
-          {/* Back content */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm">
-            {item.description && (
-              <div>
-                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Description</p>
-                <p className="text-foreground leading-relaxed text-xs line-clamp-6">{item.description}</p>
-              </div>
-            )}
-            {(item.maker || item.period || item.origin) && (
-              <div>
-                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Maker / Origin</p>
-                <p className="text-foreground text-xs">{[item.maker, item.period, item.origin].filter(Boolean).join(" · ")}</p>
-              </div>
-            )}
-            {item.dimensions && (
-              <div>
-                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Dimensions</p>
-                <p className="text-foreground text-xs">{item.dimensions}</p>
-              </div>
-            )}
-
-            {item.materials && (
-              <div>
-                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase mb-1">Materials</p>
-                <p className="text-foreground text-xs">{item.materials}</p>
-              </div>
-            )}
-            {!item.description && !item.maker && !item.dimensions && !item.condition && (
-              <p className="text-muted-foreground text-xs italic">No additional details available.</p>
-            )}
-          </div>
-
-          {/* Back footer — view full listing */}
-          <div className="px-4 py-2.5 border-t border-border shrink-0">
-            <button
-              onClick={(e) => { e.stopPropagation(); setFlipped(false); setDrawerOpen(true); }}
-              className="w-full text-xs font-semibold text-primary hover:text-primary/80 transition-colors text-center"
-            >
-              View Full Listing →
-            </button>
-          </div>
-        </div>
-
-        </div>{/* end flip container */}
       </div>
     </motion.div>
     </>
