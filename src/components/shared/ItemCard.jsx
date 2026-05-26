@@ -270,7 +270,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             {/* Action button */}
             <button
               onClick={() => setDrawerOpen(true)}
-              className="w-full text-foreground border border-foreground/40 hover:border-foreground hover:bg-foreground hover:text-background text-xs font-semibold py-2.5 px-3 rounded transition-colors"
+              className="w-full text-foreground border border-foreground/40 hover:border-foreground hover:bg-foreground hover:text-background text-xs font-semibold py-2.5 px-3 rounded transition-colors -mt-3"
             >
               View Lot
             </button>
