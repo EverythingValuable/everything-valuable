@@ -167,11 +167,11 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
         <div
           onClick={() => setDrawerOpen(true)}
           style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
-          className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-card border border-border/40"
+          className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-card border border-border/40 flex flex-col h-full"
         >
 
           {/* Image area — movie poster style with title overlay */}
-          <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+          <div className="relative aspect-[4/5] overflow-hidden bg-muted shrink-0">
             {item.images?.[0] ? (
               <>
                 <img
@@ -207,16 +207,30 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-white"}`} />
             </button>
 
+            {/* Auction phase badge — top left, prominent */}
+            <div className="absolute top-3 left-3 z-20">
+              <Badge className={`${item.status === "prisometer" ? "bg-red-600 hover:bg-red-700" : "bg-primary hover:bg-primary/90"} text-white text-[10px] md:text-xs font-bold px-2 md:px-2.5 py-1 gap-1.5`}>
+                {item.status === "prisometer" && <TrendingDown className="w-3 h-3" />}
+                {item.status === "first_bids" && <Clock className="w-3 h-3" />}
+                {item.status === "prisometer" ? "PRI$OMETER™" : "1stBid$™"}
+              </Badge>
+            </div>
 
+            {/* Urgency indicator + countdown — top right */}
+            {item.status === "first_bids" && countdown && (
+              <div className="absolute top-3 right-12 z-20">
+                <div className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm text-xs font-bold text-white flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {countdown}
+                </div>
+              </div>
+            )}
 
-            {/* Bid count pill — top left */}
-            {(item.bid_count > 0 || item.highest_bid > 0) && (
-              <div className="absolute top-3 left-3">
-                <div className="px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-sm text-xs font-medium text-white">
-                  {item.bid_count > 0 && (
-                    <>{item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}{item.highest_bid > 0 && " · "}</>
-                  )}
-                  {item.highest_bid > 0 && <>High ${item.highest_bid.toLocaleString("en-US")}</>}
+            {/* Bid activity indicator */}
+            {item.bid_count > 0 && (
+              <div className="absolute bottom-16 left-3 z-20">
+                <div className="px-2.5 py-1 rounded-full bg-green-600/80 backdrop-blur-sm text-xs font-bold text-white flex items-center gap-1">
+                  🔥 {item.bid_count} bid{item.bid_count !== 1 ? "s" : ""}
                 </div>
               </div>
             )}
@@ -236,44 +250,52 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             </div>
           </div>
 
-          {/* Info area — status + price, compact but prominent */}
-          <div className="px-3 pt-2.5 pb-3 flex flex-col gap-2 relative">
-            {/* Status badge + countdown on same row */}
-            <div className="flex items-center justify-between gap-1 min-w-0">
-              {status.label ? (
-                <Badge variant="outline" className={`${status.color} text-[10px] md:text-xs font-semibold px-1.5 md:px-2 py-0 md:py-0.5 whitespace-nowrap shrink-0`}>
-                  {item.status === "prisometer" && <TrendingDown className="w-2.5 h-2.5 mr-0.5 shrink-0" />}
-                  {item.status === "first_bids" && <Clock className="w-2.5 h-2.5 mr-0.5 shrink-0" />}
-                  {status.label}
-                </Badge>
-              ) : <div />}
-              {item.status === "first_bids" && countdown && (
-                <span className="font-price text-[10px] md:text-xs font-bold text-primary tracking-wide whitespace-nowrap">{countdown}</span>
+          {/* Info section — price, buyer opportunity, CTA */}
+          <div className="flex-1 px-3 py-3 flex flex-col gap-2.5 justify-between">
+            {/* Current price section */}
+            <div className="space-y-1.5">
+              <span className="text-[10px] md:text-xs text-muted-foreground font-medium tracking-wide">CURRENT PRICE</span>
+              <div className="flex items-baseline gap-1">
+                <span className="font-price text-lg md:text-xl font-bold text-foreground">
+                  ${Math.floor(livePrice).toLocaleString("en-US")}
+                </span>
+                {item.status === "prisometer" && !item.make_it_mine_active && (
+                  <span className="text-sm text-red-500 animate-price-tick font-semibold">
+                    ↓
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Buyer opportunity messaging */}
+            <div className="space-y-1.5 text-[10px] md:text-xs">
+              {item.status === "prisometer" && item.highest_bid === 0 && (
+                <div className="bg-amber-50 border border-amber-200 rounded px-2 py-1.5">
+                  <p className="font-semibold text-amber-900">First bid opportunity</p>
+                  <p className="text-amber-800">Price dropping in real-time</p>
+                </div>
+              )}
+              {item.status === "prisometer" && item.highest_bid > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded px-2 py-1.5">
+                  <p className="font-semibold text-blue-900">Active bidding</p>
+                  <p className="text-blue-800">High bid ${item.highest_bid.toLocaleString()}</p>
+                </div>
+              )}
+              {item.status === "first_bids" && (
+                <div className="bg-purple-50 border border-purple-200 rounded px-2 py-1.5">
+                  <p className="font-semibold text-purple-900">Auction preview</p>
+                  <p className="text-purple-800">Place early bids before PRI$OMETER</p>
+                </div>
               )}
             </div>
 
-            {/* Desktop-only info button bottom-right */}
+            {/* Action button */}
             <button
-              className="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-muted items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-border z-10 hidden md:flex"
-              onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
+              onClick={() => setDrawerOpen(true)}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs md:text-sm font-semibold py-2 px-3 rounded-lg transition-colors mt-auto"
             >
-              <Info className="w-3.5 h-3.5 text-muted-foreground" />
+              {item.status === "prisometer" ? "Place Bid" : "View & Bid"}
             </button>
-
-            {/* Price row */}
-            <div className="flex items-baseline gap-1 min-w-0">
-              <span className="text-[10px] md:text-xs text-muted-foreground font-medium whitespace-nowrap">
-                {item.status === "prisometer" ? "Pri$ometer" : "Pri$ometer Start"}
-              </span>
-              <span className="font-price text-sm md:text-base font-bold text-foreground">
-                ${Math.floor(livePrice).toLocaleString("en-US")}
-                {item.status === "prisometer" && !item.make_it_mine_active && (
-                  <span className="text-sm text-red-500 animate-price-tick">
-                    .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
-                  </span>
-                )}
-              </span>
-            </div>
           </div>
         </div>
 
