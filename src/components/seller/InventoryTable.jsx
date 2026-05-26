@@ -385,8 +385,8 @@ export default function InventoryTable({ items, view, limit }) {
                 </button>
 
                 {/* ── ZONE 1: Item Identity ── */}
-                <div className="flex-1 min-w-0 px-5 py-4 overflow-hidden">
-                  <p className="text-[14px] font-semibold text-neutral-900 leading-snug mb-1.5 truncate">{item.title}</p>
+                <div className="flex-1 min-w-0 px-5 py-4">
+                  <p className="text-[14px] font-semibold text-neutral-900 leading-tight mb-2 line-clamp-3 h-[3.5rem]">{item.title}</p>
                   {/* Meta line */}
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-0 text-[11px] text-neutral-400 mb-2.5">
                     {item.category && <span className="capitalize">{item.category.replace(/_/g, " ")}</span>}
