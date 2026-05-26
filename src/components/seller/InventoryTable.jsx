@@ -76,7 +76,7 @@ const PAGE_SIZES = [10, 25, 50];
 
 function itemPriceDisplay(item) {
   if (item.status === "sold") return { label: "Sold for", value: `$${item.sold_price?.toLocaleString() ?? "—"}`, green: true };
-  if (item.status === "prisometer") return { label: "Current", value: item.current_price ? `$${item.current_price.toLocaleString()}` : "—" };
+  if (item.status === "prisometer") return { label: "Current", value: item.current_price ? `$${Math.round(item.current_price).toLocaleString()}` : "—" };
   if (item.status === "first_bids") {
     const bid = item.highest_bid || 0;
     return { label: bid > 0 ? "High bid" : "Starting", value: bid > 0 ? `$${bid.toLocaleString()}` : `$${item.prisometer_start_price?.toLocaleString() ?? "—"}` };
