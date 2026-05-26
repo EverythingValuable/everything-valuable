@@ -1105,14 +1105,6 @@ export default function ListingStudio() {
               "Include all physical details: dimensions, materials, technique, origin",
               "Mention provenance if known: previous owners, purchase receipts, auction records",
             ]} />
-            <Field label="Short Summary" hint="shown in search results">
-              <LineTextarea
-                rows={2}
-                placeholder="A compelling one-to-two sentence overview that draws buyers in…"
-                value={form.short_description}
-                onChange={e => set("short_description", e.target.value)}
-              />
-            </Field>
             <Field label="Full Description">
               <LineTextarea
                 rows={6}
