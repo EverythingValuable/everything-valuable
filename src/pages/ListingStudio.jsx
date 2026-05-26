@@ -255,7 +255,6 @@ export default function ListingStudio() {
     first_bids_duration_hours: 168, prisometer_start_price: "",
     reserve_price: "", below_reserve_percent: 10,
     prisometer_duration_hours: 168,
-    estimated_low: "", estimated_high: "",
     internal_notes: "", custom_fields: [],
     inventory_number: "", ownership_type: "owned",
     consignor_name: "", consignor_email: "", consignor_phone: "",
@@ -334,7 +333,6 @@ export default function ListingStudio() {
           reserve_price: item.reserve_price || "",
           below_reserve_percent: item.below_reserve_percent || 10,
           prisometer_duration_hours: item.prisometer_duration_hours || 168,
-          estimated_low: item.estimated_low || "", estimated_high: item.estimated_high || "",
           internal_notes: item.internal_notes || "", custom_fields: customFields,
           inventory_number: item.inventory_number || "", ownership_type: item.ownership_type || "owned",
           consignor_name: item.consignor_name || "", consignor_email: item.consignor_email || "",
@@ -465,8 +463,6 @@ export default function ListingStudio() {
     prisometer_duration_hours: form.prisometer_duration_hours,
     first_bids_duration_hours: form.first_bids_duration_hours,
     make_it_mine_active: true,
-    estimated_low: +form.estimated_low || undefined,
-    estimated_high: +form.estimated_high || undefined,
     internal_notes: JSON.stringify({
       custom_fields: form.custom_fields,
       taxonomy_fields: {
@@ -1170,13 +1166,7 @@ export default function ListingStudio() {
               "The reserve should protect the seller, but still leave room for bidding activity and price movement",
               "Overpricing can reduce early interest — a strong starting price should create urgency, not scare buyers away",
             ]} />
-            <div className="grid grid-cols-2 gap-8">
-              <Field label="Estimate Low">
-                <PriceInput placeholder="8,000" value={form.estimated_low} onChange={e => set("estimated_low", e.target.value)} />
-              </Field>
-              <Field label="Estimate High">
-                <PriceInput placeholder="12,000" value={form.estimated_high} onChange={e => set("estimated_high", e.target.value)} />
-              </Field>
+            <div className="grid grid-cols-1 gap-8">
               <Field label="Prisometer™ Price" required hint="shown to buyers">
                 <PriceInput placeholder="5,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
               </Field>
