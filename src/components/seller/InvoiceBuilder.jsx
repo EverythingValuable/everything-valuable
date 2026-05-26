@@ -470,17 +470,13 @@ export default function InvoiceBuilder({ user }) {
           {/* Line Items */}
           <Section title="Line Items">
             <div className="space-y-3">
-              {/* Base price — editable */}
+              {/* Base price — read-only, auto-populated */}
               <div className="flex items-center gap-3 bg-secondary/30 rounded-lg px-4 py-3">
                 <div className="flex-1 text-sm font-medium">{form.item_title || "Item"}</div>
                 <span className="text-xs text-muted-foreground w-20 text-center">Item</span>
-                <Input
-                  type="number" min="0"
-                  value={form.item_price}
-                  onChange={e => set("item_price", e.target.value)}
-                  placeholder="0.00"
-                  className="w-32 text-right"
-                />
+                <span className="w-32 text-right text-sm font-medium">
+                  ${Number(form.item_price || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </span>
               </div>
 
               {/* Fee credit row — read-only, auto-calculated */}
