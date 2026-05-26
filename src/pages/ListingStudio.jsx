@@ -1220,7 +1220,7 @@ export default function ListingStudio() {
                   ))}
                 </div>
               </Field>
-              <Field label="Prisometer™ Live Duration" infoTip="How long the PRI$OMETER countdown runs once it goes live. The price holds steady until a bid comes in, then the clock begins. When time expires, the highest bidder wins — or the item goes unsold if no bids meet the floor.">
+              <Field label="Prisometer™ Live Duration" infoTip="Choose how long the PRI$OMETER™ phase will run once live. During this period, the price gradually declines over time while buyers may place bids or use Make It Mine to purchase at the current price. If the declining price meets the highest bid at or above the reserve, the item sells automatically. If the final bid is below reserve, the seller may choose whether to accept it.">
                 <div className="flex gap-2 pt-1">
                   {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 504, label: "21 days" }].map(({ h, label }) => (
                     <Pill key={h} active={form.prisometer_duration_hours === h} onClick={() => set("prisometer_duration_hours", h)}>{label}</Pill>
