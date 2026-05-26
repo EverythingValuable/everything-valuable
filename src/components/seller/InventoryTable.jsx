@@ -5,11 +5,10 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Plus, Package, Trash2, Clock, Gavel, ShieldCheck,
+  Plus, Package, Trash2, Clock, ShieldCheck,
   Eye, Search, Handshake, Download,
   SlidersHorizontal, ChevronLeft, ChevronRight,
-  CheckCircle2, X, ZoomIn,
-  Loader2, XCircle
+  CheckCircle2, X, ZoomIn, Loader2
 } from "lucide-react";
 import { formatDistanceToNow, isPast, subDays } from "date-fns";
 import ItemRowMenu from "./ItemRowMenu";
@@ -106,7 +105,7 @@ function SummaryStrip({ items }) {
       {stats.map(s => (
         <div key={s.label} className="flex-1 min-w-[100px] px-5 py-3.5">
           <p className="text-[9px] font-bold tracking-[0.16em] uppercase text-muted-foreground/50 mb-1">{s.label}</p>
-          <p className={`font-price text-xl font-bold leading-none ${s.accent ? "text-red-600" : s.green ? "text-emerald-600" : "text-foreground"}`}>
+          <p className={`font-price text-xl font-bold leading-none ${s.accent ? "text-primary" : "text-foreground"}`}>
             {s.value}
           </p>
         </div>
@@ -313,174 +312,177 @@ export default function InventoryTable({ items, view, limit }) {
         </div>
       )}
 
-      {/* ── Inventory Records ── */}
+      {/* ── Catalog Records ── */}
       {displayed.length > 0 && (
-        <div className="border border-neutral-200 bg-white overflow-hidden">
+        <div className="space-y-2">
+          {displayed.map((item) => {
+            const price = itemPriceDisplay(item);
+            const isLive = ["first_bids", "prisometer", "pending_review"].includes(item.status);
+            const isConsignment = item.ownership_type === "consignment";
 
-          {/* Column header */}
-          <div className="grid items-center border-b border-neutral-200 px-5 py-2.5" style={{background:"#f5f4f2", gridTemplateColumns:"auto 1fr 160px 140px 100px 140px"}}>
-            <div className="w-8 pr-3">
-              <input type="checkbox" checked={selected.size === displayed.length && displayed.length > 0} onChange={toggleAll} className="accent-neutral-700" />
-            </div>
-            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400">Item</span>
-            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 text-left hidden md:block">Status</span>
-            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 text-right hidden lg:block">Pricing</span>
-            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 text-center hidden xl:block">Engagement</span>
-            <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 text-right">Action</span>
-          </div>
+            // Timer
+            let timerText = null;
+            if (item.status === "first_bids" && item.first_bids_end) {
+              const ended = isPast(new Date(item.first_bids_end));
+              timerText = { text: ended ? "Preview ended" : `Ends ${formatDistanceToNow(new Date(item.first_bids_end), { addSuffix: true })}`, ended };
+            } else if (item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours) {
+              const end = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000);
+              const ended = isPast(end);
+              timerText = { text: ended ? "Expired" : `Ends ${formatDistanceToNow(end, { addSuffix: true })}`, ended };
+            }
 
-          {/* Rows */}
-          <div className="divide-y divide-neutral-100">
-            {displayed.map((item) => {
-              const price = itemPriceDisplay(item);
-              const isLive = ["first_bids", "prisometer", "pending_review"].includes(item.status);
-              const isConsignment = item.ownership_type === "consignment";
+            // Health chips
+            const chips = [];
+            if (!item.images?.length) chips.push({ label: "Needs Photos", urgent: true });
+            else if (item.images.length < 3) chips.push({ label: `${item.images.length} Photo${item.images.length !== 1 ? "s" : ""}`, urgent: false });
+            else chips.push({ label: `${item.images.length} Photos`, urgent: false });
+            if (!item.condition_notes && item.status !== "draft") chips.push({ label: "Missing Condition", urgent: true });
+            if (!item.reserve_price && item.status !== "draft") chips.push({ label: "No Reserve", urgent: false });
+            if (item.status === "pending_review") chips.push({ label: "Needs Decision", urgent: true });
+            if (["first_bids","prisometer"].includes(item.status) && (item.view_count || 0) < 3) chips.push({ label: "Low Views", urgent: false });
+            if (item.reserve_price && item.highest_bid >= item.reserve_price) chips.push({ label: "Reserve Met", urgent: false });
+            if (isConsignment) chips.push({ label: "Consignment", urgent: false });
 
-              let timerText = null;
-              if (item.status === "first_bids" && item.first_bids_end) {
-                const ended = isPast(new Date(item.first_bids_end));
-                timerText = { text: ended ? "Preview ended" : `Ends ${formatDistanceToNow(new Date(item.first_bids_end), { addSuffix: true })}`, ended };
-              } else if (item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours) {
-                const end = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000);
-                const ended = isPast(end);
-                timerText = { text: ended ? "Expired" : `Ends ${formatDistanceToNow(end, { addSuffix: true })}`, ended };
-              }
+            // Price label
+            const priceLabel = {
+              sold: "SOLD FOR",
+              prisometer: "LIVE PRICE",
+              first_bids: item.highest_bid > 0 ? "HIGH BID" : "STARTING",
+              pending_review: "OFFER PRICE",
+              draft: "ASKING",
+              scheduled: "ASKING",
+              unsold: "ASKING",
+              declined: "ASKING",
+            }[item.status] || "ASKING";
 
-              return (
-                <div
-                  key={item.id}
-                  className={`grid items-center px-5 py-4 transition-colors hover:bg-neutral-50 ${selected.has(item.id) ? "bg-neutral-50" : "bg-white"}`}
-                  style={{gridTemplateColumns:"auto 1fr 160px 140px 100px 140px"}}
-                >
-                  {/* Checkbox */}
-                  <div className="w-8 pr-3 self-start pt-1">
-                    <input type="checkbox" checked={selected.has(item.id)} onChange={() => toggleSelect(item.id)} className="accent-neutral-700" />
+            return (
+              <div
+                key={item.id}
+                className={`border transition-colors group ${selected.has(item.id) ? "border-neutral-400 bg-neutral-50" : "border-neutral-200 bg-white hover:border-neutral-300 hover:bg-[#faf9f7]"}`}
+              >
+                <div className="flex items-stretch gap-0">
+
+                  {/* Checkbox strip */}
+                  <div className="flex items-start pt-5 pl-4 pr-3 shrink-0">
+                    <input type="checkbox" checked={selected.has(item.id)} onChange={() => toggleSelect(item.id)} className="accent-neutral-700 mt-0.5" />
                   </div>
 
-                  {/* Item column: thumbnail + metadata */}
-                  <div className="flex items-start gap-4 min-w-0">
-                    {/* Thumbnail */}
-                    <button
-                      onClick={() => item.images?.[0] && setLightbox({ images: item.images, startIndex: 0 })}
-                      className="relative shrink-0 w-20 h-20 overflow-hidden border border-neutral-200 group focus:outline-none bg-neutral-50"
-                    >
-                      {item.images?.[0] ? (
-                        <>
-                          <img src={item.images[0]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                            <ZoomIn className="w-3.5 h-3.5 text-white opacity-0 group-hover:opacity-100" />
-                          </div>
-                          {item.images.length > 1 && (
-                            <span className="absolute bottom-0.5 right-0.5 bg-black/60 text-white text-[8px] font-bold px-1">+{item.images.length - 1}</span>
-                          )}
-                        </>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-5 h-5 text-neutral-300" />
-                        </div>
-                      )}
-                    </button>
-
-                    {/* Text metadata */}
-                    <div className="min-w-0 flex-1 py-0.5">
-                      <p className="text-[13px] font-semibold text-neutral-900 leading-snug line-clamp-2 mb-1.5">{item.title}</p>
-
-                      {/* Meta row 1: category · maker · period */}
-                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] text-neutral-400 mb-1.5">
-                        {item.category && <span className="capitalize">{item.category.replace(/_/g, " ")}</span>}
-                        {item.maker && <><span className="text-neutral-300">·</span><span>{item.maker}</span></>}
-                        {item.period && <><span className="text-neutral-300">·</span><span>{item.period}</span></>}
-                        {item.inventory_number && <><span className="text-neutral-300">·</span><span className="font-mono">{item.inventory_number}</span></>}
-                        {item.lot_number && <><span className="text-neutral-300">·</span><span className="font-mono">Lot #{item.lot_number}</span></>}
-                      </div>
-
-                      {/* Meta row 2: tags */}
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        {isConsignment && (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold tracking-wide uppercase bg-neutral-100 text-neutral-500 border border-neutral-200 px-1.5 py-0.5">
-                            <Handshake className="w-2 h-2" /> Consignment
-                          </span>
-                        )}
-                        {timerText && (
-                          <span className={`text-[10px] font-medium flex items-center gap-1 ${timerText.ended ? "text-neutral-400" : "text-neutral-600"}`}>
-                            <Clock className="w-2.5 h-2.5 shrink-0" /> {timerText.text}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Status */}
-                  <div className="hidden md:flex items-center">
-                    <StatusBadge status={item.status} />
-                  </div>
-
-                  {/* Pricing */}
-                  <div className="hidden lg:block text-right">
-                    <p className="font-price text-base font-bold text-neutral-900 leading-none tabular-nums">{price.value}</p>
-                    <p className="text-[10px] text-neutral-400 mt-1">{price.label}</p>
-                    {item.reserve_price > 0 && (
-                      <p className="text-[9px] text-neutral-400 mt-0.5 flex items-center justify-end gap-1">
-                        <ShieldCheck className="w-2.5 h-2.5 text-neutral-300" />
-                        Reserve ${item.reserve_price.toLocaleString()}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Engagement */}
-                  <div className="hidden xl:flex flex-col items-center gap-1.5">
-                    <div className="flex items-center gap-1.5 text-[11px] text-neutral-500">
-                      <Eye className="w-3 h-3 text-neutral-300 shrink-0" />
-                      <span className="tabular-nums font-semibold text-neutral-700">{item.view_count || 0}</span>
-                      <span className="text-neutral-400">views</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-neutral-500">
-                      <Gavel className="w-3 h-3 text-neutral-300 shrink-0" />
-                      <span className="tabular-nums font-semibold text-neutral-700">{item.bid_count || 0}</span>
-                      <span className="text-neutral-400">bids</span>
-                    </div>
-                    {item.highest_bid > 0 && (
-                      <p className="text-[9px] text-neutral-400 tabular-nums">High ${item.highest_bid.toLocaleString()}</p>
-                    )}
-                  </div>
-
-                  {/* Action */}
-                  <div className="flex items-center justify-end gap-1.5">
-                    {item.status === "pending_review" ? (
+                  {/* Thumbnail */}
+                  <button
+                    onClick={() => item.images?.[0] && setLightbox({ images: item.images, startIndex: 0 })}
+                    className="relative shrink-0 w-24 h-24 my-4 ml-1 overflow-hidden border border-neutral-200 group/img focus:outline-none bg-[#f5f4f2]"
+                  >
+                    {item.images?.[0] ? (
                       <>
-                        <button
-                          onClick={() => handleAcceptOffer(item)} disabled={processingOffer === item.id}
-                          className="text-[11px] font-bold px-3 h-8 bg-neutral-900 hover:bg-black text-white transition-colors disabled:opacity-50 flex items-center gap-1"
-                        >
-                          {processingOffer === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
-                          Accept
-                        </button>
-                        <button
-                          onClick={() => handleDeclineOffer(item)} disabled={processingOffer === item.id}
-                          className="text-[11px] font-bold px-3 h-8 border border-neutral-300 text-neutral-600 hover:border-neutral-500 transition-colors disabled:opacity-50"
-                        >
-                          Decline
-                        </button>
+                        <img src={item.images[0]} alt="" className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/10 transition-colors" />
+                        {item.images.length > 1 && (
+                          <span className="absolute bottom-1 right-1 bg-black/70 text-white text-[8px] font-bold px-1.5 py-0.5 leading-tight">+{item.images.length - 1}</span>
+                        )}
                       </>
-                    ) : item.status !== "sold" ? (
-                      <Link to={`/seller/studio?edit=${item.id}`}>
-                        <button className="text-[11px] font-bold px-4 h-8 border border-neutral-300 text-neutral-700 hover:border-neutral-700 hover:text-neutral-900 transition-colors">
-                          {isLive ? "Manage" : item.status === "unsold" ? "Relist" : "Edit"}
-                        </button>
-                      </Link>
                     ) : (
-                      <Link to={`/item/${item.id}`}>
-                        <button className="text-[11px] font-bold px-4 h-8 border border-neutral-300 text-neutral-700 hover:border-neutral-700 hover:text-neutral-900 transition-colors">
-                          View
-                        </button>
-                      </Link>
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-6 h-6 text-neutral-300" />
+                      </div>
                     )}
-                    <ItemRowMenu item={item} />
+                  </button>
+
+                  {/* ── LEFT: Identity block ── */}
+                  <div className="flex-1 min-w-0 px-5 py-4 flex flex-col justify-between">
+                    {/* Title */}
+                    <div>
+                      <p className="text-[14px] font-semibold text-neutral-900 leading-snug line-clamp-2 mb-1">{item.title}</p>
+                      {/* Catalog meta line */}
+                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0 text-[11px] text-neutral-400 mb-3">
+                        {item.category && <span className="capitalize">{item.category.replace(/_/g, " ")}</span>}
+                        {item.maker && <><span className="text-neutral-200">·</span><span>{item.maker}</span></>}
+                        {item.period && <><span className="text-neutral-200">·</span><span>{item.period}</span></>}
+                        {item.lot_number && <><span className="text-neutral-200">·</span><span className="font-mono">Lot #{item.lot_number}</span></>}
+                        {item.inventory_number && <><span className="text-neutral-200">·</span><span className="font-mono text-neutral-300">{item.inventory_number}</span></>}
+                      </div>
+                    </div>
+
+                    {/* Status badge + timer + chips */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge status={item.status} />
+                      {timerText && (
+                        <span className={`inline-flex items-center gap-1 text-[10px] font-medium ${timerText.ended ? "text-neutral-400" : "text-neutral-600"}`}>
+                          <Clock className="w-3 h-3 shrink-0" />
+                          {timerText.text}
+                        </span>
+                      )}
+                      {chips.map((chip, ci) => (
+                        <span key={ci} className={`text-[9px] font-bold tracking-[0.1em] uppercase px-2 py-0.5 border ${chip.urgent ? "border-primary/30 text-primary bg-primary/5" : "border-neutral-200 text-neutral-400 bg-neutral-50"}`}>
+                          {chip.label}
+                        </span>
+                      ))}
+                    </div>
                   </div>
+
+                  {/* ── RIGHT: Pricing + Activity + Action ── */}
+                  <div className="shrink-0 flex flex-col items-end justify-between py-4 px-5 border-l border-neutral-100 min-w-[220px]">
+
+                    {/* Price block */}
+                    <div className="text-right">
+                      <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-1">{priceLabel}</p>
+                      <p className="font-price text-[22px] font-bold text-neutral-900 leading-none tabular-nums">{price.value}</p>
+                      {item.reserve_price > 0 && (
+                        <p className="text-[10px] text-neutral-400 mt-1 flex items-center justify-end gap-1">
+                          <ShieldCheck className="w-2.5 h-2.5 text-neutral-300 shrink-0" />
+                          Reserve ${item.reserve_price.toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Activity */}
+                    <div className="text-right space-y-0.5 my-3">
+                      <p className="text-[10px] text-neutral-400 tabular-nums">
+                        {item.view_count || 0} views · {item.watcher_count || 0} watching · {item.bid_count || 0} bid{(item.bid_count || 0) !== 1 ? "s" : ""}
+                      </p>
+                      {item.highest_bid > 0 && (
+                        <p className="text-[10px] text-neutral-500 font-semibold tabular-nums">High bid ${item.highest_bid.toLocaleString()}</p>
+                      )}
+                    </div>
+
+                    {/* Action */}
+                    <div className="flex items-center gap-1.5">
+                      {item.status === "pending_review" ? (
+                        <>
+                          <button
+                            onClick={() => handleAcceptOffer(item)} disabled={processingOffer === item.id}
+                            className="text-[11px] font-bold px-3 h-8 bg-neutral-900 hover:bg-black text-white transition-colors disabled:opacity-50 flex items-center gap-1"
+                          >
+                            {processingOffer === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
+                            Accept
+                          </button>
+                          <button
+                            onClick={() => handleDeclineOffer(item)} disabled={processingOffer === item.id}
+                            className="text-[11px] font-bold px-3 h-8 border border-neutral-300 text-neutral-600 hover:border-neutral-500 transition-colors disabled:opacity-50"
+                          >
+                            Decline
+                          </button>
+                        </>
+                      ) : item.status !== "sold" ? (
+                        <Link to={`/seller/studio?edit=${item.id}`}>
+                          <button className="text-[11px] font-bold tracking-wide px-5 h-8 bg-neutral-900 hover:bg-black text-white transition-colors">
+                            {isLive ? "Manage" : item.status === "unsold" ? "Relist" : "Edit"}
+                          </button>
+                        </Link>
+                      ) : (
+                        <Link to={`/item/${item.id}`}>
+                          <button className="text-[11px] font-bold px-5 h-8 border border-neutral-300 text-neutral-700 hover:border-neutral-700 hover:text-neutral-900 transition-colors">
+                            View
+                          </button>
+                        </Link>
+                      )}
+                      <ItemRowMenu item={item} />
+                    </div>
+                  </div>
+
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
