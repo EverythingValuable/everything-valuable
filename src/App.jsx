@@ -27,6 +27,21 @@ import Portal from './pages/Portal';
 import HotspotManager from './pages/HotspotManager';
 import BulkUpload from './pages/BulkUpload';
 import AdminDashboardNew from './pages/AdminDashboardNew';
+import AdminHealth from './pages/AdminPages/AdminHealth';
+import AdminSellers from './pages/AdminPages/AdminSellers';
+import AdminUsers from './pages/AdminPages/AdminUsers';
+import AdminListings from './pages/AdminPages/AdminListings';
+import AdminTransactions from './pages/AdminPages/AdminTransactions';
+import AdminInvoices from './pages/AdminPages/AdminInvoices';
+import AdminFees from './pages/AdminPages/AdminFees';
+import AdminRevenue from './pages/AdminPages/AdminRevenue';
+import AdminPayouts from './pages/AdminPages/AdminPayouts';
+import AdminDisputes from './pages/AdminPages/AdminDisputes';
+import AdminSupport from './pages/AdminPages/AdminSupport';
+import AdminRisk from './pages/AdminPages/AdminRisk';
+import AdminActivity from './pages/AdminPages/AdminActivity';
+import AdminSettings from './pages/AdminPages/AdminSettings';
+import AdminRoles from './pages/AdminPages/AdminRoles';
 import ConsignorDetail from './pages/ConsignorDetail';
 import SellerAccess from './pages/SellerAccess';
 import Dealers from './pages/Dealers';
@@ -63,8 +78,24 @@ const AuthenticatedApp = () => {
       <Route path="/seller/profile" element={<SellerPublicProfile />} />
       <Route path="/seller/bulk-upload" element={<BulkUpload />} />
       <Route path="/seller/consignor/:id" element={<ConsignorDetail />} />
+
+      {/* Admin workspace */}
       <Route path="/admin" element={<AdminDashboardNew />} />
-      <Route path="/admin/*" element={<AdminDashboardNew />} />
+      <Route path="/admin/health" element={<AdminHealth />} />
+      <Route path="/admin/sellers" element={<AdminSellers />} />
+      <Route path="/admin/users" element={<AdminUsers />} />
+      <Route path="/admin/listings" element={<AdminListings />} />
+      <Route path="/admin/transactions" element={<AdminTransactions />} />
+      <Route path="/admin/invoices" element={<AdminInvoices />} />
+      <Route path="/admin/fees" element={<AdminFees />} />
+      <Route path="/admin/revenue" element={<AdminRevenue />} />
+      <Route path="/admin/payouts" element={<AdminPayouts />} />
+      <Route path="/admin/disputes" element={<AdminDisputes />} />
+      <Route path="/admin/support" element={<AdminSupport />} />
+      <Route path="/admin/risk" element={<AdminRisk />} />
+      <Route path="/admin/activity" element={<AdminActivity />} />
+      <Route path="/admin/settings" element={<AdminSettings />} />
+      <Route path="/admin/roles" element={<AdminRoles />} />
 
       {/* Public site — with shared Navbar/Footer */}
       <Route element={<AppLayout />}>
