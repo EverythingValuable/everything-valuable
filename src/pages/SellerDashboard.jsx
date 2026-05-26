@@ -215,7 +215,7 @@ function SellerDashboardInner() {
                 </h1>
                 <p className="text-[13px] text-muted-foreground mt-1">
                   {activeItems.length > 0
-                    ? `${activeItems.length} active listing${activeItems.length !== 1 ? "s" : ""} with a combined asking value of $${activeValue.toLocaleString()}`
+                    ? `${activeItems.length} active listing${activeItems.length !== 1 ? "s" : ""}`
                     : `${format(new Date(), "EEEE, MMMM d, yyyy")} · No active listings yet`}
                 </p>
               </>
