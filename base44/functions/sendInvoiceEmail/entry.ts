@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     const [sellerProfile] = await base44.asServiceRole.entities.SellerProfile.filter({ user_email: invoice.seller_email });
     const sellerName = sellerProfile?.display_name || 'Your Seller';
 
-    const balanceDue = Math.max(0, Number(invoice.total_amount ?? invoice.item_price ?? 0) - Number(invoice.service_fee ?? 0));
+    const balanceDue = Number(invoice.total_amount ?? invoice.item_price ?? 0);
 
     const totalFormatted = `$${Number(invoice.total_amount ?? invoice.item_price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
     const balanceFormatted = `$${balanceDue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
