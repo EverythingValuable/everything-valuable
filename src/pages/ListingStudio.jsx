@@ -3,19 +3,21 @@ import { useNavigate, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { cn } from "@/lib/utils";
 import {
-  ChevronLeft, Upload, X, GripVertical, Lock,
+  Upload, X, GripVertical, Lock,
   XCircle, Save, Eye, EyeOff, Globe, Info, ArrowLeft, Trash2, Wand2, Loader2, Pencil, Calendar, Clock
 } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import CategoryFields from "../components/listing/CategoryFields";
 import CustomFieldsEditor from "../components/listing/CustomFieldsEditor";
 import DimensionsInput from "../components/listing/DimensionsInput";
-import CategoryPickerModal from "../components/listing/CategoryPickerModal";
 import AIListingAssistant from "../components/listing/AIListingAssistant";
 import ThemeCustomizer from "../components/listing/ThemeCustomizer";
 import LocationPicker from "../components/listing/LocationPicker";
 import ImageEditorModal from "../components/listing/ImageEditorModal";
-import { MAIN_CATEGORIES } from "@/lib/categoryConfig";
+import CategorySelector from "../components/listing/CategorySelector";
+import ObjectTypePicker from "../components/listing/ObjectTypePicker";
+import TaxonomyFields from "../components/listing/TaxonomyFields";
+import GeneratedTitlePanel from "../components/listing/GeneratedTitlePanel";
+import ListingIntelligencePanel from "../components/listing/ListingIntelligencePanel";
 
 const THEMES = {
   minimal: { light: { bg: "#faf9f7", text: "#1a1a1a", primary: "#d63859" }, dark: { bg: "#0f0e0d", text: "#f5f5f5", primary: "#ff4081" } },
@@ -47,10 +49,10 @@ function SectionHeader({ number, title, subtitle, locked, badge, darkMode }) {
   );
 }
 
-function Section({ number, title, subtitle, children, locked, badge, themeColors, darkMode }) {
+function Section({ number, id, title, subtitle, children, locked, badge, themeColors, darkMode }) {
   return (
     <div
-      id={`section-${number}`}
+      id={id || `section-${number}`}
       className={cn(
         "border shadow-sm px-10 py-10 rounded-lg",
         locked && "opacity-50 pointer-events-none"
@@ -214,12 +216,12 @@ export default function ListingStudio() {
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [activeStep, setActiveStep] = useState(1); // 1=Category, 2=Photos, 3=Details, etc.
   // uploadQueue: array of { id, name, status: 'uploading'|'removing_bg'|'done'|'error' }
   const [uploadQueue, setUploadQueue] = useState([]);
   const [removingBgIndexes, setRemovingBgIndexes] = useState(new Set());
   const [autoBgRemoval, setAutoBgRemoval] = useState(false);
   const [editingImageIndex, setEditingImageIndex] = useState(null);
-  const [categoryPickerOpen, setCategoryPickerOpen] = useState(false);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("09:00");
@@ -231,11 +233,21 @@ export default function ListingStudio() {
   const isUnsold = itemStatus === "unsold";
 
   const [form, setForm] = useState({
-    images: [], title: "", category: "", subcategory: "", maker: "",
-    period: "", style: "", technique: "", keywords: "",
-    materials: "", dimensions: "", origin: "", location: "",
+    images: [], title: "", category: "", subcategory: "", objectType: "",
+    // Taxonomy fields
+    artist: "", maker: "", manufacturer: "", signatureStatus: "",
+    medium: "", support: "", style: "", origin: "", period: "",
+    primaryMaterial: "", secondaryMaterial: "", woodType: "",
+    upholsteryMaterial: "", metal: "", metalPurity: "", stone: "",
+    caratWeight: "", ring_size: "", glassType: "", silverType: "",
+    pattern: "", shade_material: "", titleOfWork: "", subject: "",
+    framed: "", printEdition: "", printPublisher: "", printPrinter: "",
+    foundry: "", edition: "",
+    // Standard fields
+    technique: "", keywords: "",
+    materials: "", dimensions: "", location: "",
     model: "", movement_type: "", running_status: "",
-    metal_purity: "", stone_type: "", ring_size: "", length: "",
+    metal_purity: "", stone_type: "", length: "",
     condition: "very_good", provenance: "",
     description: "", short_description: "", condition_notes: "",
     shipping_notes: "", marks: "", terms_and_conditions: "",
@@ -272,20 +284,48 @@ export default function ListingStudio() {
           (parsed.custom_fields || []).forEach(f => { storedValues[f.label] = f.value; });
         } catch {}
         const customFields = template.map(f => ({ ...f, value: storedValues[f.label] ?? "" }));
+        let extraFields = {};
+        try { extraFields = JSON.parse(item.internal_notes || "{}").taxonomy_fields || {}; } catch {}
         setForm({
           images: item.images || [], title: item.title || "", category: item.category || "",
-          subcategory: item.subcategory || "", maker: item.maker || "",
-          period: item.period || "", style: item.style || "",
+          subcategory: item.subcategory || "", objectType: extraFields.objectType || item.subcategory || "",
+          artist: extraFields.artist || "", maker: item.maker || extraFields.maker || "",
+          manufacturer: extraFields.manufacturer || "",
+          signatureStatus: extraFields.signatureStatus || "",
+          medium: extraFields.medium || "", support: extraFields.support || "",
+          style: item.style || extraFields.style || "",
+          origin: item.origin || extraFields.origin || "",
+          period: item.period || extraFields.period || "",
+          primaryMaterial: extraFields.primaryMaterial || item.materials || "",
+          secondaryMaterial: extraFields.secondaryMaterial || "",
+          metal: extraFields.metal || item.metal_purity || "",
+          metalPurity: extraFields.metalPurity || item.metal_purity || "",
+          stone: extraFields.stone || item.stone_type || "",
+          caratWeight: extraFields.caratWeight || "",
+          glassType: extraFields.glassType || "",
+          silverType: extraFields.silverType || "",
+          pattern: extraFields.pattern || "",
+          shade_material: extraFields.shade_material || "",
+          titleOfWork: extraFields.titleOfWork || "",
+          subject: extraFields.subject || "",
+          framed: extraFields.framed || "",
+          printEdition: extraFields.printEdition || "",
+          printPublisher: extraFields.printPublisher || "",
+          printPrinter: extraFields.printPrinter || "",
+          foundry: extraFields.foundry || "",
+          edition: extraFields.edition || "",
+          upholsteryMaterial: extraFields.upholsteryMaterial || "",
+          woodType: extraFields.woodType || "",
           technique: item.technique || "", keywords: item.keywords || "",
           materials: item.materials || "", dimensions: item.dimensions || "",
-          origin: item.origin || "", location: item.location || profile?.location || "",
+          location: item.location || profile?.location || "",
           model: item.model || "", movement_type: item.movement_type || "",
           running_status: item.running_status || "", metal_purity: item.metal_purity || "",
-          stone_type: item.stone_type || "", ring_size: item.ring_size || "",
+          stone_type: item.stone_type || "", ring_size: item.ring_size || extraFields.ring_size || "",
           length: item.length || "", condition: item.condition || "very_good",
           provenance: item.provenance || "", description: item.description || "",
           short_description: item.short_description || "", condition_notes: item.condition_notes || "",
-          shipping_notes: item.shipping_notes || "", marks: item.marks || "",
+          shipping_notes: item.shipping_notes || "", marks: item.marks || extraFields.marks || "",
           terms_and_conditions: item.terms_and_conditions || "",
           first_bids_duration_hours: item.first_bids_duration_hours || 168,
           prisometer_start_price: item.prisometer_start_price || "",
@@ -300,6 +340,7 @@ export default function ListingStudio() {
           consignor_commission_percent: item.consignor_commission_percent || "",
           consignor_notes: item.consignor_notes || "", customer_location: item.customer_location || "",
         });
+        if (item.category) setActiveStep(3);
       } else {
         const template = profile?.listing_custom_fields_template || [];
         const seededFields = template.map(f => ({ ...f, value: "" }));
@@ -393,8 +434,8 @@ export default function ListingStudio() {
     short_description: form.short_description,
     condition: form.condition,
     provenance: form.provenance,
-    subcategory: form.subcategory || undefined,
-    maker: form.maker || undefined,
+    subcategory: form.objectType || form.subcategory || undefined,
+    maker: form.maker || form.artist || undefined,
     style: form.style || undefined,
     technique: form.technique || undefined,
     keywords: form.keywords || undefined,
@@ -405,7 +446,7 @@ export default function ListingStudio() {
     stone_type: form.stone_type || undefined,
     ring_size: form.ring_size || undefined,
     length: form.length || undefined,
-    materials: form.materials,
+    materials: form.primaryMaterial || form.materials || undefined,
     dimensions: form.dimensions,
     period: form.period,
     origin: form.origin,
@@ -423,7 +464,23 @@ export default function ListingStudio() {
     make_it_mine_active: true,
     estimated_low: +form.estimated_low || undefined,
     estimated_high: +form.estimated_high || undefined,
-    internal_notes: JSON.stringify({ custom_fields: form.custom_fields }),
+    internal_notes: JSON.stringify({
+      custom_fields: form.custom_fields,
+      taxonomy_fields: {
+        objectType: form.objectType, artist: form.artist, maker: form.maker,
+        manufacturer: form.manufacturer, signatureStatus: form.signatureStatus,
+        medium: form.medium, support: form.support, style: form.style,
+        origin: form.origin, period: form.period, primaryMaterial: form.primaryMaterial,
+        secondaryMaterial: form.secondaryMaterial, metal: form.metal,
+        metalPurity: form.metalPurity, stone: form.stone, caratWeight: form.caratWeight,
+        glassType: form.glassType, silverType: form.silverType, pattern: form.pattern,
+        shade_material: form.shade_material, titleOfWork: form.titleOfWork,
+        subject: form.subject, framed: form.framed, printEdition: form.printEdition,
+        printPublisher: form.printPublisher, printPrinter: form.printPrinter,
+        foundry: form.foundry, edition: form.edition, upholsteryMaterial: form.upholsteryMaterial,
+        woodType: form.woodType, ring_size: form.ring_size, marks: form.marks,
+      }
+    }),
     inventory_number: form.inventory_number || undefined,
     ownership_type: form.ownership_type,
     consignor_name: form.ownership_type === "consignment" ? form.consignor_name : undefined,
@@ -457,7 +514,23 @@ export default function ListingStudio() {
           technique: form.technique || undefined, description: form.description,
           short_description: form.short_description, condition: form.condition,
           condition_notes: form.condition_notes, shipping_notes: form.shipping_notes,
-          internal_notes: JSON.stringify({ custom_fields: form.custom_fields }),
+          internal_notes: JSON.stringify({
+      custom_fields: form.custom_fields,
+      taxonomy_fields: {
+        objectType: form.objectType, artist: form.artist, maker: form.maker,
+        manufacturer: form.manufacturer, signatureStatus: form.signatureStatus,
+        medium: form.medium, support: form.support, style: form.style,
+        origin: form.origin, period: form.period, primaryMaterial: form.primaryMaterial,
+        secondaryMaterial: form.secondaryMaterial, metal: form.metal,
+        metalPurity: form.metalPurity, stone: form.stone, caratWeight: form.caratWeight,
+        glassType: form.glassType, silverType: form.silverType, pattern: form.pattern,
+        shade_material: form.shade_material, titleOfWork: form.titleOfWork,
+        subject: form.subject, framed: form.framed, printEdition: form.printEdition,
+        printPublisher: form.printPublisher, printPrinter: form.printPrinter,
+        foundry: form.foundry, edition: form.edition, upholsteryMaterial: form.upholsteryMaterial,
+        woodType: form.woodType, ring_size: form.ring_size, marks: form.marks,
+      }
+    }),
           inventory_number: form.inventory_number || undefined,
           location: form.location || undefined, customer_location: form.customer_location || undefined,
         };
@@ -676,15 +749,6 @@ export default function ListingStudio() {
       </header>
 
       {/* Modals */}
-      {categoryPickerOpen && (
-        <CategoryPickerModal
-          value={form.category}
-          subcategory={form.subcategory}
-          onSave={(cat, sub) => { set("category", cat); set("subcategory", sub || ""); set("style", ""); }}
-          onClose={() => setCategoryPickerOpen(false)}
-        />
-      )}
-
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setDeleteConfirm(false)}>
           <div className="bg-white p-10 max-w-sm w-full mx-4 space-y-6 shadow-2xl" onClick={e => e.stopPropagation()}>
@@ -804,20 +868,30 @@ export default function ListingStudio() {
         <div className="hidden xl:block">
           <div className="sticky top-16 flex flex-col">
             {[
-              { num: "01", label: "Photos",           id: "section-01" },
-              { num: "02", label: "Item Details",     id: "section-02" },
-              { num: "03", label: "Description",      id: "section-03" },
-              { num: "04", label: "Pricing & Auction",id: "section-04" },
-              { num: "05", label: "Inventory &\nLogistics", id: "section-05" },
-              { num: "06", label: "Custom Fields",    id: "section-06" },
-            ].map(({ num, label, id }) => (
+              { num: "01", label: "Category",          id: "section-01", done: !!form.category },
+              { num: "02", label: "Photos",             id: "section-02", done: form.images?.length >= 3 },
+              { num: "03", label: "Item Details",       id: "section-03", done: !!form.objectType && !!form.title },
+              { num: "04", label: "Description",        id: "section-04", done: (form.description?.length || 0) > 80 },
+              { num: "05", label: "Condition",          id: "section-05", done: !!form.condition_notes },
+              { num: "06", label: "Pricing",            id: "section-06", done: !!form.prisometer_start_price },
+              { num: "07", label: "Logistics",          id: "section-07", done: !!form.customer_location },
+              { num: "08", label: "Custom Fields",      id: "section-08", done: true },
+            ].map(({ num, label, id, done }) => (
               <button
                 key={id}
                 onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
                 className="group text-left flex items-start gap-3 py-3 border-l-2 border-transparent hover:border-neutral-400 pl-3 transition-all"
               >
-                <span className="text-[11px] font-bold text-neutral-300 group-hover:text-neutral-500 tabular-nums mt-0.5 shrink-0">{num}</span>
-                <span className="text-[11px] font-semibold tracking-[0.08em] uppercase text-neutral-400 group-hover:text-neutral-700 transition-colors leading-tight whitespace-pre-line">{label}</span>
+                <div className="shrink-0 mt-0.5">
+                  {done
+                    ? <span className="text-[10px] text-emerald-500 font-bold">✓</span>
+                    : <span className="text-[11px] font-bold text-neutral-300 group-hover:text-neutral-500 tabular-nums">{num}</span>
+                  }
+                </div>
+                <span className={cn(
+                  "text-[11px] font-semibold tracking-[0.08em] uppercase transition-colors leading-tight whitespace-pre-line",
+                  done ? "text-neutral-600 group-hover:text-neutral-900" : "text-neutral-400 group-hover:text-neutral-700"
+                )}>{label}</span>
               </button>
             ))}
             {editId && (
@@ -836,8 +910,30 @@ export default function ListingStudio() {
         {/* ── LEFT FORM ─────────────────────────────────────────────────── */}
         <div className="space-y-5 min-w-0">
 
-          {/* 01 · Photos */}
-          <Section number="01" title="Photos" subtitle="First photo becomes the cover image" themeColors={themeColors} darkMode={darkMode}>
+          {/* 01 · Category */}
+          <Section number="01" title="Category" id="section-01" themeColors={themeColors} darkMode={darkMode}>
+            <CategorySelector
+              value={form.category}
+              onChange={cat => {
+                set("category", cat);
+                set("objectType", "");
+                set("style", "");
+                set("primaryMaterial", "");
+              }}
+            />
+            {form.category && (
+              <div className="pt-6 border-t border-neutral-100">
+                <ObjectTypePicker
+                  category={form.category}
+                  value={form.objectType}
+                  onChange={v => set("objectType", v)}
+                />
+              </div>
+            )}
+          </Section>
+
+          {/* 02 · Photos */}
+          <Section number="02" id="section-02" title="Photos" subtitle="First photo becomes the cover image" themeColors={themeColors} darkMode={darkMode}>
             <DropZone onFiles={handleImageUpload} />
 
             {/* AI Background Removal Toggle */}
@@ -965,65 +1061,42 @@ export default function ListingStudio() {
             )}
           </Section>
 
-          {/* 02 · Item Details */}
-          <Section number="02" title="Item Details" locked={isLive} themeColors={themeColors} darkMode={darkMode}>
-            <Field label="Title" required>
-              <LineInput
-                large
-                className="font-serif text-xl"
-                placeholder="e.g. Fernand Léger — Composition Abstraite, 1928"
-                value={form.title}
-                onChange={e => set("title", e.target.value)}
-              />
-            </Field>
-            <TipBox title="Tips for a Great Title" tips={[
-              'Lead with Artist / Maker name if known (e.g. "Henri Matisse — ...")',
-              "Include medium or material (Oil on canvas, Bronze, Sterling Silver…)",
-              'Add date or period ("circa 1920s", "Art Deco, 1935")',
-              "Keep it under 80 characters for best search visibility",
-            ]} />
+          {/* 03 · Item Details */}
+          <Section number="03" title="Item Details" id="section-03" locked={isLive} themeColors={themeColors} darkMode={darkMode}>
+            {/* Generated Title Panel */}
+            {(form.category || form.objectType) && (
+              <GeneratedTitlePanel form={form} set={set} category={form.category} />
+            )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              <Field label="Category" required>
-                <button
-                  type="button"
-                  onClick={() => setCategoryPickerOpen(true)}
-                  className="w-full h-11 border-0 border-b border-neutral-200 bg-transparent text-base text-left flex items-center justify-between gap-2 hover:border-neutral-700 focus:outline-none focus:border-neutral-700 transition-colors duration-200"
-                >
-                  <span className={form.category ? "text-neutral-800" : "text-neutral-300"}>
-                    {form.category
-                      ? [MAIN_CATEGORIES.find(c => c.value === form.category)?.label, form.subcategory].filter(Boolean).join(" › ")
-                      : "Select category…"}
-                  </span>
-                  <ChevronLeft className="w-3.5 h-3.5 text-neutral-300 rotate-180 shrink-0" />
-                </button>
-              </Field>
+            {/* Taxonomy-specific fields */}
+            {form.category && form.objectType && (
+              <TaxonomyFields category={form.category} form={form} set={set} />
+            )}
 
-              <Field label="Condition">
-                <select value={form.condition} onChange={e => set("condition", e.target.value)}
-                  className="w-full h-11 border-0 border-b border-neutral-200 bg-transparent text-base text-neutral-800 focus:outline-none focus:border-neutral-700 transition-colors duration-200 appearance-none cursor-pointer">
-                  {CONDITIONS.map(c => <option key={c} value={c}>{c.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</option>)}
-                </select>
-              </Field>
-            </div>
+            {!form.category && (
+              <div className="text-center py-12 border border-dashed border-neutral-200">
+                <p className="text-neutral-400 text-sm">Select a category above to unlock item details.</p>
+              </div>
+            )}
 
-            <Field label="Dimensions">
-              <DimensionsInput value={form.dimensions} onChange={v => set("dimensions", v)} />
-            </Field>
+            {form.category && !form.objectType && (
+              <div className="text-center py-12 border border-dashed border-neutral-200">
+                <p className="text-neutral-400 text-sm">Select an object type to unlock item details.</p>
+              </div>
+            )}
 
-            <Field label="Marks & Signatures">
-              <LineInput placeholder="e.g. Signed lower right in pencil, numbered 14/50" value={form.marks} onChange={e => set("marks", e.target.value)} />
-            </Field>
-
+            {/* Dimensions — always shown once category selected */}
             {form.category && (
-              <div className="pt-2 border-t border-neutral-50">
-                <CategoryFields form={form} set={set} />
+              <div className="pt-4 border-t border-neutral-100">
+                <Field label="Dimensions">
+                  <DimensionsInput value={form.dimensions} onChange={v => set("dimensions", v)} />
+                </Field>
               </div>
             )}
           </Section>
 
-          {/* 03 · Description */}
-          <Section number="03" title="Description & Presentation" themeColors={themeColors} darkMode={darkMode}>
+          {/* 04 · Description */}
+          <Section number="04" id="section-04" title="Description & Presentation" themeColors={themeColors} darkMode={darkMode}>
             <TipBox title="Tips for a Great Description"
               image="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80"
               tips={[
@@ -1048,24 +1121,14 @@ export default function ListingStudio() {
                 onChange={e => set("description", e.target.value)}
               />
             </Field>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              <Field label="Condition Report">
-                <LineTextarea
-                  rows={3}
-                  placeholder="Detail any wear, restoration, or damage honestly and precisely…"
-                  value={form.condition_notes}
-                  onChange={e => set("condition_notes", e.target.value)}
-                />
-              </Field>
-              <Field label="Provenance">
-                <LineTextarea
-                  rows={3}
-                  placeholder="e.g. Private collection, Paris; acquired directly from the artist in 1974…"
-                  value={form.provenance}
-                  onChange={e => set("provenance", e.target.value)}
-                />
-              </Field>
-            </div>
+            <Field label="Provenance">
+              <LineTextarea
+                rows={3}
+                placeholder="e.g. Private collection, Paris; acquired directly from the artist in 1974…"
+                value={form.provenance}
+                onChange={e => set("provenance", e.target.value)}
+              />
+            </Field>
             <Field label="Terms & Conditions" hint="optional — overrides your default">
               <LineTextarea
                 rows={2}
@@ -1079,8 +1142,29 @@ export default function ListingStudio() {
             </Field>
           </Section>
 
-          {/* 04 · Pricing */}
-          <Section number="04" title="Pricing & Auction" locked={isLive} badge="Auction Config" themeColors={themeColors} darkMode={darkMode}>
+          {/* 05 · Condition */}
+          <Section number="05" id="section-05" title="Condition" themeColors={themeColors} darkMode={darkMode}>
+            <Field label="Condition Grade" required>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {CONDITIONS.map(c => (
+                  <Pill key={c} active={form.condition === c} onClick={() => set("condition", c)}>
+                    {c.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                  </Pill>
+                ))}
+              </div>
+            </Field>
+            <Field label="Condition Report" hint="be specific and honest">
+              <LineTextarea
+                rows={4}
+                placeholder="Detail any wear, restoration, chips, cracks, fading, or damage precisely…"
+                value={form.condition_notes}
+                onChange={e => set("condition_notes", e.target.value)}
+              />
+            </Field>
+          </Section>
+
+          {/* 06 · Pricing */}
+          <Section number="06" id="section-06" title="Pricing & Auction" locked={isLive} badge="Auction Config" themeColors={themeColors} darkMode={darkMode}>
             <TipBox title="Pricing Tips" tips={[
               "Set the PRI$OMETER starting price near the high end of what a serious buyer might pay",
               "The reserve should protect the seller, but still leave room for bidding activity and price movement",
@@ -1145,8 +1229,8 @@ export default function ListingStudio() {
             </div>
           </Section>
 
-          {/* 05 · Logistics */}
-          <Section number="05" title="Inventory & Logistics" themeColors={themeColors} darkMode={darkMode}>
+          {/* 07 · Logistics */}
+          <Section number="07" id="section-07" title="Inventory & Logistics" themeColors={themeColors} darkMode={darkMode}>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               <Field label="Inventory No." visibility="private">
                 <LineInput placeholder="EV-2024-001" value={form.inventory_number} onChange={e => set("inventory_number", e.target.value)} />
@@ -1233,8 +1317,8 @@ export default function ListingStudio() {
             )}
           </Section>
 
-          {/* 06 · Custom Fields */}
-          <Section number="06" title="Custom Tracking Fields" subtitle="Internal fields saved to your profile template" themeColors={themeColors} darkMode={darkMode}>
+          {/* 08 · Custom Fields */}
+          <Section number="08" id="section-08" title="Custom Tracking Fields" subtitle="Internal fields saved to your profile template" themeColors={themeColors} darkMode={darkMode}>
             <CustomFieldsEditor fields={form.custom_fields} onChange={handleCustomFieldsChange} />
           </Section>
 
@@ -1278,10 +1362,14 @@ export default function ListingStudio() {
 
         </div>
 
-        {/* ── RIGHT: AI Assistant ────────────────────────────────────────── */}
+        {/* ── RIGHT: Intelligence Panel ──────────────────────────────────── */}
         <div className="hidden xl:flex flex-col">
-          <div className="sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-hide pb-4 border shadow-sm" style={{backgroundColor: darkMode ? '#1a1a1a' : '#ffffff', borderColor: darkMode ? '#333' : '#ddd'}}>
-            <AIListingAssistant form={form} onApply={(field, value) => set(field, value)} />
+          <div className="sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto scrollbar-hide border shadow-sm divide-y divide-neutral-100" style={{backgroundColor: darkMode ? '#1a1a1a' : '#ffffff', borderColor: darkMode ? '#333' : '#ddd'}}>
+            <ListingIntelligencePanel form={form} category={form.category} />
+            <div className="p-4">
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-3">AI Writing Assistant</p>
+              <AIListingAssistant form={form} onApply={(field, value) => set(field, value)} />
+            </div>
           </div>
         </div>
       </div>
