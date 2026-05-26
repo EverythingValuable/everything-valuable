@@ -92,6 +92,39 @@ function FieldBlock({ label, hint, required, children }) {
   );
 }
 
+const TIME_PERIODS = [
+  "Pre 1600",
+  "1600–1700",
+  "1700–1800",
+  "1800–1870",
+  "1870–1900",
+  "1900–1950",
+  "1950–2000",
+  "Post 2000",
+  "Other",
+];
+
+function TimePeriodSelect({ value, onChange, hint }) {
+  return (
+    <div className="space-y-0.5">
+      <SelectField
+        value={value}
+        onChange={onChange}
+        options={TIME_PERIODS}
+        placeholder="Select time period…"
+      />
+      {hint && (
+        <LineInput
+          value={value && !TIME_PERIODS.includes(value) ? value : ""}
+          onChange={onChange}
+          placeholder={hint}
+          className="mt-1"
+        />
+      )}
+    </div>
+  );
+}
+
 function PillSelect({ value, onChange, options }) {
   return (
     <div className="flex flex-wrap gap-1.5 pt-1">
@@ -138,8 +171,8 @@ function FineArtFields({ form, set }) {
         <FieldBlock label="Origin / Country">
           <SelectField value={form.origin} onChange={v => set("origin", v)} options={ORIGINS} placeholder="Select origin…" />
         </FieldBlock>
-        <FieldBlock label="Period / Date" hint="e.g. circa 1920s, 1934">
-          <LineInput value={form.period} onChange={v => set("period", v)} placeholder="circa 1920s" />
+        <FieldBlock label="Period / Date">
+          <TimePeriodSelect value={form.period} onChange={v => set("period", v)} hint="or type e.g. circa 1920s, 1934" />
         </FieldBlock>
         <FieldBlock label="Subject">
           <LineInput value={form.subject} onChange={v => set("subject", v)} placeholder="e.g. Landscape, Portrait, Abstract" />
@@ -193,7 +226,7 @@ function FurnitureFields({ form, set }) {
         <SelectField value={form.secondaryMaterial} onChange={v => set("secondaryMaterial", v)} options={mats} placeholder="Select material…" />
       </FieldBlock>
       <FieldBlock label="Period / Circa">
-        <LineInput value={form.period} onChange={v => set("period", v)} placeholder="circa 1940s" />
+        <TimePeriodSelect value={form.period} onChange={v => set("period", v)} />
       </FieldBlock>
       <FieldBlock label="Upholstery" hint="if applicable">
         <LineInput value={form.upholsteryMaterial} onChange={v => set("upholsteryMaterial", v)} placeholder="e.g. Original Velvet" />
@@ -224,7 +257,7 @@ function DecorativeArtsFields({ form, set }) {
         <SelectField value={form.style} onChange={v => set("style", v)} options={styles} placeholder="Select style…" />
       </FieldBlock>
       <FieldBlock label="Period / Circa">
-        <LineInput value={form.period} onChange={v => set("period", v)} placeholder="circa 1910" />
+        <TimePeriodSelect value={form.period} onChange={v => set("period", v)} />
       </FieldBlock>
       <FieldBlock label="Pattern / Model">
         <LineInput value={form.pattern} onChange={v => set("pattern", v)} placeholder="e.g. Favrile, Wisteria" />
@@ -290,6 +323,7 @@ function CeramicsFields({ form, set }) {
       <FieldBlock label="Pattern / Decoration">
         <LineInput value={form.pattern} onChange={v => set("pattern", v)} placeholder="e.g. Blue Onion, Chinoiserie" />
       </FieldBlock>
+
       <FieldBlock label="Marks / Backstamp">
         <LineInput value={form.marks} onChange={v => set("marks", v)} placeholder="e.g. Blue underglaze mark" />
       </FieldBlock>
@@ -308,7 +342,7 @@ function AsianWorksFields({ form, set }) {
         <SelectField value={form.style} onChange={v => set("style", v)} options={STYLES.asian_works} placeholder="Select period…" />
       </FieldBlock>
       <FieldBlock label="Period / Circa">
-        <LineInput value={form.period} onChange={v => set("period", v)} placeholder="e.g. 19th Century" />
+        <TimePeriodSelect value={form.period} onChange={v => set("period", v)} />
       </FieldBlock>
       <FieldBlock label="Maker / Workshop">
         <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Workshop name" />
@@ -341,7 +375,7 @@ function SculptureFields({ form, set }) {
         <SelectField value={form.style} onChange={v => set("style", v)} options={STYLES.fine_art} placeholder="Select style…" />
       </FieldBlock>
       <FieldBlock label="Period / Circa">
-        <LineInput value={form.period} onChange={v => set("period", v)} placeholder="e.g. circa 1900" />
+        <TimePeriodSelect value={form.period} onChange={v => set("period", v)} />
       </FieldBlock>
       <FieldBlock label="Foundry" hint="if applicable">
         <LineInput value={form.foundry} onChange={v => set("foundry", v)} placeholder="e.g. Barbedienne Foundry" />
@@ -368,7 +402,7 @@ function SilverFields({ form, set }) {
         <SelectField value={form.silverType} onChange={v => set("silverType", v)} options={mats} placeholder="Select type…" />
       </FieldBlock>
       <FieldBlock label="Period / Circa">
-        <LineInput value={form.period} onChange={v => set("period", v)} placeholder="e.g. circa 1890" />
+        <TimePeriodSelect value={form.period} onChange={v => set("period", v)} />
       </FieldBlock>
       <FieldBlock label="Marks / Hallmarks">
         <LineInput value={form.marks} onChange={v => set("marks", v)} placeholder="e.g. Lion passant, date letter G" />
@@ -402,7 +436,7 @@ function LightingFields({ form, set }) {
         <SelectField value={form.style} onChange={v => set("style", v)} options={styles} placeholder="Select style…" />
       </FieldBlock>
       <FieldBlock label="Period / Circa">
-        <LineInput value={form.period} onChange={v => set("period", v)} placeholder="circa 1910" />
+        <TimePeriodSelect value={form.period} onChange={v => set("period", v)} />
       </FieldBlock>
     </div>
   );
@@ -423,7 +457,7 @@ function GlassFields({ form, set }) {
         <SelectField value={form.origin} onChange={v => set("origin", v)} options={ORIGINS} placeholder="Select origin…" />
       </FieldBlock>
       <FieldBlock label="Period / Circa">
-        <LineInput value={form.period} onChange={v => set("period", v)} placeholder="circa 1900" />
+        <TimePeriodSelect value={form.period} onChange={v => set("period", v)} />
       </FieldBlock>
       <FieldBlock label="Marks / Signatures">
         <LineInput value={form.marks} onChange={v => set("marks", v)} placeholder="e.g. Signed in cameo Gallé" />
@@ -451,7 +485,7 @@ function DefaultFields({ form, set }) {
         <SelectField value={form.style} onChange={v => set("style", v)} options={styles} placeholder="Select style…" />
       </FieldBlock>
       <FieldBlock label="Period / Circa">
-        <LineInput value={form.period} onChange={v => set("period", v)} placeholder="e.g. circa 1920s" />
+        <TimePeriodSelect value={form.period} onChange={v => set("period", v)} />
       </FieldBlock>
     </div>
   );
