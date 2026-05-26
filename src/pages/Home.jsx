@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import HeroSection from "../components/home/HeroSection";
 import FeaturedItems from "../components/home/FeaturedItems";
-import CategoryCircles from "../components/home/CategoryCircles";
+import DepartmentGrid from "../components/home/DepartmentGrid";
 import HowItWorksPreview from "../components/home/HowItWorksPreview";
 import RecentlyViewed from "../components/home/RecentlyViewed";
 import PrisometerExplainer from "../components/home/PrisometerExplainer";
@@ -36,7 +36,7 @@ export default function Home() {
   return (
     <div>
       <HeroSection />
-      <CategoryCircles />
+      <DepartmentGrid />
       <RecentlyViewed />
 
       {/* Featured items */}
