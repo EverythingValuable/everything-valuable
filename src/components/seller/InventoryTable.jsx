@@ -74,9 +74,32 @@ const STATUSES = [
 ];
 const PAGE_SIZES = [10, 25, 50];
 
+function computeLivePrisometerPrice(item) {
+  if (!item.prisometer_activated_at || !item.prisometer_duration_hours) return item.prisometer_start_price || 0;
+  
+  const startTime = new Date(item.prisometer_activated_at).getTime();
+  const endTime = startTime + (item.prisometer_duration_hours * 3600 * 1000);
+  const now = Date.now();
+  
+  if (now >= endTime) return item.reserve_price || 0;
+  
+  const elapsed = now - startTime;
+  const total = endTime - startTime;
+  const progress = elapsed / total;
+  
+  const startPrice = item.prisometer_start_price || 0;
+  const reserve = item.reserve_price || 0;
+  const decline = startPrice - reserve;
+  
+  return Math.max(reserve, startPrice - (decline * progress));
+}
+
 function itemPriceDisplay(item) {
   if (item.status === "sold") return { label: "Sold for", value: `$${item.sold_price?.toLocaleString() ?? "—"}`, green: true };
-  if (item.status === "prisometer") return { label: "Current", value: item.current_price ? `$${Math.round(item.current_price).toLocaleString()}` : "—" };
+  if (item.status === "prisometer") {
+    const livePrice = computeLivePrisometerPrice(item);
+    return { label: "Current", value: livePrice ? `$${Math.round(livePrice).toLocaleString()}` : "—" };
+  }
   if (item.status === "first_bids") {
     const bid = item.highest_bid || 0;
     return { label: bid > 0 ? "High bid" : "Starting", value: bid > 0 ? `$${bid.toLocaleString()}` : `$${item.prisometer_start_price?.toLocaleString() ?? "—"}` };
@@ -146,9 +169,16 @@ export default function InventoryTable({ items, view, limit }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [lightbox, setLightbox] = useState(null);
+  const [tick, setTick] = useState(0);
 
   const [processingOffer, setProcessingOffer] = useState(null);
   const queryClient = useQueryClient();
+
+  // Force re-render every second for live price updates
+  useEffect(() => {
+    const interval = setInterval(() => setTick(t => t + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAcceptOffer = async (item) => {
     setProcessingOffer(item.id);
