@@ -314,7 +314,7 @@ export default function InventoryTable({ items, view, limit }) {
 
       {/* ── Catalog Records ── */}
       {displayed.length > 0 && (
-        <div className="space-y-0 border border-neutral-200 bg-white divide-y divide-neutral-100">
+        <div className="border border-neutral-200 bg-white divide-y divide-neutral-100">
           {displayed.map((item) => {
             const price = itemPriceDisplay(item);
             const isLive = ["first_bids", "prisometer", "pending_review"].includes(item.status);
@@ -331,17 +331,20 @@ export default function InventoryTable({ items, view, limit }) {
               timerText = { text: ended ? "Expired" : `Ends ${formatDistanceToNow(end, { addSuffix: true })}`, ended };
             }
 
-            // Status chips (shown inline under title)
-            const chips = [];
-            if (item.status === "sold") chips.push({ label: "Sold", check: true, urgent: false });
-            if (item.images?.length) chips.push({ label: `${item.images.length} Photos`, urgent: false });
-            else chips.push({ label: "Needs Photos", urgent: true });
-            if (!item.condition_notes && item.status !== "draft") chips.push({ label: "Missing Condition", urgent: true });
-            if (item.status === "pending_review") chips.push({ label: "Needs Decision", urgent: true });
-            if (item.reserve_price && item.highest_bid >= item.reserve_price) chips.push({ label: "Reserve Met", urgent: false });
-            if (isConsignment) chips.push({ label: "Consignment", urgent: false });
-            if (item.provenance) chips.push({ label: "Provenance", urgent: false });
-            if (item.provenance_docs?.length) chips.push({ label: "Documentation", urgent: false });
+            // Build chip list — max 3 visible + overflow
+            const allChips = [];
+            if (item.status === "sold") allChips.push({ label: "Sold", check: true, urgent: false });
+            if (item.images?.length) allChips.push({ label: `${item.images.length} Photos`, urgent: false });
+            else allChips.push({ label: "Needs Photos", urgent: true });
+            if (!item.condition_notes && item.status !== "draft") allChips.push({ label: "Missing Condition", urgent: true });
+            if (item.status === "pending_review") allChips.push({ label: "Needs Decision", urgent: true });
+            if (item.reserve_price && item.highest_bid >= item.reserve_price) allChips.push({ label: "Reserve Met", urgent: false });
+            if (isConsignment) allChips.push({ label: "Consignment", urgent: false });
+            if (item.provenance) allChips.push({ label: "Provenance", urgent: false });
+            if (item.provenance_docs?.length) allChips.push({ label: "Docs", urgent: false });
+            const MAX_CHIPS = 3;
+            const visibleChips = allChips.slice(0, MAX_CHIPS);
+            const overflowCount = allChips.length - MAX_CHIPS;
 
             // Price label
             const priceLabel = {
@@ -355,142 +358,164 @@ export default function InventoryTable({ items, view, limit }) {
               declined: "ASKING",
             }[item.status] || "ASKING";
 
+            const priceValue = price.value || "—";
+
             return (
               <div
                 key={item.id}
-                className={`flex items-center gap-0 transition-colors ${selected.has(item.id) ? "bg-neutral-50" : "bg-white hover:bg-[#fafaf9]"}`}
+                style={{ display: "grid", gridTemplateColumns: "32px 112px minmax(320px, 1fr) 190px 170px 120px 44px", minHeight: "132px", alignItems: "center" }}
+                className={`transition-colors ${selected.has(item.id) ? "bg-neutral-50" : "bg-white hover:bg-[#fafaf9]"}`}
               >
-                {/* Checkbox */}
-                <div className="flex items-center pl-4 pr-2 shrink-0 self-stretch">
+                {/* Col 1: Checkbox */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", alignSelf: "stretch" }}>
                   <input type="checkbox" checked={selected.has(item.id)} onChange={() => toggleSelect(item.id)} className="accent-neutral-700" />
                 </div>
 
-                {/* Thumbnail — square, large, flush */}
-                <button
-                  onClick={() => item.images?.[0] && setLightbox({ images: item.images, startIndex: 0 })}
-                  className="relative shrink-0 w-[104px] h-[104px] my-3 overflow-hidden focus:outline-none bg-neutral-100 group/img"
-                >
-                  {item.images?.[0] ? (
-                    <>
-                      <img src={item.images[0]} alt="" className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" />
-                      {item.images.length > 1 && (
-                        <span className="absolute bottom-1.5 left-1.5 bg-black/75 text-white text-[9px] font-bold px-1.5 py-0.5 leading-tight">+{item.images.length - 1}</span>
-                      )}
-                    </>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Package className="w-7 h-7 text-neutral-300" />
-                    </div>
-                  )}
-                </button>
+                {/* Col 2: Image */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "20px 0" }}>
+                  <button
+                    onClick={() => item.images?.[0] && setLightbox({ images: item.images, startIndex: 0 })}
+                    className="relative focus:outline-none group/img"
+                    style={{ width: 92, height: 92, flexShrink: 0, background: "#f7f6f3", border: "1px solid #e8e5df", overflow: "hidden" }}
+                  >
+                    {item.images?.[0] ? (
+                      <>
+                        <img src={item.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} className="group-hover/img:scale-105 transition-transform duration-300" />
+                        {item.images.length > 1 && (
+                          <span style={{ position: "absolute", bottom: 4, right: 4, background: "rgba(0,0,0,0.75)", color: "#fff", fontSize: 9, fontWeight: 700, padding: "1px 5px", lineHeight: "1.4" }}>
+                            +{item.images.length - 1}
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Package className="w-6 h-6 text-neutral-300" />
+                      </div>
+                    )}
+                  </button>
+                </div>
 
-                {/* ── ZONE 1: Item Identity ── */}
-                <div className="flex-1 min-w-0 px-5 py-4">
-                  <p className="text-[14px] font-semibold text-neutral-900 leading-tight mb-2 line-clamp-3 h-[3.5rem]">{item.title}</p>
-                  {/* Meta line */}
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0 text-[11px] text-neutral-400 mb-2.5">
-                    {item.category && <span className="capitalize">{item.category.replace(/_/g, " ")}</span>}
-                    {item.period && <><span className="text-neutral-300">·</span><span>{item.period}</span></>}
-                    {item.lot_number && <><span className="text-neutral-300">·</span><span>Lot #{item.lot_number}</span></>}
+                {/* Col 3: Item Details */}
+                <div style={{ padding: "22px 20px 22px 16px", minWidth: 0 }}>
+                  {/* Title — capped at 2 lines */}
+                  <p style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.28, color: "#111", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", marginBottom: 8 }}>
+                    {item.title}
+                  </p>
+                  {/* Metadata */}
+                  <div style={{ marginBottom: 10, fontSize: 12, color: "#8d8a84", display: "flex", flexWrap: "wrap", gap: "0 6px" }}>
+                    {item.category && <span style={{ textTransform: "capitalize" }}>{item.category.replace(/_/g, " ")}</span>}
+                    {item.period && <><span style={{ color: "#ccc" }}>·</span><span>{item.period}</span></>}
+                    {item.lot_number && <><span style={{ color: "#ccc" }}>·</span><span>Lot #{item.lot_number}</span></>}
+                    {item.maker && <><span style={{ color: "#ccc" }}>·</span><span>{item.maker}</span></>}
                   </div>
-                  {/* Chips row */}
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {/* For live items: status badge first */}
+                  {/* Chip row */}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5, alignItems: "center" }}>
+                    {/* Live status badge */}
                     {(item.status === "prisometer" || item.status === "first_bids") && (
                       <StatusBadge status={item.status} />
                     )}
+                    {/* Timer chip */}
                     {timerText && (
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-medium border px-2 py-0.5 ${timerText.ended ? "border-neutral-200 text-neutral-400" : "border-neutral-300 text-neutral-600"}`}>
-                        <Clock className="w-3 h-3 shrink-0" />
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4, height: 22, padding: "0 8px", fontSize: 11, border: `1px solid ${timerText.ended ? "#e5e5e5" : "#d1d1d1"}`, color: timerText.ended ? "#aaa" : "#555" }}>
+                        <Clock style={{ width: 11, height: 11, flexShrink: 0 }} />
                         {timerText.text}
                       </span>
                     )}
-                    {/* Reserve chip for live items */}
+                    {/* Reserve chip for live */}
                     {(item.status === "prisometer" || item.status === "first_bids") && item.reserve_price > 0 && (
-                      <span className="inline-flex items-center gap-1 text-[10px] border border-neutral-200 text-neutral-500 px-2 py-0.5">
+                      <span style={{ display: "inline-flex", alignItems: "center", height: 22, padding: "0 8px", fontSize: 11, border: "1px solid #e5e5e5", color: "#777" }}>
                         Reserve ${item.reserve_price.toLocaleString()}
                       </span>
                     )}
-                    {/* For non-live: status chips */}
-                    {item.status !== "prisometer" && item.status !== "first_bids" && chips.map((chip, ci) => (
-                      <span key={ci} className={`inline-flex items-center gap-1 text-[10px] border px-2 py-0.5 ${
-                        chip.urgent
-                          ? "border-primary/25 text-primary bg-primary/5"
-                          : "border-neutral-200 text-neutral-500"
-                      }`}>
+                    {/* Non-live chips */}
+                    {item.status !== "prisometer" && item.status !== "first_bids" && visibleChips.map((chip, ci) => (
+                      <span key={ci} style={{ display: "inline-flex", alignItems: "center", gap: 4, height: 22, padding: "0 8px", fontSize: 11, border: chip.urgent ? "1px solid rgba(220,38,38,0.25)" : "1px solid #e5e5e5", color: chip.urgent ? "hsl(var(--primary))" : "#777", background: chip.urgent ? "rgba(220,38,38,0.04)" : "transparent" }}>
                         {chip.check && (
-                          <svg className="w-2.5 h-2.5" viewBox="0 0 10 10" fill="none">
+                          <svg style={{ width: 10, height: 10 }} viewBox="0 0 10 10" fill="none">
                             <path d="M1.5 5.5L3.5 7.5L8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
                         )}
                         {chip.label}
                       </span>
                     ))}
+                    {item.status !== "prisometer" && item.status !== "first_bids" && overflowCount > 0 && (
+                      <span style={{ display: "inline-flex", alignItems: "center", height: 22, padding: "0 8px", fontSize: 11, border: "1px solid #e5e5e5", color: "#aaa" }}>
+                        +{overflowCount} more
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                {/* ── ZONE 2: Price Block ── */}
-                <div className="shrink-0 w-[200px] px-5 py-4 border-l border-neutral-100 flex flex-col justify-center">
-                  <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-neutral-400 mb-2">{priceLabel}</p>
-                  <p className="font-price text-[28px] font-bold text-neutral-900 leading-none tabular-nums">{price.value}</p>
-                  {item.reserve_price > 0 && item.status !== "prisometer" && item.status !== "first_bids" && (
-                    <p className="text-[10px] text-neutral-500 mt-2">Reserve ${item.reserve_price.toLocaleString()}</p>
+                {/* Col 4: Price Block */}
+                <div style={{ borderLeft: "1px solid #eeeae4", padding: "0 0 0 28px", alignSelf: "stretch", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                  <p style={{ fontSize: 10, letterSpacing: "0.16em", textTransform: "uppercase", color: "#aaa6a0", fontWeight: 700, marginBottom: 8 }}>{priceLabel}</p>
+                  <p style={{ fontSize: 24, lineHeight: 1, fontWeight: 700, color: "#111", fontVariantNumeric: "tabular-nums" }}>{priceValue}</p>
+                  {item.reserve_price > 0 && (
+                    <p style={{ marginTop: 8, fontSize: 12, color: "#8d8a84" }}>Reserve ${item.reserve_price.toLocaleString()}</p>
                   )}
                 </div>
 
-                {/* ── ZONE 3: Activity ── */}
-                <div className="shrink-0 w-[160px] px-4 py-4 border-l border-neutral-100 flex flex-col justify-center space-y-1">
-                  <div className="flex items-center gap-2 text-[11px] text-neutral-500">
-                    <Eye className="w-3.5 h-3.5 text-neutral-300 shrink-0" />
-                    <span className="tabular-nums font-medium text-neutral-700">{item.view_count || 0}</span>
-                    <span className="text-neutral-400">views</span>
+                {/* Col 5: Activity Block */}
+                <div style={{ borderLeft: "1px solid #eeeae4", padding: "0 0 0 24px", alignSelf: "stretch", display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7, height: 20, fontSize: 12, color: "#77736d" }}>
+                    <Eye style={{ width: 13, height: 13, color: "#bbb", flexShrink: 0 }} />
+                    <span style={{ fontWeight: 600, color: "#333", fontVariantNumeric: "tabular-nums" }}>{item.view_count || 0}</span>
+                    <span>views</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] text-neutral-500">
-                    <svg className="w-3.5 h-3.5 text-neutral-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    <span className="tabular-nums font-medium text-neutral-700">{item.watcher_count || 0}</span>
-                    <span className="text-neutral-400">watching</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7, height: 20, fontSize: 12, color: "#77736d" }}>
+                    <svg style={{ width: 13, height: 13, color: "#bbb", flexShrink: 0 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <span style={{ fontWeight: 600, color: "#333", fontVariantNumeric: "tabular-nums" }}>{item.watcher_count || 0}</span>
+                    <span>watching</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] text-neutral-500">
-                    <svg className="w-3.5 h-3.5 text-neutral-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    <span className="tabular-nums font-medium text-neutral-700">{item.bid_count || 0}</span>
-                    <span className="text-neutral-400">bid{(item.bid_count || 0) !== 1 ? "s" : ""}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7, height: 20, fontSize: 12, color: "#77736d" }}>
+                    <svg style={{ width: 13, height: 13, color: "#bbb", flexShrink: 0 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span style={{ fontWeight: 600, color: "#333", fontVariantNumeric: "tabular-nums" }}>{item.bid_count || 0}</span>
+                    <span>bid{(item.bid_count || 0) !== 1 ? "s" : ""}</span>
                   </div>
                   {item.highest_bid > 0 && (
-                    <p className="text-[10px] text-neutral-500 tabular-nums pt-0.5">High ${item.highest_bid.toLocaleString()}</p>
+                    <p style={{ fontSize: 11, color: "#555", fontVariantNumeric: "tabular-nums", marginTop: 2 }}>High ${item.highest_bid.toLocaleString()}</p>
                   )}
                 </div>
 
-                {/* ── ZONE 4: Action ── */}
-                <div className="shrink-0 flex items-center gap-2 px-5 border-l border-neutral-100">
+                {/* Col 6: Action Button */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                   {item.status === "pending_review" ? (
-                    <>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                       <button
                         onClick={() => handleAcceptOffer(item)} disabled={processingOffer === item.id}
-                        className="text-[11px] font-bold px-3 h-8 bg-neutral-900 hover:bg-black text-white transition-colors disabled:opacity-50 flex items-center gap-1"
+                        style={{ width: 86, height: 34, fontSize: 11, fontWeight: 700, background: "#111", color: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}
                       >
                         {processingOffer === item.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle2 className="w-3 h-3" />}
                         Accept
                       </button>
                       <button
                         onClick={() => handleDeclineOffer(item)} disabled={processingOffer === item.id}
-                        className="text-[11px] font-bold px-3 h-8 border border-neutral-300 text-neutral-600 hover:border-neutral-500 transition-colors disabled:opacity-50"
+                        style={{ width: 86, height: 34, fontSize: 11, fontWeight: 700, background: "transparent", color: "#555", border: "1px solid #d1d1d1", cursor: "pointer" }}
                       >
                         Decline
                       </button>
-                    </>
+                    </div>
                   ) : item.status !== "sold" ? (
                     <Link to={`/seller/studio?edit=${item.id}`}>
-                      <button className="text-[12px] font-semibold px-5 h-8 border border-neutral-300 text-neutral-700 hover:border-neutral-700 hover:text-neutral-900 transition-colors whitespace-nowrap">
+                      <button style={{ width: 86, height: 38, fontSize: 12, fontWeight: 600, background: "transparent", color: "#444", border: "1px solid #d1d1d1", cursor: "pointer" }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = "#555"; e.currentTarget.style.color = "#111"; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = "#d1d1d1"; e.currentTarget.style.color = "#444"; }}>
                         {isLive ? "Manage" : item.status === "unsold" ? "Relist" : "Edit"}
                       </button>
                     </Link>
                   ) : (
                     <Link to={`/item/${item.id}`}>
-                      <button className="text-[12px] font-semibold px-5 h-8 border border-neutral-300 text-neutral-700 hover:border-neutral-700 hover:text-neutral-900 transition-colors">
+                      <button style={{ width: 86, height: 38, fontSize: 12, fontWeight: 600, background: "transparent", color: "#444", border: "1px solid #d1d1d1", cursor: "pointer" }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = "#555"; e.currentTarget.style.color = "#111"; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = "#d1d1d1"; e.currentTarget.style.color = "#444"; }}>
                         View
                       </button>
                     </Link>
                   )}
+                </div>
+
+                {/* Col 7: More Menu */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <ItemRowMenu item={item} />
                 </div>
               </div>
