@@ -273,14 +273,15 @@ export function generateTitle(fields, categoryKey) {
   // Title case
   title = title.replace(/\b\w/g, l => l.toUpperCase());
 
-  // Enforce 65 char limit by dropping fields from the end of formula (except objectType, artist, primaryMaterial)
-  if (title.length > 65) {
+  // Enforce 120 char limit by dropping lowest-priority fields from the end
+  if (title.length > 120) {
     const safe = unique.filter(p => {
       const lower = p.toLowerCase();
       return (
         lower === (fields.objectType || "").toLowerCase() ||
         lower === (fields.artist || "").toLowerCase() ||
         lower === (fields.maker || "").toLowerCase() ||
+        lower === (fields.style || "").toLowerCase() ||
         lower === (fields.medium || "").toLowerCase() ||
         lower === (fields.primaryMaterial || "").toLowerCase() ||
         lower === (fields.metal || "").toLowerCase()
