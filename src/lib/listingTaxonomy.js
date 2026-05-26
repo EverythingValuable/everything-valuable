@@ -280,15 +280,14 @@ export function generateTitle(fields, categoryKey) {
 // ─── Listing Strength ─────────────────────────────────────────────────────────
 export function getListingStrength(form, categoryKey) {
   const checks = [
-    { key: "images", label: "Photos", pass: (f) => (f.images?.length || 0) >= 3, weight: 20 },
-    { key: "title", label: "Title", pass: (f) => f.title?.trim()?.length > 10, weight: 15 },
-    { key: "objectType", label: "Object Type", pass: (f) => !!f.objectType, weight: 10 },
-    { key: "description", label: "Description", pass: (f) => (f.description?.length || 0) > 80, weight: 15 },
-    { key: "condition", label: "Condition", pass: (f) => !!f.condition, weight: 10 },
+    { key: "images", label: "Photos added", pass: (f) => (f.images?.length || 0) >= 3, weight: 20 },
+    { key: "title", label: "Title complete", pass: (f) => f.title?.trim()?.length > 10, weight: 15 },
+    { key: "objectType", label: "Pricing set", pass: (f) => !!f.prisometer_start_price, weight: 15 },
+    { key: "description", label: "Full description", pass: (f) => (f.description?.length || 0) > 80, weight: 15 },
+    { key: "condition", label: "Condition set", pass: (f) => !!f.condition, weight: 10 },
     { key: "condition_notes", label: "Condition Report", pass: (f) => (f.condition_notes?.length || 0) > 20, weight: 10 },
-    { key: "prisometer_start_price", label: "Pricing", pass: (f) => !!f.prisometer_start_price, weight: 10 },
-    { key: "dimensions", label: "Dimensions", pass: (f) => !!f.dimensions, weight: 5 },
-    { key: "customer_location", label: "Item Location", pass: (f) => !!f.customer_location, weight: 5 },
+    { key: "category", label: "Category selected", pass: (f) => !!f.category, weight: 10 },
+    { key: "customer_location", label: "Item location", pass: (f) => !!f.customer_location, weight: 5 },
   ];
 
   const score = checks.reduce((sum, c) => sum + (c.pass(form) ? c.weight : 0), 0);
