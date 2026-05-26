@@ -255,13 +255,13 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             {/* Current price section */}
             <div className="space-y-1.5">
               <span className="text-[10px] md:text-xs text-muted-foreground font-medium tracking-wide">CURRENT PRICE</span>
-              <div className="flex items-baseline gap-1">
+              <div className="flex items-baseline gap-0.5">
                 <span className="font-price text-lg md:text-xl font-bold text-foreground">
                   ${Math.floor(livePrice).toLocaleString("en-US")}
                 </span>
                 {item.status === "prisometer" && !item.make_it_mine_active && (
-                  <span className="text-sm text-red-500 animate-price-tick font-semibold">
-                    ↓
+                  <span className="font-price text-base md:text-lg font-bold text-red-500 animate-price-tick tabular-nums">
+                    .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
                   </span>
                 )}
               </div>
