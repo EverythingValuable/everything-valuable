@@ -33,7 +33,7 @@ export default function OurApproach() {
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: "url('https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3e367c567_Banner2.jpg')",
+          backgroundImage: "url('https://media.base44.com/images/public/69beac1c3231aaeb891946d5/c9e5f1fb7_15.webp')",
           opacity: 0.12,
         }}
       />
