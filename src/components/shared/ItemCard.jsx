@@ -123,13 +123,13 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
         <div className="rounded overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
 
           {/* ── FULL PHOTO with all overlays ─────────── */}
-          <div className="relative aspect-square overflow-hidden bg-muted">
+          <div className="relative overflow-hidden bg-muted">
             {item.images?.[0] ? (
               <>
                 <img
                   src={item.images[0]}
                   alt={item.title}
-                  className={`w-full h-full object-cover transition-opacity duration-700 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
+                  className={`w-full h-auto block transition-opacity duration-700 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
                   draggable="false"
                   onContextMenu={e => e.preventDefault()}
                 />
@@ -137,7 +137,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                   <img
                     src={item.images[1]}
                     alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                    className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                     draggable="false"
                     onContextMenu={e => e.preventDefault()}
                   />
