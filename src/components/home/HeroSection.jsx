@@ -73,7 +73,7 @@ export default function HeroSection() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-xs font-semibold rounded-none text-white/60 hover:text-white hover:bg-white/10 tracking-wide h-10"
+                className="text-xs font-semibold rounded-none text-white/90 hover:text-white hover:bg-white/10 tracking-wide h-10 underline underline-offset-4 decoration-white/40"
               >
                 How It Works
               </Button>
@@ -88,20 +88,20 @@ export default function HeroSection() {
           transition={{ duration: 0.55, ease: "easeOut", delay: 0.18 }}
           className="w-full md:w-96 lg:w-[440px] shrink-0 space-y-3"
         >
-          <p className="text-[11px] uppercase tracking-[0.2em] text-white/40 font-semibold">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-white/75 font-semibold">
             Search the Marketplace
           </p>
           <form
             onSubmit={handleSearch}
-            className="flex items-center gap-0 bg-white/5 border border-white/15 hover:border-white/30 focus-within:border-primary focus-within:bg-white/8 transition-all group"
+            className="flex items-center gap-0 bg-white/10 border border-white/30 hover:border-white/50 focus-within:border-primary transition-all group"
           >
-            <Search className="w-4 h-4 text-white/40 group-focus-within:text-primary transition-colors flex-shrink-0 ml-4" />
+            <Search className="w-4 h-4 text-white/70 group-focus-within:text-primary transition-colors flex-shrink-0 ml-4" />
             <input
               type="text"
               placeholder="Search art, antiques, jewelry, watches…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent text-sm text-white placeholder:text-white/35 outline-none px-3 py-4"
+              className="flex-1 bg-transparent text-sm text-white placeholder:text-white/60 outline-none px-3 py-4"
             />
             <button
               type="submit"
@@ -117,7 +117,7 @@ export default function HeroSection() {
               <button
                 key={tag}
                 onClick={() => navigate(`/browse?search=${encodeURIComponent(tag)}`)}
-                className="text-[10px] px-3 py-1 border border-white/15 text-white/45 hover:border-white/40 hover:text-white/75 transition-colors tracking-wide"
+                className="text-[10px] px-3 py-1 border border-white/35 text-white/70 hover:border-white/60 hover:text-white transition-colors tracking-wide"
               >
                 {tag}
               </button>
