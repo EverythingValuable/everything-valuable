@@ -220,9 +220,9 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               {item.status === "prisometer" ? (
                 <>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Current Price</span>
-                    <div className="flex items-baseline gap-0.5 font-price">
-                      <span className="text-base font-bold text-foreground">
+                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Current</span>
+                     <div className="flex items-baseline gap-0.5 font-price">
+                       <span className="text-sm font-bold text-foreground">
                         ${Math.floor(livePrice).toLocaleString("en-US")}
                       </span>
                       {!item.make_it_mine_active && (
@@ -233,33 +233,32 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                     </div>
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">High Bid</span>
-                    <span className="font-price text-base font-bold text-foreground">
+                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">High Bid</span>
+                    <span className="font-price text-sm font-bold text-foreground">
                       {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
                     </span>
                   </div>
-                  <div className="h-5" />
-                  <div className="h-5" />
+
                 </>
               ) : (
                 <>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview High Bid</span>
-                    <span className="font-price text-base font-bold text-foreground">
+                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Bid</span>
+                    <span className="font-price text-sm font-bold text-foreground">
                       {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
                     </span>
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">PRI$OMETER Start</span>
-                    <span className="font-price text-base font-bold text-foreground">
+                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Start</span>
+                    <span className="font-price text-sm font-bold text-foreground">
                       ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
                     </span>
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview Ends</span>
-                    <span className="font-price text-base font-bold text-foreground">{countdown || "—"}</span>
+                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Ends</span>
+                    <span className="font-price text-sm font-bold text-foreground">{countdown || "—"}</span>
                   </div>
-                  <div className="h-5" />
+
                 </>
               )}
             </div>
