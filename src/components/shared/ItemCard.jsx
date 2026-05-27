@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Heart, Info } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import ProductDrawer from "./ProductDrawer";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 function useLivePrice(item) {
@@ -63,9 +63,9 @@ function useCountdown(endDateStr) {
 }
 
 export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
+  const navigate = useNavigate();
   const livePrice = useLivePrice(item);
   const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
 
@@ -112,15 +112,13 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
   const isPrisometer = item.status === "prisometer";
 
   return (
-    <>
-      {drawerOpen && <ProductDrawer itemId={item.id} onClose={() => setDrawerOpen(false)} />}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: index * 0.05 }}
-        className="group cursor-pointer"
-        onClick={() => setDrawerOpen(true)}
-      >
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: index * 0.05 }}
+      className="group cursor-pointer"
+      onClick={() => navigate(`/item/${item.id}`)}
+    >
         {/* ── IMAGE ─────────────────────────────────── */}
         <div className="relative overflow-hidden bg-white flex items-center justify-center min-h-[300px]">
           {item.images?.[0] ? (
@@ -260,6 +258,5 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
           </div>
         </div>
       </motion.div>
-    </>
   );
 }

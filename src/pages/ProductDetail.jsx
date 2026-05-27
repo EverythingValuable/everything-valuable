@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { ChevronRight, ArrowLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import ProductDetailContent from "@/components/shared/ProductDetailContent";
 
 export default function ProductDetail() {
+  const navigate = useNavigate();
   const { id: itemId } = useParams();
 
   const { data: item } = useQuery({
@@ -44,6 +45,17 @@ export default function ProductDetail() {
 
   return (
     <div className="w-full">
+      {/* Back Button */}
+      <div className="w-full px-4 md:px-4 py-3 border-b border-border">
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+      </div>
+
       {/* Breadcrumb */}
       <div className="w-full px-4 md:px-4 py-3">
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
