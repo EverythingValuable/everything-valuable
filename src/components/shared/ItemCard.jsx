@@ -190,9 +190,9 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
           <div className="mt-3 space-y-1">
             {isPrisometer ? (
               <>
-                <p className="text-sm font-semibold text-neutral-900">
-                  <span className="text-[10px] uppercase tracking-wide text-neutral-400 mr-1">PRI$OMETER™:</span>
-                  <span className="font-price tabular-nums">
+                <p className="text-base font-bold text-neutral-900">
+                  <span className="text-[11px] uppercase tracking-wide text-neutral-600 mr-2">PRI$OMETER™:</span>
+                  <span className="font-price tabular-nums text-lg">
                     ${Math.floor(livePrice).toLocaleString("en-US")}
                     {!item.make_it_mine_active && (
                       <span className="text-primary animate-price-tick">
