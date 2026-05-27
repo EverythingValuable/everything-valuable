@@ -4,6 +4,7 @@ import {
   STYLES, ORIGINS, MEDIUMS, SUPPORTS, SIGNATURE_STATUSES,
   MATERIALS, STONES, METAL_PURITY,
 } from "@/lib/listingTaxonomy";
+import ArtistPicker from "./ArtistPicker";
 
 function LineInput({ value, onChange, placeholder, className }) {
   return (
@@ -154,7 +155,7 @@ function FineArtFields({ form, set }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <FieldBlock label="Artist / Maker">
-          <LineInput value={form.artist} onChange={v => set("artist", v)} placeholder="e.g. André Lhote" />
+          <ArtistPicker value={form.artist} onChange={v => set("artist", v)} placeholder="e.g. André Lhote" />
         </FieldBlock>
         <FieldBlock label="Signature Status">
           <SelectField value={form.signatureStatus} onChange={v => set("signatureStatus", v)} options={SIGNATURE_STATUSES} placeholder="Select…" />
@@ -208,10 +209,10 @@ function FurnitureFields({ form, set }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <FieldBlock label="Designer / Maker">
-        <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Harvey Probber" />
+        <ArtistPicker value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Harvey Probber" />
       </FieldBlock>
       <FieldBlock label="Manufacturer">
-        <LineInput value={form.manufacturer} onChange={v => set("manufacturer", v)} placeholder="e.g. Knoll, Herman Miller" />
+        <ArtistPicker value={form.manufacturer} onChange={v => set("manufacturer", v)} placeholder="e.g. Knoll, Herman Miller" />
       </FieldBlock>
       <FieldBlock label="Style / Period" required>
         <SelectField value={form.style} onChange={v => set("style", v)} options={styles} placeholder="Select style…" />
@@ -242,7 +243,7 @@ function DecorativeArtsFields({ form, set }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <FieldBlock label="Maker / Designer">
-        <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Tiffany Studios" />
+        <ArtistPicker value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Tiffany Studios" />
       </FieldBlock>
       <FieldBlock label="Origin / Country">
         <SelectField value={form.origin} onChange={v => set("origin", v)} options={ORIGINS} placeholder="Select origin…" />
@@ -275,7 +276,7 @@ function JewelryFields({ form, set }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <FieldBlock label="Maker / Brand">
-        <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Cartier, Tiffany & Co." />
+        <ArtistPicker value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Cartier, Tiffany & Co." />
       </FieldBlock>
       <FieldBlock label="Signature Status">
         <SelectField value={form.signatureStatus} onChange={v => set("signatureStatus", v)} options={["Signed", "Unsigned", "Attributed To"]} placeholder="Select…" />
@@ -309,7 +310,7 @@ function CeramicsFields({ form, set }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <FieldBlock label="Maker / Manufactory">
-        <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Meissen, Sèvres" />
+        <ArtistPicker value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Meissen, Sèvres" />
       </FieldBlock>
       <FieldBlock label="Origin / Country">
         <SelectField value={form.origin} onChange={v => set("origin", v)} options={ORIGINS} placeholder="Select origin…" />
@@ -345,7 +346,7 @@ function AsianWorksFields({ form, set }) {
         <TimePeriodSelect value={form.period} onChange={v => set("period", v)} />
       </FieldBlock>
       <FieldBlock label="Maker / Workshop">
-        <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Workshop name" />
+        <ArtistPicker value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Workshop name" />
       </FieldBlock>
       <FieldBlock label="Marks / Reign Mark">
         <LineInput value={form.marks} onChange={v => set("marks", v)} placeholder="e.g. Six-character reign mark" />
@@ -360,7 +361,7 @@ function SculptureFields({ form, set }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <FieldBlock label="Artist / Maker">
-        <LineInput value={form.artist} onChange={v => set("artist", v)} placeholder="e.g. Rodin" />
+        <ArtistPicker value={form.artist} onChange={v => set("artist", v)} placeholder="e.g. Rodin" />
       </FieldBlock>
       <FieldBlock label="Signature Status">
         <SelectField value={form.signatureStatus} onChange={v => set("signatureStatus", v)} options={SIGNATURE_STATUSES} placeholder="Select…" />
@@ -393,7 +394,7 @@ function SilverFields({ form, set }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <FieldBlock label="Maker / Silversmith">
-        <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Paul Storr, Gorham" />
+        <ArtistPicker value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Paul Storr, Gorham" />
       </FieldBlock>
       <FieldBlock label="Origin / Country">
         <SelectField value={form.origin} onChange={v => set("origin", v)} options={ORIGINS} placeholder="Select origin…" />
@@ -421,7 +422,7 @@ function LightingFields({ form, set }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <FieldBlock label="Maker / Designer">
-        <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Tiffany Studios, Murano" />
+        <ArtistPicker value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Tiffany Studios, Murano" />
       </FieldBlock>
       <FieldBlock label="Origin / Country">
         <SelectField value={form.origin} onChange={v => set("origin", v)} options={ORIGINS} placeholder="Select origin…" />
@@ -448,7 +449,7 @@ function GlassFields({ form, set }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <FieldBlock label="Maker / Studio">
-        <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Gallé, Daum, Lalique" />
+        <ArtistPicker value={form.maker} onChange={v => set("maker", v)} placeholder="e.g. Gallé, Daum, Lalique" />
       </FieldBlock>
       <FieldBlock label="Glass Type" required>
         <SelectField value={form.glassType} onChange={v => set("glassType", v)} options={glassTypes} placeholder="Select type…" />
@@ -473,7 +474,7 @@ function DefaultFields({ form, set }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <FieldBlock label="Maker / Designer">
-        <LineInput value={form.maker} onChange={v => set("maker", v)} placeholder="Maker or artist name" />
+        <ArtistPicker value={form.maker} onChange={v => set("maker", v)} placeholder="Maker or artist name" />
       </FieldBlock>
       <FieldBlock label="Origin / Country">
         <SelectField value={form.origin} onChange={v => set("origin", v)} options={ORIGINS} placeholder="Select origin…" />

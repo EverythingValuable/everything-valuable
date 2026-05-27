@@ -1,0 +1,33 @@
+{
+  "name": "Artist",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Artist, maker, studio, or creator name"
+    },
+    "category": {
+      "type": "string",
+      "description": "Primary category (e.g. Fine Art, Glass, Jewelry, Ceramics, Furniture, Silver, Sculpture)"
+    },
+    "nationality": {
+      "type": "string"
+    },
+    "birth_year": {
+      "type": "number"
+    },
+    "death_year": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
