@@ -110,9 +110,6 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
   const isPrisometer = item.status === "prisometer";
 
-  // Format price helper
-  const fmt = (val) => !val || val === 0 ? "—" : `$${Number(val).toLocaleString("en-US")}`;
-
   return (
     <>
       {drawerOpen && <ProductDrawer itemId={item.id} onClose={() => setDrawerOpen(false)} />}
@@ -123,125 +120,115 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
         className="group cursor-pointer"
         onClick={() => setDrawerOpen(true)}
       >
-        <div className="rounded overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
-
-          {/* ── FULL PHOTO with all overlays ─────────── */}
-          <div className="relative aspect-[4/5] overflow-hidden bg-muted">
-            {item.images?.[0] ? (
-              <>
+        {/* ── IMAGE ─────────────────────────────────── */}
+        <div className="relative overflow-hidden bg-neutral-100">
+          {item.images?.[0] ? (
+            <>
+              <img
+                src={item.images[0]}
+                alt={item.title}
+                className={`w-full object-contain max-h-[300px] transition-opacity duration-500 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
+                draggable="false"
+                onContextMenu={e => e.preventDefault()}
+              />
+              {item.images[1] && (
                 <img
-                  src={item.images[0]}
+                  src={item.images[1]}
                   alt={item.title}
-                  className={`w-full h-full object-contain transition-opacity duration-700 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
+                  className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   draggable="false"
                   onContextMenu={e => e.preventDefault()}
                 />
-                {item.images[1] && (
-                  <img
-                    src={item.images[1]}
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-                    draggable="false"
-                    onContextMenu={e => e.preventDefault()}
-                  />
-                )}
-                <div className="absolute inset-0 z-10" onContextMenu={e => e.preventDefault()} draggable="false" />
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
-                <span className="font-serif text-4xl">EV</span>
-              </div>
-            )}
-
-            {/* Strong bottom gradient for title legibility */}
-            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none z-20" />
-
-            {/* Status pill — top left */}
-            <div className="absolute top-2 left-2 z-30">
-              {isPrisometer ? (
-                <div className="flex items-center gap-1 px-2 py-0.5 bg-black/80 text-white text-[9px] font-bold tracking-wide rounded-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
-                  PRI$OMETER Live
-                </div>
-              ) : item.status === "first_bids" ? (
-                <div className="px-2 py-0.5 bg-white/90 text-foreground text-[9px] font-bold tracking-wide rounded-sm">
-                  1stBid$ Preview
-                </div>
-              ) : null}
+              )}
+              <div className="absolute inset-0 z-10" onContextMenu={e => e.preventDefault()} draggable="false" />
+            </>
+          ) : (
+            <div className="w-full h-48 flex items-center justify-center text-neutral-300">
+              <span className="font-serif text-4xl">EV</span>
             </div>
+          )}
 
-            {/* Watchlist — top right */}
+          {/* Status pill — top left */}
+          <div className="absolute top-2 left-2 z-20">
+            {isPrisometer ? (
+              <div className="flex items-center gap-1 px-2 py-0.5 bg-black/75 text-white text-[9px] font-bold tracking-wide">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
+                PRI$OMETER Live
+              </div>
+            ) : item.status === "first_bids" ? (
+              <div className="px-2 py-0.5 bg-white/90 text-foreground text-[9px] font-bold tracking-wide">
+                1stBid$ Preview
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        {/* ── INFO BELOW IMAGE — Sotheby's style ───── */}
+        <div className="pt-3 pb-2">
+
+          {/* Title row with watchlist heart */}
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-serif text-sm font-semibold text-neutral-900 leading-snug line-clamp-2 flex-1">
+              {item.title}
+            </h3>
             <button
-              className={`absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition-opacity ${isSaved ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+              className="shrink-0 mt-0.5"
               onClick={handleWatchlist}
             >
-              <Heart className={`w-3.5 h-3.5 ${isSaved ? "fill-red-500 text-red-500" : "text-white"}`} />
+              <Heart className={`w-4 h-4 transition-colors ${isSaved ? "fill-neutral-800 text-neutral-800" : "text-neutral-400 hover:text-neutral-700"}`} />
             </button>
-
-            {/* Title + seller overlaid on photo bottom */}
-            <div className="absolute inset-x-0 bottom-0 z-30 px-3 pb-2.5 pt-8">
-              <h3 className="font-serif text-sm font-semibold text-white leading-snug line-clamp-2 drop-shadow-sm">
-                {item.title}
-              </h3>
-              {(sellerProfile?.display_name || item.seller_name) && (
-                <p className="text-[10px] text-white/60 mt-0.5 truncate">
-                  {sellerProfile?.display_name || item.seller_name}
-                </p>
-              )}
-            </div>
           </div>
 
-          {/* ── CONDENSED DATA STRIP ─────────────────── */}
-          <div className="px-3 py-2 flex flex-col gap-1.5">
+          {/* Seller / subtitle */}
+          {(sellerProfile?.display_name || item.seller_name) && (
+            <p className="text-xs text-neutral-500 mt-0.5 truncate">
+              {sellerProfile?.display_name || item.seller_name}
+            </p>
+          )}
 
-            {/* Price row */}
+          {/* Estimate */}
+          {(item.estimated_low || item.estimated_high) && (
+            <p className="mt-2.5 text-xs text-neutral-500">
+              <span className="text-neutral-400 mr-0.5">Estimate:</span>
+              {item.estimated_low ? `$${item.estimated_low.toLocaleString("en-US")}` : ""}
+              {item.estimated_low && item.estimated_high ? " – " : ""}
+              {item.estimated_high ? `$${item.estimated_high.toLocaleString("en-US")}` : ""}
+            </p>
+          )}
+
+          {/* Price */}
+          <div className="mt-1">
             {isPrisometer ? (
-              <div className="flex items-baseline justify-between">
-                <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">Current</span>
-                <span className="font-price text-sm font-bold text-foreground tabular-nums">
+              <p className="text-xs font-semibold text-neutral-900 uppercase tracking-wide">
+                Current Bid:{" "}
+                <span className="font-price tabular-nums">
                   ${Math.floor(livePrice).toLocaleString("en-US")}
                   {!item.make_it_mine_active && (
-                    <span className="text-red-600 animate-price-tick">
+                    <span className="text-primary animate-price-tick">
                       .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
                     </span>
                   )}
                 </span>
-              </div>
+                {item.bid_count > 0 && (
+                  <span className="text-[10px] font-normal text-neutral-400 ml-1 normal-case tracking-normal">
+                    ({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})
+                  </span>
+                )}
+              </p>
             ) : (
-              <div className="flex items-baseline justify-between">
-                <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">Start</span>
-                <span className="font-price text-sm font-bold text-foreground tabular-nums">
+              <p className="text-xs font-semibold text-neutral-900 uppercase tracking-wide">
+                Starting Bid:{" "}
+                <span className="font-price tabular-nums">
                   ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
                 </span>
-              </div>
+              </p>
             )}
-
-            {/* Secondary row */}
-            <div className="flex items-baseline justify-between">
-              <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">High Bid</span>
-              <span className="font-price text-xs font-semibold text-foreground tabular-nums">
-                {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
-              </span>
-            </div>
-
-            {/* Third row — always show for consistency */}
-            <div className="flex items-baseline justify-between">
-              <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">
-                {item.status === "first_bids" ? "Ends" : "Start"}
-              </span>
-              <span className="font-price text-xs font-semibold text-foreground tabular-nums">
-                {item.status === "first_bids" ? (countdown || "—") : fmt(item.prisometer_start_price)}
-              </span>
-            </div>
-
-            {/* CTA */}
-            <button
-              onClick={e => { e.stopPropagation(); setDrawerOpen(true); }}
-              className="w-full mt-0.5 text-foreground border border-foreground/30 hover:bg-foreground hover:text-background text-[10px] font-bold tracking-wide py-1.5 transition-colors"
-            >
-              VIEW LOT
-            </button>
           </div>
+
+          {/* Countdown */}
+          {item.status === "first_bids" && countdown && (
+            <p className="mt-0.5 text-[10px] text-neutral-400">{countdown} remaining</p>
+          )}
         </div>
       </motion.div>
     </>
