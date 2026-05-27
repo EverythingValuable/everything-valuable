@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import ProductDrawer from "./ProductDrawer";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 function useLivePrice(item) {
   const [livePrice, setLivePrice] = useState(item.current_price || item.prisometer_start_price);
@@ -193,9 +194,18 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                 <div className="flex items-baseline gap-1.5">
                   <div className="flex items-center gap-1">
                     <span className="text-[11px] uppercase tracking-wide text-neutral-600 font-semibold">PRI$OMETER™:</span>
-                    <button type="button" onClick={e => e.stopPropagation()} title="Price declines until it meets a bid or reserve is reached" className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600 transition-colors shrink-0">
-                      <Info className="w-2.5 h-2.5" />
-                    </button>
+                    <TooltipProvider delayDuration={100}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" onClick={e => e.stopPropagation()} className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600 transition-colors shrink-0">
+                            <Info className="w-2.5 h-2.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[200px] text-xs leading-relaxed">
+                          The asking price that gradually declines over time until it meets a bid or the reserve is reached.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <span className="font-price tabular-nums text-lg font-bold text-neutral-900">
                     ${Math.floor(livePrice).toLocaleString("en-US")}
@@ -220,9 +230,18 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <p className="text-[11px] uppercase tracking-wide text-neutral-500 font-semibold">1stBids™ Preview</p>
-                    <button type="button" onClick={e => e.stopPropagation()} title="Early bidding phase where interested buyers can place bids" className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600 transition-colors shrink-0">
-                      <Info className="w-2.5 h-2.5" />
-                    </button>
+                    <TooltipProvider delayDuration={100}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" onClick={e => e.stopPropagation()} className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600 transition-colors shrink-0">
+                            <Info className="w-2.5 h-2.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[200px] text-xs leading-relaxed">
+                          An early preview phase where buyers can place bids before the PRI$OMETER™ goes live.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   {countdown && (
                     <p className="text-[11px] text-neutral-600 font-medium">{countdown} remaining</p>
