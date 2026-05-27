@@ -190,14 +190,16 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
           <div className="mt-3 space-y-1">
             {isPrisometer ? (
               <>
-                <p className="text-[10px] uppercase tracking-wide text-neutral-400">PRI$OMETER™</p>
-                <p className="text-sm font-semibold text-neutral-900 font-price tabular-nums">
-                  ${Math.floor(livePrice).toLocaleString("en-US")}
-                  {!item.make_it_mine_active && (
-                    <span className="text-primary animate-price-tick">
-                      .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
-                    </span>
-                  )}
+                <p className="text-sm font-semibold text-neutral-900">
+                  <span className="text-[10px] uppercase tracking-wide text-neutral-400 mr-1">PRI$OMETER™:</span>
+                  <span className="font-price tabular-nums">
+                    ${Math.floor(livePrice).toLocaleString("en-US")}
+                    {!item.make_it_mine_active && (
+                      <span className="text-primary animate-price-tick">
+                        .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
+                      </span>
+                    )}
+                  </span>
                 </p>
                 {item.highest_bid > 0 && (
                   <p className="text-xs text-neutral-500">
