@@ -143,7 +143,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
           className="rounded-lg overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full"
         >
           {/* Image area — artwork is the hero */}
-          <div className="relative aspect-[3/4] overflow-hidden bg-muted shrink-0">
+          <div className="relative aspect-[4/5] overflow-hidden bg-muted shrink-0">
             {item.images?.[0] ? (
               <>
                 <img
@@ -197,15 +197,15 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
           </div>
 
           {/* Information area — clean white section */}
-          <div className="flex-1 px-4 py-4 flex flex-col gap-4 justify-between">
+          <div className="flex-1 px-4 py-3 flex flex-col gap-3 justify-between">
             {/* Category, Title, Seller */}
             <div>
               {item.category && (
-                <p className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase mb-1.5">
+                <p className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase mb-1">
                   {item.category.replace(/_/g, " ")}
                 </p>
               )}
-              <h3 className="font-serif text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-1.5">
+              <h3 className="font-serif text-xs font-semibold text-foreground leading-snug line-clamp-2 mb-1">
                 {item.title}
               </h3>
               {(sellerProfile?.display_name || item.seller_name) && (
@@ -216,7 +216,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             </div>
 
             {/* Structured sale data — always 4 rows for consistent height */}
-            <div className="space-y-1.5 border-t border-border pt-2.5">
+             <div className="space-y-1 border-t border-border pt-2">
               {item.status === "prisometer" ? (
                 <>
                   <div className="flex items-baseline justify-between">
@@ -267,7 +267,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             {/* Action button */}
             <button
               onClick={() => setDrawerOpen(true)}
-              className="w-full text-foreground border border-foreground/40 hover:border-foreground hover:bg-foreground hover:text-background text-xs font-semibold py-2.5 px-3 rounded transition-colors -mt-3"
+              className="w-full text-foreground border border-foreground/40 hover:border-foreground hover:bg-foreground hover:text-background text-xs font-semibold py-2 px-3 rounded transition-colors -mt-2"
             >
               View Lot
             </button>
