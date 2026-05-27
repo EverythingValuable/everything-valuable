@@ -1,25 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Heart, Clock, TrendingDown, Info, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import ProductDrawer from "./ProductDrawer";
-
-const categoryLabels = {
-  fine_art: "Fine Art", jewelry: "Jewelry", watches: "Watches", furniture: "Furniture",
-  decorative_arts: "Decorative Arts", design: "Design", antiques: "Antiques",
-  collectibles: "Collectibles", photography: "Photography", sculpture: "Sculpture",
-  ceramics: "Ceramics", textiles: "Textiles", books: "Books", wine: "Wine",
-  luxury_goods: "Luxury Goods", other: "Other"
-};
-
-const statusConfig = {
-  first_bids: { label: "1stBid$ Live", color: "bg-white text-primary border-primary/40" },
-  prisometer: { label: "PRI$OMETER Active", color: "bg-red-50 text-red-600 border-red-200" },
-  sold: { label: "Sold", color: "bg-muted text-muted-foreground border-border" },
-  pending_review: { label: "Pending", color: "bg-amber-50 text-amber-700 border-amber-200" },
-};
 
 function useLivePrice(item) {
   const [livePrice, setLivePrice] = useState(item.current_price || item.prisometer_start_price);
@@ -66,7 +50,7 @@ function useCountdown(endDateStr) {
         const d = Math.floor(h / 24);
         setTimeLeft(`${d}d ${h % 24}h`);
       } else {
-        setTimeLeft(`${h}h ${m.toString().padStart(2,"0")}m ${s.toString().padStart(2,"0")}s`);
+        setTimeLeft(`${h}h ${m.toString().padStart(2, "0")}m ${s.toString().padStart(2, "0")}s`);
       }
     };
     update();
@@ -77,11 +61,16 @@ function useCountdown(endDateStr) {
   return timeLeft;
 }
 
+// Normalize any price value to a display string
+function fmt(val) {
+  if (!val || val === 0) return "—";
+  return "$" + Number(val).toLocaleString("en-US");
+}
+
 export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
   const livePrice = useLivePrice(item);
   const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
 
@@ -101,7 +90,6 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
   useEffect(() => {
     if (!user?.email) return;
-    // Stagger watchlist checks by index to avoid simultaneous bursts
     const delay = 200 + (index % 10) * 150;
     const timeout = setTimeout(() => {
       base44.entities.WatchlistItem.filter({ item_id: item.id, user_email: user.email })
@@ -110,8 +98,6 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
     }, delay);
     return () => clearTimeout(timeout);
   }, [user?.email, item.id]);
-
-  const [flipped, setFlipped] = useState(false);
 
   const isSaved = !!watchlistEntry;
   const handleWatchlist = async (e) => {
@@ -128,28 +114,41 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
     queryClient.invalidateQueries({ queryKey: ["buyer-watchlist"] });
   };
 
+  const isPrisometer = item.status === "prisometer";
+
+  // Build exactly 3 uniform data rows for every card state
+  const rows = isPrisometer
+    ? [
+        { label: "Current", value: null, isPriceTicket: true },
+        { label: "High Bid", value: item.highest_bid > 0 ? fmt(item.highest_bid) : "—" },
+        { label: "Start", value: fmt(item.prisometer_start_price) },
+      ]
+    : [
+        { label: "High Bid", value: item.highest_bid > 0 ? fmt(item.highest_bid) : "—" },
+        { label: "Start", value: fmt(item.prisometer_start_price) },
+        { label: "Ends", value: countdown || "—" },
+      ];
+
   return (
     <>
       {drawerOpen && <ProductDrawer itemId={item.id} onClose={() => setDrawerOpen(false)} />}
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
-    >
-      <div className="group block cursor-pointer">
-        {/* Premium auction catalog card */}
-        <div
-          onClick={() => setDrawerOpen(true)}
-          className="rounded-lg overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full"
-        >
-          {/* Image area — artwork is the hero */}
-          <div className="relative aspect-[4/5] overflow-hidden bg-muted shrink-0">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: index * 0.05 }}
+        className="group cursor-pointer"
+        onClick={() => setDrawerOpen(true)}
+      >
+        <div className="rounded overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
+
+          {/* ── IMAGE ─────────────────────────────────── */}
+          <div className="relative aspect-square overflow-hidden bg-muted">
             {item.images?.[0] ? (
               <>
                 <img
                   src={item.images[0]}
                   alt={item.title}
-                  className={`w-full h-full object-cover transition-opacity duration-1000 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
+                  className={`w-full h-full object-cover transition-opacity duration-700 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
                   draggable="false"
                   onContextMenu={e => e.preventDefault()}
                 />
@@ -157,7 +156,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                   <img
                     src={item.images[1]}
                     alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                     draggable="false"
                     onContextMenu={e => e.preventDefault()}
                   />
@@ -170,110 +169,83 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               </div>
             )}
 
-            {/* Watchlist button — top right, subtle */}
-            <button
-              className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white border border-border/40 ${isSaved ? "!opacity-100" : ""}`}
-              onClick={handleWatchlist}
-            >
-              <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-foreground"}`} />
-            </button>
+            {/* gradient scrim for overlays */}
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/30 to-transparent pointer-events-none z-20" />
 
-            {/* Status pill — top left, minimal */}
-            <div className="absolute top-3 left-3 z-20">
-              {item.status === "prisometer" ? (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-foreground text-white text-[10px] font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+            {/* Status pill — bottom left over image */}
+            <div className="absolute bottom-2 left-2 z-30">
+              {isPrisometer ? (
+                <div className="flex items-center gap-1 px-2 py-0.5 bg-black/80 text-white text-[9px] font-bold tracking-wide rounded-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
                   PRI$OMETER Live
                 </div>
               ) : item.status === "first_bids" ? (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-foreground/30 text-foreground text-[10px] font-semibold">
+                <div className="px-2 py-0.5 bg-white/90 text-foreground text-[9px] font-bold tracking-wide rounded-sm">
                   1stBid$ Preview
                 </div>
               ) : null}
             </div>
 
-            {/* Subtle bottom fade */}
-            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
+            {/* Watchlist — top right */}
+            <button
+              className={`absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center transition-opacity border border-white/60 ${isSaved ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+              onClick={handleWatchlist}
+            >
+              <Heart className={`w-3.5 h-3.5 ${isSaved ? "fill-red-500 text-red-500" : "text-foreground"}`} />
+            </button>
           </div>
 
-          {/* Information area — clean white section */}
-          <div className="flex-1 px-4 py-3 flex flex-col gap-3 justify-between">
-            {/* Category, Title, Seller */}
+          {/* ── INFO ──────────────────────────────────── */}
+          <div className="px-3 pt-2.5 pb-3 flex flex-col gap-2">
+
+            {/* Category + Title */}
             <div>
               {item.category && (
-                <p className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase mb-1">
+                <p className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase mb-0.5">
                   {item.category.replace(/_/g, " ")}
                 </p>
               )}
-              <h3 className="font-serif text-xs font-semibold text-foreground leading-snug line-clamp-2 mb-1">
+              <h3 className="font-serif text-xs font-semibold text-foreground leading-snug line-clamp-2">
                 {item.title}
               </h3>
               {(sellerProfile?.display_name || item.seller_name) && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
                   {sellerProfile?.display_name || item.seller_name}
                 </p>
               )}
             </div>
 
-            {/* Structured sale data — always 4 rows for consistent height */}
-             <div className="space-y-1 border-t border-border pt-2">
-              {item.status === "prisometer" ? (
-                <>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Current</span>
-                     <div className="flex items-baseline gap-0.5 font-price">
-                       <span className="text-sm font-bold text-foreground">
-                        ${Math.floor(livePrice).toLocaleString("en-US")}
-                      </span>
+            {/* Data rows — always exactly 3, same height for every card */}
+            <div className="border-t border-border pt-2 space-y-1">
+              {rows.map((row, i) => (
+                <div key={i} className="flex items-baseline justify-between gap-2">
+                  <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase shrink-0">{row.label}</span>
+                  {row.isPriceTicket ? (
+                    <span className="font-price text-sm font-bold text-foreground tabular-nums">
+                      ${Math.floor(livePrice).toLocaleString("en-US")}
                       {!item.make_it_mine_active && (
-                        <span className="text-sm font-bold text-red-600 animate-price-tick tabular-nums">
+                        <span className="text-red-600 animate-price-tick">
                           .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
                         </span>
                       )}
-                    </div>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">High Bid</span>
-                    <span className="font-price text-sm font-bold text-foreground">
-                      {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
                     </span>
-                  </div>
-
-                </>
-              ) : (
-                <>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Bid</span>
-                    <span className="font-price text-sm font-bold text-foreground">
-                      {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Start</span>
-                    <span className="font-price text-sm font-bold text-foreground">
-                      ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Ends</span>
-                    <span className="font-price text-sm font-bold text-foreground">{countdown || "—"}</span>
-                  </div>
-
-                </>
-              )}
+                  ) : (
+                    <span className="font-price text-sm font-bold text-foreground tabular-nums truncate">{row.value}</span>
+                  )}
+                </div>
+              ))}
             </div>
 
-            {/* Action button */}
+            {/* CTA */}
             <button
-              onClick={() => setDrawerOpen(true)}
-              className="w-full text-foreground border border-foreground/40 hover:border-foreground hover:bg-foreground hover:text-background text-xs font-semibold py-2 px-3 rounded transition-colors -mt-2"
+              onClick={e => { e.stopPropagation(); setDrawerOpen(true); }}
+              className="w-full mt-0.5 text-foreground border border-foreground/30 hover:bg-foreground hover:text-background text-[10px] font-bold tracking-wide py-1.5 transition-colors"
             >
-              View Lot
+              VIEW LOT
             </button>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
     </>
   );
 }
