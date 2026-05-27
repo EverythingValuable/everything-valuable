@@ -27,18 +27,12 @@ export default function ExecutiveSummary({ data }) {
   return (
     <div className="space-y-3">
       <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Executive Summary</h2>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <StatCard
           label="Gross Marketplace Sales"
           value={grossSales}
           subtext="Total completed marketplace sales"
           trend={12.4}
-        />
-        <StatCard
-          label="Net Platform Revenue"
-          value={netRevenue}
-          subtext="Platform revenue after credits"
-          icon={TrendingUp}
         />
         <StatCard
           label="Service Fees Collected"
