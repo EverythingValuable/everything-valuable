@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
@@ -52,15 +52,53 @@ function FollowButton({ cat, user, follows }) {
     <button
       onClick={handleClick}
       disabled={isPending}
-      className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold transition-all border mt-1 ${
+      className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold transition-all border mt-1 ${
         isFollowing
           ? "bg-primary text-white border-primary"
           : "bg-background text-muted-foreground border-border hover:border-primary hover:text-primary"
       }`}
     >
-      {isFollowing ? <BellOff className="w-2.5 h-2.5" /> : <Bell className="w-2.5 h-2.5" />}
+      {isFollowing ? <BellOff className="w-3 h-3" /> : <Bell className="w-3 h-3" />}
       {isFollowing ? "Following" : "Follow"}
     </button>
+  );
+}
+
+function CategoryCard({ cat, index, user, follows, itemCounts }) {
+  const count = itemCounts?.[cat.key];
+
+  return (
+    <motion.div
+      key={cat.key}
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.06, duration: 0.5, ease: "easeOut" }}
+      className="flex-shrink-0 w-[140px] md:w-[160px]"
+    >
+      <Link to={`/browse?category=${cat.key}`} className="group block">
+        {/* Image */}
+        <div className="w-full h-[130px] md:h-[148px] overflow-hidden bg-neutral-100 border border-border/40">
+          <img
+            src={cat.image}
+            alt={cat.label}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          />
+        </div>
+        {/* Label */}
+        <p className="mt-2 text-sm font-semibold text-foreground group-hover:text-primary transition-colors leading-tight">
+          {cat.label}
+        </p>
+      </Link>
+
+      {/* Item count */}
+      {count != null && (
+        <p className="text-[11px] text-muted-foreground mt-0.5">{count.toLocaleString()} items</p>
+      )}
+
+      {/* Follow button */}
+      <FollowButton cat={cat} user={user} follows={follows} />
+    </motion.div>
   );
 }
 
@@ -79,50 +117,46 @@ export default function CategoryCircles() {
     staleTime: 60000,
   });
 
+  // Fetch live item counts per category
+  const { data: allItems = [] } = useQuery({
+    queryKey: ["items-category-counts"],
+    queryFn: () => base44.entities.Item.filter({ status: ["prisometer", "first_bids"] }),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const itemCounts = useMemo(() => {
+    const counts = {};
+    allItems.forEach(item => {
+      if (item.category) {
+        counts[item.category] = (counts[item.category] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [allItems]);
+
   return (
     <section className="pt-12 md:pt-16 pb-0 bg-background">
       <div className="max-w-screen-xl mx-auto px-6 md:px-10">
 
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className="text-xs tracking-[0.22em] uppercase font-display font-semibold text-primary mb-2">
-              Browse by Category
-            </p>
-            <h2 className="font-serif text-3xl md:text-5xl font-semibold text-foreground leading-tight">
-              What are you looking for?
-            </h2>
-          </div>
+        <div className="mb-8">
+          <p className="text-xs tracking-[0.22em] uppercase font-display font-semibold text-primary mb-2">
+            Browse by Category
+          </p>
+          <h2 className="font-serif text-3xl md:text-4xl font-semibold text-foreground leading-tight">
+            What are you looking for?
+          </h2>
         </div>
 
-        <div className="flex gap-5 md:gap-8 overflow-x-auto pb-3 scrollbar-none">
+        <div className="flex gap-4 md:gap-5 overflow-x-auto pb-4 scrollbar-hide">
           {categories.map((cat, i) => (
-            <motion.div
+            <CategoryCard
               key={cat.key}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.06, duration: 0.5, ease: "easeOut" }}
-              className="flex-shrink-0 flex flex-col items-center"
-            >
-              <Link to={`/browse?category=${cat.key}`} className="group flex flex-col items-center gap-2">
-                {/* Circle */}
-                <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border border-border/40 shadow-sm group-hover:shadow-md transition-shadow duration-300">
-                  <img
-                    src={cat.image}
-                    alt={cat.label}
-                    className="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-700 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-300 rounded-full" />
-                </div>
-                {/* Label */}
-                <span className="text-xs font-display font-medium text-foreground/80 group-hover:text-primary tracking-wide transition-colors duration-200 text-center whitespace-nowrap">
-                  {cat.label}
-                </span>
-              </Link>
-
-              {/* Follow button */}
-              <FollowButton cat={cat} user={user} follows={follows} />
-            </motion.div>
+              cat={cat}
+              index={i}
+              user={user}
+              follows={follows}
+              itemCounts={itemCounts}
+            />
           ))}
         </div>
 
