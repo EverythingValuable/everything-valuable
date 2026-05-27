@@ -123,13 +123,13 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
         <div className="rounded overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
 
           {/* ── FULL PHOTO with all overlays ─────────── */}
-          <div className="relative overflow-hidden bg-muted">
+          <div className="relative aspect-[4/5] overflow-hidden bg-muted">
             {item.images?.[0] ? (
               <>
                 <img
                   src={item.images[0]}
                   alt={item.title}
-                  className={`w-full h-auto block transition-opacity duration-700 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
+                  className={`w-full h-full object-contain transition-opacity duration-700 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
                   draggable="false"
                   onContextMenu={e => e.preventDefault()}
                 />
