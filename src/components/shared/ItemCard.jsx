@@ -61,12 +61,6 @@ function useCountdown(endDateStr) {
   return timeLeft;
 }
 
-// Normalize any price value to a display string
-function fmt(val) {
-  if (!val || val === 0) return "—";
-  return "$" + Number(val).toLocaleString("en-US");
-}
-
 export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
   const livePrice = useLivePrice(item);
   const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
@@ -116,19 +110,6 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
   const isPrisometer = item.status === "prisometer";
 
-  // Build exactly 3 uniform data rows for every card state
-  const rows = isPrisometer
-    ? [
-        { label: "Current", value: null, isPriceTicket: true },
-        { label: "High Bid", value: item.highest_bid > 0 ? fmt(item.highest_bid) : "—" },
-        { label: "Start", value: fmt(item.prisometer_start_price) },
-      ]
-    : [
-        { label: "High Bid", value: item.highest_bid > 0 ? fmt(item.highest_bid) : "—" },
-        { label: "Start", value: fmt(item.prisometer_start_price) },
-        { label: "Ends", value: countdown || "—" },
-      ];
-
   return (
     <>
       {drawerOpen && <ProductDrawer itemId={item.id} onClose={() => setDrawerOpen(false)} />}
@@ -141,7 +122,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
       >
         <div className="rounded overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
 
-          {/* ── IMAGE ─────────────────────────────────── */}
+          {/* ── FULL PHOTO with all overlays ─────────── */}
           <div className="relative aspect-square overflow-hidden bg-muted">
             {item.images?.[0] ? (
               <>
@@ -169,11 +150,11 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               </div>
             )}
 
-            {/* gradient scrim for overlays */}
-            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/30 to-transparent pointer-events-none z-20" />
+            {/* Strong bottom gradient for title legibility */}
+            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none z-20" />
 
-            {/* Status pill — bottom left over image */}
-            <div className="absolute bottom-2 left-2 z-30">
+            {/* Status pill — top left */}
+            <div className="absolute top-2 left-2 z-30">
               {isPrisometer ? (
                 <div className="flex items-center gap-1 px-2 py-0.5 bg-black/80 text-white text-[9px] font-bold tracking-wide rounded-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
@@ -188,53 +169,70 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
             {/* Watchlist — top right */}
             <button
-              className={`absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center transition-opacity border border-white/60 ${isSaved ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+              className={`absolute top-2 right-2 z-30 w-7 h-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition-opacity ${isSaved ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
               onClick={handleWatchlist}
             >
-              <Heart className={`w-3.5 h-3.5 ${isSaved ? "fill-red-500 text-red-500" : "text-foreground"}`} />
+              <Heart className={`w-3.5 h-3.5 ${isSaved ? "fill-red-500 text-red-500" : "text-white"}`} />
             </button>
-          </div>
 
-          {/* ── INFO ──────────────────────────────────── */}
-          <div className="px-3 pt-2.5 pb-3 flex flex-col gap-2">
-
-            {/* Category + Title */}
-            <div>
+            {/* Title + seller overlaid on photo bottom */}
+            <div className="absolute inset-x-0 bottom-0 z-30 px-3 pb-2.5 pt-8">
               {item.category && (
-                <p className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase mb-0.5">
+                <p className="text-[8px] font-bold tracking-widest text-white/60 uppercase mb-0.5">
                   {item.category.replace(/_/g, " ")}
                 </p>
               )}
-              <h3 className="font-serif text-xs font-semibold text-foreground leading-snug line-clamp-2">
+              <h3 className="font-serif text-sm font-semibold text-white leading-snug line-clamp-2 drop-shadow-sm">
                 {item.title}
               </h3>
               {(sellerProfile?.display_name || item.seller_name) && (
-                <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
+                <p className="text-[10px] text-white/60 mt-0.5 truncate">
                   {sellerProfile?.display_name || item.seller_name}
                 </p>
               )}
             </div>
+          </div>
 
-            {/* Data rows — always exactly 3, same height for every card */}
-            <div className="border-t border-border pt-2 space-y-1">
-              {rows.map((row, i) => (
-                <div key={i} className="flex items-baseline justify-between gap-2">
-                  <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase shrink-0">{row.label}</span>
-                  {row.isPriceTicket ? (
-                    <span className="font-price text-sm font-bold text-foreground tabular-nums">
-                      ${Math.floor(livePrice).toLocaleString("en-US")}
-                      {!item.make_it_mine_active && (
-                        <span className="text-red-600 animate-price-tick">
-                          .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
-                        </span>
-                      )}
+          {/* ── CONDENSED DATA STRIP ─────────────────── */}
+          <div className="px-3 py-2 flex flex-col gap-1.5">
+
+            {/* Price row */}
+            {isPrisometer ? (
+              <div className="flex items-baseline justify-between">
+                <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">Current</span>
+                <span className="font-price text-sm font-bold text-foreground tabular-nums">
+                  ${Math.floor(livePrice).toLocaleString("en-US")}
+                  {!item.make_it_mine_active && (
+                    <span className="text-red-600 animate-price-tick">
+                      .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
                     </span>
-                  ) : (
-                    <span className="font-price text-sm font-bold text-foreground tabular-nums truncate">{row.value}</span>
                   )}
-                </div>
-              ))}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-baseline justify-between">
+                <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">Start</span>
+                <span className="font-price text-sm font-bold text-foreground tabular-nums">
+                  ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
+                </span>
+              </div>
+            )}
+
+            {/* Secondary row */}
+            <div className="flex items-baseline justify-between">
+              <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">High Bid</span>
+              <span className="font-price text-xs font-semibold text-foreground tabular-nums">
+                {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
+              </span>
             </div>
+
+            {/* Countdown only for first_bids */}
+            {item.status === "first_bids" && countdown && (
+              <div className="flex items-baseline justify-between">
+                <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">Ends</span>
+                <span className="font-price text-xs font-semibold text-foreground tabular-nums">{countdown}</span>
+              </div>
+            )}
 
             {/* CTA */}
             <button
