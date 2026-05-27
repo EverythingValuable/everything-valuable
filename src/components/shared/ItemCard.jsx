@@ -121,7 +121,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
         onClick={() => setDrawerOpen(true)}
       >
         {/* ── IMAGE ─────────────────────────────────── */}
-        <div className="relative overflow-hidden bg-neutral-100">
+        <div className="relative overflow-hidden bg-white flex items-center justify-center min-h-[300px]">
           {item.images?.[0] ? (
             <>
               <img
