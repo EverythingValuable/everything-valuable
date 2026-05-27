@@ -110,6 +110,9 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
   const isPrisometer = item.status === "prisometer";
 
+  // Format price helper
+  const fmt = (val) => !val || val === 0 ? "—" : `$${Number(val).toLocaleString("en-US")}`;
+
   return (
     <>
       {drawerOpen && <ProductDrawer itemId={item.id} onClose={() => setDrawerOpen(false)} />}
@@ -221,13 +224,15 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               </span>
             </div>
 
-            {/* Countdown only for first_bids */}
-            {item.status === "first_bids" && countdown && (
-              <div className="flex items-baseline justify-between">
-                <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">Ends</span>
-                <span className="font-price text-xs font-semibold text-foreground tabular-nums">{countdown}</span>
-              </div>
-            )}
+            {/* Third row — always show for consistency */}
+            <div className="flex items-baseline justify-between">
+              <span className="text-[8px] font-bold tracking-widest text-muted-foreground uppercase">
+                {item.status === "first_bids" ? "Ends" : "Start"}
+              </span>
+              <span className="font-price text-xs font-semibold text-foreground tabular-nums">
+                {item.status === "first_bids" ? (countdown || "—") : fmt(item.prisometer_start_price)}
+              </span>
+            </div>
 
             {/* CTA */}
             <button
