@@ -17,40 +17,42 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="bg-[hsl(40,33%,97%)] py-12 md:py-16">
-      <div className="max-w-screen-2xl mx-auto px-4 md:px-6 flex flex-col md:flex-row md:items-center gap-8 md:gap-12">
+    <section className="bg-[hsl(30,15%,14%)] py-14 md:py-20">
+      <div className="max-w-screen-2xl mx-auto px-6 md:px-12 flex flex-col md:flex-row md:items-center gap-10 md:gap-16">
 
         {/* Left — Text */}
         <motion.div
-          initial={{ opacity: 0, y: -15 }}
+          initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="space-y-4 flex-1"
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="space-y-5 flex-1"
         >
           {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2.5">
-            <div className="w-6 h-px bg-primary" />
-            <span className="text-[10px] tracking-[0.25em] uppercase font-display font-semibold text-primary">
+          <div className="inline-flex items-center gap-3">
+            <div className="w-5 h-px bg-primary" />
+            <span className="text-[10px] tracking-[0.3em] uppercase font-semibold text-primary">
               Art · Antiques · Jewelry · Watches
             </span>
           </div>
 
           {/* Headline */}
-          <h1 className="font-serif text-3xl md:text-4xl font-semibold leading-tight text-foreground">
-            A New Standard for <em className="not-italic text-primary">Everything Valuable</em>
+          <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight text-white">
+            A New Standard for{" "}
+            <em className="not-italic text-primary">Everything Valuable</em>
           </h1>
 
           {/* Subhead */}
-          <p className="font-sans text-sm md:text-base text-muted-foreground leading-relaxed max-w-[500px]">
-            Discover exceptional objects through a marketplace reimagined for transparency. Every lot begins in our exclusive <span className="font-semibold text-foreground">1stBid$™</span> preview phase, then enters live <span className="font-semibold text-foreground">PRI$OMETER™</span> pricing for a more dynamic and engaging path to purchase.
+          <p className="text-sm md:text-[15px] text-white/55 leading-relaxed max-w-[460px]">
+            Every lot begins in <span className="text-white/80 font-medium">1stBid$™</span> preview, then enters live{" "}
+            <span className="text-white/80 font-medium">PRI$OMETER™</span> pricing — a smarter, more transparent path to purchase.
           </p>
 
-          {/* CTAs */}
-          <div className="flex flex-wrap items-center gap-4 pt-2">
+          {/* CTA */}
+          <div className="flex flex-wrap items-center gap-3 pt-1">
             <Link to="/browse">
               <Button
                 size="sm"
-                className="bg-foreground text-background hover:bg-foreground/85 gap-2 text-xs font-semibold rounded-none tracking-wide"
+                className="bg-primary text-white hover:bg-primary/90 gap-2 text-xs font-semibold rounded-none tracking-wide px-5 h-10"
               >
                 Discover Objects
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -58,44 +60,58 @@ export default function HeroSection() {
             </Link>
             <Link to="/how-it-works">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="text-xs font-semibold rounded-none border-foreground/30 hover:border-foreground/70 tracking-wide text-foreground"
+                className="text-xs font-semibold rounded-none text-white/60 hover:text-white hover:bg-white/10 tracking-wide h-10"
               >
-                How PRI$OMETER™ Works
+                How It Works
               </Button>
             </Link>
           </div>
-
-          {/* Micro-line */}
-          <p className="text-[10px] text-muted-foreground/50 tracking-[0.18em] uppercase font-display pt-1">
-            Live Auctions · 1stBid$™ Preview · PRI$OMETER™ Sales
-          </p>
         </motion.div>
 
-        {/* Right — Search Bar */}
+        {/* Right — Search */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          className="w-full md:w-80 lg:w-96 shrink-0"
+          transition={{ duration: 0.55, ease: "easeOut", delay: 0.18 }}
+          className="w-full md:w-96 lg:w-[440px] shrink-0 space-y-3"
         >
-          <form onSubmit={handleSearch} className="flex items-center gap-2 bg-white border border-border shadow-sm px-4 h-12 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
-            <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <p className="text-[11px] uppercase tracking-[0.2em] text-white/40 font-semibold">
+            Search the Marketplace
+          </p>
+          <form
+            onSubmit={handleSearch}
+            className="flex items-center gap-0 bg-white/5 border border-white/15 hover:border-white/30 focus-within:border-primary focus-within:bg-white/8 transition-all group"
+          >
+            <Search className="w-4 h-4 text-white/40 group-focus-within:text-primary transition-colors flex-shrink-0 ml-4" />
             <input
               type="text"
-              placeholder="Search Everything Valuable…"
+              placeholder="Search art, antiques, jewelry, watches…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+              className="flex-1 bg-transparent text-sm text-white placeholder:text-white/35 outline-none px-3 py-4"
             />
-            <button type="submit" className="text-xs font-semibold text-primary hover:text-primary/80 transition-colors shrink-0">
+            <button
+              type="submit"
+              className="h-full px-5 py-4 bg-primary text-white text-xs font-bold tracking-wide hover:bg-primary/90 transition-colors shrink-0"
+            >
               Search
             </button>
           </form>
-          <p className="text-[10px] text-muted-foreground/50 tracking-wide mt-2 px-1">
-            Search art, antiques, jewelry, watches and more
-          </p>
+
+          {/* Quick links */}
+          <div className="flex flex-wrap gap-2 pt-1">
+            {["Fine Art", "Jewelry", "Watches", "Asian Antiques"].map((tag) => (
+              <button
+                key={tag}
+                onClick={() => navigate(`/browse?search=${encodeURIComponent(tag)}`)}
+                className="text-[10px] px-3 py-1 border border-white/15 text-white/45 hover:border-white/40 hover:text-white/75 transition-colors tracking-wide"
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
         </motion.div>
 
       </div>
