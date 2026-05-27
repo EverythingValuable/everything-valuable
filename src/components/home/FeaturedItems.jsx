@@ -13,7 +13,7 @@ export default function FeaturedItems({ liveItems = [], previewItems = [], title
   if (!isLoading && !allItems.length) return null;
 
   if (isLoading) return (
-    <section className="py-16 md:py-24">
+    <section className="py-10 md:py-14">
       <div className="max-w-screen-2xl mx-auto px-4 md:px-6">
         <div className="h-8 w-48 bg-muted rounded animate-pulse mb-10" />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
@@ -30,7 +30,7 @@ export default function FeaturedItems({ liveItems = [], previewItems = [], title
   );
 
   return (
-    <section className="py-16 md:py-24">
+    <section className="py-10 md:py-14">
       <div className="max-w-screen-2xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <div>

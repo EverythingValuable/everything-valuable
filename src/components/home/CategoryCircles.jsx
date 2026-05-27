@@ -131,7 +131,7 @@ export default function CategoryCircles() {
   });
 
   return (
-    <section className="pt-12 md:pt-16 pb-0 bg-background">
+    <section className="pt-8 md:pt-10 pb-0 bg-background">
       <div className="max-w-screen-2xl mx-auto px-4 md:px-6">
 
         {/* Header */}
