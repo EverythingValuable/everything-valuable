@@ -177,11 +177,6 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
             {/* Title + seller overlaid on photo bottom */}
             <div className="absolute inset-x-0 bottom-0 z-30 px-3 pb-2.5 pt-8">
-              {item.category && (
-                <p className="text-[8px] font-bold tracking-widest text-white/60 uppercase mb-0.5">
-                  {item.category.replace(/_/g, " ")}
-                </p>
-              )}
               <h3 className="font-serif text-sm font-semibold text-white leading-snug line-clamp-2 drop-shadow-sm">
                 {item.title}
               </h3>
