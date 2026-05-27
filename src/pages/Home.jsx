@@ -7,7 +7,6 @@ import CategoryCircles from "../components/home/CategoryCircles";
 import HowItWorksPreview from "../components/home/HowItWorksPreview";
 import RecentlyViewed from "../components/home/RecentlyViewed";
 import PrisometerExplainer from "../components/home/PrisometerExplainer";
-import PrisometerAnimated from "../components/home/PrisometerAnimated";
 import SellersSection from "../components/home/SellersSection";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -47,9 +46,6 @@ export default function Home() {
         title="Featured Live Sales"
         isLoading={featuredLoading}
       />
-
-      {/* Prisometer Animated */}
-      <PrisometerAnimated />
 
       {/* Prisometer Explainer */}
       <PrisometerExplainer />
