@@ -212,10 +212,12 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
               </>
             ) : (
               <>
-                <p className="text-[10px] uppercase tracking-wide text-neutral-400">1stBids™ Preview</p>
-                <p className="text-sm font-semibold text-neutral-900 font-price tabular-nums">
-                  ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] uppercase tracking-wide text-neutral-400">1stBids™ Preview</p>
+                  {countdown && (
+                    <p className="text-[10px] text-neutral-400">{countdown} remaining</p>
+                  )}
+                </div>
                 {item.highest_bid > 0 && (
                   <p className="text-xs text-neutral-500">
                     High bid: <span className="font-semibold text-neutral-800">${item.highest_bid.toLocaleString("en-US")}</span>
@@ -223,9 +225,6 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                       <span className="text-neutral-400 ml-1">({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})</span>
                     )}
                   </p>
-                )}
-                {countdown && (
-                  <p className="text-[10px] text-neutral-400">{countdown} remaining</p>
                 )}
               </>
             )}
