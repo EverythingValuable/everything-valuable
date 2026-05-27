@@ -178,11 +178,10 @@ export default function CategoryCircles() {
                   </div>
 
                   {/* Content area */}
-                  <div className="pt-2 pb-3.5 px-3.5">
-                    <p className="font-semibold text-[13px] text-neutral-900 leading-tight">{cat.label}</p>
-                    <p className="text-[11px] text-neutral-400 mt-0.5 mb-2.5">{cat.count} items</p>
-                    <FollowButton cat={cat} user={user} follows={follows} />
-                  </div>
+                   <div className="pt-2 pb-3.5 px-3.5">
+                     <p className="font-semibold text-[13px] text-neutral-900 leading-tight">{cat.label}</p>
+                     <p className="text-[11px] text-neutral-400 mt-0.5 mb-2.5">{cat.count} items</p>
+                   </div>
                 </Link>
               </motion.div>
             );
