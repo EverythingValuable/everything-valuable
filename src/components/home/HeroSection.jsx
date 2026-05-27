@@ -18,15 +18,16 @@ export default function HeroSection() {
 
   return (
     <section className="py-14 md:py-20 relative overflow-hidden">
-      {/* Background image with overlay */}
+      {/* Dark base */}
+      <div className="absolute inset-0 bg-[hsl(30,15%,14%)]" />
+      {/* Background image on top of dark base, low opacity */}
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-20"
+        className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: "url('https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3e367c567_Banner2.jpg')"
+          backgroundImage: "url('https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3e367c567_Banner2.jpg')",
+          opacity: 0.18
         }}
       />
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-[hsl(30,15%,14%)]" />
 
       <div className="max-w-screen-2xl mx-auto px-6 md:px-12 flex flex-col md:flex-row md:items-center gap-10 md:gap-16 relative z-10">
 
