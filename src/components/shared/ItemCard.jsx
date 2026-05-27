@@ -186,49 +186,48 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             </p>
           )}
 
-          {/* Estimate */}
-          {(item.estimated_low || item.estimated_high) && (
-            <p className="mt-2.5 text-xs text-neutral-500">
-              <span className="text-neutral-400 mr-0.5">Estimate:</span>
-              {item.estimated_low ? `$${item.estimated_low.toLocaleString("en-US")}` : ""}
-              {item.estimated_low && item.estimated_high ? " – " : ""}
-              {item.estimated_high ? `$${item.estimated_high.toLocaleString("en-US")}` : ""}
-            </p>
-          )}
-
-          {/* Price */}
-          <div className="mt-1">
+          {/* Price block */}
+          <div className="mt-3 space-y-1">
             {isPrisometer ? (
-              <p className="text-xs font-semibold text-neutral-900 uppercase tracking-wide">
-                Current Bid:{" "}
-                <span className="font-price tabular-nums">
+              <>
+                <p className="text-[10px] uppercase tracking-wide text-neutral-400">PRI$OMETER™</p>
+                <p className="text-sm font-semibold text-neutral-900 font-price tabular-nums">
                   ${Math.floor(livePrice).toLocaleString("en-US")}
                   {!item.make_it_mine_active && (
                     <span className="text-primary animate-price-tick">
                       .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
                     </span>
                   )}
-                </span>
-                {item.bid_count > 0 && (
-                  <span className="text-[10px] font-normal text-neutral-400 ml-1 normal-case tracking-normal">
-                    ({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})
-                  </span>
+                </p>
+                {item.highest_bid > 0 && (
+                  <p className="text-xs text-neutral-500">
+                    High bid: <span className="font-semibold text-neutral-800">${item.highest_bid.toLocaleString("en-US")}</span>
+                    {item.bid_count > 0 && (
+                      <span className="text-neutral-400 ml-1">({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})</span>
+                    )}
+                  </p>
                 )}
-              </p>
+              </>
             ) : (
-              <p className="text-xs font-semibold text-neutral-900 uppercase tracking-wide">
-                Starting Bid:{" "}
-                <span className="font-price tabular-nums">
+              <>
+                <p className="text-[10px] uppercase tracking-wide text-neutral-400">1stBids™ Preview</p>
+                <p className="text-sm font-semibold text-neutral-900 font-price tabular-nums">
                   ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
-                </span>
-              </p>
+                </p>
+                {item.highest_bid > 0 && (
+                  <p className="text-xs text-neutral-500">
+                    High bid: <span className="font-semibold text-neutral-800">${item.highest_bid.toLocaleString("en-US")}</span>
+                    {item.bid_count > 0 && (
+                      <span className="text-neutral-400 ml-1">({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})</span>
+                    )}
+                  </p>
+                )}
+                {countdown && (
+                  <p className="text-[10px] text-neutral-400">{countdown} remaining</p>
+                )}
+              </>
             )}
           </div>
-
-          {/* Countdown */}
-          {item.status === "first_bids" && countdown && (
-            <p className="mt-0.5 text-[10px] text-neutral-400">{countdown} remaining</p>
-          )}
         </div>
       </motion.div>
     </>
