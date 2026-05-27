@@ -192,7 +192,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2 md:gap-3">
           {/* Search bar — desktop only, hidden on landing */}
           {!isLanding && (
-            <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 bg-muted border border-border rounded-lg px-3 h-9 w-56 lg:w-72 focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all">
+            <form onSubmit={handleSearch} className="hidden md:flex items-center gap-2 bg-muted border border-border rounded-lg px-3 h-9 w-56 lg:w-72 focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all order-last">
               <Search className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
               <input
                 type="text"
@@ -203,6 +203,7 @@ export default function Navbar() {
               />
             </form>
           )}
+          
           <Link to="/buyer" className={iconLinkClass} aria-label="Watchlist">
             <Heart className="w-4 h-4" />
           </Link>
