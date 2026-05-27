@@ -181,7 +181,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
 
           {/* Seller / subtitle */}
           {(sellerProfile?.display_name || item.seller_name) && (
-            <p className="text-xs text-neutral-500 mt-0.5 truncate">
+            <p className="text-sm text-neutral-600 mt-0.5 truncate font-medium">
               {sellerProfile?.display_name || item.seller_name}
             </p>
           )}
@@ -202,10 +202,10 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                   </span>
                 </p>
                 {item.highest_bid > 0 && (
-                  <p className="text-xs text-neutral-500">
-                    High bid: <span className="font-semibold text-neutral-800">${item.highest_bid.toLocaleString("en-US")}</span>
+                  <p className="text-sm text-neutral-600">
+                    High bid: <span className="font-semibold text-neutral-900">${item.highest_bid.toLocaleString("en-US")}</span>
                     {item.bid_count > 0 && (
-                      <span className="text-neutral-400 ml-1">({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})</span>
+                      <span className="text-neutral-500 ml-1">({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})</span>
                     )}
                   </p>
                 )}
@@ -213,16 +213,16 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
             ) : (
               <>
                 <div className="flex items-center justify-between">
-                  <p className="text-[10px] uppercase tracking-wide text-neutral-400">1stBids™ Preview</p>
+                  <p className="text-[11px] uppercase tracking-wide text-neutral-500 font-semibold">1stBids™ Preview</p>
                   {countdown && (
-                    <p className="text-[10px] text-neutral-400">{countdown} remaining</p>
+                    <p className="text-[11px] text-neutral-600 font-medium">{countdown} remaining</p>
                   )}
                 </div>
                 {item.highest_bid > 0 && (
-                  <p className="text-xs text-neutral-500">
-                    High bid: <span className="font-semibold text-neutral-800">${item.highest_bid.toLocaleString("en-US")}</span>
+                  <p className="text-sm text-neutral-600">
+                    High bid: <span className="font-semibold text-neutral-900">${item.highest_bid.toLocaleString("en-US")}</span>
                     {item.bid_count > 0 && (
-                      <span className="text-neutral-400 ml-1">({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})</span>
+                      <span className="text-neutral-500 ml-1">({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})</span>
                     )}
                   </p>
                 )}
