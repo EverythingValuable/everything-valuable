@@ -159,23 +159,26 @@ export default function CategoryCircles() {
               >
                 <Link
                   to={`/browse?category=${cat.key}`}
-                  className="block bg-white border border-[#e5e5e5] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-neutral-400"
+                  className="block bg-white border border-[#e5e5e5] rounded-2xl cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-neutral-400"
                 >
                   {/* Image area */}
-                  <div className="relative h-[120px] md:h-[140px] overflow-hidden bg-neutral-100">
+                  <div className="relative h-[120px] md:h-[140px] overflow-hidden bg-neutral-100 rounded-t-2xl">
                     <img
                       src={cat.image}
                       alt={cat.label}
                       className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     />
-                    {/* Icon badge */}
-                    <div className="absolute bottom-0 translate-y-1/2 left-3.5 w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center border border-neutral-100 z-10">
+                  </div>
+
+                  {/* Icon badge — sits between image and content, not clipped */}
+                  <div className="flex justify-center -mt-4 relative z-10">
+                    <div className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center border border-neutral-200">
                       <Icon className="w-4 h-4 text-neutral-800" />
                     </div>
                   </div>
 
                   {/* Content area */}
-                  <div className="pt-6 pb-3.5 px-3.5">
+                  <div className="pt-2 pb-3.5 px-3.5">
                     <p className="font-semibold text-[13px] text-neutral-900 leading-tight">{cat.label}</p>
                     <p className="text-[11px] text-neutral-400 mt-0.5 mb-2.5">{cat.count} items</p>
                     <FollowButton cat={cat} user={user} follows={follows} />
