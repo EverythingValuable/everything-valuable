@@ -193,7 +193,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                 <div className="flex items-baseline gap-1.5">
                   <div className="flex items-center gap-1">
                     <span className="text-[11px] uppercase tracking-wide text-neutral-600 font-semibold">PRI$OMETER™:</span>
-                    <button type="button" title="Price declines until it meets a bid or reserve is reached" className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600 transition-colors shrink-0">
+                    <button type="button" onClick={e => e.stopPropagation()} title="Price declines until it meets a bid or reserve is reached" className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600 transition-colors shrink-0">
                       <Info className="w-2.5 h-2.5" />
                     </button>
                   </div>
@@ -220,7 +220,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <p className="text-[11px] uppercase tracking-wide text-neutral-500 font-semibold">1stBids™ Preview</p>
-                    <button type="button" title="Early bidding phase where interested buyers can place bids" className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600 transition-colors shrink-0">
+                    <button type="button" onClick={e => e.stopPropagation()} title="Early bidding phase where interested buyers can place bids" className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-neutral-300 text-neutral-400 hover:border-neutral-500 hover:text-neutral-600 transition-colors shrink-0">
                       <Info className="w-2.5 h-2.5" />
                     </button>
                   </div>
