@@ -132,7 +132,7 @@ export default function CategoryCircles() {
 
   return (
     <section className="pt-12 md:pt-16 pb-0 bg-background">
-      <div className="max-w-screen-xl mx-auto px-6 md:px-10">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-6">
 
         {/* Header */}
         <div className="mb-8">
