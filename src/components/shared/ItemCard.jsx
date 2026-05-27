@@ -79,7 +79,7 @@ function useCountdown(endDateStr) {
 
 export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
   const livePrice = useLivePrice(item);
-  const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : item.status === "prisometer" ? new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000) : null);
+  const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const queryClient = useQueryClient();
@@ -238,10 +238,7 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                       {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
                     </span>
                   </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Ends In</span>
-                    <span className="font-price text-base font-bold text-foreground">{countdown || "—"}</span>
-                  </div>
+                  <div className="h-5" />
                   <div className="h-5" />
                 </>
               ) : (
