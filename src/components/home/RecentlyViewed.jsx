@@ -112,7 +112,11 @@ function RecentCard({ item, index, onOpen }) {
             <div className="px-2 py-0.5 bg-white/90 text-foreground text-[9px] font-bold tracking-wide border border-neutral-200">
               1stBID$ PREVIEW
             </div>
-          ) : null}
+          ) : (
+            <div className="px-2 py-0.5 bg-neutral-800/80 text-white text-[9px] font-bold tracking-wide uppercase">
+              {item.status?.replace(/_/g, " ") || "Viewed"}
+            </div>
+          )}
         </div>
       </div>
 
@@ -198,7 +202,7 @@ export default function RecentlyViewed() {
       const results = await Promise.all(
         recentIds.map(id => base44.entities.Item.filter({ id }).then(r => r[0]).catch(() => null))
       );
-      return results.filter(Boolean).filter(i => ["first_bids", "prisometer"].includes(i.status));
+      return results.filter(Boolean);
     },
     enabled: recentIds.length > 0,
     staleTime: 1000 * 30,
