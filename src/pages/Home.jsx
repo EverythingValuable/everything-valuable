@@ -7,6 +7,7 @@ import CategoryCircles from "../components/home/CategoryCircles";
 import HowItWorksPreview from "../components/home/HowItWorksPreview";
 import RecentlyViewed from "../components/home/RecentlyViewed";
 import PrisometerExplainer from "../components/home/PrisometerExplainer";
+import WhyDifferentSection from "../components/home/WhyDifferentSection";
 import SellersSection from "../components/home/SellersSection";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,9 @@ export default function Home() {
         title="Featured Live Sales"
         isLoading={featuredLoading}
       />
+
+      {/* Why Different */}
+      <WhyDifferentSection />
 
       {/* Prisometer Explainer */}
       <PrisometerExplainer />
