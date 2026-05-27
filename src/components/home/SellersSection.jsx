@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 export default function SellersSection() {
@@ -28,16 +27,14 @@ export default function SellersSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link to="/sell">
-              <Button className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2 rounded-full h-12 px-6 whitespace-nowrap">
+              <button className="inline-flex h-12 items-center justify-center gap-3 bg-primary px-7 text-sm font-bold text-white transition-colors hover:bg-primary/90">
                 Apply to Sell <ArrowRight className="w-4 h-4" />
-              </Button>
+              </button>
             </Link>
             <Link to="/browse">
-              <Button
-                className="bg-background text-foreground hover:bg-background/90 gap-2 rounded-full h-12 px-6 whitespace-nowrap"
-              >
+              <button className="inline-flex h-12 items-center justify-center gap-3 border border-white/55 bg-white/5 px-7 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/12">
                 Explore the Marketplace <ArrowRight className="w-4 h-4" />
-              </Button>
+              </button>
             </Link>
           </div>
         </div>
