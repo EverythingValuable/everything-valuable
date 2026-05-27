@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import HeroSection from "../components/home/HeroSection";
 import FeaturedItems from "../components/home/FeaturedItems";
 import CategoryCircles from "../components/home/CategoryCircles";
+import OurApproach from "../components/home/OurApproach";
 import HowItWorksPreview from "../components/home/HowItWorksPreview";
 import RecentlyViewed from "../components/home/RecentlyViewed";
 import PrisometerExplainer from "../components/home/PrisometerExplainer";
@@ -46,6 +47,9 @@ export default function Home() {
         title="Featured Live Sales"
         isLoading={featuredLoading}
       />
+
+      {/* Our Approach */}
+      <OurApproach />
 
       {/* Prisometer Explainer */}
       <PrisometerExplainer />
