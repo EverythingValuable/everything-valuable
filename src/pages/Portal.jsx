@@ -6,9 +6,7 @@ import {
   Gavel,
   Globe2,
   HeadphonesIcon,
-  Home,
   ShieldCheck,
-  Sofa,
 } from "lucide-react";
 
 const PERSONAL_IMG =
@@ -138,22 +136,7 @@ export default function Portal() {
               </motion.div>
             </div>
 
-            {/* Right: stat cards */}
-            <motion.div
-              variants={fadeUp}
-              className="grid max-w-[440px] grid-cols-2 gap-3 justify-self-start lg:mb-8 lg:justify-self-end"
-            >
-              <StatCard
-                icon={Sofa}
-                value="Rare Finds"
-                text="Unlock a world of unique art, antiques and collectibles"
-              />
-              <StatCard
-                icon={Home}
-                value="Full Transparency"
-                text="Peace of mind with verified sellers and protected transactions."
-              />
-            </motion.div>
+
           </div>
         </motion.div>
       </section>
@@ -352,15 +335,7 @@ export default function Portal() {
   );
 }
 
-function StatCard({ icon: Icon, value, text }) {
-  return (
-    <div className="rounded-[6px] bg-white/80 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.18)] backdrop-blur-sm">
-      <Icon className="mb-3 h-6 w-6 text-primary" />
-      <p className="font-serif text-3xl font-bold text-neutral-900">{value}</p>
-      <p className="mt-2 text-[12px] leading-5 text-neutral-500">{text}</p>
-    </div>
-  );
-}
+
 
 function CategoryCard({ image, title, desc, to }) {
   return (
