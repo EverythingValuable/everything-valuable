@@ -201,8 +201,8 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                             <Info className="w-2.5 h-2.5" />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-[200px] text-xs leading-relaxed">
-                          The asking price that gradually declines over time until it meets a bid or the reserve is reached.
+                        <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
+                          The PRI$OMETER™ is our live declining-price engine. The price starts high and drops continuously over time. You can place a bid at any moment — or use Make It Mine to buy instantly at the current price.
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
