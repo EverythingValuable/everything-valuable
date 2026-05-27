@@ -137,146 +137,142 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
       transition={{ duration: 0.4, delay: index * 0.05 }}
     >
       <div className="group block cursor-pointer">
-        {/* Premium auction catalog card */}
-        <div
-          onClick={() => setDrawerOpen(true)}
-          className="rounded-lg overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full"
-        >
-          {/* Image area — artwork is the hero */}
-          <div className="relative aspect-[3/4] overflow-hidden bg-muted shrink-0">
-            {item.images?.[0] ? (
-              <>
-                <img
-                  src={item.images[0]}
-                  alt={item.title}
-                  className={`w-full h-full object-cover transition-opacity duration-1000 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
-                  draggable="false"
-                  onContextMenu={e => e.preventDefault()}
-                />
-                {item.images[1] && (
-                  <img
-                    src={item.images[1]}
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
-                    draggable="false"
-                    onContextMenu={e => e.preventDefault()}
-                  />
-                )}
-                <div className="absolute inset-0 z-10" onContextMenu={e => e.preventDefault()} draggable="false" />
-              </>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
-                <span className="font-serif text-4xl">EV</span>
-              </div>
-            )}
+         {/* Premium auction catalog card — compact, image-led */}
+         <div
+           onClick={() => setDrawerOpen(true)}
+           className="rounded-lg overflow-hidden border border-border bg-white shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full max-w-xs"
+         >
+           {/* Image area — 55-60% of card height, artwork is the hero */}
+           <div className="relative aspect-[3/4] overflow-hidden bg-muted shrink-0">
+             {item.images?.[0] ? (
+               <>
+                 <img
+                   src={item.images[0]}
+                   alt={item.title}
+                   className={`w-full h-full object-cover transition-opacity duration-1000 ${item.images[1] ? "group-hover:opacity-0" : ""}`}
+                   draggable="false"
+                   onContextMenu={e => e.preventDefault()}
+                 />
+                 {item.images[1] && (
+                   <img
+                     src={item.images[1]}
+                     alt={item.title}
+                     className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
+                     draggable="false"
+                     onContextMenu={e => e.preventDefault()}
+                   />
+                 )}
+                 <div className="absolute inset-0 z-10" onContextMenu={e => e.preventDefault()} draggable="false" />
+               </>
+             ) : (
+               <div className="w-full h-full flex items-center justify-center text-muted-foreground/20">
+                 <span className="font-serif text-4xl">EV</span>
+               </div>
+             )}
 
-            {/* Watchlist button — top right, subtle */}
-            <button
-              className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white border border-border/40 ${isSaved ? "!opacity-100" : ""}`}
-              onClick={handleWatchlist}
-            >
-              <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-foreground"}`} />
-            </button>
+             {/* Watchlist button — top right, subtle */}
+             <button
+               className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white border border-border/40 ${isSaved ? "!opacity-100" : ""}`}
+               onClick={handleWatchlist}
+             >
+               <Heart className={`w-4 h-4 ${isSaved ? "fill-red-500 text-red-500" : "text-foreground"}`} />
+             </button>
 
-            {/* Status pill — top left, minimal */}
-            <div className="absolute top-3 left-3 z-20">
-              {item.status === "prisometer" ? (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-foreground text-white text-[10px] font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                  PRI$OMETER Live
-                </div>
-              ) : item.status === "first_bids" ? (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-foreground/30 text-foreground text-[10px] font-semibold">
-                  1stBid$ Preview
-                </div>
-              ) : null}
-            </div>
+             {/* Status pill — top left, minimal */}
+             <div className="absolute top-3 left-3 z-20">
+               {item.status === "prisometer" ? (
+                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-foreground text-white text-[10px] font-semibold">
+                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                   PRI$OMETER Live
+                 </div>
+               ) : item.status === "first_bids" ? (
+                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-foreground/30 text-foreground text-[10px] font-semibold">
+                   1stBid$ Preview
+                 </div>
+               ) : null}
+             </div>
 
-            {/* Subtle bottom fade */}
-            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
-          </div>
+             {/* Subtle bottom fade */}
+             <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
+           </div>
 
-          {/* Information area — clean white section */}
-          <div className="flex-1 px-4 py-4 flex flex-col gap-4 justify-between">
-            {/* Category, Title, Seller */}
-            <div>
-              {item.category && (
-                <p className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase mb-1.5">
-                  {item.category.replace(/_/g, " ")}
-                </p>
-              )}
-              <h3 className="font-serif text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-1.5">
-                {item.title}
-              </h3>
-              {(sellerProfile?.display_name || item.seller_name) && (
-                <p className="text-xs text-muted-foreground">
-                  {sellerProfile?.display_name || item.seller_name}
-                </p>
-              )}
-            </div>
+           {/* Information area — compact white section */}
+           <div className="flex-1 px-3.5 py-2.5 flex flex-col gap-2">
+             {/* Category, Title, Seller — tightened */}
+             <div>
+               {item.category && (
+                 <p className="text-[8px] font-bold tracking-[0.08em] text-muted-foreground uppercase mb-0.5">
+                   {item.category.replace(/_/g, " ")}
+                 </p>
+               )}
+               <h3 className="font-serif text-xs font-semibold text-foreground leading-snug line-clamp-2 mb-1">
+                 {item.title}
+               </h3>
+               {(sellerProfile?.display_name || item.seller_name) && (
+                 <p className="text-[11px] text-muted-foreground/80 font-light">
+                   {sellerProfile?.display_name || item.seller_name}
+                 </p>
+               )}
+             </div>
 
-            {/* Structured sale data — always 4 rows for consistent height */}
-            <div className="space-y-1.5 border-t border-border pt-2.5">
-              {item.status === "prisometer" ? (
-                <>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Current Price</span>
-                    <div className="flex items-baseline gap-0.5 font-price">
-                      <span className="text-base font-bold text-foreground">
-                        ${Math.floor(livePrice).toLocaleString("en-US")}
-                      </span>
-                      {!item.make_it_mine_active && (
-                        <span className="text-sm font-bold text-red-600 animate-price-tick tabular-nums">
-                          .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">High Bid</span>
-                    <span className="font-price text-base font-bold text-foreground">
-                      {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Ends In</span>
-                    <span className="font-price text-base font-bold text-foreground">{countdown || "—"}</span>
-                  </div>
-                  <div className="h-5" />
-                </>
-              ) : (
-                <>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview High Bid</span>
-                    <span className="font-price text-base font-bold text-foreground">
-                      {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">PRI$OMETER Start</span>
-                    <span className="font-price text-base font-bold text-foreground">
-                      ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-[9px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Preview Ends</span>
-                    <span className="font-price text-base font-bold text-foreground">{countdown || "—"}</span>
-                  </div>
-                  <div className="h-5" />
-                </>
-              )}
-            </div>
+             {/* Compact pricing grid — 2 rows max */}
+             <div className="border-t border-border/60 pt-1.5 space-y-1">
+               {item.status === "prisometer" ? (
+                 <>
+                   <div className="flex items-baseline justify-between text-[10px]">
+                     <span className="font-bold text-muted-foreground/70 uppercase tracking-wide">Current</span>
+                     <div className="flex items-baseline gap-0.5 font-price">
+                       <span className="text-sm font-bold text-foreground">
+                         ${Math.floor(livePrice).toLocaleString("en-US")}
+                       </span>
+                       {!item.make_it_mine_active && (
+                         <span className="text-xs font-bold text-red-600 animate-price-tick tabular-nums">
+                           .{Math.floor((livePrice % 1) * 100).toString().padStart(2, "0")}
+                         </span>
+                       )}
+                     </div>
+                   </div>
+                   <div className="flex items-baseline justify-between text-[10px]">
+                     <span className="font-bold text-muted-foreground/70 uppercase tracking-wide">High</span>
+                     <span className="font-price text-sm font-bold text-foreground">
+                       {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
+                     </span>
+                   </div>
+                 </>
+               ) : (
+                 <>
+                   <div className="flex items-baseline justify-between text-[10px]">
+                     <span className="font-bold text-muted-foreground/70 uppercase tracking-wide">High Bid</span>
+                     <span className="font-price text-sm font-bold text-foreground">
+                       {item.highest_bid > 0 ? `$${item.highest_bid.toLocaleString("en-US")}` : "—"}
+                     </span>
+                   </div>
+                   <div className="flex items-baseline justify-between text-[10px]">
+                     <span className="font-bold text-muted-foreground/70 uppercase tracking-wide">Start</span>
+                     <span className="font-price text-sm font-bold text-foreground">
+                       ${(item.prisometer_start_price || 0).toLocaleString("en-US")}
+                     </span>
+                   </div>
+                 </>
+               )}
+             </div>
 
-            {/* Action button */}
-            <button
-              onClick={() => setDrawerOpen(true)}
-              className="w-full text-foreground border border-foreground/40 hover:border-foreground hover:bg-foreground hover:text-background text-xs font-semibold py-2.5 px-3 rounded transition-colors -mt-3"
-            >
-              View Lot
-            </button>
-          </div>
-        </div>
-      </div>
+             {/* Footer row: Ends In left, View Lot button right */}
+             <div className="flex items-center justify-between gap-2 pt-1 mt-auto">
+               <div className="text-[10px] flex flex-col gap-0.5">
+                 <span className="font-bold text-muted-foreground/70 uppercase tracking-wide">Ends In</span>
+                 <span className="font-price text-xs font-bold text-foreground">{countdown || "—"}</span>
+               </div>
+               <button
+                 onClick={() => setDrawerOpen(true)}
+                 className="h-7 px-3 text-foreground border border-foreground/40 hover:border-foreground hover:bg-foreground hover:text-background text-[10px] font-semibold rounded transition-colors shrink-0"
+               >
+                 View Lot
+               </button>
+             </div>
+           </div>
+         </div>
+       </div>
     </motion.div>
     </>
   );
