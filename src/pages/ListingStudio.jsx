@@ -477,6 +477,7 @@ export default function ListingStudio() {
     condition_notes: form.condition_notes,
     shipping_notes: form.shipping_notes || sellerProfile?.shipping_info || undefined,
     terms_and_conditions: form.terms_and_conditions || sellerProfile?.terms_and_conditions || undefined,
+    estimated_low: +form.estimated_low || 0,
     prisometer_start_price: +form.prisometer_start_price || 0,
     reserve_price: +form.reserve_price || 0,
     below_reserve_percent: form.below_reserve_percent,
@@ -1238,6 +1239,9 @@ export default function ListingStudio() {
               "Overpricing can reduce early interest — a strong starting price should create urgency, not scare buyers away",
             ]} />
             <div className="grid grid-cols-1 gap-8">
+              <Field label="1stBids™ Start Price" required hint="where bidding begins" infoTip="The opening bid price for the 1stBids™ preview phase. Buyers will be able to place bids starting at this amount.">
+                <PriceInput placeholder="1,000" value={form.estimated_low} onChange={e => set("estimated_low", e.target.value)} />
+              </Field>
               <Field label="Prisometer™ Price" required hint="shown to buyers" infoTip="This is the publicly visible asking price buyers see. Set it near the high end of what a serious buyer might pay — it signals value and creates urgency. The price can drop below reserve if bids come in under your threshold.">
                 <PriceInput placeholder="9,000" value={form.prisometer_start_price} onChange={e => set("prisometer_start_price", e.target.value)} />
               </Field>

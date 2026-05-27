@@ -286,7 +286,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
     const increment = getTierIncrement(currentHighest);
     const rawStart = currentHighest > 0
       ? currentHighest + increment
-      : Math.max(item.estimated_low ? item.estimated_low / 2 : 0, 100);
+      : Math.max(item.estimated_low ? item.estimated_low : 0, 100);
     let start = snapToValidBid(rawStart);
 
     // For prisometer phase, cap options at (or below) the live current price
@@ -308,7 +308,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   const currentHighestBid = item.highest_bid || 0;
   const sellerTiers = sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers;
   const increment = getMinBidIncrement(currentHighestBid, sellerTiers);
-  const startingBid = item.estimated_low ? item.estimated_low / 2 : 0;
+  const startingBid = item.estimated_low ? item.estimated_low : 0;
   const minBid = currentHighestBid > 0 ? currentHighestBid + increment : startingBid;
 
   const price = lockedPrice || currentPrice;
