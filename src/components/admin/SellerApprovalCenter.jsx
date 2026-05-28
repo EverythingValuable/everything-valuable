@@ -36,10 +36,17 @@ function ApplicationRow({ app }) {
 
   const isPending = ["pending", "needs_more_info"].includes(app.application_status);
   const isApproved = app.application_status === "approved";
+  const isRejected = app.application_status === "rejected";
 
   const resendMutation = useMutation({
     mutationFn: () => base44.functions.invoke("resendWelcomeEmail", { application_id: app.id }),
     onSuccess: () => alert("Welcome email resent successfully!"),
+    onError: () => alert("Failed to resend email. Please try again."),
+  });
+
+  const resendDeclinedMutation = useMutation({
+    mutationFn: () => base44.functions.invoke("resendDeclinedEmail", { application_id: app.id }),
+    onSuccess: () => alert("Declined email resent successfully!"),
     onError: () => alert("Failed to resend email. Please try again."),
   });
 
@@ -147,6 +154,22 @@ function ApplicationRow({ app }) {
                 {resendMutation.isPending ? "Sending…" : "Resend Welcome Email"}
               </Button>
               {resendMutation.isSuccess && (
+                <span className="text-xs text-green-600 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Sent!</span>
+              )}
+            </div>
+          )}
+          {isRejected && (
+            <div className="pt-2 flex items-center gap-3 flex-wrap">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={resendDeclinedMutation.isPending}
+                onClick={() => resendDeclinedMutation.mutate()}
+              >
+                <Mail className="w-3.5 h-3.5 mr-1" />
+                {resendDeclinedMutation.isPending ? "Sending…" : "Resend Declined Email"}
+              </Button>
+              {resendDeclinedMutation.isSuccess && (
                 <span className="text-xs text-green-600 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Sent!</span>
               )}
             </div>
