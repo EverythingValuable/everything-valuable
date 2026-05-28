@@ -15,20 +15,11 @@
       "enum": [
         "fine_art",
         "decorative_art",
-        "decorative_arts",
         "jewelry",
         "asian_antiques",
-        "asian_works",
         "fashion_accessories",
         "watches_clocks",
         "furniture",
-        "lighting",
-        "silver",
-        "ceramics_porcelain",
-        "glass",
-        "sculpture",
-        "rugs_textiles",
-        "books_manuscripts",
         "collectibles",
         "other"
       ]

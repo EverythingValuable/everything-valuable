@@ -9,7 +9,7 @@ export const LISTING_CATEGORIES = [
     examples: ["Painting", "Drawing", "Print", "Photograph"],
   },
   {
-    value: "decorative_arts",
+    value: "decorative_art",
     label: "Decorative Arts",
     description: "Vases, boxes, trays, objects, mirrors, desk accessories",
     examples: ["Vase", "Tray", "Mirror", "Box"],
@@ -21,64 +21,22 @@ export const LISTING_CATEGORIES = [
     examples: ["Chair", "Table", "Cabinet", "Desk"],
   },
   {
-    value: "lighting",
-    label: "Lighting",
-    description: "Table lamps, chandeliers, sconces, pendants, lanterns",
-    examples: ["Table Lamp", "Chandelier", "Sconce"],
-  },
-  {
     value: "jewelry",
     label: "Jewelry",
     description: "Rings, necklaces, bracelets, brooches, earrings",
     examples: ["Ring", "Necklace", "Bracelet", "Brooch"],
   },
   {
-    value: "silver",
-    label: "Silver",
-    description: "Flatware, tea sets, trays, candlesticks, serving pieces",
-    examples: ["Tea Set", "Tray", "Candlestick"],
-  },
-  {
-    value: "ceramics_porcelain",
-    label: "Ceramics & Porcelain",
-    description: "Vases, bowls, plates, figures, tea sets",
-    examples: ["Vase", "Bowl", "Figure", "Tea Set"],
-  },
-  {
-    value: "glass",
-    label: "Glass",
-    description: "Art glass vases, bowls, sculpture, paperweights",
-    examples: ["Vase", "Bowl", "Paperweight", "Sculpture"],
-  },
-  {
-    value: "sculpture",
-    label: "Sculpture",
-    description: "Bronze, stone, marble, terracotta, wood figures",
-    examples: ["Figure", "Bust", "Relief", "Abstract"],
-  },
-  {
-    value: "asian_works",
-    label: "Asian Works of Art",
-    description: "Chinese, Japanese, Korean and other Asian decorative arts",
-    examples: ["Porcelain", "Bronze", "Jade", "Scroll"],
-  },
-  {
-    value: "rugs_textiles",
-    label: "Rugs & Textiles",
-    description: "Oriental rugs, tapestries, quilts, needlework",
-    examples: ["Persian Rug", "Tapestry", "Quilt"],
-  },
-  {
     value: "watches_clocks",
-    label: "Clocks & Watches",
+    label: "Watches & Clocks",
     description: "Mantel clocks, wristwatches, pocket watches, wall clocks",
     examples: ["Mantel Clock", "Wristwatch", "Pocket Watch"],
   },
   {
-    value: "books_manuscripts",
-    label: "Books & Manuscripts",
-    description: "Rare books, manuscripts, maps, documents, ephemera",
-    examples: ["Rare Book", "Manuscript", "Map"],
+    value: "asian_antiques",
+    label: "Asian Antiques",
+    description: "Chinese, Japanese, Korean and other Asian decorative arts",
+    examples: ["Porcelain", "Bronze", "Jade", "Scroll"],
   },
   {
     value: "fashion_accessories",
@@ -88,7 +46,7 @@ export const LISTING_CATEGORIES = [
   },
   {
     value: "collectibles",
-    label: "Collectibles & Memorabilia",
+    label: "Collectibles",
     description: "Coins, medals, stamps, vintage objects, curiosities",
     examples: ["Coin", "Stamp", "Toy", "Memorabilia"],
   },
@@ -103,20 +61,13 @@ export const LISTING_CATEGORIES = [
 // ─── Object Types by Category ──────────────────────────────────────────────────
 export const OBJECT_TYPES = {
   fine_art: ["Painting", "Drawing", "Print", "Lithograph", "Etching", "Engraving", "Woodcut", "Screenprint", "Aquatint", "Drypoint", "Photograph", "Poster", "Mixed Media", "Collage", "Watercolor", "Pastel", "Charcoal Drawing", "Ink Drawing", "Sculpture", "Portfolio", "Artist Book"],
-  decorative_arts: ["Vase", "Bowl", "Box", "Tray", "Mirror", "Candlestick", "Candelabra", "Clock", "Barometer", "Inkwell", "Letter Opener", "Paperweight", "Frame", "Panel", "Screen", "Jardiniere", "Urn", "Centerpiece", "Figurine", "Group"],
+  decorative_art: ["Vase", "Bowl", "Box", "Tray", "Mirror", "Candlestick", "Candelabra", "Clock", "Barometer", "Inkwell", "Letter Opener", "Paperweight", "Frame", "Panel", "Screen", "Jardiniere", "Urn", "Centerpiece", "Figurine", "Group", "Table Lamp", "Floor Lamp", "Chandelier", "Pendant Light", "Wall Sconce", "Lantern", "Ceiling Fixture", "Desk Lamp", "Bouillotte Lamp", "Torchère", "Pair of Lamps"],
   furniture: ["Chair", "Armchair", "Side Chair", "Dining Chair", "Rocking Chair", "Table", "Dining Table", "Console Table", "Coffee Table", "Side Table", "Desk", "Writing Table", "Cabinet", "Chest", "Commode", "Sideboard", "Bookcase", "Étagère", "Mirror", "Sofa", "Settee", "Bench", "Stool", "Ottoman", "Bed", "Headboard", "Screen", "Vitrine", "Pedestal"],
-  lighting: ["Table Lamp", "Floor Lamp", "Chandelier", "Pendant Light", "Wall Sconce", "Lantern", "Ceiling Fixture", "Desk Lamp", "Bouillotte Lamp", "Torchère", "Candelabra", "Pair of Lamps"],
   jewelry: ["Ring", "Necklace", "Bracelet", "Brooch", "Earrings", "Pendant", "Charm", "Cufflinks", "Tie Clip", "Stickpin", "Jewelry Set", "Parure", "Demi-Parure"],
   watches_clocks: ["Wristwatch", "Pocket Watch", "Mantel Clock", "Wall Clock", "Bracket Clock", "Carriage Clock", "Tall Case Clock", "Alarm Clock", "Travel Clock"],
-  silver: ["Flatware Set", "Tea Set", "Coffee Set", "Tray", "Bowl", "Candlestick", "Candelabra", "Pitcher", "Creamer", "Sugar Bowl", "Goblet", "Box", "Frame", "Serving Piece", "Tureen", "Ladle", "Salt Cellar"],
-  ceramics_porcelain: ["Vase", "Bowl", "Plate", "Charger", "Cup", "Saucer", "Tea Set", "Coffee Set", "Figure", "Figurine", "Jardiniere", "Urn", "Centerpiece", "Platter", "Covered Jar", "Cachepot", "Tureen", "Basket"],
-  glass: ["Vase", "Bowl", "Sculpture", "Decanter", "Stemware", "Bottle", "Paperweight", "Lamp Shade", "Centerpiece", "Compote", "Perfume Bottle", "Inkwell"],
-  sculpture: ["Figure", "Bust", "Relief", "Abstract", "Animal", "Portrait", "Torso", "Group"],
-  rugs_textiles: ["Rug", "Carpet", "Runner", "Mat", "Tapestry", "Needlework", "Quilt", "Panel", "Hanging", "Textile"],
-  asian_works: ["Vase", "Bowl", "Jar", "Figure", "Figurine", "Scroll", "Painting", "Jade Carving", "Bronze", "Lacquerware", "Panel", "Screen", "Lamp", "Censer"],
+  asian_antiques: ["Vase", "Bowl", "Jar", "Figure", "Figurine", "Scroll", "Painting", "Jade Carving", "Bronze", "Lacquerware", "Panel", "Screen", "Lamp", "Censer"],
   collectibles: ["Coin", "Medal", "Stamp", "Toy", "Doll", "Poster", "Autograph", "Document", "Memorabilia", "Map", "Ephemera"],
   fashion_accessories: ["Handbag", "Clutch", "Tote", "Backpack", "Scarf", "Sunglasses", "Belt", "Hat", "Gloves", "Shoes"],
-  books_manuscripts: ["Rare Book", "Manuscript", "Map", "Atlas", "Document", "Letter", "Photograph", "Ephemera"],
   other: ["Other"],
 };
 
@@ -124,9 +75,8 @@ export const OBJECT_TYPES = {
 export const STYLES = {
   fine_art: ["Abstract", "Abstract Expressionist", "Academic", "Art Deco", "Art Nouveau", "Ashcan School", "Barbizon", "Bauhaus", "Classical", "Color Field", "Contemporary", "Constructivist", "Cubist", "Dada", "Expressionist", "Fauvist", "Figurative", "Folk Art", "Harlem Renaissance", "Hudson River School", "Impressionist", "Minimalist", "Modern", "Naive Art", "Op Art", "Outsider Art", "Pop Art", "Post-Impressionist", "Post-War", "Realist", "Regionalist", "Romantic", "School Of Paris", "Social Realist", "Surrealist", "Tonalist", "WPA"],
   furniture: ["Aesthetic Movement", "Arts and Crafts", "Art Nouveau", "Art Deco", "Baroque", "Bauhaus", "Biedermeier", "Brutalist", "Chinoiserie", "Chippendale", "Directoire", "Eastlake", "Edwardian", "Empire", "Federal", "French Regency", "Georgian", "Gothic Revival", "Hollywood Regency", "Industrial", "Louis XV", "Louis XVI", "Machine Age", "Mid-Century Modern", "Mission", "Modern", "Neoclassical", "Postmodern", "Queen Anne", "Rococo", "Scandinavian Modern", "Victorian"],
-  decorative_arts: ["Aesthetic Movement", "Arts and Crafts", "Art Nouveau", "Art Deco", "Baroque", "Biedermeier", "Chinoiserie", "Directoire", "Edwardian", "Empire", "Georgian", "Gothic Revival", "Hollywood Regency", "Industrial", "Jugendstil", "Louis XV", "Louis XVI", "Machine Age", "Mid-Century Modern", "Modern", "Neoclassical", "Rococo", "Scandinavian Modern", "Secessionist", "Space Age", "Victorian", "Vienna Secession"],
-  asian_works: ["Arita", "Banko", "Edo", "Famille Jaune", "Famille Noire", "Famille Rose", "Famille Verte", "Han Dynasty", "Imari", "Kangxi Period", "Kutani", "Meiji", "Ming Dynasty", "Qing Dynasty", "Qianlong Period", "Republic Period", "Satsuma", "Song Dynasty", "Tang Dynasty", "Taisho", "Yongzheng Period", "Yuan Dynasty"],
-  ceramics_porcelain: ["Arita", "Art Deco", "Art Nouveau", "Arts and Crafts", "Famille Rose", "Famille Verte", "Imari", "Kangxi Period", "Meiji", "Ming Dynasty", "Qing Dynasty", "Satsuma", "Studio Pottery", "Victorian"],
+  decorative_art: ["Aesthetic Movement", "Arts and Crafts", "Art Nouveau", "Art Deco", "Baroque", "Biedermeier", "Chinoiserie", "Directoire", "Edwardian", "Empire", "Georgian", "Gothic Revival", "Hollywood Regency", "Industrial", "Jugendstil", "Louis XV", "Louis XVI", "Machine Age", "Mid-Century Modern", "Modern", "Neoclassical", "Rococo", "Scandinavian Modern", "Secessionist", "Space Age", "Victorian", "Vienna Secession"],
+  asian_antiques: ["Arita", "Banko", "Edo", "Famille Jaune", "Famille Noire", "Famille Rose", "Famille Verte", "Han Dynasty", "Imari", "Kangxi Period", "Kutani", "Meiji", "Ming Dynasty", "Qing Dynasty", "Qianlong Period", "Republic Period", "Satsuma", "Song Dynasty", "Tang Dynasty", "Taisho", "Yongzheng Period", "Yuan Dynasty"],
   default: ["Art Deco", "Art Nouveau", "Arts and Crafts", "Baroque", "Biedermeier", "Chinoiserie", "Edwardian", "Empire", "Georgian", "Gothic Revival", "Industrial", "Mid-Century Modern", "Modern", "Neoclassical", "Rococo", "Scandinavian Modern", "Victorian"],
 };
 
@@ -144,7 +94,7 @@ export const SIGNATURE_STATUSES = ["Signed", "Monogrammed", "Attributed To", "Af
 
 // ─── Materials by Category ────────────────────────────────────────────────────
 export const MATERIALS = {
-  decorative_arts: ["Bronze", "Brass", "Copper", "Pewter", "Iron", "Steel", "Wood", "Lacquer", "Enamel", "Porcelain", "Ceramic", "Glass", "Crystal", "Stone", "Marble", "Alabaster", "Resin", "Composition", "Mother-of-Pearl", "Shell", "Bone", "Leather"],
+  decorative_art: ["Bronze", "Brass", "Copper", "Pewter", "Iron", "Steel", "Wood", "Lacquer", "Enamel", "Porcelain", "Ceramic", "Glass", "Crystal", "Stone", "Marble", "Alabaster", "Resin", "Composition", "Mother-of-Pearl", "Shell", "Bone", "Leather"],
   furniture: ["Walnut", "Mahogany", "Oak", "Rosewood", "Teak", "Maple", "Pine", "Cherry", "Satinwood", "Kingwood", "Burl Wood", "Ebony", "Ebonized Wood", "Giltwood", "Lacquered Wood", "Cane", "Wicker", "Rattan", "Steel", "Brass", "Bronze", "Iron", "Glass", "Marble", "Leather", "Velvet", "Linen"],
   sculpture: ["Bronze", "Marble", "Terracotta", "Plaster", "Stone", "Granite", "Alabaster", "Wood", "Ivory", "Bone", "Resin", "Steel", "Iron", "Brass", "Copper", "Glass"],
   jewelry: ["Yellow Gold", "White Gold", "Rose Gold", "Platinum", "Sterling Silver", "Silver", "Vermeil", "Gold Filled", "Gold Plated", "Stainless Steel"],
@@ -174,16 +124,10 @@ export const CATEGORY_FIELDS = {
     optional: ["manufacturer", "woodType", "upholsteryMaterial"],
     titleFormula: ["maker", "origin", "style", "period", "primaryMaterial", "objectType"],
   },
-  decorative_arts: {
+  decorative_art: {
     required: ["objectType"],
     recommended: ["maker", "origin", "style", "primaryMaterial", "period"],
-    optional: ["pattern", "marks"],
-    titleFormula: ["maker", "origin", "style", "primaryMaterial", "objectType"],
-  },
-  lighting: {
-    required: ["objectType"],
-    recommended: ["maker", "origin", "style", "primaryMaterial", "period"],
-    optional: ["shade_material"],
+    optional: ["pattern", "marks", "shade_material"],
     titleFormula: ["maker", "origin", "style", "primaryMaterial", "objectType"],
   },
   jewelry: {
@@ -192,31 +136,7 @@ export const CATEGORY_FIELDS = {
     optional: ["ringSize", "caratWeight"],
     titleFormula: ["signatureStatus", "maker", "metalPurity", "metal", "stone", "objectType"],
   },
-  ceramics_porcelain: {
-    required: ["objectType"],
-    recommended: ["maker", "origin", "style", "period", "pattern"],
-    optional: ["marks"],
-    titleFormula: ["maker", "origin", "style", "period", "objectType"],
-  },
-  glass: {
-    required: ["objectType"],
-    recommended: ["maker", "glassType", "origin", "period"],
-    optional: ["marks"],
-    titleFormula: ["maker", "origin", "glassType", "period", "objectType"],
-  },
-  silver: {
-    required: ["objectType", "silverType"],
-    recommended: ["maker", "origin", "period", "marks"],
-    optional: ["pattern"],
-    titleFormula: ["maker", "origin", "period", "silverType", "objectType"],
-  },
-  sculpture: {
-    required: ["objectType", "primaryMaterial"],
-    recommended: ["artist", "signatureStatus", "origin", "style", "period"],
-    optional: ["foundry", "edition"],
-    titleFormula: ["signatureStatus", "artist", "origin", "style", "primaryMaterial", "objectType"],
-  },
-  asian_works: {
+  asian_antiques: {
     required: ["objectType"],
     recommended: ["origin", "style", "period"],
     optional: ["maker", "marks"],
