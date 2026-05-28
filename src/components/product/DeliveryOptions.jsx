@@ -52,12 +52,7 @@ export default function DeliveryOptions({ item }) {
           )}
         </div>
 
-        {/* Seller shipping note */}
-        {item?.shipping_notes ? (
-          <p className="text-xs text-muted-foreground">{item.shipping_notes}</p>
-        ) : (
-          <p className="text-xs text-muted-foreground">Shipping fees will be calculated by the seller after purchase.</p>
-        )}
+        <p className="text-xs text-muted-foreground">Shipping fees will be calculated by the seller after purchase.</p>
 
         {/* ThePackengers demo row */}
         <div className="flex items-center justify-between border border-border rounded-lg px-4 py-3 bg-background">
