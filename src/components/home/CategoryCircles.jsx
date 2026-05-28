@@ -5,7 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Bell, BellOff,
-  Palette, Gem, Watch, Sofa, FlaskConical, Globe, Shirt, Archive
+  Palette, Gem, Watch, Sofa, FlaskConical, Globe, Shirt, Archive, Sun
 } from "lucide-react";
 
 const categories = [
@@ -38,14 +38,21 @@ const categories = [
     image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80&fit=crop",
   },
   {
-    key: "decorative_art",
-    label: "Decorative Art",
+    key: "lighting",
+    label: "Lighting",
+    count: "0",
+    icon: Sun,
+    image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&q=80&fit=crop",
+  },
+  {
+    key: "decorative_arts",
+    label: "Decorative Arts",
     count: "1",
     icon: FlaskConical,
     image: "https://media.base44.com/images/public/69beac1c3231aaeb891946d5/b1b4cc42b_Screenshot2026-04-30at11135PM.jpg",
   },
   {
-    key: "asian_antiques",
+    key: "asian_works",
     label: "Asian Art",
     count: "0",
     icon: Globe,
@@ -145,7 +152,7 @@ export default function CategoryCircles() {
         </div>
 
         {/* Cards — horizontal scroll on mobile, grid on desktop */}
-        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-8 md:overflow-visible md:snap-none">
+        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-9 md:overflow-visible md:snap-none">
           {categories.map((cat, i) => {
             const Icon = cat.icon;
             return (
