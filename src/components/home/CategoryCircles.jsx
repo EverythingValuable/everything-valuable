@@ -25,7 +25,7 @@ const categories = [
   },
   {
     key: "watches_clocks",
-    label: "Watches",
+    label: "Watches and Clocks",
     count: "1",
     icon: Watch,
     image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=600&q=80&fit=crop",
