@@ -525,9 +525,12 @@ export default function ListingStudio() {
     ));
   };
 
+  const [createdId, setCreatedId] = useState(null);
+
   const saveDraft = async () => {
     setSaving(true);
-    if (isEditMode) {
+    const currentId = editId || createdId;
+    if (currentId) {
       if (isLive) {
         const restrictedPayload = {
           images: form.images, category: form.category, subcategory: form.subcategory || undefined,
@@ -536,33 +539,36 @@ export default function ListingStudio() {
           short_description: form.short_description, condition: form.condition,
           condition_notes: form.condition_notes, shipping_notes: form.shipping_notes,
           internal_notes: JSON.stringify({
-      custom_fields: form.custom_fields,
-      taxonomy_fields: {
-        objectType: form.objectType, artist: form.artist, maker: form.maker,
-        manufacturer: form.manufacturer, signatureStatus: form.signatureStatus,
-        medium: form.medium, support: form.support, style: form.style,
-        origin: form.origin, period: form.period, primaryMaterial: form.primaryMaterial,
-        secondaryMaterial: form.secondaryMaterial, metal: form.metal,
-        metalPurity: form.metalPurity, stone: form.stone, caratWeight: form.caratWeight,
-        glassType: form.glassType, silverType: form.silverType, pattern: form.pattern,
-        shade_material: form.shade_material, titleOfWork: form.titleOfWork,
-        subject: form.subject, framed: form.framed, printEdition: form.printEdition,
-        printPublisher: form.printPublisher, printPrinter: form.printPrinter,
-        foundry: form.foundry, edition: form.edition, upholsteryMaterial: form.upholsteryMaterial,
-        woodType: form.woodType, ring_size: form.ring_size, marks: form.marks,
-      }
-    }),
+            custom_fields: form.custom_fields,
+            taxonomy_fields: {
+              objectType: form.objectType, artist: form.artist, maker: form.maker,
+              manufacturer: form.manufacturer, signatureStatus: form.signatureStatus,
+              medium: form.medium, support: form.support, style: form.style,
+              origin: form.origin, period: form.period, primaryMaterial: form.primaryMaterial,
+              secondaryMaterial: form.secondaryMaterial, metal: form.metal,
+              metalPurity: form.metalPurity, stone: form.stone, caratWeight: form.caratWeight,
+              glassType: form.glassType, silverType: form.silverType, pattern: form.pattern,
+              shade_material: form.shade_material, titleOfWork: form.titleOfWork,
+              subject: form.subject, framed: form.framed, printEdition: form.printEdition,
+              printPublisher: form.printPublisher, printPrinter: form.printPrinter,
+              foundry: form.foundry, edition: form.edition, upholsteryMaterial: form.upholsteryMaterial,
+              woodType: form.woodType, ring_size: form.ring_size, marks: form.marks,
+            }
+          }),
           inventory_number: form.inventory_number || undefined,
           location: form.location || undefined, customer_location: form.customer_location || undefined,
         };
-        await base44.entities.Item.update(editId, restrictedPayload);
+        await base44.entities.Item.update(currentId, restrictedPayload);
         await notifyWatchers("Category, description, photos, or condition was updated.");
       } else {
-        await base44.entities.Item.update(editId, buildPayload());
+        await base44.entities.Item.update(currentId, buildPayload());
       }
     } else {
       const user = await base44.auth.me();
-      await base44.entities.Item.create(buildPayload({ seller_email: user.email, seller_name: user.full_name, status: "draft" }));
+      const newItem = await base44.entities.Item.create(buildPayload({ seller_email: user.email, seller_name: user.full_name, status: "draft" }));
+      setCreatedId(newItem.id);
+      // Update URL so the page knows about the new item without a full reload
+      window.history.replaceState(null, "", `/seller/studio?edit=${newItem.id}`);
     }
     setSaving(false);
     setSaved(true);
@@ -628,8 +634,9 @@ export default function ListingStudio() {
     const now = new Date();
     const firstBidsEnd = new Date(now.getTime() + form.first_bids_duration_hours * 3600000);
     const liveFields = { first_bids_start: now.toISOString(), first_bids_end: firstBidsEnd.toISOString(), status: "first_bids", highest_bid: 0, bid_count: 0 };
-    if (isEditMode) {
-      await base44.entities.Item.update(editId, buildPayload(liveFields));
+    const currentId = editId || createdId;
+    if (currentId) {
+      await base44.entities.Item.update(currentId, buildPayload(liveFields));
     } else {
       const user = await base44.auth.me();
       await base44.entities.Item.create(buildPayload({ seller_email: user.email, seller_name: user.full_name, ...liveFields }));
@@ -648,8 +655,9 @@ export default function ListingStudio() {
       first_bids_end: firstBidsEnd.toISOString(),
       highest_bid: 0, bid_count: 0,
     };
-    if (isEditMode) {
-      await base44.entities.Item.update(editId, buildPayload(schedFields));
+    const currentId = editId || createdId;
+    if (currentId) {
+      await base44.entities.Item.update(currentId, buildPayload(schedFields));
     } else {
       const user = await base44.auth.me();
       await base44.entities.Item.create(buildPayload({ seller_email: user.email, seller_name: user.full_name, ...schedFields }));
