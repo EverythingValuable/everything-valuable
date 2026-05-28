@@ -372,6 +372,13 @@ export default function ProductDetailContent({ itemId }) {
                   </div>
                 </CollapsibleSection>
               )}
+              {item.shipping_notes && (
+                <CollapsibleSection title="Shipping" defaultOpen={false}>
+                  <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm w-full max-w-full overflow-hidden break-words [overflow-wrap:anywhere]">
+                    <ReactMarkdown components={mdComponents}>{item.shipping_notes}</ReactMarkdown>
+                  </div>
+                </CollapsibleSection>
+              )}
               </div>
           </div>
 
@@ -417,13 +424,6 @@ export default function ProductDetailContent({ itemId }) {
                 🔔 Price Alert
               </Button>
               <DeliveryOptions item={item} />
-              {item.shipping_notes && (
-                <CollapsibleSection title="Shipping" defaultOpen={false}>
-                  <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm w-full max-w-full overflow-hidden break-words [overflow-wrap:anywhere]">
-                    <ReactMarkdown components={mdComponents}>{item.shipping_notes}</ReactMarkdown>
-                  </div>
-                </CollapsibleSection>
-              )}
               <ItemMessaging item={item} user={user} />
               {sellerProfile?.terms_and_conditions && (
                 <TermsAndConditions terms={sellerProfile.terms_and_conditions} defaultOpen={false} />
