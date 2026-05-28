@@ -46,31 +46,58 @@ Deno.serve(async (req) => {
           ? `Great news! ${item.title} just entered 1stBid$ phase. Check it out now!`
           : `Perfect timing! ${item.title} is now available at $${item.current_price.toLocaleString("en-US")} — your target price!`;
 
-        await base44.integrations.Core.SendEmail({
-          to: alert.user_email,
-          subject: `Price Alert: ${item.title}`,
-          body: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #1a1a1a; margin-bottom: 20px;">Your Price Alert Triggered!</h2>
-              
-              ${item.images?.[0] ? `<img src="${item.images[0]}" alt="${item.title}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;" />` : ''}
-              
-              <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-                <h3 style="margin: 0 0 10px 0; color: #1a1a1a;">${item.title}</h3>
-                ${triggerReason === "first_bids_started"
-                  ? `<p style="margin: 0; color: #666; font-size: 14px;">1stBid$ phase has started!</p>`
-                  : `<p style="margin: 0; color: #666; font-size: 14px;">Current price: <strong style="color: #1a1a1a; font-size: 16px;">$${item.current_price.toLocaleString("en-US", { minimumFractionDigits: 2 })}</strong></p>
-                    <p style="margin: 5px 0 0 0; color: #999; font-size: 12px;">Your target: $${alert.target_price.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>`
-                }
-              </div>
-              
-              <a href="https://everythingvaluable.com/item/${item.id}" style="display: inline-block; background: #8b6f47; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-bottom: 20px;">View Item</a>
-              
-              <p style="color: #999; font-size: 12px; margin: 20px 0 0 0;">
-                This alert has been automatically marked as triggered and won't send again.
-              </p>
+        const itemImageHtml = item.images?.[0]
+          ? `<img src="${item.images[0]}" alt="${item.title}" width="100%" style="display:block;max-height:260px;object-fit:cover;margin:0 0 24px;" />`
+          : '';
+
+        const alertBody = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f0ede8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f0ede8;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:580px;">
+        <tr><td style="padding-bottom:20px;text-align:center;">
+          <img src="https://media.base44.com/images/public/69beac1c3231aaeb891946d5/3a2676053_LOGOEV.png" alt="Everything Valuable" width="140" style="height:auto;display:block;margin:0 auto;" />
+        </td></tr>
+        <tr><td style="background:#ffffff;border:1px solid #ddd8d0;overflow:hidden;">
+          <div style="height:3px;background:#c0392b;"></div>
+          <div style="padding:36px 40px 28px;border-bottom:1px solid #ede9e3;">
+            <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#c0392b;">Price Alert</p>
+            <h1 style="margin:0;font-size:24px;font-weight:700;color:#111111;line-height:1.25;">${triggerReason === "first_bids_started" ? "Bidding Has Opened" : "Your Target Price Was Reached"}</h1>
+          </div>
+          <div style="padding:32px 40px;">
+            ${itemImageHtml}
+            <div style="background:#f8f6f3;border:1px solid #ede9e3;padding:20px 24px;margin:0 0 24px;">
+              <p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#999;">Item</p>
+              <p style="margin:0 0 14px;font-size:16px;font-weight:600;color:#111;">${item.title}</p>
+              ${triggerReason === "first_bids_started"
+                ? `<p style="margin:0;font-size:14px;color:#555;">The 1stBid$™ preview phase has begun — you can now place a bid.</p>`
+                : `<p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#999;">Current Price</p>
+                   <p style="margin:0 0 10px;font-size:22px;font-weight:700;color:#c0392b;">$${item.current_price.toLocaleString("en-US")}</p>
+                   <p style="margin:0;font-size:12px;color:#999;">Your target: $${alert.target_price.toLocaleString("en-US")}</p>`
+              }
             </div>
-          `
+            <a href="https://everythingvaluable.com/item/${item.id}" style="display:inline-block;background:#111;color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:13px 28px;">View Item Now</a>
+          </div>
+          <div style="background:#f8f6f3;border-top:1px solid #ede9e3;padding:20px 40px;text-align:center;">
+            <p style="margin:0 0 4px;font-size:12px;color:#999;">© Everything Valuable — Fine Art, Antiques & Collectibles</p>
+            <p style="margin:0;font-size:11px;color:#bbb;"><a href="https://everythingvaluable.com" style="color:#bbb;text-decoration:none;">everythingvaluable.com</a></p>
+          </div>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+        await base44.integrations.Core.SendEmail({
+          from_name: 'Everything Valuable',
+          to: alert.user_email,
+          subject: triggerReason === "first_bids_started"
+            ? `Bidding Now Open: ${item.title}`
+            : `Price Alert: ${item.title} Has Reached Your Target`,
+          body: alertBody,
         });
 
         // Update alert status to triggered
