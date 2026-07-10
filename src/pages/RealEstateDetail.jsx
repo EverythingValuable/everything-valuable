@@ -13,6 +13,8 @@ import { useToast } from "@/components/ui/use-toast";
 import HotspotProductGallery from "../components/product/HotspotProductGallery";
 import PriceConvergenceModule from "../components/product/PriceConvergenceModule";
 import RealEstateBidSection from "../components/realestate/RealEstateBidSection";
+import MortgageCalculator from "../components/realestate/MortgageCalculator";
+import RENeighborhoodMap from "../components/realestate/RENeighborhoodMap";
 
 // Fake listings mirror REFeaturedListings data so detail page works for demo
 const FAKE_LISTINGS = {
@@ -369,6 +371,17 @@ export default function RealEstateDetail() {
                 </div>
               </CollapsibleSection>
 
+              {/* Neighborhood Map */}
+              {(listing.latitude || listing.location) && (
+                <CollapsibleSection title="Location & Neighborhood" defaultOpen={false}>
+                  <RENeighborhoodMap
+                    lat={listing.latitude || 41.9265}
+                    lng={listing.longitude || -73.9124}
+                    title={listing.title}
+                  />
+                </CollapsibleSection>
+              )}
+
               {/* Document Download Buttons */}
               <div className="border-t border-border pt-6 space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Documents</p>
@@ -449,6 +462,9 @@ export default function RealEstateDetail() {
 
               {/* Messaging */}
               <RealEstateAgentMessaging listingId={listingId} sellerName={listing.seller_name} />
+
+              {/* Mortgage Calculator */}
+              <MortgageCalculator defaultPrice={listing.prisometer_start_price} />
 
               <Separator />
 

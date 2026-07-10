@@ -23,6 +23,8 @@ import SellerSettings from './pages/SellerSettings';
 import SellerPublicProfile from './pages/SellerPublicProfile';
 import RealEstateHome from './pages/RealEstateHome';
 import RealEstateDetail from './pages/RealEstateDetail';
+import RealEstateBrowse from './pages/RealEstateBrowse';
+import RealEstateAgents from './pages/RealEstateAgents';
 import Portal from './pages/Portal';
 import HotspotManager from './pages/HotspotManager';
 import BulkUpload from './pages/BulkUpload';
@@ -109,6 +111,8 @@ const AuthenticatedApp = () => {
         <Route path="/about" element={<About />} />
         <Route path="/sell" element={<SellWithUs />} />
         <Route path="/real-property" element={<RealEstateHome />} />
+        <Route path="/real-property/browse" element={<RealEstateBrowse />} />
+        <Route path="/real-property/agents" element={<RealEstateAgents />} />
         <Route path="/real-property/listing/:id" element={<RealEstateDetail />} />
         <Route path="/hotspot-manager" element={<HotspotManager />} />
         <Route path="/seller-access" element={<SellerAccess />} />

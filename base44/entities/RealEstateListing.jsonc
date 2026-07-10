@@ -1,0 +1,208 @@
+{
+  "name": "RealEstateListing",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "short_description": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "property_type": {
+      "type": "string",
+      "enum": [
+        "single_family",
+        "condo",
+        "townhouse",
+        "multi_family",
+        "land",
+        "commercial",
+        "farm_estate",
+        "waterfront",
+        "historic_estate",
+        "other"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "coming_soon",
+        "first_bids",
+        "prisometer",
+        "sold",
+        "off_market"
+      ],
+      "default": "draft"
+    },
+    "address_line1": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "zip": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string",
+      "default": "United States"
+    },
+    "display_location": {
+      "type": "string",
+      "description": "Public-facing location string, e.g. Rhinebeck, NY"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "beds": {
+      "type": "number"
+    },
+    "baths": {
+      "type": "number"
+    },
+    "sqft": {
+      "type": "number"
+    },
+    "acres": {
+      "type": "number"
+    },
+    "year_built": {
+      "type": "number"
+    },
+    "garage_spaces": {
+      "type": "number"
+    },
+    "stories": {
+      "type": "number"
+    },
+    "hoa_monthly": {
+      "type": "number"
+    },
+    "tax_annual": {
+      "type": "number"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "e.g. Pool, Fireplace, Water Views, Private Dock"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "virtual_tour_url": {
+      "type": "string"
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "ID of the RealEstateAgent record"
+    },
+    "seller_email": {
+      "type": "string"
+    },
+    "seller_name": {
+      "type": "string"
+    },
+    "prisometer_start_price": {
+      "type": "number"
+    },
+    "reserve_price": {
+      "type": "number"
+    },
+    "below_reserve_percent": {
+      "type": "number",
+      "enum": [
+        10,
+        15,
+        20
+      ]
+    },
+    "prisometer_duration_hours": {
+      "type": "number"
+    },
+    "prisometer_activated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "current_price": {
+      "type": "number"
+    },
+    "first_bids_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "first_bids_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "first_bids_duration_hours": {
+      "type": "number"
+    },
+    "highest_bid": {
+      "type": "number",
+      "default": 0
+    },
+    "highest_bidder_email": {
+      "type": "string"
+    },
+    "bid_count": {
+      "type": "number",
+      "default": 0
+    },
+    "sold_price": {
+      "type": "number"
+    },
+    "sold_to_email": {
+      "type": "string"
+    },
+    "sold_via": {
+      "type": "string",
+      "enum": [
+        "bid",
+        "make_it_mine",
+        "seller_accepted"
+      ]
+    },
+    "make_it_mine_active": {
+      "type": "boolean",
+      "default": false
+    },
+    "make_it_mine_expires": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "condition_notes": {
+      "type": "string"
+    },
+    "transaction_notes": {
+      "type": "string"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0
+    },
+    "watcher_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "property_type",
+    "prisometer_start_price"
+  ]
+}

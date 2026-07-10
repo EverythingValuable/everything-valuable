@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Star, Award } from "lucide-react";
+import { ArrowRight, Shield, Star, Award, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import REHeroSection from "../components/realestate/REHeroSection";
 import RealEstateSearchBar from "../components/realestate/RealEstateSearchBar";
@@ -87,15 +87,20 @@ export default function RealEstateHome() {
             Join brokers, estate sellers, and private owners using Everything Valuable 
             to reach a global audience of discerning buyers.
           </p>
-          <div className="flex justify-center gap-4">
-            <Link to="/sell">
+          <div className="flex justify-center gap-4 flex-wrap">
+            <Link to="/real-property/browse">
               <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 rounded-full h-12 px-8">
-                Become a Seller <ArrowRight className="w-4 h-4" />
+                Browse Properties <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/real-property">
+            <Link to="/real-property/agents">
               <Button size="lg" variant="outline" className="gap-2 rounded-full h-12 px-8">
-                Browse Properties
+                <Users className="w-4 h-4" /> Find an Agent
+              </Button>
+            </Link>
+            <Link to="/sell">
+              <Button size="lg" variant="outline" className="gap-2 rounded-full h-12 px-8">
+                Become a Seller
               </Button>
             </Link>
           </div>

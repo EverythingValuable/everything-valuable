@@ -64,7 +64,7 @@ export default function RECategoryGrid() {
               transition={{ delay: i * 0.08 }}
             >
               <Link
-                to={`/real-estate/browse?category=${cat.key}`}
+                to={`/real-property/browse?category=${cat.key}`}
                 className="group relative aspect-[3/2] md:aspect-[4/3] overflow-hidden rounded-xl block"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-muted to-secondary group-hover:from-muted/80 transition-all duration-500" />

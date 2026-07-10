@@ -54,7 +54,7 @@ export default function REHeroSection() {
 
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-5 mb-8">
-            <Link to="/real-estate/browse">
+            <Link to="/real-property/browse">
               <Button
                 size="lg"
                 className="bg-foreground text-background hover:bg-foreground/85 gap-2 h-11 px-7 text-sm font-semibold rounded-none tracking-wide"

@@ -1,0 +1,94 @@
+{
+  "name": "RealEstateAgent",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "e.g. Licensed Real Estate Broker, Senior Advisor"
+    },
+    "photo_url": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "brokerage": {
+      "type": "string"
+    },
+    "license_number": {
+      "type": "string"
+    },
+    "licensed_states": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "e.g. [NY, CT, NJ]"
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "e.g. Luxury Estates, Waterfront, Historic Properties"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "years_experience": {
+      "type": "number"
+    },
+    "total_sales_volume": {
+      "type": "number"
+    },
+    "active_listings_count": {
+      "type": "number",
+      "default": 0
+    },
+    "closed_transactions": {
+      "type": "number",
+      "default": 0
+    },
+    "rating": {
+      "type": "number"
+    },
+    "review_count": {
+      "type": "number",
+      "default": 0
+    },
+    "service_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Cities or regions served"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "email"
+  ]
+}
