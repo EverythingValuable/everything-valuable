@@ -14,6 +14,24 @@ export default function RealEstateHome() {
     <div>
       <REHeroSection />
 
+      {/* Quick Nav */}
+      <div className="border-b border-border bg-card">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-6 flex items-center gap-1 overflow-x-auto scrollbar-hide py-3">
+          <Link to="/real-property/browse" className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-foreground text-background text-xs font-semibold whitespace-nowrap hover:bg-foreground/85 transition-colors">
+            <span>🏠</span> Browse All Properties
+          </Link>
+          <Link to="/real-property/browse?view=map" className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-border text-xs font-semibold whitespace-nowrap hover:bg-muted transition-colors">
+            <span>🗺️</span> Map View
+          </Link>
+          <Link to="/real-property/agents" className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-border text-xs font-semibold whitespace-nowrap hover:bg-muted transition-colors">
+            <span>👤</span> Our Agents
+          </Link>
+          <Link to="/how-it-works" className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-border text-xs font-semibold whitespace-nowrap hover:bg-muted transition-colors">
+            <span>ℹ️</span> How It Works
+          </Link>
+        </div>
+      </div>
+
       {/* Search Bar */}
       <RealEstateSearchBar />
 

@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Search, Star, Phone, Mail, Globe, MapPin, Award, TrendingUp } from "lucide-react";
+import { Search, Star, Phone, Mail, Globe, MapPin, Award, TrendingUp, Bed, Bath, Square, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -52,6 +53,105 @@ const DEMO_AGENTS = [
     featured: false, active: true,
   },
 ];
+
+const STATUS_CONFIG = {
+  first_bids: { label: "1stBid$™", color: "bg-primary/10 text-primary border-primary/20" },
+  prisometer: { label: "PRI$OMETER™", color: "bg-red-50 text-red-600 border-red-200" },
+  coming_soon: { label: "Coming Soon", color: "bg-amber-50 text-amber-700 border-amber-200" },
+  sold: { label: "Sold", color: "bg-gray-100 text-gray-500 border-gray-200" },
+};
+
+function AgentListings({ agentId, agentName }) {
+  const [open, setOpen] = useState(false);
+
+  const { data: listings = [], isLoading } = useQuery({
+    queryKey: ["agent-listings", agentId],
+    queryFn: () => base44.entities.RealEstateListing.filter({ agent_id: agentId }),
+    enabled: open,
+    staleTime: 60000,
+  });
+
+  // Also check by seller_name as fallback for demo data
+  const { data: byName = [] } = useQuery({
+    queryKey: ["agent-listings-byname", agentName],
+    queryFn: () => base44.entities.RealEstateListing.filter({ seller_name: agentName }),
+    enabled: open && listings.length === 0,
+    staleTime: 60000,
+  });
+
+  const allListings = listings.length > 0 ? listings : byName;
+  const active = allListings.filter(l => l.status !== "sold" && l.status !== "off_market");
+  const past = allListings.filter(l => l.status === "sold" || l.status === "off_market");
+
+  return (
+    <div className="border-t border-border mt-4 pt-3">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="flex items-center justify-between w-full text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <span>View Listings</span>
+        {open ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+      </button>
+
+      {open && (
+        <div className="mt-3 space-y-4">
+          {isLoading && <p className="text-xs text-muted-foreground">Loading...</p>}
+
+          {!isLoading && allListings.length === 0 && (
+            <p className="text-xs text-muted-foreground italic">No listings on record yet.</p>
+          )}
+
+          {active.length > 0 && (
+            <div>
+              <p className="text-[10px] uppercase tracking-wider font-semibold text-primary mb-2">Active ({active.length})</p>
+              <div className="space-y-2">
+                {active.map(l => (
+                  <Link key={l.id} to={`/real-property/listing/${l.id}`} className="flex gap-3 group">
+                    <div className="w-16 h-12 rounded-lg overflow-hidden bg-muted shrink-0">
+                      {l.images?.[0] && <img src={l.images[0]} alt={l.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium line-clamp-1 group-hover:text-primary transition-colors">{l.title}</p>
+                      <p className="text-[10px] text-muted-foreground">{l.display_location}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${STATUS_CONFIG[l.status]?.color}`}>{STATUS_CONFIG[l.status]?.label || l.status}</Badge>
+                        <span className="text-[10px] font-semibold">${l.prisometer_start_price?.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {past.length > 0 && (
+            <div>
+              <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-2">Past Sales ({past.length})</p>
+              <div className="space-y-2">
+                {past.map(l => (
+                  <Link key={l.id} to={`/real-property/listing/${l.id}`} className="flex gap-3 group opacity-70 hover:opacity-100 transition-opacity">
+                    <div className="w-16 h-12 rounded-lg overflow-hidden bg-muted shrink-0">
+                      {l.images?.[0] && <img src={l.images[0]} alt={l.title} className="w-full h-full object-cover" />}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium line-clamp-1">{l.title}</p>
+                      <p className="text-[10px] text-muted-foreground">{l.display_location}</p>
+                      <p className="text-[10px] font-semibold text-muted-foreground">{l.sold_price ? `Sold $${l.sold_price.toLocaleString()}` : `Listed $${l.prisometer_start_price?.toLocaleString()}`}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Link to={`/real-property/browse`} className="block text-center text-xs text-primary font-semibold hover:underline pt-1">
+            View all properties →
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function AgentCard({ agent, index }) {
   const [showContact, setShowContact] = useState(false);
@@ -157,6 +257,8 @@ function AgentCard({ agent, index }) {
             )}
           </div>
         )}
+
+        <AgentListings agentId={agent.id} agentName={agent.name} />
       </div>
     </motion.div>
   );

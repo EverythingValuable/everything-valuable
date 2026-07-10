@@ -103,7 +103,8 @@ function ListingCard({ listing }) {
 }
 
 export default function RealEstateBrowse() {
-  const [view, setView] = useState("grid"); // "grid" | "map"
+  const urlParams = new URLSearchParams(window.location.search);
+  const [view, setView] = useState(urlParams.get("view") === "map" ? "map" : "grid"); // "grid" | "map"
   const [search, setSearch] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [minPrice, setMinPrice] = useState("");
