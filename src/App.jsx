@@ -48,6 +48,7 @@ import ConsignorDetail from './pages/ConsignorDetail';
 import SellerAccess from './pages/SellerAccess';
 import Dealers from './pages/Dealers';
 import ItemsNearMe from './pages/ItemsNearMe';
+import PrisometerLicensing from './pages/PrisometerLicensing';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -118,6 +119,7 @@ const AuthenticatedApp = () => {
         <Route path="/seller-access" element={<SellerAccess />} />
         <Route path="/dealers" element={<Dealers />} />
         <Route path="/items-near-me" element={<ItemsNearMe />} />
+        <Route path="/prisometer-licensing" element={<PrisometerLicensing />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
