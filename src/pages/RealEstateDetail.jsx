@@ -466,6 +466,23 @@ export default function RealEstateDetail() {
               {/* Mortgage Calculator */}
               <MortgageCalculator defaultPrice={listing.prisometer_start_price} />
 
+              {/* Mini map */}
+              {listing.location && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Location</p>
+                  <div className="rounded-lg overflow-hidden border border-border" style={{ height: 180 }}>
+                    <RENeighborhoodMap
+                      lat={listing.latitude || 41.9265}
+                      lng={listing.longitude || -73.9124}
+                      title={listing.title}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />{listing.location}
+                  </p>
+                </div>
+              )}
+
               <Separator />
 
               {/* Actions */}

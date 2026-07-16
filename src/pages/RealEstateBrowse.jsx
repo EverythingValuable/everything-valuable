@@ -212,17 +212,30 @@ export default function RealEstateBrowse() {
       </div>
 
       {/* Content */}
-      <div className="max-w-screen-2xl mx-auto px-4 md:px-8 py-8">
-        {view === "map" ? (
-          <div className="grid lg:grid-cols-5 gap-6">
-            <div className="lg:col-span-3 h-[600px] rounded-xl overflow-hidden border border-border">
-              <REPropertyMap listings={filtered} />
+      {view === "map" ? (
+        <div className="relative flex" style={{ height: "calc(100vh - 180px)", minHeight: 500 }}>
+          {/* Full-bleed map */}
+          <div className="absolute inset-0">
+            <REPropertyMap listings={filtered} />
+          </div>
+          {/* Floating side panel */}
+          <div className="relative z-10 ml-auto w-full max-w-xs bg-background/95 backdrop-blur-md border-l border-border overflow-y-auto shadow-2xl">
+            <div className="p-4 border-b border-border sticky top-0 bg-background/95 backdrop-blur-md">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{filtered.length} propert{filtered.length !== 1 ? "ies" : "y"}</p>
             </div>
-            <div className="lg:col-span-2 space-y-4 overflow-y-auto max-h-[600px] pr-1">
-              {filtered.map((l, i) => <ListingCard key={l.id} listing={l} />)}
+            <div className="p-4 space-y-5">
+              {filtered.map(l => <ListingCard key={l.id} listing={l} />)}
+              {filtered.length === 0 && (
+                <div className="text-center py-12 text-muted-foreground">
+                  <MapPin className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No properties match</p>
+                </div>
+              )}
             </div>
           </div>
-        ) : (
+        </div>
+      ) : (
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-8 py-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6">
             {filtered.map((l, i) => (
               <motion.div key={l.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
@@ -237,8 +250,8 @@ export default function RealEstateBrowse() {
               </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
