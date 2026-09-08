@@ -1,0 +1,39 @@
+{
+  "name": "Check Price Alerts on Item Update",
+  "description": "",
+  "trigger": {
+    "condition": "${ ((.trigger.changed_fields | index(\"current_price\") != null) or (.trigger.changed_fields | index(\"status\") != null) or (.trigger.data.status == \"first_bids\")) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "Item"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "check_price_alerts_on_item_update",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "checkPriceAlerts",
+            "args": {
+              "trigger_type": "price_changed"
+            }
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "checkPriceAlerts"
+  }
+}
