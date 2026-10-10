@@ -28,7 +28,7 @@ const THEMES = {
   classic: { light: { bg: "#fffbf5", text: "#2c2c2c", primary: "#8b5a3c" }, dark: { bg: "#1a1410", text: "#f5f1ec", primary: "#d4a574" } }
 };
 
-const LIVE_STATUSES = ["first_bids", "prisometer", "pending_review"];
+const LIVE_STATUSES = ["first_bids", "buy_now", "prisometer", "pending_review"];
 const CONDITIONS = ["excellent", "very_good", "good", "fair", "as_is"];
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
@@ -275,6 +275,8 @@ export default function ListingStudio() {
     first_bids_duration_hours: 168, prisometer_start_price: "",
     reserve_price: "", below_reserve_percent: 10,
     prisometer_duration_hours: 168,
+    phase_2_duration_hours: 72, anti_snipe_window_minutes: 10,
+    phase_1_color: "gray", phase_2_color: "red", phase_3_color: "green",
     internal_notes: "", custom_fields: [],
     inventory_number: "", ownership_type: "owned",
     consignor_name: "", consignor_email: "", consignor_phone: "",
@@ -353,6 +355,11 @@ export default function ListingStudio() {
           reserve_price: item.reserve_price || "",
           below_reserve_percent: item.below_reserve_percent || 10,
           prisometer_duration_hours: item.prisometer_duration_hours || 168,
+          phase_2_duration_hours: item.phase_2_duration_hours || 72,
+          anti_snipe_window_minutes: item.anti_snipe_window_minutes || 10,
+          phase_1_color: item.phase_1_color || "gray",
+          phase_2_color: item.phase_2_color || "red",
+          phase_3_color: item.phase_3_color || "green",
           internal_notes: item.internal_notes || "", custom_fields: customFields,
           inventory_number: item.inventory_number || "", ownership_type: item.ownership_type || "owned",
           consignor_name: item.consignor_name || "", consignor_email: item.consignor_email || "",
@@ -483,6 +490,11 @@ export default function ListingStudio() {
     below_reserve_percent: form.below_reserve_percent,
     prisometer_duration_hours: form.prisometer_duration_hours,
     first_bids_duration_hours: form.first_bids_duration_hours,
+    phase_2_duration_hours: form.phase_2_duration_hours,
+    anti_snipe_window_minutes: form.anti_snipe_window_minutes,
+    phase_1_color: form.phase_1_color,
+    phase_2_color: form.phase_2_color,
+    phase_3_color: form.phase_3_color,
     make_it_mine_active: true,
     internal_notes: JSON.stringify({
       custom_fields: form.custom_fields,
@@ -1277,14 +1289,14 @@ export default function ListingStudio() {
             </Field>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-2 border-t border-neutral-50">
-              <Field label="1stBids™ Preview Duration" infoTip="Choose how long the 1stBid$ preview period runs before the PRI$OMETER™ begins. During this preview, buyers can place early bids to show interest and establish demand. If the highest preview bid meets or exceeds the PRI$OMETER™ starting price, the item can sell before the declining-price phase begins. If not, the PRI$OMETER™ goes live and the price begins to drop.">
+              <Field label="Phase 1 — Preview Duration" infoTip="How long Phase 1 (Preview) runs. The PRI$OMETER™ price stays fixed. Buyers place bids to discover whether the asset was underpriced. If the highest offer meets the displayed price, that bidder wins when the phase ends (with anti-snipe extension on late bids). If no offer clears the displayed price, the listing moves to Phase 2 (Buy Now).">
                 <div className="flex gap-2 pt-1">
                   {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 720, label: "30 days" }].map(({ h, label }) => (
                     <Pill key={h} active={form.first_bids_duration_hours === h} onClick={() => set("first_bids_duration_hours", h)}>{label}</Pill>
                   ))}
                 </div>
               </Field>
-              <Field label="Prisometer™ Live Duration" infoTip="Choose how long the PRI$OMETER™ phase will run once live. During this period, the price gradually declines over time while buyers may place bids or use Make It Mine to purchase at the current price. If the declining price meets the highest bid at or above the reserve, the item sells automatically. If the final bid is below reserve, the seller may choose whether to accept it.">
+              <Field label="Phase 3 — Declining Duration" infoTip="How long Phase 3 runs once it begins. The PRI$OMETER™ price declines from the displayed price toward the floor over this period — a longer duration means a slower decline rate. When the declining price meets the highest offer at or above the hidden reserve, the sale completes automatically. If it meets an offer below reserve, the offer is sent to the seller to accept or reject.">
                 <div className="flex gap-2 pt-1">
                   {[{ h: 168, label: "7 days" }, { h: 336, label: "14 days" }, { h: 504, label: "21 days" }].map(({ h, label }) => (
                     <Pill key={h} active={form.prisometer_duration_hours === h} onClick={() => set("prisometer_duration_hours", h)}>{label}</Pill>
@@ -1293,12 +1305,63 @@ export default function ListingStudio() {
               </Field>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-2 border-t border-neutral-50">
+              <Field label="Phase 2 — Buy Now Duration" infoTip="How long the stagnant Buy Now phase lasts after Phase 1 ends with no clearing bid. The PRI$OMETER™ price stays fixed and Make It Mine is active. If nobody buys, Phase 3 (declining) begins.">
+                <div className="flex gap-2 pt-1 flex-wrap">
+                  {[{ h: 24, label: "24 hrs" }, { h: 72, label: "3 days" }, { h: 168, label: "7 days" }, { h: 336, label: "14 days" }].map(({ h, label }) => (
+                    <Pill key={h} active={form.phase_2_duration_hours === h} onClick={() => set("phase_2_duration_hours", h)}>{label}</Pill>
+                  ))}
+                </div>
+              </Field>
+              <Field label="Anti-Snipe Window" infoTip="During Phase 1, if a bid at or above the displayed price lands within this window of expiry, Phase 1 is automatically extended so competing buyers can counter.">
+                <div className="flex gap-2 pt-1 flex-wrap">
+                  {[{ m: 5, label: "5 min" }, { m: 10, label: "10 min" }, { m: 15, label: "15 min" }, { m: 30, label: "30 min" }].map(({ m, label }) => (
+                    <Pill key={m} active={form.anti_snipe_window_minutes === m} onClick={() => set("anti_snipe_window_minutes", m)}>{label}</Pill>
+                  ))}
+                </div>
+              </Field>
+            </div>
+
+            <Field label="PRI$OMETER™ Color by Phase" infoTip="Choose the illumination color the Pri$ometer shows in each phase. Defaults are gray (Preview), red (Buy Now), and green (Declining).">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-1">
+                {[
+                  { key: "phase_1_color", label: "Phase 1 · Preview" },
+                  { key: "phase_2_color", label: "Phase 2 · Buy Now" },
+                  { key: "phase_3_color", label: "Phase 3 · Declining" },
+                ].map(({ key, label }) => (
+                  <div key={key} className="space-y-2">
+                    <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-neutral-400">{label}</p>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {[
+                        { c: "gray", sw: "#9ca3af" },
+                        { c: "red", sw: "#d43d2a" },
+                        { c: "amber", sw: "#f59e0b" },
+                        { c: "green", sw: "#10b981" },
+                      ].map(({ c, sw }) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => set(key, c)}
+                          className={cn(
+                            "w-7 h-7 rounded-full border-2 transition-all",
+                            form[key] === c ? "border-neutral-800 scale-110" : "border-neutral-200"
+                          )}
+                          style={{ backgroundColor: sw }}
+                          aria-label={c}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Field>
+
             <div className="flex items-center justify-between border-t border-neutral-100 pt-5">
               <div>
                 <p className="text-sm font-bold tracking-wide text-neutral-700">Make It Mine™</p>
-                <p className="text-sm text-neutral-500 mt-1">Buyers can purchase immediately at your asking price.</p>
+                <p className="text-sm text-neutral-500 mt-1">Available during Phase 2 — buyers can purchase instantly at the displayed price.</p>
               </div>
-              <span className="text-xs font-bold tracking-[0.15em] uppercase border border-neutral-200 text-neutral-400 px-3 py-1.5">Always On</span>
+              <span className="text-xs font-bold tracking-[0.15em] uppercase border border-neutral-200 text-neutral-400 px-3 py-1.5">Phase 2</span>
             </div>
           </Section>
 

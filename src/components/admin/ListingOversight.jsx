@@ -222,7 +222,7 @@ export default function ListingOversight() {
                   <ExternalLink className="w-3.5 h-3.5" />
                 </Button>
               </Link>
-              {["first_bids", "prisometer"].includes(item.status) && (
+              {["first_bids", "buy_now", "prisometer"].includes(item.status) && (
                 <Button
                   size="sm"
                   variant="outline"

@@ -18,6 +18,7 @@
       "type": "string",
       "enum": [
         "first_bids",
+        "buy_now",
         "prisometer"
       ]
     },

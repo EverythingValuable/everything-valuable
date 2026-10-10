@@ -49,6 +49,7 @@ function ImageLightbox({ images, startIndex, onClose }) {
 const STATUS_CONFIG = {
   draft:          { label: "Draft",           dot: "bg-neutral-300",  text: "text-neutral-400",  bg: "bg-neutral-50",   border: "border-neutral-200", style: "muted" },
   first_bids:     { label: "1stBid$ Preview", dot: "bg-neutral-800",  text: "text-neutral-800",  bg: "bg-white",        border: "border-neutral-700", style: "outlined" },
+  buy_now:        { label: "Buy Now",         dot: "bg-[#d43d2a]",     text: "text-[#d43d2a]",     bg: "bg-[#fef2f0]",     border: "border-[#d43d2a]/30", style: "outlined" },
   prisometer:     { label: "PRI$OMETER Live", dot: "bg-primary",      text: "text-white",        bg: "bg-neutral-900",  border: "border-neutral-900", style: "dark" },
   sold:           { label: "Sold",            dot: null,              text: "text-neutral-700",  bg: "bg-white",        border: "border-neutral-700", style: "sold" },
   pending_review: { label: "Under Review",    dot: "bg-primary",      text: "text-neutral-700",  bg: "bg-white",        border: "border-neutral-300", style: "review" },
@@ -65,6 +66,7 @@ const STATUSES = [
   { value: "active", label: "Active (excl. Sold)" },
   { value: "", label: "All Statuses" },
   { value: "prisometer", label: "PRI$OMETER Live" },
+  { value: "buy_now", label: "Buy Now" },
   { value: "first_bids", label: "1stBid$ Preview" },
   { value: "pending_review", label: "Under Review" },
   { value: "draft", label: "Draft" },
@@ -100,6 +102,10 @@ function itemPriceDisplay(item) {
     const livePrice = computeLivePrisometerPrice(item);
     return { label: "Current", value: livePrice ? `$${Math.round(livePrice).toLocaleString()}` : "—" };
   }
+  if (item.status === "buy_now") {
+    const bid = item.highest_bid || 0;
+    return { label: bid > 0 ? "High bid" : "Buy Now", value: bid > 0 ? `$${bid.toLocaleString()}` : `$${item.prisometer_start_price?.toLocaleString() ?? "—"}` };
+  }
   if (item.status === "first_bids") {
     const bid = item.highest_bid || 0;
     return { label: bid > 0 ? "High bid" : "Starting", value: bid > 0 ? `$${bid.toLocaleString()}` : `$${item.prisometer_start_price?.toLocaleString() ?? "—"}` };
@@ -111,6 +117,7 @@ function itemPriceDisplay(item) {
 function SummaryStrip({ items }) {
   const totalValue = items.reduce((s, i) => s + (i.current_price || i.highest_bid || i.prisometer_start_price || 0), 0);
   const live = items.filter(i => i.status === "prisometer").length;
+  const buyNow = items.filter(i => i.status === "buy_now").length;
   const preview = items.filter(i => i.status === "first_bids").length;
   const sold = items.filter(i => i.status === "sold").length;
   const draft = items.filter(i => i.status === "draft").length;
@@ -119,6 +126,7 @@ function SummaryStrip({ items }) {
     { label: "Total Items",        value: items.length.toLocaleString() },
     { label: "Total Value",        value: `$${totalValue.toLocaleString()}` },
     { label: "PRI$OMETER Live",    value: live.toLocaleString(),    accent: live > 0 },
+    { label: "Buy Now",            value: buyNow.toLocaleString(),   accent: buyNow > 0 },
     { label: "1stBid$ Preview",    value: preview.toLocaleString() },
     { label: "Drafts",             value: draft.toLocaleString() },
     { label: "Sold",               value: sold.toLocaleString(),    green: true },
@@ -348,7 +356,7 @@ export default function InventoryTable({ items, view, limit }) {
         <div className="border border-neutral-200 bg-white divide-y divide-neutral-100">
           {displayed.map((item) => {
             const price = itemPriceDisplay(item);
-            const isLive = ["first_bids", "prisometer", "pending_review"].includes(item.status);
+            const isLive = ["first_bids", "buy_now", "prisometer", "pending_review"].includes(item.status);
             const isConsignment = item.ownership_type === "consignment";
 
             // Timer
@@ -356,6 +364,9 @@ export default function InventoryTable({ items, view, limit }) {
             if (item.status === "first_bids" && item.first_bids_end) {
               const ended = isPast(new Date(item.first_bids_end));
               timerText = { text: ended ? "Preview ended" : `Ends ${formatDistanceToNow(new Date(item.first_bids_end), { addSuffix: true })}`, ended };
+            } else if (item.status === "buy_now" && item.phase_2_end) {
+              const ended = isPast(new Date(item.phase_2_end));
+              timerText = { text: ended ? "Buy Now ended" : `Ends ${formatDistanceToNow(new Date(item.phase_2_end), { addSuffix: true })}`, ended };
             } else if (item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours) {
               const end = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000);
               const ended = isPast(end);
@@ -381,6 +392,7 @@ export default function InventoryTable({ items, view, limit }) {
             const priceLabel = {
               sold: "SOLD FOR",
               prisometer: "CURRENT PRICE",
+              buy_now: item.highest_bid > 0 ? "HIGH BID" : "BUY NOW",
               first_bids: item.highest_bid > 0 ? "HIGH BID" : "STARTING AT",
               pending_review: "OFFER PRICE",
               draft: "ASKING",
@@ -442,7 +454,7 @@ export default function InventoryTable({ items, view, limit }) {
                   {/* Chip row */}
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 5, alignItems: "center" }}>
                     {/* Live status badge */}
-                    {(item.status === "prisometer" || item.status === "first_bids") && (
+                    {(item.status === "prisometer" || item.status === "buy_now" || item.status === "first_bids") && (
                       <StatusBadge status={item.status} />
                     )}
                     {/* Timer chip */}
@@ -453,13 +465,13 @@ export default function InventoryTable({ items, view, limit }) {
                       </span>
                     )}
                     {/* Reserve chip for live */}
-                    {(item.status === "prisometer" || item.status === "first_bids") && item.reserve_price > 0 && (
+                    {(item.status === "prisometer" || item.status === "buy_now" || item.status === "first_bids") && item.reserve_price > 0 && (
                       <span style={{ display: "inline-flex", alignItems: "center", height: 22, padding: "0 8px", fontSize: 11, border: "1px solid #e5e5e5", color: "#777" }}>
                         Reserve ${item.reserve_price.toLocaleString()}
                       </span>
                     )}
                     {/* Non-live chips */}
-                    {item.status !== "prisometer" && item.status !== "first_bids" && visibleChips.map((chip, ci) => (
+                    {item.status !== "prisometer" && item.status !== "buy_now" && item.status !== "first_bids" && visibleChips.map((chip, ci) => (
                       <span key={ci} style={{ display: "inline-flex", alignItems: "center", gap: 4, height: 22, padding: "0 8px", fontSize: 11, border: chip.urgent ? "1px solid rgba(220,38,38,0.25)" : "1px solid #e5e5e5", color: chip.urgent ? "hsl(var(--primary))" : "#777", background: chip.urgent ? "rgba(220,38,38,0.04)" : "transparent" }}>
                         {chip.check && (
                           <svg style={{ width: 10, height: 10 }} viewBox="0 0 10 10" fill="none">
@@ -469,7 +481,7 @@ export default function InventoryTable({ items, view, limit }) {
                         {chip.label}
                       </span>
                     ))}
-                    {item.status !== "prisometer" && item.status !== "first_bids" && overflowCount > 0 && (
+                    {item.status !== "prisometer" && item.status !== "buy_now" && item.status !== "first_bids" && overflowCount > 0 && (
                       <span style={{ display: "inline-flex", alignItems: "center", height: 22, padding: "0 8px", fontSize: 11, border: "1px solid #e5e5e5", color: "#aaa" }}>
                         +{overflowCount} more
                       </span>

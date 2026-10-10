@@ -97,7 +97,7 @@ function PriceConvergenceModuleWrapper({ item }) {
   const queryClient = useQueryClient();
 
   const isActive = item.status === "prisometer" && !item.make_it_mine_active;
-  const isPaused = item.status === "prisometer" && item.make_it_mine_active;
+  const isPaused = (item.status === "prisometer" || item.status === "buy_now") && item.make_it_mine_active;
 
   useEffect(() => {
     if (!isPaused || !item.make_it_mine_expires) return;
@@ -187,7 +187,7 @@ export default function ProductDetailContent({ itemId }) {
   // Watch for convergence → trigger celebration for the winner
   useEffect(() => {
     if (!item || !user) return;
-    const wasActive = prevStatusRef.current === "prisometer" || prevStatusRef.current === "first_bids";
+    const wasActive = prevStatusRef.current === "prisometer" || prevStatusRef.current === "first_bids" || prevStatusRef.current === "buy_now";
     const justSold = item.status === "sold" && wasActive;
     if (justSold && item.sold_to_email === user.email) {
       setShowWinCelebration(true);
@@ -261,7 +261,7 @@ export default function ProductDetailContent({ itemId }) {
   return (
     <div className="w-full max-w-7xl mx-auto overflow-x-hidden">
       {/* Sticky compact price bar for mobile during active phases */}
-      {isMobile && (item.status === "first_bids" || item.status === "prisometer") && (
+      {isMobile && (item.status === "first_bids" || item.status === "buy_now" || item.status === "prisometer") && (
         <div className="lg:hidden sticky top-0 z-20 bg-background border-b border-border px-4 py-2.5 shadow-sm flex items-center justify-between gap-3">
           {item.status === "first_bids" && (
             <>
@@ -271,11 +271,19 @@ export default function ProductDetailContent({ itemId }) {
               </span>
             </>
           )}
+          {item.status === "buy_now" && (
+            <>
+              <span className="text-xs font-bold text-[#d43d2a] uppercase tracking-wider">Buy Now Active</span>
+              <span className="font-price text-lg font-bold text-[#d43d2a]">
+                ${item.prisometer_start_price?.toLocaleString("en-US")}
+              </span>
+            </>
+          )}
           {item.status === "prisometer" && (
             <>
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse inline-block" />
-                <span className="text-xs font-bold text-red-600 uppercase tracking-wider">PRI$OMETER™ Live</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Declining</span>
               </div>
               <MobileStickyPrice item={item} />
             </>
@@ -294,8 +302,9 @@ export default function ProductDetailContent({ itemId }) {
             <div className="lg:hidden mt-6 space-y-5 w-full">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="outline" className="text-xs">{categoryLabels[item.category] || item.category}</Badge>
-              {item.status === "first_bids" && <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Active</Badge>}
-              {item.status === "prisometer" && <Badge className="bg-red-50 text-red-600 border-red-200 text-xs font-display">PRI$OMETER™ Live</Badge>}
+              {item.status === "first_bids" && <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-display">1stBid$™ Preview</Badge>}
+              {item.status === "buy_now" && <Badge className="bg-[#fef2f0] text-[#d43d2a] border-[#d43d2a]/30 text-xs font-display">Buy Now Active</Badge>}
+              {item.status === "prisometer" && <Badge className="bg-emerald-50 text-emerald-600 border-emerald-200 text-xs font-display">PRI$OMETER™ Declining</Badge>}
             </div>
             <div className="w-full max-w-full min-w-0">
               <h1 className="font-display text-2xl font-bold leading-tight text-foreground break-words whitespace-normal w-full max-w-full overflow-hidden [overflow-wrap:anywhere]">
@@ -310,8 +319,8 @@ export default function ProductDetailContent({ itemId }) {
                 </p>
               )}
             </div>
-            {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
-            {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
+            {(item.status === "first_bids" || item.status === "buy_now" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
+            {(item.status === "first_bids" || item.status === "buy_now" || item.status === "prisometer") && <BidSection item={item} />}
 
             <div className="flex gap-3">
               <Button variant="outline" className={`flex-1 gap-2 h-10 ${isSaved ? "text-red-500 border-red-200 bg-red-50 hover:bg-red-100" : ""}`} onClick={() => user ? saveMutation.mutate() : base44.auth.redirectToLogin()} disabled={saveMutation.isPending}>
@@ -403,8 +412,8 @@ export default function ProductDetailContent({ itemId }) {
                   </p>
                 )}
               </div>
-              {(item.status === "first_bids" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
-              {(item.status === "first_bids" || item.status === "prisometer") && <BidSection item={item} />}
+              {(item.status === "first_bids" || item.status === "buy_now" || item.status === "prisometer") && <PriceConvergenceModuleWrapper item={item} />}
+              {(item.status === "first_bids" || item.status === "buy_now" || item.status === "prisometer") && <BidSection item={item} />}
               <Separator />
               {(item.customer_location || item.location) && (
                 <div className="bg-secondary/40 rounded-lg p-4 space-y-2">

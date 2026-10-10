@@ -130,19 +130,22 @@
         "draft",
         "scheduled",
         "first_bids",
+        "buy_now",
         "prisometer",
         "sold",
         "pending_review",
         "unsold",
         "declined"
       ],
-      "default": "draft"
+      "default": "draft",
+      "description": "Phase 1 = first_bids (preview, stagnant gray), Phase 2 = buy_now (stagnant + Buy Now), Phase 3 = prisometer (declining)"
     },
     "lot_number": {
       "type": "string"
     },
     "first_bids_duration_hours": {
-      "type": "number"
+      "type": "number",
+      "description": "Phase 1 (Preview) duration"
     },
     "first_bids_start": {
       "type": "string",
@@ -152,11 +155,31 @@
       "type": "string",
       "format": "date-time"
     },
+    "anti_snipe_window_minutes": {
+      "type": "number",
+      "default": 10,
+      "description": "Phase 1 anti-snipe extension window applied when a qualifying bid (>= Pri$ometer displayed price) lands near expiry"
+    },
+    "phase_2_duration_hours": {
+      "type": "number",
+      "default": 72,
+      "description": "Phase 2 (Stagnant + Buy Now) duration"
+    },
+    "phase_2_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "phase_2_end": {
+      "type": "string",
+      "format": "date-time"
+    },
     "prisometer_start_price": {
-      "type": "number"
+      "type": "number",
+      "description": "The Pri$ometer displayed price \u2014 stagnant in Phase 1 & 2, declines in Phase 3. Must be at or above the hidden reserve."
     },
     "reserve_price": {
-      "type": "number"
+      "type": "number",
+      "description": "Hidden minimum reserve price (never shown to buyers)"
     },
     "below_reserve_percent": {
       "type": "number",
@@ -167,11 +190,46 @@
       ]
     },
     "prisometer_duration_hours": {
-      "type": "number"
+      "type": "number",
+      "description": "Phase 3 (Declining) duration \u2014 controls the decline rate"
+    },
+    "phase_1_color": {
+      "type": "string",
+      "enum": [
+        "gray",
+        "red",
+        "amber",
+        "green"
+      ],
+      "default": "gray",
+      "description": "Pri$ometer illumination color during Phase 1"
+    },
+    "phase_2_color": {
+      "type": "string",
+      "enum": [
+        "gray",
+        "red",
+        "amber",
+        "green"
+      ],
+      "default": "red",
+      "description": "Pri$ometer illumination color during Phase 2"
+    },
+    "phase_3_color": {
+      "type": "string",
+      "enum": [
+        "gray",
+        "red",
+        "amber",
+        "green"
+      ],
+      "default": "green",
+      "description": "Pri$ometer illumination color during Phase 3"
     },
     "prisometer_activated_at": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "When Phase 3 (declining) began"
     },
     "current_price": {
       "type": "number"

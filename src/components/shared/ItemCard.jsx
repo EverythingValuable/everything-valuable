@@ -65,7 +65,7 @@ function useCountdown(endDateStr) {
 export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
   const navigate = useNavigate();
   const livePrice = useLivePrice(item);
-  const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : null);
+  const countdown = useCountdown(item.status === "first_bids" ? item.first_bids_end : item.status === "buy_now" ? item.phase_2_end : null);
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
 
@@ -151,8 +151,13 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
           <div className="absolute top-2 left-2 z-20">
             {isPrisometer ? (
               <div className="flex items-center gap-1 px-2 py-0.5 bg-black/75 text-white text-[9px] font-bold tracking-wide">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
-                PRI$OMETER Live
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                Declining
+              </div>
+            ) : item.status === "buy_now" ? (
+              <div className="flex items-center gap-1 px-2 py-0.5 bg-black/75 text-white text-[9px] font-bold tracking-wide">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#d43d2a] animate-pulse shrink-0" />
+                Buy Now
               </div>
             ) : item.status === "first_bids" ? (
               <div className="px-2 py-0.5 bg-white/90 text-foreground text-[9px] font-bold tracking-wide">
@@ -214,6 +219,28 @@ export default function ItemCard({ item, index = 0, sellerProfileOverride }) {
                     )}
                   </span>
                 </div>
+                {item.highest_bid > 0 && (
+                  <p className="text-sm text-neutral-600">
+                    High bid: <span className="font-semibold text-neutral-900">${item.highest_bid.toLocaleString("en-US")}</span>
+                    {item.bid_count > 0 && (
+                      <span className="text-neutral-500 ml-1">({item.bid_count} {item.bid_count === 1 ? "bid" : "bids"})</span>
+                    )}
+                  </p>
+                )}
+              </>
+            ) : item.status === "buy_now" ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[11px] uppercase tracking-wide text-[#d43d2a] font-semibold">Buy Now</p>
+                  </div>
+                  {countdown && (
+                    <p className="text-[11px] text-neutral-600 font-medium">{countdown} remaining</p>
+                  )}
+                </div>
+                <span className="font-price tabular-nums text-lg font-bold text-[#d43d2a]">
+                  ${Math.floor(item.prisometer_start_price || 0).toLocaleString("en-US")}
+                </span>
                 {item.highest_bid > 0 && (
                   <p className="text-sm text-neutral-600">
                     High bid: <span className="font-semibold text-neutral-900">${item.highest_bid.toLocaleString("en-US")}</span>

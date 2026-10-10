@@ -30,7 +30,7 @@ export default function SellerAnalytics({ user }) {
   });
 
   const soldItems = items.filter(i => i.status === "sold");
-  const liveItems = items.filter(i => ["first_bids", "prisometer"].includes(i.status));
+  const liveItems = items.filter(i => ["first_bids", "buy_now", "prisometer"].includes(i.status));
   const totalRevenue = soldItems.reduce((s, i) => s + (i.sold_price || 0), 0);
   const avgSalePrice = soldItems.length ? totalRevenue / soldItems.length : 0;
 

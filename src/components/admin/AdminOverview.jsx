@@ -56,7 +56,7 @@ export default function AdminOverview() {
   const buyers = allUsers.filter(u => (u.role || "buyer") === "buyer").length;
   const sellers = allUsers.filter(u => u.role === "seller").length;
   const pendingApps = allApplications.filter(a => a.application_status === "pending").length;
-  const activeListings = allItems.filter(i => ["first_bids", "prisometer"].includes(i.status)).length;
+  const activeListings = allItems.filter(i => ["first_bids", "buy_now", "prisometer"].includes(i.status)).length;
   const firstBidsItems = allItems.filter(i => i.status === "first_bids").length;
   const prisometerItems = allItems.filter(i => i.status === "prisometer").length;
   const soldItems = allItems.filter(i => i.status === "sold").length;

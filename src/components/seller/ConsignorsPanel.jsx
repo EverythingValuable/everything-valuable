@@ -126,11 +126,11 @@ export default function ConsignorsPanel({ user }) {
     if (!itemsByConsignor[key]) itemsByConsignor[key] = { total: 0, sold: 0, active: 0 };
     itemsByConsignor[key].total++;
     if (item.status === "sold") itemsByConsignor[key].sold++;
-    if (["first_bids", "prisometer"].includes(item.status)) itemsByConsignor[key].active++;
+    if (["first_bids", "buy_now", "prisometer"].includes(item.status)) itemsByConsignor[key].active++;
   });
 
   const ownedItems = allItems.filter(i => !i.ownership_type || i.ownership_type === "owned");
-  const ownedStats = { total: ownedItems.length, sold: ownedItems.filter(i => i.status === "sold").length, active: ownedItems.filter(i => ["first_bids","prisometer"].includes(i.status)).length };
+  const ownedStats = { total: ownedItems.length, sold: ownedItems.filter(i => i.status === "sold").length, active: ownedItems.filter(i => ["first_bids","buy_now","prisometer"].includes(i.status)).length };
 
   const filtered = consignors.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||

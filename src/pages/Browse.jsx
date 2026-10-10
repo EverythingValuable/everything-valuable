@@ -29,7 +29,7 @@ export default function Browse() {
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["items-browse"],
     queryFn: () => base44.entities.Item.filter(
-      { status: ["first_bids", "prisometer"] },
+      { status: ["first_bids", "buy_now", "prisometer"] },
       "-created_date",
       200
     ),

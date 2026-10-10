@@ -302,8 +302,9 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   };
 
   const isOwnListing = currentUser && item.seller_email && currentUser.email === item.seller_email;
-  const canBid = !isOwnListing && (item.status === "first_bids" || item.status === "prisometer");
-  const canMakeItMine = !isOwnListing && item.status === "prisometer" && !item.make_it_mine_active;
+  const canBid = !isOwnListing && (item.status === "first_bids" || item.status === "buy_now" || item.status === "prisometer");
+  const canMakeItMine = !isOwnListing && item.status === "buy_now" && !item.make_it_mine_active;
+  const buyNowDisabledPhase1 = !isOwnListing && item.status === "first_bids";
   const currentPrice = item.current_price || item.prisometer_start_price;
   const currentHighestBid = item.highest_bid || 0;
   const sellerTiers = sellerProfile?.bid_increment_tiers || item.seller_bid_increment_tiers;
@@ -326,7 +327,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
   );
 
   // Not signed in — show branded sign-in gate instead of bidding UI
-  if (!currentUser && (item.status === "first_bids" || item.status === "prisometer")) {
+  if (!currentUser && (item.status === "first_bids" || item.status === "buy_now" || item.status === "prisometer")) {
     return (
       <div className="rounded-2xl border border-border bg-card overflow-hidden">
         <div className="px-6 py-8 text-center space-y-4">
@@ -361,7 +362,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
 
   // Signed in but no card on file — require payment method before bidding
   const hasPaymentMethod = !!buyerProfile?.payment_method_label;
-  if (currentUser && !hasPaymentMethod && (item.status === "first_bids" || item.status === "prisometer")) {
+  if (currentUser && !hasPaymentMethod && (item.status === "first_bids" || item.status === "buy_now" || item.status === "prisometer")) {
     return (
       <>
         {showAddCard && (
@@ -437,14 +438,25 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
 
 
 
-      {/* Make It Mine button */}
+      {/* Make It Mine button — active only in Phase 2 (Buy Now) */}
       {canMakeItMine && !showConfirm && !bidSuccess && (
         <Button
           onClick={handleOpenConfirm}
           className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-base font-semibold gap-2"
         >
           <ShoppingBag className="w-5 h-5" />
-          Make It Mine
+          Make It Mine — Buy Now
+        </Button>
+      )}
+
+      {/* Phase 1: Buy Now visibly disabled */}
+      {buyNowDisabledPhase1 && !showConfirm && !bidSuccess && (
+        <Button
+          disabled
+          className="w-full h-14 bg-muted text-muted-foreground rounded-xl text-base font-semibold gap-2 cursor-not-allowed"
+        >
+          <ShoppingBag className="w-5 h-5" />
+          Make It Mine — Available Phase 2
         </Button>
       )}
 
@@ -639,7 +651,7 @@ export default function BidSection({ item, onMakeItMine, onCancel }) {
           </div>
 
           <div className="bg-background/50 rounded-lg p-4 space-y-1 text-sm">
-            <p>The PRI$OMETER is currently paused at <strong>${price.toLocaleString("en-US")}</strong></p>
+            <p>{item.status === "buy_now" ? "Your Buy Now price is locked at" : "The PRI$OMETER is currently paused at"} <strong>${price.toLocaleString("en-US")}</strong></p>
             <p className="text-red-600 font-medium mt-2">Please review the bid amount and ensure you are ready to proceed.</p>
           </div>
 
