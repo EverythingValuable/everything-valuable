@@ -195,9 +195,8 @@ export default function PriceConvergenceModule({ item, isActive, isPaused, pause
     countdownTarget = item.first_bids_end;
   } else if (item.status === "buy_now") {
     countdownTarget = item.phase_2_end;
-  } else if (item.status === "prisometer" && item.prisometer_activated_at && item.prisometer_duration_hours) {
-    countdownTarget = new Date(new Date(item.prisometer_activated_at).getTime() + item.prisometer_duration_hours * 3600000).toISOString();
   }
+  // Phase 3 (Pri$ometer) intentionally has no countdown — buyers must never know when it ends.
   const cd = useCountdown(countdownTarget);
 
   // Phase 1 — Preview (stagnant, gray)
@@ -243,8 +242,6 @@ export default function PriceConvergenceModule({ item, isActive, isPaused, pause
     return (
       <div className="space-y-1.5">
         <PhaseIndicator item={item} />
-        <PhaseTimerBox color={color} title="Declining Price" cd={cd}
-          body="The price drops continuously. When it meets the highest offer, the sale concludes — above reserve auto-completes; below reserve goes to the seller." />
         <PriusometerPriceBox item={item} color={color} displayPrice={displayPrice} cents={cents} formatPrice={formatPrice}
           isActive={isActive} isPaused={isPaused} pauseTimeLeft={pauseTimeLeft}
           subtitle="Declining Price"
