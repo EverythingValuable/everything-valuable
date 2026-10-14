@@ -127,10 +127,15 @@ function PriusometerPriceBox({ item, color, displayPrice, cents, formatPrice, is
         initial={{ scale: 1.02, opacity: 0.8 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className={`font-sans text-4xl md:text-5xl lg:text-6xl font-bold ${color.price} mt-1`}
+        className={`font-sans text-4xl md:text-5xl lg:text-6xl font-bold ${color.price} mt-1 tabular-nums`}
       >
         ${formatPrice(displayPrice)}
-        {isActive && <span className={`font-sans text-xl ${color.price} animate-price-tick`}>.{cents.toString().padStart(2, "0")}</span>}
+        {isActive && (
+          <span className={`font-sans text-xl ${color.price}`}>
+            .{cents.toString().padStart(4, "0").slice(0, 2)}
+            <span className="text-red-500">{cents.toString().padStart(4, "0").slice(2)}</span>
+          </span>
+        )}
       </motion.div>
       <ExpandableInfoBox explanation={explanation} />
     </div>

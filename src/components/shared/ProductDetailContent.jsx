@@ -46,17 +46,20 @@ function MobileStickyPrice({ item }) {
       const progress = Math.min(elapsed / durationMs, 1);
       const price = Math.max(startPrice - (startPrice - floorPrice) * progress, floorPrice);
       setDisplayPrice(price);
-      setCents(Math.floor((price % 1) * 100));
+      setCents(Math.floor((price % 1) * 10000));
     };
     update();
-    intervalRef.current = setInterval(update, 800);
+    intervalRef.current = setInterval(update, 60);
     return () => clearInterval(intervalRef.current);
   }, [item]);
 
   return (
     <span className="font-price text-xl font-bold text-foreground tabular-nums">
       ${Math.floor(displayPrice).toLocaleString("en-US")}
-      <span className="text-sm text-red-500">.{cents.toString().padStart(2, "0")}</span>
+      <span className="text-sm">
+        .{cents.toString().padStart(4, "0").slice(0, 2)}
+        <span className="text-red-500">{cents.toString().padStart(4, "0").slice(2)}</span>
+      </span>
     </span>
   );
 }
@@ -140,7 +143,8 @@ function PriceConvergenceModuleWrapper({ item }) {
         const effectiveFloor = Math.max(floorPrice, highestBid);
         const currentPrice = Math.max(calculatedPrice, effectiveFloor);
         setDisplayPrice(currentPrice);
-        setCents(Math.floor((currentPrice % 1) * 100));
+        // 4 decimal places: value in 1/10000ths of a dollar
+        setCents(Math.floor((currentPrice % 1) * 10000));
 
         // Trigger convergence when calculated price meets or drops below highest bid
         if (highestBid > 0 && calculatedPrice <= highestBid && !convergenceTriggeredRef.current) {
@@ -151,7 +155,7 @@ function PriceConvergenceModuleWrapper({ item }) {
         }
       };
       updatePrice();
-      intervalRef.current = setInterval(updatePrice, 800);
+      intervalRef.current = setInterval(updatePrice, 60);
       return () => clearInterval(intervalRef.current);
     } else {
       setDisplayPrice(item.current_price || item.prisometer_start_price);
