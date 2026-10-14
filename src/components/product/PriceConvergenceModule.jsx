@@ -9,12 +9,6 @@ const COLOR_MAP = {
   green: { text: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", dot: "bg-emerald-500", price: "text-emerald-600", label: "text-emerald-600" },
 };
 
-const PHASE_META = [
-  { key: "first_bids", label: "Preview", title: "Phase 1 — Preview" },
-  { key: "buy_now", label: "Buy Now", title: "Phase 2 — Buy Now" },
-  { key: "prisometer", label: "Declining", title: "Phase 3 — Declining Price" },
-];
-
 function phaseColor(item, phaseIndex) {
   const key = phaseIndex === 0 ? item.phase_1_color
     : phaseIndex === 1 ? item.phase_2_color
@@ -62,34 +56,6 @@ function ExpandableInfoBox({ explanation }) {
           {explanation}
         </p>
       )}
-    </div>
-  );
-}
-
-function PhaseIndicator({ item }) {
-  const currentIndex = PHASE_META.findIndex(p => p.key === item.status);
-  if (currentIndex < 0) return null;
-  return (
-    <div className="rounded-xl border border-border bg-card px-5 py-3 shadow-sm w-full overflow-hidden">
-      <div className="flex items-center gap-2">
-        {PHASE_META.map((phase, i) => {
-          const c = phaseColor(item, i);
-          const active = i === currentIndex;
-          const done = i < currentIndex;
-          return (
-            <React.Fragment key={phase.key}>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <div className={`w-2 h-2 rounded-full ${active ? c.dot : done ? c.dot : "bg-muted-foreground/20"} ${active ? "animate-pulse" : ""}`} />
-                <span className={`text-[10px] font-bold uppercase tracking-wider ${active ? c.label : "text-muted-foreground/50"}`}>{phase.label}</span>
-              </div>
-              {i < PHASE_META.length - 1 && (
-                <div className={`flex-1 h-px ${done ? "bg-foreground/30" : "bg-border"}`} />
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-      <p className="text-[11px] text-muted-foreground mt-2 font-medium">{PHASE_META[currentIndex].title}</p>
     </div>
   );
 }
@@ -204,7 +170,6 @@ export default function PriceConvergenceModule({ item, isActive, isPaused, pause
     const color = phaseColor(item, 0);
     return (
       <div className="space-y-1.5">
-        <PhaseIndicator item={item} />
         <PhaseTimerBox color={color} title="1stBid$™ Preview" cd={cd}
           body="The PRI$OMETER™ price is fixed during preview. Place your highest bid — if it meets the displayed price, you can win before live pricing begins." />
         <PriusometerPriceBox item={item} color={color} displayPrice={displayPrice} cents={cents} formatPrice={formatPrice}
@@ -224,7 +189,6 @@ export default function PriceConvergenceModule({ item, isActive, isPaused, pause
     const color = phaseColor(item, 1);
     return (
       <div className="space-y-1.5">
-        <PhaseIndicator item={item} />
         <PhaseTimerBox color={color} title="Buy Now Phase" cd={cd}
           body="The price is fixed and Make It Mine is active. Buy now at the displayed price, or keep bidding — bidding continues into Phase 3." />
         <PriusometerPriceBox item={item} color={color} displayPrice={displayPrice} cents={cents} formatPrice={formatPrice}
@@ -241,7 +205,6 @@ export default function PriceConvergenceModule({ item, isActive, isPaused, pause
     const color = phaseColor(item, 2);
     return (
       <div className="space-y-1.5">
-        <PhaseIndicator item={item} />
         <PriusometerPriceBox item={item} color={color} displayPrice={displayPrice} cents={cents} formatPrice={formatPrice}
           isActive={isActive} isPaused={isPaused} pauseTimeLeft={pauseTimeLeft}
           subtitle="Declining Price"
